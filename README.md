@@ -68,6 +68,8 @@ Die projektlokalen Spec-Kit-Skripte verwenden PowerShell, auch unter Linux.
 ## Nachweise und Repositorygrenzen
 
 Arbeitsnachweise liegen unter [evidence](specs/001-agent-multisession/evidence/README.md).
+Die [Repository-/Clone-Prüfung](specs/001-agent-multisession/evidence/repository-bootstrap.md)
+dokumentiert den getesteten Initialcommit und die Grenzen dieser lokalen Prüfung.
 Rohberichte/TRX/Source-Manifeste unter `artifacts/` und `TestResults/` bleiben lokal
 beziehungsweise werden als CI-Artefakte übertragen; ein frischer Clone enthält sie nicht.
 Fehlende Originalartefakte dürfen nicht rekonstruiert und als historische Ausführung

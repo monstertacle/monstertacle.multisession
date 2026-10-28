@@ -29,9 +29,11 @@ Ausführliche Regeln stehen in [AGENTS.md](AGENTS.md), der
 ## Übergabe an einen Remote-Agenten
 
 Repository: <https://github.com/monstertacle/monstertacle.multisession>.
-**Nächster begrenzter Implementierungsauftrag: T112**, nicht alle offenen Tasks.
-T112 wurde vor dem angeforderten Stopp nur vorbereitet: Lese-/Werkzeugprüfungen,
-noch keine C#-Änderung oder neuer Red-Lauf für diesen Task.
+**Nächster begrenzter Implementierungsauftrag: T025** mit den zugehörigen noch fehlenden
+Red-Fällen aus T016–T019, nicht alle offenen Tasks.
+T112 (ReservedDispatch-Vertrag) ist umgesetzt; Nachweise und Grenzen stehen in
+[evidence/tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md).
+Der kontrollierte Store ist weiterhin keine SQLite-Persistenz, die Runtime noch kein fertiger Dispatcher.
 
 1. Eigenen Arbeitsbranch aus dem aktuellen Remote-Stand erstellen; keine parallelen
    Änderungen mehrerer Agenten im selben Arbeitsbaum.
@@ -55,9 +57,11 @@ Die Codex-Skills liegen bereits unter `.agents/skills/`. Bei einem Client mit di
 Skill-Unterstützung lautet der Agentenauftrag (kein Shellbefehl):
 
 ```text
-$speckit-implement Nur T112 bearbeiten. Vor Umsetzung aktuellen Deep-Dive dokumentieren,
+$speckit-implement Nur den nächsten T025-Dispatcherzyklus samt passenden Red-Fällen bearbeiten.
+Vor Umsetzung aktuellen Deep-Dive dokumentieren,
 fachliches Red vor Green beobachten, Regression, native Qualitätsprüfung und vollständigen
-Codemetr-Guard ausführen. Keine anderen Tasks umsetzen. Änderungen und Prüfnachweise
+Codemetr-Guard ausführen. T112 wiederverwenden; keine anderen Storys umsetzen.
+Änderungen und Prüfnachweise
 auf einem Arbeitsbranch zur Überprüfung zurückliefern; kein Merge, Deployment oder NuGet-Push.
 ```
 

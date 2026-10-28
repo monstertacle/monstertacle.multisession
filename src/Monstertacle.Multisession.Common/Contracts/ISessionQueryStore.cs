@@ -3,6 +3,8 @@ namespace Monstertacle.Multisession.Contracts;
 /// <summary>Bounded domain reads, separated from the atomic write contract.</summary>
 public interface ISessionQueryStore
 {
+    /// <summary>Reads a reserved dispatch at read time; null grants no send permission. Reading does not authorize retries.</summary>
+    ValueTask<ReservedDispatch?> GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken);
     /// <summary>Reads a session owned by this store.</summary>
     ValueTask<SessionSnapshot?> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken);
     /// <summary>Lists sessions in stable bounded order.</summary>

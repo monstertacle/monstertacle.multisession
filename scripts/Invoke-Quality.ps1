@@ -14,7 +14,7 @@ function Invoke-Dotnet([string[]]$Arguments) {
 }
 
 function Get-SourceHash {
-    $files = @(Get-Item global.json, Directory.Build.props, Directory.Packages.props, .editorconfig,
+    $files = @(Get-Item -Force global.json, Directory.Build.props, Directory.Packages.props, .editorconfig,
         Monstertacle.Multisession.slnx, codemetr.json, .config/dotnet-tools.json)
     $files += @(Get-ChildItem src, tests, examples, scripts, .github/workflows -Recurse -File |
         Where-Object {

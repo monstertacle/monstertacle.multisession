@@ -174,3 +174,97 @@ Sourcehash `5f6ef71246cb3758190f8cc6debdca98587fbfb3f8168e71cc46ed2e33ad7fc6`,
 Artefakte `artifacts/quality/windows/53582390efb54d0e8c568b3d84615c9f/`.
 Coverage **233/264 = 88,2576 %**, Runner **FAIL / Exit 1**. Keine Freigabe;
 Linux-/CI-/Zielsystem-/Provider-/Paketnachweise und initiale Manifestlücke bleiben offen.
+
+## T112 — reservierter Dispatch-Snapshot (2026-10-28)
+
+Owner: aktuelle Implementierungssitzung; Arbeitsbranch `feature/reserved-dispatch-contract`,
+Basiscommit `0cd4ac8`. Vorabanalyse: `architecture/2026-10-28-reserved-dispatch.md`.
+Bezug FR-007/FR-018/FR-019 und Orchestrierungsvertrag §1. T112 ist lokal umgesetzt;
+keine abgeschlossene US1, kein produktiver Store/Dispatcher und keine Produktfreigabe.
+
+### Tatsächlich beobachtetes Red vor Green
+
+Befehl für die ersten drei Läufe:
+`dotnet test tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~ReservedDispatchContractTests --logger trx --results-directory artifacts/tdd/<Verzeichnis>`.
+Alle .NET-Läufe erfolgen über `bash /home/user1/dev/scripts/run-capped.sh --`.
+TRX und vor jedem Lauf erfasste `sources.sha256` bleiben in der ignorierten lokalen Ablage.
+Die Sourcehashes unten sind SHA256 der jeweiligen Manifestdatei, keine Commit-IDs.
+
+| Reihenfolge / Verzeichnis | Beobachtetes Ergebnis | Manifest-SHA256 |
+| --- | --- | --- |
+| `reserved-dispatch-red-compiled` | Exit 1; sieben ausgeführte fachlich rote Fälle: fehlender Snapshot (5), fehlender Completionablauf und falscher Konfliktfehlertyp (2) | `6534fb769964f735292bd4cffa4468687b7bf0a8970d62063ad6905f2480fe78` |
+| `reserved-dispatch-projection` | Exit 1; vollständige Submission und reine Reads grün (2); Cancel/nicht laufend noch lesbar (2), aktuelle Revision 0 statt 1 (1), Completion noch Stub (2) | `d2e9b344ec15ec82553dd9b20c4d8051155c06368a7104b1c1b4cf287df3baba` |
+| `reserved-dispatch-green` | Exit 0; sieben Fälle grün einschließlich Revisionskonflikt ohne Result-/History-/Binding-/Releasewirkung, einmaligem Abschluss und nächster Sequenz/Revision | `7dcfd07351b68e1e59e603d5f3e09b38c63286740fb7cd348cee97d486035aba` |
+| `reserved-dispatch-evidence-red` | Filter `FullyQualifiedName~RefusesUnmodelledCompletionWithoutRelease`; Exit 1; zwei Fälle: Unknown/InProgress-Completion wurde fälschlich ohne Exception akzeptiert | `4aece24c74e7bf96ac2ae8f0abf4a52c095f3692dc3041d91d0c8ae11711136d` |
+| `reserved-dispatch-final` | Sourcefassung des anschließenden vollständigen nativen Qualitätslaufs; alle neun T112-Fälle grün innerhalb 26 Contractfällen | `c4e7274a77772a68d5aeffae0119ac5372c915c91fdd6f9e0dc82e2ebe7bad9e` |
+
+Der erste Versuch unter `reserved-dispatch-red` scheiterte am Analyzer CA1859 einer
+Testvariable; er ist ausdrücklich kein fachlicher Red-Nachweis. Nach Änderung zur
+expliziten Schnittstellenkonvertierung folgte der tatsächlich ausgeführte Red-Lauf oben.
+Vor Erweiterung und erneut vor Refactoring bestanden jeweils 158 Unitfälle.
+
+### Umsetzung, Refactoring und Grenzen
+
+- Common ergänzt ReservedDispatch, die explizite ISessionQueryStore-Leseoperation und
+  SessionSnapshot.BindingRevision; vorhandene Reservierungsrückgabe bleibt unverändert.
+- Das bestehende Double erfasst Submission/Session/Sequence/Revision unter demselben
+  Gate wie Running/Reservierung. Settings sind bereits durch ProviderSessionContext
+  eingefroren. Reads verändern weder Zustand noch Revision und prüfen aktive
+  Reservierung, Running und fehlende Abbruchmarkierung zum Lesezeitpunkt.
+- Kontrollierte bestätigte Completion prüft offene Reservierung und aktuelle Revision
+  vor jeder Teilwirkung; Ergebnis, History, Binding und Freigabe folgen im selben Lock.
+  Erstes Opening-Binding hat Revision 0, bestätigte Folgepublikation erhöht sie.
+  Mehrmaliges Lesen ist keine Send-/Retryberechtigung. Ein doppelter Abschluss scheitert.
+- Das Double modelliert hier ausschließlich bestätigte Completion. Unknown/InProgress
+  werden ausdrücklich als noch nicht implementiert abgewiesen und behalten Reservierung
+  und unveränderten Request. Produktionsverhalten dazu bleibt T051/T060/T070/T075/T080;
+  bereits vorhandenes MarkUncertain wird nicht durch eine unsichere Freigabe ersetzt.
+- Nach grünem Stand meldete Codemetr zunächst Storekopplung 41 bei Grenze 40.
+  Abbruchcollection und Historyaufnahme wurden in ControlledDispatchState gekapselt.
+  Danach voller Guard und Regression grün; keine Schwellen-/Pin-/Scopeänderung.
+- ContractTests kompilieren die drei bestehenden kontrollierten Fixturequellen per Link;
+  keine Produktabhängigkeit auf Testassemblies und keine zweite Storeimplementierung.
+
+### Native Gesamtprüfung des geänderten Quellstands
+
+`pwsh -NoProfile -File scripts/Invoke-Quality.ps1 -Platform linux` über run-capped:
+**Exit 0**. Artefakte: `artifacts/quality/linux/b83d5853697d45c5aa01d3a26f4d8883/`.
+Qualitätsscope-Sourcehash aus run.json:
+`617d3f67adf713058c7a60950846899f93893a58ddc4fd23ac3af55e2db4417f`.
+
+- Locked-Restore, Release-Build, Format-/Analyzerprüfung und transitiver NuGet-Audit bestanden;
+  Build 0 Warnungen/Fehler. Ein erster Formatlauf fand zwei Zeilenumbrüche im neuen
+  Initializer; korrigiert, der vollständige finale Lauf bestand.
+- TRX maschinell gezählt: **186 Tests bestanden**, 158 Unit, 26 Contract, je 1 Integration-
+  und Linux-Infrastrukturtest; 0 fehlgeschlagen/nicht ausgeführt. Zusätzlich 13 bestandene
+  Coverage-Gateverhaltensfälle (aus Log gezählt).
+- Gesamter nativer Produktumfang: **241/271 = 88,9299 %**, Mindestwert 87 % erfüllt;
+  8 Reports, gemeinsame vier Bibliotheken plus Linux. Windows ist der fremden nativen
+  Plattform zugeordnet, nicht still aus beiden Läufen entfernt.
+- Full-Guard `dotnet tool run codemetr-csharp -- check --format json`, CLI 0.1.0:
+  **76 Dateien/Typen**, 0 Verstöße/Parsefehler/übersprungene Typen, Exit 0;
+  `artifacts/tdd/reserved-dispatch-codemetr-final.json`.
+- Lokaler Host: Debian GNU/Linux 13, PowerShell 7.6.9, SDK 10.0.403. Dieser native
+  Linuxlauf ist kein Ubuntu-24.04-, Windows-, GitHub-CI-, Rechte-/Crash-/Liveprovider-
+  oder Paketabnahmenachweis. Finale Q-Gates bleiben offen.
+
+Der Linuxrunner scheiterte zunächst vor der Prüfung an der vorhandenen versteckten
+.editorconfig. Mechanische Metadatenkorrektur `Get-Item -Force` in der festen Rootliste;
+Vorabanalyse/Reproduktion: `architecture/2026-10-28-linux-quality-file-discovery.md`.
+Der vollständige Lauf oben validiert die korrigierte Erfassung ohne Änderung der Gates.
+
+### Abgleich der Befunde und Folgearbeit
+
+| Gegenstand | Disposition / zuständige Folgeaufgabe |
+| --- | --- |
+| Fehlende Dispatchprojektion und Completion-Revisionsprüfung | T112 umgesetzt und durch die neun neuen Fälle geprüft |
+| Zu hohe Kopplung im erweiterten Double | Gekapselt; vollständiger Codemetr-Guard bestanden |
+| Unmodellierte Completion konnte im neuen Double freigeben | Zwei beobachtete Red-Fälle, ausdrücklicher Stubguard, finale Regression grün |
+| Linuxrunner findet versteckte Rootdatei nicht | `-Force` ergänzt; originaler vollständiger Linuxrunner bestanden |
+| Echte SQLite-Atomizität / Crash / Operations-ID-Sicherung | Bestehende T051/T059/T060, Owner: ausführende US5-Implementierungssitzung; atomare Reservierung/Completion und Crashfälle sind deren Abnahme |
+| Dispatcher und tatsächliche Sends | Nächster begrenzter Auftrag T025 mit passenden Red-Fällen T016–T019, Owner: nächste US1-Implementierungssitzung; keine Wiederholung alter DispatchId, nur neue Eingabe, einmaliger bestätigter Abschluss |
+| Paging / native Recovery-/Lifecyclezustände | Bestehende T113/T115/T062/T070/T075/T077/T080; jeweilige US5-/US3-Sitzung, Abnahme gemäß dortigen konkreten Fällen; kein stiller Zusatzumfang zu T112 |
+| Externe native CI / Produktfreigabe | Bestehende T111/T104 und Q-01–Q-06, Owner: freigebende Projektverantwortliche und jeweilige ausführende Sitzung |
+
+T112 verändert weder historische Nachweise noch die dokumentierte anfängliche Manifestlücke.
+Keine neuen offenen T112-Abnahmeblocker. Andere Storytasks bleiben unverändert offen.

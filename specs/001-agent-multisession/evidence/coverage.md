@@ -54,3 +54,15 @@ unter dem damaligen 90-%-Gate jeweils FAIL. Letzter 90-%-Lauf nach FIFO:
 Diese historischen Ergebnisse wurden nicht umgeschrieben. Der neue PASS entsteht
 durch die genehmigte Schwellenänderung, nicht durch zusätzlich abgedeckten Produktcode.
 Ein Fortschritt der Coverage ist keine Abnahme unimplementierter Funktionen.
+
+## T112: nativer Linuxlauf nach Repositoryübernahme
+
+SDK 10.0.403 / Debian GNU/Linux 13, vollständiger Runner
+`pwsh -NoProfile -File scripts/Invoke-Quality.ps1 -Platform linux`: Exit 0.
+Sourcehash `617d3f67adf713058c7a60950846899f93893a58ddc4fd23ac3af55e2db4417f`,
+Artefakte `artifacts/quality/linux/b83d5853697d45c5aa01d3a26f4d8883/`.
+**241/271 = 88,9299 %** des gesamten nativen Produktumfangs, Mindestwert 87 % erfüllt.
+158 Unit-, 26 Contract-, 1 Integration- und 1 Linux-Infrastrukturtest bestanden;
+13 Coverage-Gateverhaltensfälle bestanden. Vollständiger Codemetr-Guard: 76 Typen,
+0 Verstöße/Parsefehler/übersprungene Typen. TDD und Grenzen: [tdd-us1.md](tdd-us1.md).
+Kein Windows-/Ubuntu-Zielsystem-/CI-Nachweis für diesen Stand; keine Produktfreigabe.

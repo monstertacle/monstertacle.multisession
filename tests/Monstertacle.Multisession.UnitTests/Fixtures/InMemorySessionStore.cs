@@ -12,6 +12,7 @@ internal sealed class InMemorySessionStore : ISessionStore
     private readonly Dictionary<Guid, SubmitRequest> _submissions = [];
     private readonly Dictionary<Guid, DateTimeOffset> _acceptedUtc = [];
     private readonly Dictionary<Guid, ExecutionReservation> _reservations = [];
+    public ControlledDispatchState DispatchState { get; } = new();
     public Action? CommittingBinding { get; init; }
     public Action? BlockingSession { get; init; }
     public Func<SubmitRequest, CancellationToken, ValueTask>? CommittingAcceptance { get; init; }
@@ -34,7 +35,16 @@ internal sealed class InMemorySessionStore : ISessionStore
     {
         cancellationToken.ThrowIfCancellationRequested();
         CommittingBinding?.Invoke();
-        _sessions[sessionId] = _sessions[sessionId] with { Binding = binding, Lifecycle = SessionLifecycle.Open };
+        lock (_admissionGate)
+        {
+            SessionSnapshot session = _sessions[sessionId];
+            _sessions[sessionId] = session with
+            {
+                Binding = binding,
+                Lifecycle = SessionLifecycle.Open,
+                BindingRevision = session.Binding is null ? 0 : checked(session.BindingRevision + 1),
+            };
+        }
         return ValueTask.CompletedTask;
     }
 
@@ -44,6 +54,22 @@ internal sealed class InMemorySessionStore : ISessionStore
         BlockingSession?.Invoke();
         _sessions[sessionId] = _sessions[sessionId] with { BlockReason = reason };
         return ValueTask.CompletedTask;
+    }
+
+    ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_admissionGate)
+        {
+            if (!_reservations.TryGetValue(dispatchId, out ExecutionReservation? reservation)
+                || _requests[reservation.RequestId].State != RequestState.Running
+                || DispatchState.IsCancellationRequested(reservation.RequestId))
+            {
+                return ValueTask.FromResult<ReservedDispatch?>(null);
+            }
+
+            return ValueTask.FromResult(DispatchState.Snapshots.GetValueOrDefault(dispatchId));
+        }
     }
 
     ValueTask<SessionSnapshot?> ISessionQueryStore.GetSessionAsync(Guid sessionId, CancellationToken cancellationToken)
@@ -130,6 +156,8 @@ internal sealed class InMemorySessionStore : ISessionStore
             }
 
             ExecutionReservation reservation = new(Guid.NewGuid(), head.RequestId, head.SessionId, head.WriteWorkspaceKey, Clock.GetUtcNow());
+            DispatchState.Snapshots.Add(reservation.DispatchId, new ReservedDispatch(reservation,
+                _sessions[head.SessionId], _submissions[head.RequestId], head.Sequence, _sessions[head.SessionId].BindingRevision));
             _reservations.Add(reservation.DispatchId, reservation);
             _requests[head.RequestId] = _requests[head.RequestId] with { State = RequestState.Running, Certainty = ExecutionCertainty.InProgress };
             return reservation;
@@ -138,7 +166,41 @@ internal sealed class InMemorySessionStore : ISessionStore
     public ValueTask CommitObservationAsync(Guid dispatchId, ProviderObservation observation, CancellationToken cancellationToken)
         => throw new NotImplementedException();
     public ValueTask CommitCompletionAsync(Guid dispatchId, ProviderReply reply, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (reply.Certainty != ExecutionCertainty.ConfirmedEnded)
+        {
+            throw new NotImplementedException("Controlled completion models confirmed results only.");
+        }
+        lock (_admissionGate)
+        {
+            if (!_reservations.TryGetValue(dispatchId, out ExecutionReservation? reservation)
+                || _requests[reservation.RequestId].State != RequestState.Running
+                || DispatchState.Snapshots[dispatchId].BindingRevision != _sessions[reservation.SessionId].BindingRevision)
+            {
+                throw new SessionOperationException(new PublicError(ErrorCode.RevisionConflict));
+            }
+
+            ReservedDispatch snapshot = DispatchState.Snapshots[dispatchId];
+            SessionSnapshot session = _sessions[reservation.SessionId];
+            SessionSnapshot updated = reply.Binding is null ? session : session with
+            {
+                Binding = reply.Binding,
+                BindingRevision = checked(session.BindingRevision + 1),
+            };
+            _requests[reservation.RequestId] = _requests[reservation.RequestId] with
+            {
+                State = reply.Outcome,
+                Certainty = reply.Certainty,
+                Result = reply,
+            };
+            DispatchState.RecordCompletion(snapshot, reply);
+            _sessions[reservation.SessionId] = updated;
+            _reservations.Remove(dispatchId);
+        }
+
+        return ValueTask.CompletedTask;
+    }
     public ValueTask MarkUncertainAsync(Guid dispatchId, PublicError failure, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

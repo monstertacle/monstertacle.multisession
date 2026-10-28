@@ -6,5 +6,8 @@
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/InMemorySessionStore.cs" Link="Fixtures/InMemorySessionStore.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledDispatchState.cs" Link="Fixtures/ControlledDispatchState.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/SchedulingData.cs" Link="Fixtures/SchedulingData.cs" />
   </ItemGroup>
 </Project>

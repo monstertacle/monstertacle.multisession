@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "maxTypeLines": 600,
+    "maxConstructorParameters": 6,
+    "maxPublicMethods": 10,
+    "maxInstanceFields": 8,
+    "maxCyclomaticComplexity": 25,
+    "minMaintainabilityIndex": 15,
+    "maxClassCoupling": 40,
+    "maxDepthOfInheritance": 3,
+    "maxParameters": 7,
+    "maxNestingDepth": 4,
+    "bannedTypeNameSuffixes": ["Helper", "Helpers", "Util", "Utils", "Utilities", "Manager", "Processor"]
+  },
+  "context": ["."],
+  "exclude": [],
+  "overrides": []
+}

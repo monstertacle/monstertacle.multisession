@@ -1,0 +1,50 @@
+using Monstertacle.Multisession.Contracts;
+
+namespace Monstertacle.Multisession.UnitTests.Fixtures;
+
+internal sealed class ControlledProvider : ISessionProvider
+{
+    public TaskCompletionSource<ProviderCall> Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public TaskCompletionSource<ProviderReply> Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public ProviderCapabilities Capabilities { get; init; } = new(true, true, false, false, false);
+    public Action<ProviderSessionContext>? Opening { get; init; }
+    public ProviderBinding OpeningBinding { get; init; } = new("controlled", 1, null, null);
+
+    public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        Opening?.Invoke(context);
+        return ValueTask.FromResult(OpeningBinding);
+    }
+
+    public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(binding);
+    }
+
+    public async ValueTask<ProviderReply> SendAsync(
+        ProviderCall request,
+        ProviderBinding binding,
+        Func<ProviderObservation, CancellationToken, ValueTask> observe,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        Started.TrySetResult(request);
+        return await Completion.Task.WaitAsync(cancellationToken);
+    }
+
+    public ValueTask<ProviderReply> InspectAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)
+        => ValueTask.FromResult(Unsupported());
+
+    public ValueTask<ProviderReply> CancelAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)
+        => ValueTask.FromResult(Unsupported());
+
+    private static ProviderReply Unsupported() => new(
+        RequestState.Failed,
+        ExecutionCertainty.Unknown,
+        string.Empty,
+        false,
+        null,
+        new PublicError(ErrorCode.UnsupportedProviderAction, ExecutionCertainty.Unknown));
+}

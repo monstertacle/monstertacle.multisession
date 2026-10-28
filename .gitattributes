@@ -1,0 +1,7 @@
+# Match .editorconfig on Windows and Linux; do not store binary line-ending conversions.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
+*.zip binary

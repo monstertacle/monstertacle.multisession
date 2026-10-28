@@ -1,0 +1,22 @@
+name: dependency-audit
+
+on:
+  schedule:
+    - cron: '16 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      # Directory.Build.props enables NuGetAuditMode=all, level=low, warnings as errors.
+      # --force reevaluates the locked graph; no floating versions or ignored advisories.
+      - run: dotnet restore Monstertacle.Multisession.slnx --locked-mode --force
+      - run: dotnet list Monstertacle.Multisession.slnx package --vulnerable --include-transitive --no-restore

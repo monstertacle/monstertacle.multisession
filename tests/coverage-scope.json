@@ -1,0 +1,19 @@
+{
+  "thresholdPercent": 87,
+  "commonAssemblies": [
+    "Monstertacle.Multisession.Common",
+    "Monstertacle.Multisession.Storage.Sqlite",
+    "Monstertacle.Multisession.Providers.OpenAI",
+    "Monstertacle.Multisession.Providers.Gemini"
+  ],
+  "platformAssemblies": {
+    "windows": "Monstertacle.Multisession.Windows",
+    "linux": "Monstertacle.Multisession.Linux"
+  },
+  "productDirectory": "src",
+  "exclusions": [
+    { "scope": "tests", "reason": "Test infrastructure is not product code." },
+    { "scope": "examples", "reason": "ValidationHost is a non-production acceptance harness, not a shipped library." },
+    { "scope": "**/obj/**", "reason": "SDK-generated assembly metadata and global usings." }
+  ]
+}

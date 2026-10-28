@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>json,cobertura</Format>
+          <Include>[Monstertacle.Multisession.Common]*,[Monstertacle.Multisession.Storage.Sqlite]*,[Monstertacle.Multisession.Windows]*,[Monstertacle.Multisession.Linux]*,[Monstertacle.Multisession.Providers.OpenAI]*,[Monstertacle.Multisession.Providers.Gemini]*</Include>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+          <SkipAutoProps>false</SkipAutoProps>
+          <ExcludeAssembliesWithoutSources>None</ExcludeAssembliesWithoutSources>
+          <ExcludeByFile>**/obj/**</ExcludeByFile>
+          <UseSourceLink>false</UseSourceLink>
+          <SingleHit>false</SingleHit>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

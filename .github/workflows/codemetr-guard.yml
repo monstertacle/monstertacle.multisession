@@ -1,0 +1,33 @@
+name: codemetr-guard
+
+on:
+  pull_request:
+  push:
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+      - name: Full Codemetr guard (including tests and validation host)
+        shell: pwsh
+        run: |
+          $report = & dotnet tool run codemetr-csharp -- check --format json
+          $guardExitCode = $LASTEXITCODE
+          $report | Write-Output
+          if ($guardExitCode -ne 0) { exit $guardExitCode }
+          $result = ($report -join "`n") | ConvertFrom-Json -ErrorAction Stop
+          if ($result.passed -ne $true -or $result.summary.files -lt 1 -or $result.summary.types -lt 1) {
+            throw 'Codemetr did not verify any C# product scope. Empty checks cannot pass CI.'
+          }

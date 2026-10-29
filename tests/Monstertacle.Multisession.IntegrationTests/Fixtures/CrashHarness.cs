@@ -42,7 +42,7 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
             string expectedBarrier = point == CrashProtocol.JournalPoint ? CrashProtocol.JournalBarrier : CrashProtocol.RecoveryBarrier;
             if (harness.Signal is null || harness.Signal.Barrier != expectedBarrier || harness.Signal.ProcessId != child.Id)
             {
-                throw new InvalidOperationException("Crash worker did not reach the expected barrier.");
+                throw new InvalidOperationException($"Crash worker did not reach the expected barrier: {line}");
             }
             return harness;
         }

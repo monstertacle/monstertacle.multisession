@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.ValidationHost;
 
@@ -23,9 +24,15 @@ internal static class CrashWorker
             await Task.Delay(Timeout.InfiniteTimeSpan);
             return 2;
         }
-        catch (Exception)
+        catch (Exception failure)
         {
-            await Console.Out.WriteLineAsync("{\"status\":\"failed\",\"failureCode\":\"crash-fixture\"}");
+            string category = failure switch
+            {
+                SessionOperationException operation => operation.Failure.Code.ToString(),
+                TimeoutException => "WorkerTimeout",
+                _ => "crash-fixture",
+            };
+            await Console.Out.WriteLineAsync(JsonSerializer.Serialize(new { status = "failed", failureCode = category }));
             return 2;
         }
     }

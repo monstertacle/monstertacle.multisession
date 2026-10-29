@@ -505,3 +505,11 @@ Windows-Fehler aus 40936649050/40937967664 bleiben ausdrücklich offen unter
 T094/T099/SC-009; als Nächstes aussagekräftige Prozessdiagnosen und Eingrenzung.
 Weitere CLI-Abläufe native-context/recovery/soak sowie Paket- und Abschlussaufträge
 aus tasks.md bleiben in Arbeit. Keine Freigabe oder Live-Ausführung behauptet.
+
+2026-10-29T19:25:57Z: Prozessdiagnosen nach reproduziertem Informationsverlust
+verbessert. Korrigierter Red-Test erwartet den bestehenden öffentlichen Fehler
+UnsupportedStoreVersion; danach 29 gezielte Regressionen grün. Volltor
+linux/7dd6ea21db0f423895776a4cc29356e9: 984 Tests, 97.5677 % Produktabdeckung,
+Sourcehash a39a285d2c2b0537719a4a286d352f8151ce692e1743e406f316d3120b269b36.
+Codemetr 417 Dateien/433 Typen, keine Verstöße. Die Windows-Ursachen bleiben
+T094/T099/SC-009 zugeordnet; neue CI erhält die tatsächlichen Reportkategorien.

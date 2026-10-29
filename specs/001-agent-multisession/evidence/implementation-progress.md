@@ -545,3 +545,11 @@ linux/15b459ed027a487a84e16788972d8675: 990 Tests, 97.5677 %, Sourcehash
 ee3b9c21381727066e30f34af464fe99c424bf5fa9b904ec73f45d34845c6396.
 Hashumfang um tatsächliche Paketinputs erweitert, zuerst rot abgesichert.
 Windows-Paketlauf, Produktlizenz und finale identische Nachweise bleiben offen.
+
+2026-10-29T19:46:51Z: Paket-Smoke wird nach nativer Qualität auch in beiden
+CI-Jobs ausgeführt; Berichte und nupkg-Dateien erhalten eigene Artefakte.
+Lokaler Reportkopie-Smoke ist grün (Workspace-Endung 03c3a7c584af45bcadc4716f704fff3f).
+Produkt-/Vorlagencode unverändert gegenüber dem grünen Paket-Volltor; neue
+CI-Ausführung bleibt abzuwarten. Frühere intermittierende Windows-Routingfehler
+bleiben T094/T099 zugeordnet; Recovery-CLI selbst bestand im fehlgeschlagenen
+Lauf 40941309691, dessen einziger gemeldeter Fehler die Routing-Bereinigung war.

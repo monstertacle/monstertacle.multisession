@@ -78,5 +78,10 @@ try {
         ForEach-Object { [ordered]@{ File = $_.Name; Sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() } })
     [ordered]@{ Status = 'PASS'; Platform = $platformPackage; CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O'); Workspace = $workspace; Hashes = $hashes; Consumer = $report } |
         ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $workspace 'manifest.json')
+    $reports = Join-Path $root ('artifacts/package-smoke/' + (Split-Path $workspace -Leaf))
+    $null = New-Item -Path $reports -ItemType Directory -Force
+    foreach ($name in @('manifest.json', 'codemetr.json', 'report.json', 'Program.cs', 'Consumer.csproj', 'NuGet.Config', 'packages.lock.json', 'restore.log', 'locked-restore.log', 'build.log')) {
+        Copy-Item -LiteralPath (Join-Path $workspace $name) -Destination $reports
+    }
     Write-Host "PASS package consumer: $workspace"
 } finally { Pop-Location }

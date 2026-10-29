@@ -32,9 +32,23 @@ jobs:
         if: failure() && runner.os == 'Windows'
         shell: pwsh
         run: ./scripts/Measure-WindowsVolumeFormatting.ps1
+      - name: Pack and consume local library packages
+        shell: pwsh
+        run: |
+          dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.1.0
+          if ($LASTEXITCODE -ne 0) { throw 'Local package build failed.' }
+          ./eng/PackageSmoke.ps1
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: quality-${{ matrix.platform }}
           path: artifacts/quality/${{ matrix.platform }}/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: packages-and-consumer-${{ matrix.platform }}
+          path: |
+            artifacts/packages/
+            artifacts/package-smoke/
           if-no-files-found: error

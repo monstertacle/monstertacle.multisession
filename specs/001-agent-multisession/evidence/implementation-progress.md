@@ -222,3 +222,14 @@ Neuer konkreter Folgeauftrag T118 (Owner diese Gesamtimplementierung, bereit vor
 Factory- und Runtimeoptions vor Startup verbindlich vergleichen, insbesondere Retention.
 Danach lokale Löschung/Retention T054/T064, verbleibende Diagnostik/Lifecycleaudits und
 Plattform-/Konsumabnahmen. Keine vollständige Story- oder Produktfreigabe.
+
+### 2026-10-29T13:38:21Z: Optionsprüfung vor Storevorbereitung
+
+T118 implementiert: zehn tatsächlich rote SQL-Mismatches und eine rote Startupbarriere
+jetzt grün. Factory- und Runtimeoptionen stimmen verbindlich vor Recovery/Workers überein;
+keine stille abweichende Retention oder Limits, keine Mutation bei Abweisung. Kanonische
+Ablageschreibweise und ausdrückliches Reopen mit neuer übereinstimmender Konfiguration
+bleiben erlaubt. 648 Tests lokal vollständig grün,96,8385 % Gesamtdeckung; Codemetr294
+Dateien/300 Typen sauber. Lauf fd5ba5660eef44b09dd2251bcbb3e9d7, tdd-us5.md. T118 bis
+nativeCI offen, danach T054/T064 lokale Retention/Löschung. Close-/Stop-Sammelcommit
+9e4dfa0 ist inzwischen Windows/Ubuntu-CI-grün (quality40882554552, Guard40882554553).

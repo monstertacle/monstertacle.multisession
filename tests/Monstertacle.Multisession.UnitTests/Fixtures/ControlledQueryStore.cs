@@ -9,6 +9,15 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
     private bool _disposed;
     protected abstract ControlledStoreState State { get; }
     public Func<ValueTask>? Disposing { get; init; }
+    public Func<RuntimeOptions, CancellationToken, ValueTask>? ValidatingOptions { get; init; }
+
+    async ValueTask IStoreBootstrap.ValidateRuntimeOptionsAsync(RuntimeOptions options, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (ValidatingOptions is not null) { await ValidatingOptions(options, cancellationToken); }
+        cancellationToken.ThrowIfCancellationRequested();
+        if (options.Validate() is { } failure) { throw new SessionOperationException(failure); }
+    }
 
     ValueTask IStoreBootstrap.StartAsync(IStateDirectoryLease lease, CancellationToken cancellationToken)
     {

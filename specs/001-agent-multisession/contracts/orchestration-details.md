@@ -229,3 +229,18 @@ ClosedUtc wird einmal gesetzt. Opening bekommt einen eigenen Fall. Ein später B
 Commit darf Closing/Closed nicht wieder öffnen. Der SessionClosure-Kern beobachtet den
 Fortschritt begrenzt; Completion beziehungsweise Recovery aktualisieren Closing auch ohne
 wartenden Caller. Keine dieser Transaktionen ruft einen Provider auf oder löscht dessen Daten.
+
+## 6. Store- und Runtimeoptionen vor Startup
+
+SessionRuntime wartet ValidateRuntimeOptionsAsync auf IStoreBootstrap vor StartAsync,
+Recovery und Workeranlage ab. Der SQLite-Store vergleicht die wirksamen RuntimeOptions
+mit seinem bei CreateNew/OpenExisting validierten immutable Factoryrecord. Alle Werte
+müssen übereinstimmen; StateDirectory wird über den gehaltenen Leasebezug abgeglichen,
+kanonisch äquivalente Schreibweisen sind kein anderer Store. Unterschiedliche Retention,
+Limits oder Fristen ergeben InvalidConfiguration vor Änderung gespeicherter Nutzerzustände.
+
+Ein explizites OpenExisting mit neuer gültiger Konfiguration ist erlaubt; danach benutzt
+seine Runtime dieselbe Konfiguration. Options werden nicht im Schema ersetzt oder still
+überschrieben. Ein direkter Storeconsumer verwendet bereits seine ausdrücklich validierte
+Factorykonfiguration. Scheitert die Runtime vor erfolgreicher Storevorbereitung, verbleiben
+Store und Lease im Eigentum des Hosts. Zweitbesitz bleibt StoreAlreadyOwned.

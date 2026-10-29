@@ -39,6 +39,15 @@ internal sealed class SqliteStoreState
         _accepting = true;
     }
 
+    internal void ValidateRuntimeOptions(RuntimeOptions options)
+    {
+        if (_started) { throw StorageFailurePolicy.Error(ErrorCode.StoreAlreadyOwned, true, false); }
+        if (!_lease.IsHeld || !_lease.Matches(options.StateDirectory) || (options with { StateDirectory = Options.StateDirectory }) != Options)
+        {
+            throw StorageFailurePolicy.Error(ErrorCode.InvalidConfiguration, true, false);
+        }
+    }
+
     internal void StopAcceptance() => _accepting = false;
     internal void RequireAcceptance()
     {

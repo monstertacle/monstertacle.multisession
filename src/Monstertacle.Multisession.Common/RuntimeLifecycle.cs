@@ -50,6 +50,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         bool prepared = false;
         try
         {
+            await host.Store.ValidateRuntimeOptionsAsync(options, cancellationToken).AsTask().WaitAsync(cancellationToken);
             await host.Store.StartAsync(host.Lease, cancellationToken);
             prepared = true;
             SessionCatalog catalog = new(host.Store, host.Providers, host.Profiles, host.Clock);

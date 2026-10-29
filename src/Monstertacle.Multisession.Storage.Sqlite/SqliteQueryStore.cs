@@ -7,6 +7,9 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
 {
     protected SqliteStoreState State { get; } = state;
 
+    ValueTask IStoreBootstrap.ValidateRuntimeOptionsAsync(RuntimeOptions options, CancellationToken cancellationToken)
+        => State.Queue.WriteAsync(_ => State.ValidateRuntimeOptions(options), cancellationToken);
+
     ValueTask IStoreBootstrap.StartAsync(IStateDirectoryLease lease, CancellationToken cancellationToken)
         => State.Queue.WriteAsync(connection => State.Start(connection, lease), cancellationToken);
     ValueTask IStoreBootstrap.StopAcceptanceAsync(CancellationToken cancellationToken)

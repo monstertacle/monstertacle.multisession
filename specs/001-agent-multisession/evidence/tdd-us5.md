@@ -539,3 +539,37 @@ bleibt mit T054-Retention/Datenträgerfällen, späterem Lifecycle und nativer P
 abzugleichen. Nächster konkreter AuftragT070/T075 Requestzustandsmatrix als Grundlage für
 Cancel/Stop/Close und Retention; Owner ausführende Gesamtimplementierungssitzung.
 9fdbda7 auf Windows/Ubuntu erfolgreich: quality40872437853,Guard40872437848.
+
+## T118: wirksame Factory-/Runtimeoptionen vor Recovery prüfen
+
+Architektur vor Portsignatur/Code architecture/2026-10-29-bootstrap-options.md,
+Ausgang9e4dfa0. bootstrap-options-final-red:10 fachliche SQL-Redfälle, jeweils gültige
+abweichende Retention/Limits/Fristen wurden ohne Ausnahme akzeptiert; zwei übereinstimmende
+Reopen-/Ablagefälle schon grün. bootstrap-preparation-red: ein fachlich roter Vertrag,
+Runtime-Startup beendete sich ohne die ausstehende Optionsprüfung abzuwarten. Der zuerst
+kleinere tatsächliche Satzbootstrap-options-red hatte7 rote/2 grüne Fälle. Keine Compiler-
+oder Infrastrukturfehler als Red verwendet.
+
+Green: bestehendes IStoreBootstrap um passive Optionsprüfung ergänzt; vor Store.Start/
+Recovery/Workers verbindlich awaited und durch Callertoken begrenzt. SQLite prüft das
+vollständige immutable Record einschließlich Retention, normalisiert nur den durch Lease
+bestätigten Ablagebezug. Kein stilles Überschreiben, keine Daten-/Schemaänderung bei
+Abweisung; Queue und native Identität bleiben erhalten, null Sends, fehlgeschlagene
+Vorbereitung entsorgt keine hosteigene Lease. Explizites OpenExisting mit neuem überein-
+stimmendem Factory-/Runtimerecord bleibt erlaubt. Direkter Storeconsumer benutzt seine
+bereits validierten Factoryoptionen. Kontrollierter Store hat keine eigene Factorypolicy
+und sichert den awaitbaren Startupvertrag, nicht den SQLgleichheitsbeleg.
+
+Vollständig lokal grün artifacts/quality/linux/fd5ba5660eef44b09dd2251bcbb3e9d7,
+SourceHash8284d6752f0fd302db4a04a42e549c25cc18e7f4be54773e63b5900da6579767.
+648 Tests (283 Unit,202 Contract,162 Integration,1 Plattform), null Fehler/Skips;
+2236/2309 Produktzeilen=96,8385 %. Codemetr294 Dateien/300 Typen, null Verstöße/
+Parsefehler/Skips. Logs artifacts/tdd/bootstrap-options-{red,final-red,quality}.log;
+Fullbefehl run-capped.sh plus Format/Guard/Invoke-Quality. Qualitätslog enthält zusätzlich
+12 gezielte SQL- und4 Vertragsfälle, die nicht zur vollständigen Testzahl addiert werden.
+NativeCI des neuen Standes vor Taskabnahme abwarten; T064 darf anschließend fortfahren.
+
+Der vorherige Close-/Stop-Sammelcommit9e4dfa0 ist inzwischen auf Windows/Ubuntu grün:
+quality40882554552 und codemetr-guard40882554553. Damit ist der reale Windowsbefund von
+42fc164 am korrigierten Kopf nachgeprüft, keine Wiederholung des alten roten Laufs als
+neuer Codebeleg ausgegeben. Gesamte Produkt-/Zielhost-/Livefreigabe bleibt offen.

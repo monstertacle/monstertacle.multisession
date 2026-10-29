@@ -135,3 +135,15 @@ Linux-Gesamtregression grün: linux/c2f3a8a7912240f289dc44b2e58edcab,
 Sourcehashdcb601666f3f137aa406cbd53f2932ab700e7160825e6ca5271fb0244d7dc2ce,
 967Tests,2847/2918Produktzeilen=97.5668%,Codemetr394Dateien/405TypenohneBefunde.
 WindowsGreen diesesWiringstands folgtnoch, T093vollständigeZielmatrixbleibtoffen.
+
+## T089 eigenständiger öffentlicher Sourceconsumer
+
+ConsumerOwnedProvider undEmbeddedConsumerTests imkonsumierendenIntegrationprojekt:
+keineBibliotheksinternenAPIs/InternalsVisibleTo, einRuntime/einSQLiteStore, eigener
+Adaptermitzwei unabhängigenbestätigtenHeads. ErsteSendsüberlappen, StatusRunninglesbar,
+Folgeanfragen/volleUnicodeinhalte/Historyzuordnung korrekt; verzögerteAnfragekooperativ
+Cancelled/ConfirmedEnded unter2s, StopohneDatenlöschung,5Originalkennungen nachReopen.
+ErsterfachlichausführbarerFallsofortgrün, keineProduktkorrektur undkeinerdichtetesRed.
+VorherigeCA1861-AnalyzerfehlerderTestarraysausdrücklichkeinRed; statischreadonlyerwartete
+Werte. Logembedded-consumer-observed.log:1/1in440msgrün. NativeLease-/NuGetnachweis
+bleibtgetrennt; kontrollierterRetainedTestLease behauptetkeinenOSbesitz.

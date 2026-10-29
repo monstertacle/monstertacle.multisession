@@ -804,3 +804,20 @@ Fehlerrollback/CallerCancel und Erhalt fremderSessiondaten nachReopen. Retention
 warbereitsnativbeidseitiggrün(40887145758/40887146227); dieselbenRegeln undTests auchim
 aktuellenVolltor ae3b46d115ea4d2199372bb286d4fef9 grün. T064 abgeschlossen. T054/T065-
 Gesamtaudit undT068/T069 bleiben eigenständigoffen, keinephysischeErasurezusage.
+
+## T065/T093 Originaljournal vor Recovery privat prüfen
+
+NachnativemWindowsprozesswiringf7915dc:5/6Plattformfällegrün, Journalownertest scheitert
+anOS-DefaultownerBuiltinAdministrators. R-07 verlangtprivateWindowsACL, keinpauschales
+TokenUser==TokenOwner. Primärquellen undEntscheidung in
+architecture/2026-10-29-native-journal-security.md; VerzeichnisownerbleibtstriktUser,
+keineRichtlinien-/Prozesstoken-/ACLreparatur. PrivateDACLnurUserFullControlunverändert.
+
+ZusätzlicherdeterministischerLinux-Rednative-journal-security-red.log: öffentliches
+OriginaljournalwurdeohneFehlerverarbeitet(1Red,2Regressionengrün). Preflight prüfte
+nurDB/privateneueKopien, nichtdasOriginaljournal. JetztvorKopie übervorhandenenLeaseport
+OpenExistingprüfen. Danach27Linuxplattformfälle und32Format-/Hotjournal-/Consumerfälle
+grün,DB/JournalbeiAblehnungbytegleich,keinePrüfkopien. Redbasis/TrackedDiff/Hashesunter
+artifacts/tdd/native-journal-security-red-*. Windows-NeubelegfürTokenowner-Port steht
+nochvorProduktanpassungaus; gültigeöffentlicheDateieigentümerschaftnichtmitfremderACE
+verwechseln, keineVollabnahmeausLinux ableiten.

@@ -31,8 +31,10 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
     }
 
     /// <summary>Killing the host releases its native lock while the persisted unknown reservation remains occupied.</summary>
-    [Fact]
-    public async Task KillAllowsReacquisitionWithoutLosingUnknownReservation()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task KillAllowsReacquisitionWithoutLosingUnknownReservation(bool unsafeJournal)
     {
         Guid requestId = Guid.NewGuid();
         ExecutionReservation original;
@@ -63,6 +65,25 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
             Assert.Throws<SessionOperationException>(() => NativeLease.OpenExisting(_path)).Failure.Code);
         await child.KillAsync();
         await using NativeLease reopened = NativeLease.OpenExisting(_path);
+        if (unsafeJournal)
+        {
+            NativeFileAssertions.MakePublic(journal);
+            byte[] databaseBefore = await File.ReadAllBytesAsync(Path.Combine(_path, "multisession.db"));
+            byte[] journalBefore = await File.ReadAllBytesAsync(journal);
+            ISessionStore? unexpected = null;
+            try
+            {
+                SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(async () =>
+                    unexpected = await SqliteStoreFactory.OpenExistingAsync(reopened, _scope, Options, CancellationToken.None));
+                Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
+                Assert.Equal(databaseBefore, await File.ReadAllBytesAsync(Path.Combine(_path, "multisession.db")));
+                Assert.Equal(journalBefore, await File.ReadAllBytesAsync(journal));
+                Assert.Empty(Directory.GetFiles(_path, ".format-check-*"));
+            }
+            finally { if (unexpected is not null) { await unexpected.DisposeAsync(); } }
+            return;
+        }
+        await reopened.PrepareFileAsync("multisession.db-journal", StateFileMode.OpenExisting, CancellationToken.None);
         await using ISessionStore recovered = await SqliteStoreFactory.OpenExistingAsync(reopened, _scope, Options, CancellationToken.None);
         await recovered.StartAsync(reopened, CancellationToken.None);
         RequestSnapshot request = (await recovered.GetRequestAsync(requestId, CancellationToken.None))!;

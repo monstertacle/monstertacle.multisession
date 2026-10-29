@@ -450,3 +450,15 @@ TFM-Alias beidseitigverwendet. Volltor linux/c2f3a8a7912240f289dc44b2e58edcab er
 967Tests,97.5668%,Codemetr394Dateien/405TypenohneBefunde. NativeWindowsGreenfolgt.
 AlsNächstesT089/T094 öffentlicherConsumerflow/neueprivateRunablage, danachPaketkonsum
 undweitererSzenario-/Lifecycle-/Plattformabgleich. Livekosten weiterhinnichtfreigegeben.
+
+T089Sourceconsumer mitseparatemProvider sofortgrün: zweiüberlappendeSessions/Folge-
+anfragen/Status/Cancelunter2s/Stop ohneLöschung/5OriginalIDs nachReopen; keinerdichteterRed.
+T065/T093Originaljournal-Privatheitslücke nachfachlichemLinuxRed geschlossen: bestehendes
+JournalvorKopie/Recovery überLeasevalidieren, öffentlicherSidecarbleibtmitDBbytegleich.
+Volltor linux/50447a222c2d45b58915f048bccc2861 erfolgreich,969Tests,97.5677%,
+Sourcehash39ad918d757e4ecf6041eb8649d7cdd40e2a8d5830777cf40fe6d88c5820f29c,
+Codemetr396Dateien/408TypenohneBefunde. WindowsDefault-Tokenownerprüfung stehtnochbevor;
+aktuellerDateiportistweiterstriktUser-only. NativeCIDefaultownerf7915dc istkeinGreen:
+40928760771 zeigtprivatesSQLitejournalmitOS-DefaultownerAdministrators,5/6Fällegrün.
+KorrigierteOS-Ownerassertion plus unveränderteUser-onlyDACL undneuer Originaljournal-
+Portfall werdenjetztnativgeprüft, ProduktWindowsOwnerpolicynichtvorRedanpassen.

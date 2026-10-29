@@ -33,6 +33,7 @@ internal static class SqliteStorePreflight
             await Task.Run(() => ValidateDatabase(path, SqliteOpenMode.ReadOnly, trustScopeId), cancellationToken);
             return;
         }
+        await lease.PrepareFileAsync(Path.GetFileName(path) + _journalSuffix, StateFileMode.OpenExisting, cancellationToken);
         await ValidateJournalCopyAsync(path, lease, trustScopeId, cancellationToken);
     }
 

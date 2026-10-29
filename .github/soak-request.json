@@ -1,4 +1,5 @@
 {
-  "SourceHash": "f1c4a1f380581bd32fa8ccbc5c5f990d43f0cab9720a82e719ce462e57a16e54",
-  "RequestedUtc": "2026-10-29T21:46:52.7948724+00:00"
+  "SourceHash": "95780bfa75c745cd0adb804e0a1ac3dfcea6474169900c8ab402990248e40f5b",
+  "RequestedUtc": "2026-10-29T22:01:21.8305600+00:00",
+  "Purpose": "Native one-hour validation after canonical model and recovery isolation checks"
 }

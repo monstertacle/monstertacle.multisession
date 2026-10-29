@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.NativeHttp;
 
 namespace Monstertacle.Multisession.Providers.OpenAI;
 
@@ -11,7 +12,7 @@ internal static class OpenAiResponse
         string? id = response.GetProperty("id").GetString();
         if (response.GetProperty("object").GetString() != "response" || string.IsNullOrWhiteSpace(id))
         {
-            throw OpenAiFailure.Create(ErrorCode.ProviderUnavailable);
+            throw NativeHttpErrors.Create(ErrorCode.ProviderUnavailable);
         }
         return id;
     }

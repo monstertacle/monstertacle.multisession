@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.NativeHttp;
 
 namespace Monstertacle.Multisession.Providers.OpenAI;
 
@@ -13,7 +14,7 @@ internal static class OpenAiProtocol
             || !document.TryGetProperty("object", out JsonElement kind) || kind.ValueKind != JsonValueKind.String || kind.GetString() != "conversation"
             || !document.TryGetProperty("id", out JsonElement id) || id.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(id.GetString()))
         {
-            throw OpenAiFailure.Create(ErrorCode.ProviderUnavailable);
+            throw NativeHttpErrors.Create(ErrorCode.ProviderUnavailable);
         }
         return new(AdapterId, BindingVersion, id.GetString(), null);
     }

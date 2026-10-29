@@ -16,4 +16,3 @@ public sealed record ProviderCapabilities(
     /// <summary>Gets whether recovery must verify the uncertain execution before publishing a continuation.</summary>
     public bool RequiresOperationAwareRecovery { get; init; }
 }
-

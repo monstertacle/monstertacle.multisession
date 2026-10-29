@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.NativeHttp;
 
 namespace Monstertacle.Multisession.Providers.OpenAI;
 
-internal sealed class OpenAiOperation(OpenAiTransport transport, TimeProvider clock)
+internal sealed class OpenAiOperation(NativeHttpTransport transport, TimeProvider clock)
 {
-    private static readonly TimeSpan _pollInterval = TimeSpan.FromSeconds(1);
 
     internal async ValueTask<ProviderReply> SendAsync(ProviderCall request, ProviderBinding binding,
         Func<ProviderObservation, CancellationToken, ValueTask> observe, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ internal sealed class OpenAiOperation(OpenAiTransport transport, TimeProvider cl
             JsonElement response = initial.RootElement;
             while (OpenAiResponse.IsPending(response))
             {
-                await Task.Delay(_pollInterval, clock, execution);
+                await Task.Delay(NativeHttpDefaults.PollInterval, clock, execution);
                 using JsonDocument next = await transport.SendAsync(HttpMethod.Get, $"responses/{Uri.EscapeDataString(operationId)}", null, execution);
                 if (OpenAiResponse.Identity(next.RootElement) != operationId) { return OpenAiResponse.Failure(ErrorCode.ProviderUnavailable, ExecutionCertainty.Unknown); }
                 response = next.RootElement.Clone();

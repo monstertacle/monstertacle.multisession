@@ -241,3 +241,25 @@ Kein Live-, Zielhost-, Packaging- oder Gesamtabnahmepass. OpenAI unterstützt Mo
 keine externe AgentTask-Laufzeit. API-Betrieb braucht hostseitig freigegebenen Zugang und
 beim Livegate ausdrücklich bestätigte Kosten-/Speicher-/Testkontobedingungen.
 Die Gesamtimplementierung wird mit Gemini fortgesetzt; kein Ende nach diesem Teilschnitt.
+
+## Gemeinsame native HTTP-Infrastruktur vor zweitem Adapter
+
+Updated: 2026-10-29T08:28:01Z
+Vorabanalyse architecture/2026-10-29-shared-native-http.md, Basis b795a6d.
+Reines Refactoring ab grünem 362-Teststand, kein künstlicher Red. Header-/Body-/GET-Retry- /
+Endpointregeln liegen jetzt als interne Compile-Link-Quellen unter src/Shared/NativeHttp.
+Noch ausschließlich im OpenAI-Projekt eingebunden. Kein zusätzlicher Paket-/Assemblytyp,
+keine HTTPreferenz im Commonkern. Verbindung enthält Headername/Scheme; native HTTP400-
+Interpretation bleibt explizit injizierter Providerparser. Native Operationen und Bindings
+bleiben in ihren jeweiligen Paketen. Gleiche Poll-/Header-/Bodydefaults zentralisiert.
+
+240 Unit- und 120 Contractfälle vor/nach Refactor grün, darunter alle 61 nativen Adapterfälle.
+Manifest SHA256 `31ba5e63f245671c110b3e157a9c3916354d0f1f0a566d0c484e9cdbbfcad97f`.
+Vollständige lokale Qualität Exit 0, artifacts/quality/linux/30a8ee20478641c98a41f3d93e06d7fc/,
+Sourcehash `5cd543a9825bfc03b9434894c4bebae97b34460ce58a2e452cbc2df4e457d61d`.
+362/362 Tests aus vier TRX gezählt, 0 Fehler/Skips; alle 13 Coveragegatefälle und
+Locked-Restore/Build/Format/Analyzer/Audit grün. 924/962 Produktzeilen = 96,0499 Prozent.
+Voller Guard Exit 0, 163 Dateien/165 Typen, 0 Verstöße/Parsefehler/übersprungene Typen.
+Keine Gates/Pin-/Scopeänderung. T045 bleibt bis vollständiger US2-Regression offen.
+Gemini wird denselben internen Transport nach eigenem Red konsumieren und seine darin
+kompilierten Quellen im normalen Coverageinventar vollständig mitmessen.

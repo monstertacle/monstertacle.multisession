@@ -1,3 +1,4 @@
+using Monstertacle.Multisession.NativeHttp;
 namespace Monstertacle.Multisession.Providers.OpenAI;
 
 /// <summary>Explicit host connection for the Conversations and Responses REST contract.</summary>
@@ -10,5 +11,5 @@ public sealed record OpenAiOptions
     /// <summary>Gets whether HTTP is explicitly allowed for loopback fixtures.</summary>
     public bool AllowLocalHttp { get; init; }
     /// <summary>Gets the finite byte limit for native JSON response bodies, including metadata.</summary>
-    public int MaximumResponseBytes { get; init; } = 32 * 1024 * 1024;
+    public int MaximumResponseBytes { get; init; } = NativeHttpDefaults.MaximumResponseBytes;
 }

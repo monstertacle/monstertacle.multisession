@@ -1,12 +1,13 @@
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.NativeHttp;
 
 namespace Monstertacle.Multisession.Providers.OpenAI;
 
 /// <summary>Native Conversations/Responses adapter; no client-side agent or transcript replay.</summary>
 public sealed class OpenAiSessionProvider : ISessionProvider, IDisposable
 {
-    private readonly OpenAiTransport _transport;
+    private readonly NativeHttpTransport _transport;
     private readonly OpenAiOperation _operation;
     private readonly TimeProvider _clock;
     private readonly OpenAiObservationAccess _observations;
@@ -14,7 +15,8 @@ public sealed class OpenAiSessionProvider : ISessionProvider, IDisposable
     public OpenAiSessionProvider(OpenAiOptions options, ICredentialResolver credentials, HttpMessageHandler? handler = null, TimeProvider? clock = null)
     {
         _clock = clock ?? TimeProvider.System;
-        _transport = new(options, credentials, handler, _clock);
+        _transport = new(new(OpenAiValidation.Endpoint(options), options.CredentialReference, "Authorization", "Bearer", options.MaximumResponseBytes),
+            credentials, handler, _clock, OpenAiResponse.NativeError);
         _operation = new(_transport, _clock);
         _observations = new(_transport, _clock);
     }
@@ -39,7 +41,7 @@ public sealed class OpenAiSessionProvider : ISessionProvider, IDisposable
         using JsonDocument document = await _transport.SendAsync(HttpMethod.Get, $"conversations/{Uri.EscapeDataString(binding.SessionReference!)}", null, linked.Token);
         if (OpenAiProtocol.Conversation(document.RootElement).SessionReference != binding.SessionReference)
         {
-            throw OpenAiFailure.Create(ErrorCode.ProviderSessionExpired);
+            throw NativeHttpErrors.Create(ErrorCode.ProviderSessionExpired);
         }
         return binding;
     }

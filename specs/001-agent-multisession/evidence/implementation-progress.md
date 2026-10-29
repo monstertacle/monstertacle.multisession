@@ -66,3 +66,6 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   expliziter CAS statt altem-Kopf-Fallback. 362 Tests/96,0417 Prozent, Full-Guard
   160 Dateien/162 Typen sauber. Native Gemini-/SQLitebeweise folgen ihren bestehenden Tasks.
   Nachweis tdd-us5.md. d795ee3 CI auf Windows/Ubuntu grün.
+- Gemeinsame interne HTTPquellen aus grünem OpenAI-Stand extrahiert, ausschließlich per
+  Compile-Link im Providerpaket, kein Kerntransport/neues Paket. Vollständige Qualität
+  362 Tests, 96,0499 Prozent, 163 Dateien/165 Typen sauber. Nächster Schnitt Gemini-Red.

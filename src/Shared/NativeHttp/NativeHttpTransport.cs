@@ -1,24 +1,24 @@
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
 
-namespace Monstertacle.Multisession.Providers.OpenAI;
+namespace Monstertacle.Multisession.NativeHttp;
 
-internal sealed class OpenAiTransport : IDisposable
+internal sealed class NativeHttpTransport : IDisposable
 {
-    private static readonly TimeSpan _headerTimeout = TimeSpan.FromSeconds(30);
     private readonly HttpClient _client;
-    private readonly OpenAiOptions _options;
+    private readonly NativeHttpConnection _options;
     private readonly ICredentialResolver _credentials;
     private readonly TimeProvider _clock;
+    private readonly Func<JsonElement, ErrorCode> _classifyBadRequest;
 
-    internal OpenAiTransport(OpenAiOptions options, ICredentialResolver credentials, HttpMessageHandler? handler, TimeProvider clock)
+    internal NativeHttpTransport(NativeHttpConnection options, ICredentialResolver credentials, HttpMessageHandler? handler, TimeProvider clock, Func<JsonElement, ErrorCode> classifyBadRequest)
     {
-        Uri endpoint = OpenAiValidation.Endpoint(options);
+        Uri endpoint = options.Endpoint;
         _options = options;
         _credentials = credentials;
         _clock = clock;
+        _classifyBadRequest = classifyBadRequest;
         _client = handler is null
             ? new(new SocketsHttpHandler { AllowAutoRedirect = false, UseCookies = false })
             : new(handler, disposeHandler: false);
@@ -37,11 +37,11 @@ internal sealed class OpenAiTransport : IDisposable
                 {
                     if (body is not null) { request.Content = new StringContent(body, Encoding.UTF8, "application/json"); }
                     using HttpResponseMessage response = await HeadersAsync(request, cancellationToken);
-                    retryDelay = OpenAiReadRetry.Delay(method, response, _clock);
+                    retryDelay = NativeHttpReadRetry.Delay(method, response, _clock);
                     if (retryDelay is null)
                     {
-                        if (!response.IsSuccessStatusCode) { throw await OpenAiFailure.ResponseAsync(response, _options.MaximumResponseBytes, cancellationToken); }
-                        return await OpenAiResponseBody.ReadAsync(response.Content, _options.MaximumResponseBytes, cancellationToken);
+                        if (!response.IsSuccessStatusCode) { throw await NativeHttpErrors.ResponseAsync(response, _options.MaximumResponseBytes, _classifyBadRequest, cancellationToken); }
+                        return await NativeHttpBody.ReadAsync(response.Content, _options.MaximumResponseBytes, cancellationToken);
                     }
                 }
                 await Task.Delay(retryDelay.Value, _clock, cancellationToken);
@@ -49,14 +49,14 @@ internal sealed class OpenAiTransport : IDisposable
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
         catch (SessionOperationException failure) { throw new SessionOperationException(failure.Failure); }
-        catch (Exception) { throw OpenAiFailure.Create(ErrorCode.ProviderUnavailable); }
+        catch (Exception) { throw NativeHttpErrors.Create(ErrorCode.ProviderUnavailable); }
     }
     private async ValueTask<HttpResponseMessage> HeadersAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        using CancellationTokenSource deadline = new(_headerTimeout, _clock);
+        using CancellationTokenSource deadline = new(NativeHttpDefaults.HeaderTimeout, _clock);
         using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
         string credential = await _credentials.ResolveAsync(_options.CredentialReference, linked.Token).AsTask().WaitAsync(linked.Token);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credential);
+        request.Headers.Add(_options.CredentialHeader, _options.AuthenticationScheme is null ? credential : $"{_options.AuthenticationScheme} {credential}");
         Task<HttpResponseMessage> pending = _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, linked.Token);
         try { return await pending.WaitAsync(linked.Token); }
         catch

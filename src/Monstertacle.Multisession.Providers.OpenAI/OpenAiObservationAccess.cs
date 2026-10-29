@@ -1,15 +1,15 @@
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.NativeHttp;
 
 namespace Monstertacle.Multisession.Providers.OpenAI;
 
-internal sealed class OpenAiObservationAccess(OpenAiTransport transport, TimeProvider clock)
+internal sealed class OpenAiObservationAccess(NativeHttpTransport transport, TimeProvider clock)
 {
-    private static readonly TimeSpan _pollInterval = TimeSpan.FromSeconds(1);
     internal async ValueTask<ProviderReply> ReadAsync(ProviderSessionContext context, string operationId, bool cancel, CancellationToken cancellationToken)
     {
         OpenAiValidation.Context(context);
-        if (string.IsNullOrWhiteSpace(operationId)) { throw OpenAiFailure.Create(ErrorCode.InvalidInput, ExecutionCertainty.NotStarted); }
+        if (string.IsNullOrWhiteSpace(operationId)) { throw NativeHttpErrors.Create(ErrorCode.InvalidInput, ExecutionCertainty.NotStarted); }
         using CancellationTokenSource deadline = new(RuntimeDefaults.RequestTimeout, clock);
         using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
         string path = $"responses/{Uri.EscapeDataString(operationId)}";
@@ -22,7 +22,7 @@ internal sealed class OpenAiObservationAccess(OpenAiTransport transport, TimePro
             }
             while (true)
             {
-                if (cancel) { await Task.Delay(_pollInterval, clock, linked.Token); }
+                if (cancel) { await Task.Delay(NativeHttpDefaults.PollInterval, clock, linked.Token); }
                 using JsonDocument response = await transport.SendAsync(HttpMethod.Get, path, null, linked.Token);
                 RequireIdentity(response.RootElement, operationId);
                 if (cancel && OpenAiResponse.IsPending(response.RootElement)) { continue; }
@@ -36,6 +36,6 @@ internal sealed class OpenAiObservationAccess(OpenAiTransport transport, TimePro
     }
     private static void RequireIdentity(JsonElement response, string operationId)
     {
-        if (OpenAiResponse.Identity(response) != operationId) { throw OpenAiFailure.Create(ErrorCode.ProviderUnavailable); }
+        if (OpenAiResponse.Identity(response) != operationId) { throw NativeHttpErrors.Create(ErrorCode.ProviderUnavailable); }
     }
 }

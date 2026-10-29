@@ -179,3 +179,21 @@ LokalesVolltor linux/529d9f698a4048cc8996b14081e18a08 erfolgreich:972Tests,
 Sourcehashac8f8fcf08ca60254951e6dc79660f19a8542e627574b3c35c700453d2fa7965,
 2848/2919Zeilen=97.5677%,Codemetr401Dateien/414TypenohneBefunde. Linux misstWindowscode
 statisch, nativeVerhaltensbehauptungweiteroffen. T093/Zielsystemprüfung nichtabgehakt.
+
+NativeJournal-/Ownershipgreen zud3d38f7c89f9b21ef3693ce35abdef0deaf920c6:
+Qualität40934964534 aufWindowsundUbuntu erfolgreich,Guard40934964497grün. Private
+Default-Tokenownerjournale unverändertvalidierbar, öffentlicheOriginaljournalrechte
+abgewiesenohneDB-/Journaländerung. Zweitprozess/Kill/Unknown-/Dispatch-/Historyerhalt
+beidseitigbelegt. Windows11-Zielhost-/Alias-/FremdUID-/Soakmatrixbleibteigenständigoffen.
+
+## T094 deterministic/routing/failures/cancellation
+
+Vorabanalyse architecture/2026-10-29-host-scenarios.md. Redzustand(Gitbasis/TrackedDiff/
+Tar/Hashes/Zeit)vorGreenunterartifacts/tdd/host-scenarios-red-*gesichert;4/4fachlichrot,
+fehlendeAusführungliefertNOT RUN/3stattexpectedPASS/0. Danach4/4grün in3s.
+HosteigeneProbeProvider/Barrier/Trace undöffentlicheProbeHostkompositionohneNetzwerk:
+10Sessions/20Success,10Sessions/100FIFOkorrekteSuccess,5Failed+5Success,1kooperatives
+Cancelled/ConfirmedEndedunter2s. UnabhängigeSendsnachweislichgleichzeitiggehalten;
+Callanzahl/Originalinput/Model/Session/Request/Sequence/History stimmenüberein.
+CLItestsprüfenzusätzlichdieechteDBzählungnachProzessende. GenerischeBackendfakes sind
+keinnativerHerstellerprotokoll-/Livenachweis. WeitereSzenarienbleibenT094offen.

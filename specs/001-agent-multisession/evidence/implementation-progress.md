@@ -478,3 +478,12 @@ User-onlyFullControl. KeineOwner-/ACLreparatur/Hostrichtlinienänderung.
 Volltor linux/529d9f698a4048cc8996b14081e18a08 grün,972Tests,97.5677%,
 Codemetr401Dateien/414TypenohneBefunde. NativeWindowssuitefolgt; nächsterArbeitsumfang
 restlicheT094Deterministik-/Grenz-/Recovery-/Soakszenarien undPaketkonsumT095/T096.
+
+T094deterministic/routing/failures/cancellation nach4/4fachlichemCLI-Rot implementiert;
+20/100/10/1echteWorkloads, Originalinput-/FIFO-/Modell-/Sessionzuordnung undunter2s
+kooperativerCancel bestätigt. Volltor linux/ddb990885fb04d98b90e1300f85caa9a grün,
+976Tests,97.5677%,Sourcehash681bb276ef0cd161ba230c35ce38f2549e361f45405df458b422216b96a4399c,
+Codemetr409Dateien/424TypenohneBefunde. Vorigerd3d38f7 jetztendlichnativbeidseitiggrün:
+40934964534/40934964497, einschließlichOriginaljournal-/Tokenowner-/Privacy-/Killfall.
+NächsteT094Schnitte Kapazität/Workspace/Shutdown/Limits, danachRest-/Paket-/Zielsystem-
+audit. FehlendeSzenarienweiterNOT RUN, keineLivefreigabeangenommen.

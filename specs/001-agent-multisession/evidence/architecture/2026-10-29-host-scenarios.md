@@ -1,0 +1,19 @@
+# T094 deterministische öffentliche Host-Szenarien
+
+Bestandsprüfung2026-10-29T18:55:44Z and3d38f7. ScenarioRunner SHA256
+4bc9fffddce1a0510ab099529002c4d7bc4ff1a45d994c594742b7287dfccc1c,
+ValidationRunState803c9b25772bfd1b45bfa4ff6b9cc18d1710f6fe8fad547f5fe7504bc8669f9d.
+Root-/Consumerablauf vorhanden; alleanderenbekanntenSzenarien nochNOT RUN.
+BibliotheksfunktionenfürRouting/Fehler/Abbruch/Persistenzbereitsgetestet; fehlendes
+VerhaltenistdieöffentlichselektierbareProbe, keine neuenProduktregeln.
+
+Entscheidung vorErweiterung: kleineHostkompositionüberbestehendeNativeRunState und
+öffentlicheStore-/Runtimeports. HosteigenerProbeProvider/Trace/Barrier, keineHersteller-
+Netzwerkanrufe undkeineWerkzeugausführung. ScenarioFlow-Klassen behalten diefachlichen
+Abnahmeschritte; keinemonolithischeSwitchimplementierung. Runtime-/Storecleanupgeprüft,
+Rootdatenbleibenerhalten. VierersteCLI-Redfälle: deterministic10Sessions/20Success mit
+gehaltenerparallelerWelle; routing10Sessions/100korrektzugeordnetenFIFO-Inputs;
+failures5Failed/5unabhängigeSucceeded; cancellation1Cancelled/ConfirmedEndedunter2s.
+DBzählungenunabhängigvomReportprüfen, keineAccepted-oderPASS-Erfindung beiPending.
+WeitereQuickstartfällefolgenimvorhandenenT094-Auftrag; Live weiterunfreigegeben,
+Nativeherstellerprotokollnachweis von generischenBackendfakes unterscheiden.

@@ -182,3 +182,14 @@ Kopf noch das Binding im SessionSnapshot. Der Fall bewahrt die bekannte native I
 für explizite Klärung; der Service erhält diese bekannte Fallbindung, und der Store prüft
 sie beim gemeinsamen Entscheidungs-/Bindingcommit. Kein beobachteter Bezug wird durch
 Neueröffnen ersetzt. Produktive Persistenz dieser Projektion gehört zu T060–T062.
+
+## 6. Atomare Sperre bei unbrauchbarer Fortsetzung (T117)
+
+CommitCompletionAsync speichert bei `ContinuationAvailable=false` oder einer bekannten
+ProviderSessionExpired-Kategorie den Blockgrund ProviderUnavailable zusammen mit Result,
+History, bestätigtem Binding und zulässiger Reservierungsfreigabe. Null/true alleine ändern
+keine bestehende Policy. RecoveryRequired wird nicht herabgestuft. Eine ungewisse Antwort
+läuft weiterhin über den separaten Unsicherheitscommit und bleibt reserviert. Die Sitzung
+nimmt mit bekanntem Fortsetzungsblocker keine weiteren Requests an; bereits Queued bleiben
+für explizite Close-/Stop-/Klärung sichtbar. Kein neuer nativer Bezug und keine automatische
+Wiederholung. Produktive Transaktionen müssen dieselbe atomare Grenze erfüllen.

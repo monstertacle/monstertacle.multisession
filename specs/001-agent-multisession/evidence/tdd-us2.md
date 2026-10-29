@@ -396,3 +396,47 @@ native öffentliche Teilregression, kein ersetzter Close-/Cancel-/Paket-/Integra
 Bekannt unbrauchbare erste Bindung wird nativ vor Send verweigert; atomare vorgelagerte
 Sitzungssperre bleibt konkreter nächster Auftrag T043/T037 der ausführenden Sitzung.
 Echte Persistenz/Restart/Cancel/Stop/Rechte-/Liveläufe folgen ihren bestehenden Tasks.
+
+## T117: explizite Fortsetzungsverfügbarkeit
+
+Architektur vor Änderung: architecture/2026-10-29-continuation-availability.md.
+BindingAvailabilityTests: vier fachliche Fehler im Red (Admission/Reservation trotz
+bekannt fehlender Fortsetzung), drei bereits grüne Kompatibilitäts-/Unknownfälle.
+Nach Green 247 Unitfälle erfolgreich. ContinuationEvidenceTests: neun fachliche
+Fehler im nativen Red (fehlendes explizites Verfügbarkeitsflag), danach 194 Contractfälle
+grün. Nullable ProviderReply.ContinuationAvailable lässt bisherige Produzenten unverändert;
+false oder explizite Sessionexpiry sperrt mit ProviderUnavailable, Unknown bleibt
+RecoveryRequired und reserviert. Kein Hersteller-/Opaque-Stringzweig im Kern.
+
+Befehle: Release/no-restore dotnet test der UnitTests bzw. ContractTests mit Filter
+FullyQualifiedName~BindingAvailabilityTests bzw. ~ContinuationEvidenceTests, anschließend
+jeweils ganze Suite; alle schweren Aufrufe über run-capped.
+Quellmanifestzeiten sind LastWriteTimeUtc der unmittelbar vor den Tests erzeugten
+sources.sha256, nicht geschätzt:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| continuation-red | 2026-10-29T09:18:33.6573052Z | b99d54ff80c4b5701e18785915e4a14c78708316a5afe01773781b2741b35128 |
+| continuation-green | 2026-10-29T09:19:09.8995755Z | 778041f5c621f7d87720cac68dce9d54c6b6c86264dbfce0ed6fc3e5fcbf3d77 |
+| continuation-native-red | 2026-10-29T09:22:35.5767025Z | bc63231f922ed3c9e92db4ada96dce7d63e6e9267bfd5ca8215c107547e95997 |
+| continuation-native-green | 2026-10-29T09:23:34.0044180Z | 8aa6b8ef6780ff299fb6de1b42b35519b12490430ff1fecf1bb762a643d1989f |
+
+ContinuationRuntimeTests ist zusätzliche bereits grüne öffentliche Integration der
+zuvor rot belegten Komponenten: gehaltene erste Interaktion, queued Folgeanfrage,
+unabhängige Session nutzt zweiten Slot, bekannt fehlgeschlagene erste Interaktion
+sperrt die Session ohne Recoveryfall; null zusätzliche POSTs. Keine echte Herstellerprobe.
+Vor Refactoring beide Suiten grün. Full-Guard fand Kopplung41 im kontrollierten Writer:
+Abschluss-/Observationverantwortung bei identischer Gate/State in ControlledCompletionStore
+extrahiert. Der öffentliche Test enthielt HTTPdraht und Runtimeassertion (Kopplung44);
+Wirefixture separat komponiert. Keine Metrikgrenze oder Messumfang geändert.
+
+Finale vollständige Qualität Exit0: artifacts/quality/linux/b2ac518def394c5791749127c849cb84,
+Sourcehash afa5e8e3fcb582e0542288ed9e8f69eb99aabd2f7941a2f3752ca6baed7e3477.
+TRX gezählt: 444 bestanden (247 Unit,195 Contract,je1 Integration/Plattform),0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1167/1222 Produktzeilen=95,4992 Prozent. Full-Guard Exit0:195 Dateien/197 Typen,
+0 Verstöße/Parsefehler/Skips. Die frühere continuation-quality.log blieb leer, weil
+vorher der Guard fehlschlug; ausschließlich continuation-quality-final.log belegt diesen Lauf.
+T117 lokal abgeschlossen; echte atomare SQLite-Persistenz folgt T060/T065, Close/Reopen
+T037/T043/T079. Keine Gesamt-US2-/Freigabeabnahme. Voriger Stand6344816 auf Windows/Ubuntu
+CI erfolgreich: quality40848238534,Guard40848238603.

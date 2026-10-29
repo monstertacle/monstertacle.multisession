@@ -46,24 +46,26 @@ internal static class OpenAiResponse
         {
             string? type = item.GetProperty("type").GetString();
             if (type is "reasoning" or "compaction") { continue; }
-            if (type != "message") { return Failure(ErrorCode.UnsupportedProviderAction, ExecutionCertainty.ConfirmedEnded); }
+            if (type != "message") { return Failure(ErrorCode.UnsupportedProviderAction, ExecutionCertainty.ConfirmedEnded) with { ContinuationAvailable = false }; }
             foreach (JsonElement content in item.GetProperty("content").EnumerateArray())
             {
                 if (content.GetProperty("type").GetString() != "output_text") { continue; }
                 string? text = content.GetProperty("text").GetString();
                 int partBytes = Encoding.UTF8.GetByteCount(text ?? string.Empty);
-                if (partBytes > maximumOutputBytes - bytes) { return Failure(ErrorCode.OutputLimitExceeded, ExecutionCertainty.ConfirmedEnded); }
+                if (partBytes > maximumOutputBytes - bytes) { return EndedTextFailure(ErrorCode.OutputLimitExceeded, binding); }
                 bytes += partBytes;
                 output.Append(text);
             }
         }
-        return output.Length == 0 ? Failure(ErrorCode.ExecutionFailed, ExecutionCertainty.ConfirmedEnded)
-            : new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, output.ToString(), true, binding, null);
+        return output.Length == 0 ? EndedTextFailure(ErrorCode.ExecutionFailed, binding)
+            : new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, output.ToString(), true, binding, null) { ContinuationAvailable = binding is null ? null : true };
     }
+    private static ProviderReply EndedTextFailure(ErrorCode code, ProviderBinding? binding)
+        => Failure(code, ExecutionCertainty.ConfirmedEnded) with { ContinuationAvailable = binding is null ? null : true };
     internal static ErrorCode NativeError(JsonElement response)
         => response.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.Object
             && error.TryGetProperty("code", out JsonElement code) && code.ValueKind == JsonValueKind.String
             && code.GetString() == "context_length_exceeded" ? ErrorCode.ProviderContextLimit : ErrorCode.ExecutionFailed;
     internal static ProviderReply Failure(ErrorCode code, ExecutionCertainty certainty)
-        => new(RequestState.Failed, certainty, string.Empty, false, null, new PublicError(code, certainty));
+        => new(RequestState.Failed, certainty, string.Empty, false, null, new PublicError(code, certainty)) { ContinuationAvailable = code == ErrorCode.ProviderSessionExpired ? false : null };
 }

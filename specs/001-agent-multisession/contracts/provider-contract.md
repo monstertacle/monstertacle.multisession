@@ -223,3 +223,19 @@ ist capability-/interfacegebunden, ohne Herstellernamen im Kern. Bestätigtes En
 Fortsetzungsstand werden erst mit der ausdrücklichen revisionierten Recoveryentscheidung
 veröffentlicht; Inspect allein ändert nichts. Die historische Anfrage wird nicht nachträglich
 Succeeded. Close/Closing erfordert keine Wiederöffnung zur Fortsetzung.
+
+## 10. Ende und Fortsetzungsverfügbarkeit
+
+`ProviderReply.ContinuationAvailable` ist eine optionale Aussage des Adapters. `false`
+benennt einen bekannten Fortsetzungsblocker, `null` überlässt unveränderte Legacy-/Fehlerpolicy,
+`true` ist kein Beweis für ein externes Ende. Common interpretiert keine herstellerspezifischen
+ContinuationState-Strings. Nach sicherem Abschluss werden Ergebnis/History/Binding,
+ProviderUnavailable-Sperre und sichere Slotfreigabe gemeinsam gespeichert. Native Expiry
+blockiert auch Legacy-Produzenten ohne dieses optionale Feld.
+
+Bei Unknown hat RecoveryRequired samt gehaltener Reservierung Vorrang. Ein negatives
+Fortsetzungssignal darf fehlende Endgewissheit nicht ersetzen. Umgekehrt bleibt ein nativer
+completed-Head auch bei lokaler OutputLimitExceeded nutzbar; allein ein lokaler Textfehler
+rechtfertigt keinen Rückfall auf einen veralteten Kopf. Der erste sicher fehlgeschlagene
+Interaktionsaufruf ohne completed-Head kann seinen bekannten Root bewahren, aber keine
+neue Wurzel oder weitere Annahme stillschweigend erlauben.

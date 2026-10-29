@@ -81,3 +81,7 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   ohne eigene Kontextaktion. 427 Tests/95,4658 Prozent, 189 Dateien/191 Typen sauber.
   T044 bleibt für gesamten Close-/US2-Umfang offen. Nächste konkrete Arbeit Bindungssperren.
   Native 057c33c CI unter Windows/Ubuntu erfolgreich; Nachweis tdd-us2.md.
+- T117 lokal abgeschlossen: explizite generische Fortsetzungsverfügbarkeit, atomare
+  Sperre im kontrollierten Abschluss, native Flags und öffentliche Queueregression.
+  444 Tests/95,4992 Prozent, Full-Guard195 Dateien/197 Typen sauber. SQLite/Close folgen
+  T060/T065/T037/T079. Voriger Stand6344816 CI auf Windows/Ubuntu grün.

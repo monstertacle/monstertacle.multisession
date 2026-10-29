@@ -45,8 +45,11 @@ internal static class GeminiResponse
             .Where(content => content.GetProperty("type").GetString() == "text")
             .Select(content => content.GetProperty("text").GetString()));
         ProviderBinding? confirmed = binding is null ? null : binding with { ContinuationState = Identity(response) };
-        return ProviderReplyPolicy.NormalizeOutput(new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, output, true, confirmed, null), maximumOutputBytes);
+        return ProviderReplyPolicy.NormalizeOutput(new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, output, true, confirmed, null) { ContinuationAvailable = confirmed is null ? null : true }, maximumOutputBytes);
     }
     internal static ProviderReply Failure(ErrorCode code, ExecutionCertainty certainty, ProviderBinding? binding = null)
-        => new(RequestState.Failed, certainty, string.Empty, false, binding, new PublicError(code, certainty));
+        => new(RequestState.Failed, certainty, string.Empty, false, binding, new PublicError(code, certainty))
+        {
+            ContinuationAvailable = code == ErrorCode.ProviderSessionExpired ? false : binding is null ? null : binding.ContinuationState is not null,
+        };
 }

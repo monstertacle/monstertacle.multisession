@@ -70,7 +70,7 @@ public sealed class RequestDispatcher
             || binding.AdapterId != registration.AdapterId || binding.FormatVersion != registration.ContractVersion)
         {
             PublicError error = new(ErrorCode.InvalidConfiguration, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);
-            await CommitAsync(reservation, new(RequestState.Failed, ExecutionCertainty.NotStarted, string.Empty, false, null, error));
+            await CommitAsync(reservation, new(RequestState.Failed, ExecutionCertainty.NotStarted, string.Empty, false, null, error) { ContinuationAvailable = false });
             throw new SessionOperationException(error);
         }
 

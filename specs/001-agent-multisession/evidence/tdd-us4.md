@@ -247,3 +247,20 @@ Gemini-spezifische Kontextgrenzen bleiben ausdrücklich T034/T094/T105 offen.
 Volltor linux/426a0f712405424bad6294d5d6f87147: 985 Tests grün, 97.5677 %,
 Sourcehash 76778b8c59bbdc76a523624123c4d515fd95a7abb1d336f2204162a12262f0dd.
 Codemetr 418 Dateien/434 Typen, keine Verstöße oder ungemessenen Dateien.
+
+## T094: native Recovery-CLI
+
+2026-10-29T19:34:06Z: Recovery-CLI zunächst fachlich rot mit NOT RUN,
+Redzustand vor Green unter recovery-host-red-* archiviert. Danach zehn echte
+Kindprozess-Kills mit nativen Leases und Wiederöffnung bestanden. Je Store
+bleiben zwei Sessions, sechs ursprüngliche Request-IDs, fünf Erfolge und eine
+ungewisse reservierte Ausführung erhalten. Drei wartende A-Anfragen werden
+FIFO fortgesetzt, B wird weder erneut gesendet noch seine native Identität ersetzt.
+Der Test prüft jeden der zehn Datensätze zusätzlich direkt nach Prozessende.
+
+Nach einem Kopplungsbefund wurde die Lease-Erzeugung vor dem fachlichen Setup
+komponiert; 31 gezielte Regressionen und der vollständige Guard sind grün.
+Volltor linux/1b2430c415354159902ae2539975deb2: 986 Tests, 97.5677 %,
+Sourcehash fc8b42f48b39cf924da02ef69f3ec9b1976090c49dd2fc7fa8c2181dfd510033.
+Codemetr 420 Dateien/436 Typen ohne Verstöße. Native Windows-Prüfung für diese
+neue CLI bleibt ausstehend; keine vollständige Zielsystemabnahme behauptet.

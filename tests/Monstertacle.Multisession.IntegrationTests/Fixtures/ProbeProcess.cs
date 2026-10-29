@@ -7,7 +7,7 @@ internal sealed record ProbeProcessResult(int ExitCode, string Output, string Er
 // A bounded owned process; streams are drained concurrently and abandoned children are killed.
 internal static class ProbeProcess
 {
-    internal static async Task<ProbeProcessResult> RunAsync(ProcessStartInfo start)
+    internal static async Task<ProbeProcessResult> RunAsync(ProcessStartInfo start, TimeSpan? timeout = null)
     {
         start.UseShellExecute = false;
         start.RedirectStandardOutput = true;
@@ -18,7 +18,7 @@ internal static class ProbeProcess
         Task<string> error = process.StandardError.ReadToEndAsync();
         try
         {
-            await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(60));
+            await process.WaitForExitAsync().WaitAsync(timeout ?? TimeSpan.FromSeconds(60));
             return new(process.ExitCode, await output, await error);
         }
         finally

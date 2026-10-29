@@ -23,6 +23,7 @@ internal static class ScenarioRunner
             ["retention"] = RetentionProbeFlow.ExecuteAsync,
             ["extensions"] = ExtensionsProbeFlow.ExecuteAsync,
             ["native-context"] = NativeContextProbeFlow.ExecuteAsync,
+            ["recovery"] = RecoveryProbeFlow.ExecuteAsync,
         }.ToFrozenDictionary(StringComparer.Ordinal);
 
     internal static async Task<int> RunAsync(string[] args)

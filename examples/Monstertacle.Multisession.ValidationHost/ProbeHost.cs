@@ -9,10 +9,12 @@ internal sealed class ProbeHost(ISessionStore store, SessionRuntime runtime, Run
     internal SessionRuntime Runtime { get; } = runtime;
     internal RuntimeOptions Options { get; } = options;
     internal static async Task<ProbeHost> StartAsync(ValidationRunState state, IReadOnlyList<ProviderRegistration> providers, RuntimeOptions? selected = null,
-        ExecutionKind kind = ExecutionKind.ModelResponse, IReadOnlyList<AgentProfile>? configuredProfiles = null)
+        ExecutionKind kind = ExecutionKind.ModelResponse, IReadOnlyList<AgentProfile>? configuredProfiles = null, bool reopen = false)
     {
         RuntimeOptions options = selected ?? new() { StateDirectory = state.Directory, Retention = new(true, null), MaxConcurrentRequests = 2 };
-        ISessionStore store = await SqliteStoreFactory.CreateNewAsync(state.Lease, state.TrustScope, options, CancellationToken.None);
+        ISessionStore store = reopen
+            ? await SqliteStoreFactory.OpenExistingAsync(state.Lease, state.TrustScope, options, CancellationToken.None)
+            : await SqliteStoreFactory.CreateNewAsync(state.Lease, state.TrustScope, options, CancellationToken.None);
         IReadOnlyList<AgentProfile> profiles = configuredProfiles ?? providers.Select(item => new AgentProfile(item.ProviderId, item.ProviderId, "model-" + item.ProviderId,
             kind, new("frozen", new Dictionary<string, string>()))).ToArray();
         SessionRuntime runtime = new(store, state.Lease, providers, profiles);

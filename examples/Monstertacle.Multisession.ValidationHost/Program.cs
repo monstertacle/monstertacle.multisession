@@ -9,6 +9,7 @@ internal static class Program
         return mode switch
         {
             CrashProtocol.WorkerArgument => await CrashWorker.RunAsync(args),
+            CrashProtocol.NativeWorkerArgument => await CrashWorker.RunAsync(args, native: true),
             DiskFullProtocol.WorkerArgument => await DiskFullWorker.RunAsync(args),
             OwnershipProtocol.WorkerArgument => await NativeOwnershipWorker.RunAsync(args),
             _ => await ScenarioRunner.RunAsync(args),

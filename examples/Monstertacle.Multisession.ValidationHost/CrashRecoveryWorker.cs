@@ -8,12 +8,14 @@ namespace Monstertacle.Multisession.ValidationHost;
 
 internal static class CrashRecoveryWorker
 {
-    internal static async Task<int> RunAsync(string directory, string point)
+    internal static async Task<int> RunAsync(IStateDirectoryLease lease, string point)
     {
         // Parent initializes metadata; the trustscope is passed by its private marker, never inferred from another store.
+        string directory = lease.StateDirectory;
+        await lease.PrepareFileAsync(CrashProtocol.ScopeFileName, StateFileMode.OpenExisting, CancellationToken.None);
+        await lease.PrepareFileAsync(CrashProtocol.MarkerFileName, StateFileMode.OpenExisting, CancellationToken.None);
         string scopeText = await File.ReadAllTextAsync(Path.Combine(directory, CrashProtocol.ScopeFileName));
         Guid scope = Guid.ParseExact(scopeText, "D");
-        await using CrashStateDirectoryLease lease = new(directory);
         RuntimeOptions options = new() { StateDirectory = directory, Retention = new(true, null), MaxConcurrentRequests = 2 };
         await using ISessionStore store = await SqliteStoreFactory.OpenExistingAsync(lease, scope, options, CancellationToken.None);
         await store.StartAsync(lease, CancellationToken.None);

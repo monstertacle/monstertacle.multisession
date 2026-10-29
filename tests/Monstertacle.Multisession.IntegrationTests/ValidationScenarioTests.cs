@@ -50,19 +50,40 @@ public sealed class ValidationScenarioTests
         Assert.Equal(1L, StoreProbe.Scalar(database, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
     }
 
-    private static async Task<string> RunPassedAsync(string scenario, string root)
+    /// <summary>Ten native process kills preserve the complete SC-009 dataset in independently reopened stores.</summary>
+    [Fact]
+    public async Task RecoveryExecutesTenNativeRestarts()
+    {
+        await using PrivateStoreDirectory parent = new();
+        string run = await RunPassedAsync("recovery", Path.Combine(parent.StateDirectory, "recovery-runs"), requireDatabase: false);
+        string[] stores = Directory.GetDirectories(run, "multisession-recovery-*");
+        Assert.Equal(10, stores.Length);
+        foreach (string store in stores)
+        {
+            string database = Path.Combine(store, "multisession.db");
+            Assert.Equal(2L, StoreProbe.Scalar(database, "SELECT count(*) FROM Sessions"));
+            Assert.Equal(6L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests"));
+            Assert.Equal(6L, StoreProbe.Scalar(database, "SELECT count(*) FROM History"));
+            Assert.Equal(5L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=2"));
+            Assert.Equal(0L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State IN (0,1)"));
+            Assert.Equal(1L, StoreProbe.Scalar(database, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
+        }
+    }
+
+    private static async Task<string> RunPassedAsync(string scenario, string root, bool requireDatabase = true)
     {
         ProcessStartInfo start = new("dotnet");
         foreach (string argument in new[] { ValidationHostBuild.WorkerPath(), "--scenario", scenario, "--state-root", root })
         {
             start.ArgumentList.Add(argument);
         }
-        ProbeProcessResult result = await ProbeProcess.RunAsync(start);
+        ProbeProcessResult result = await ProbeProcess.RunAsync(start, scenario == "recovery" ? TimeSpan.FromMinutes(5) : null);
         Assert.True(result.ExitCode == 0, $"Scenario exited {result.ExitCode}: {result.Output}");
         using JsonDocument report = JsonDocument.Parse(result.Output);
         Assert.Equal("PASS", report.RootElement.GetProperty("Status").GetString());
         Assert.Equal(scenario, report.RootElement.GetProperty("Scenario").GetString());
         string database = Path.Combine(Assert.Single(Directory.GetDirectories(root)), "multisession.db");
+        if (!requireDatabase) { return Path.GetDirectoryName(database)!; }
         Assert.True(File.Exists(database));
         return database;
     }

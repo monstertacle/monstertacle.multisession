@@ -6,7 +6,7 @@ namespace Monstertacle.Multisession.ValidationHost;
 // Creates an actual uncommitted SQLite journal only inside an explicitly marked test directory.
 internal static class CrashWorker
 {
-    internal static async Task<int> RunAsync(string[] args)
+    internal static async Task<int> RunAsync(string[] args, bool native = false)
     {
         if (args.Length != 4 || !CrashProtocol.IsKnown(args[3]) || !Path.IsPathFullyQualified(args[1])
             || !Path.GetFileName(args[1]).StartsWith("multisession-", StringComparison.Ordinal)
@@ -17,7 +17,11 @@ internal static class CrashWorker
         string path = Path.Combine(args[1], "multisession.db");
         try
         {
-            if (args[3] != CrashProtocol.JournalPoint) { return await CrashRecoveryWorker.RunAsync(args[1], args[3]); }
+            if (args[3] != CrashProtocol.JournalPoint)
+            {
+                await using IStateDirectoryLease lease = native ? NativeLease.OpenExisting(args[1]) : new CrashStateDirectoryLease(args[1]);
+                return await CrashRecoveryWorker.RunAsync(lease, args[3]);
+            }
             using CrashJournal journal = CrashJournal.Begin(path);
             await Console.Out.WriteLineAsync(JsonSerializer.Serialize(new CrashSignal(CrashProtocol.JournalBarrier, Environment.ProcessId, DateTimeOffset.UtcNow)));
             await Console.Out.FlushAsync();

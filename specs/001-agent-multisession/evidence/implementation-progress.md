@@ -522,3 +522,10 @@ Native CI zu e051325 ist inzwischen auf Windows und Linux grün (40939549577),
 Guard 40939549327 grün. Frühere intermittierende Prozessfehler bleiben zur
 Eingrenzung T094/T099/SC-009 zugeordnet; neue Diagnosekategorien sind separat
 in 3e20a54 enthalten. Als Nächstes native Recovery-CLI mit zehn echten Kills.
+
+2026-10-29T19:34:06Z: Recovery-CLI nach echtem NOT-RUN-Rotfall implementiert.
+Zehn native Kindprozess-Kills, FIFO-Wiederaufnahme und Erhalt ungewisser Arbeit
+lokal bestanden. Volltor linux/1b2430c415354159902ae2539975deb2: 986 Tests,
+Sourcehash fc8b42f48b39cf924da02ef69f3ec9b1976090c49dd2fc7fa8c2181dfd510033,
+97.5677 %, Codemetr 420 Dateien/436 Typen ohne Befund. Soak-Zeitplan und
+Paketkonsum folgen; T094 und finale Plattform-/Live-Abnahmen bleiben offen.

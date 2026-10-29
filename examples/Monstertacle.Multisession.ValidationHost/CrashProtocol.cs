@@ -4,6 +4,7 @@ namespace Monstertacle.Multisession.ValidationHost;
 internal static class CrashProtocol
 {
     internal const string WorkerArgument = "--crash-worker";
+    internal const string NativeWorkerArgument = "--native-crash-worker";
     internal const string JournalPoint = "sqlite-uncommitted";
     internal const string MarkerFileName = ".crash-probe-token";
     internal const string JournalBarrier = "sqlite-journal-spilled";

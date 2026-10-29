@@ -124,3 +124,14 @@ Netzwerk-/Credential-/State-I/O; fremdeTestdaten nachweislichunverändert. Nochf
 Szenarien sindebenfalls NOT RUN/3, keinPASS ohneausgeführteProbe. InterneCrash-/Diskfull-
 Workerprotokolle weiterzuerstverdrahtet. TatsächlicheSzenarien/neueprivateUnterablagen/
 Consumer-/Paketprobe bleibenT089/T094/T096; dieseCLI-Teilprüfung istkeinSC-011-Nachweis.
+
+T093 nativzu468b401 in40926185397:2/2Windowsprozessfälle fachlichrot amfehlenden
+Ownershipsignal,4bestehendePlattformfällegrün,0Skips. Originallogs
+artifacts/tdd/windows-process-recovery-native-red.log undTRXunter
+/home/user1/dev/.agenttemp/multisession-ci-40926185397/windows/ gesichert.
+Danach vorhandenenOwnershipworker plattformneutralverdrahtet: gleicherCode mitnativer
+TFM-Leasealias undunkonditionierterProgramroute, keineQuellklassehinter#ifversteckt.
+Linux-Gesamtregression grün: linux/c2f3a8a7912240f289dc44b2e58edcab,
+Sourcehashdcb601666f3f137aa406cbd53f2932ab700e7160825e6ca5271fb0244d7dc2ce,
+967Tests,2847/2918Produktzeilen=97.5668%,Codemetr394Dateien/405TypenohneBefunde.
+WindowsGreen diesesWiringstands folgtnoch, T093vollständigeZielmatrixbleibtoffen.

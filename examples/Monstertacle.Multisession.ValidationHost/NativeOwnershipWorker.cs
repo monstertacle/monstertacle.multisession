@@ -1,13 +1,11 @@
-#if !WINDOWS
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
-using Monstertacle.Multisession.Linux;
 using Monstertacle.Multisession.Storage.Sqlite;
 
 namespace Monstertacle.Multisession.ValidationHost;
 
 // Test-only native process boundary. Never initializes a store or starts a provider.
-internal static class LinuxOwnershipWorker
+internal static class NativeOwnershipWorker
 {
     internal static async Task<int> RunAsync(string[] args)
     {
@@ -20,7 +18,7 @@ internal static class LinuxOwnershipWorker
             string marker = Path.Combine(args[1], OwnershipProtocol.MarkerFileName);
             if (!File.Exists(marker) || new FileInfo(marker).Length != args[2].Length
                 || !string.Equals(await File.ReadAllTextAsync(marker), args[2], StringComparison.Ordinal)) { return 2; }
-            await using LinuxStateDirectoryLease lease = LinuxStateDirectoryLease.OpenExisting(args[1]);
+            await using NativeLease lease = NativeLease.OpenExisting(args[1]);
             await lease.PrepareFileAsync(OwnershipProtocol.MarkerFileName, StateFileMode.OpenExisting, CancellationToken.None);
             RuntimeOptions options = new() { StateDirectory = args[1], Retention = new(true, null) };
             await using ISessionStore store = await SqliteStoreFactory.OpenExistingAsync(lease, scope, options, CancellationToken.None);
@@ -48,4 +46,3 @@ internal static class LinuxOwnershipWorker
         await Console.Out.FlushAsync();
     }
 }
-#endif

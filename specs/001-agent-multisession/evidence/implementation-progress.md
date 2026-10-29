@@ -444,3 +444,9 @@ Codemetr394Dateien/405TypenohneBefunde. ÖffentlicheSzenarioausführung bleibtT0
 WindowsT093Red zu468b401 nativin40926185397 belegt: genau2Prozessfehler anfehlender
 Ownershipbarriere,4bisherigePlattformfällegrün,0Skips. JetztvorhandenenWorker fürbeide
 Plattformenverdrahten; keinenativenGreenfolgengleichsetzen.
+
+WindowsT093-Prozesswiring nach2nativenRedfällen ergänzt; vorhandenerWorker jetztüber
+TFM-Alias beidseitigverwendet. Volltor linux/c2f3a8a7912240f289dc44b2e58edcab erfolgreich,
+967Tests,97.5668%,Codemetr394Dateien/405TypenohneBefunde. NativeWindowsGreenfolgt.
+AlsNächstesT089/T094 öffentlicherConsumerflow/neueprivateRunablage, danachPaketkonsum
+undweitererSzenario-/Lifecycle-/Plattformabgleich. Livekosten weiterhinnichtfreigegeben.

@@ -29,6 +29,8 @@ public sealed class SessionStorageConsistencyTests
     [InlineData("Binding")]
     [InlineData("malformed")]
     [InlineData("missing")]
+    [InlineData("undefined-availability-error")]
+    [InlineData("availability-error-without-block")]
     public async Task RejectsSnapshotDriftBeforeAnyRecoveryMutation(string corruption)
     {
         await using AdmissionStoreFixture fixture = await SessionAsync();
@@ -46,6 +48,8 @@ public sealed class SessionStorageConsistencyTests
             case "execution-kind": snapshot["Context"]!["ExecutionKind"] = 123456; break;
             case "adapter": snapshot["Binding"]!["AdapterId"] = "changed-adapter"; break;
             case "version": snapshot["Binding"]!["FormatVersion"] = 42; break;
+            case "undefined-availability-error": snapshot["AvailabilityError"] = 123456; snapshot["ConfigurationUnavailable"] = true; break;
+            case "availability-error-without-block": snapshot["AvailabilityError"] = (int)ErrorCode.AuthenticationFailed; break;
             case "malformed": case "missing": break;
             default: snapshot[corruption] = "changed-identifier"; break;
         }

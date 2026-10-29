@@ -439,3 +439,42 @@ keine Sleeps oder gelockerten Overlapassertions. Vorabanalyse im Runtime-Archite
 Alle weiteren Started.Task-Aufrufer geprüft: sie verlangen nur bereits geschehene
 Reservierung oder begonnenen Send, keinen späteren Delegateeintrag. Vertragssuite danach
 52/52 grün; Full-Guard erneut sauber (runtime-ci-guard.json). CI erneut nach Push nötig.
+
+## Einzelabgleich der implementierten US1-Aufgaben
+
+Gemessen 2026-10-29T21:30:10Z, Basis 5774e4f; ausdrückliche Selbstprüfung der
+vorhandenen Tests und Produktverantwortlichkeiten. Historische Abschnitte oben
+bleiben unverändert; ihre damaligen offenen Grenzen sind keine aktuelle Rücknahme
+späterer Implementierung. Dies schließt den lokalen US1-Auftrag ab, keine Produktfreigabe.
+
+| Task | Konkreter aktueller Nachweis |
+| --- | --- |
+| T016 | SessionRoutingTests: lokale Identität vor Open, Lookup/Isolation; ProviderContextTests: unveränderliche Settings; RequestAdmissionTests: Originalinput, RequestId, Sequence; RequestDispatcherTests: erste/Folgeanfrage ohne Replay; native Credentialtrennung zusätzlich in US2 |
+| T017 | SchedulingTests: Sessionsequence, ältester zulässiger Kopf, ordinaler ID-Gleichstand; WorkspaceReservationTests: blockierter Kopf wird nicht übergangen; DispatchConcurrencyTests/ParallelSessionsTests: überlappende echte kontrollierte Sends |
+| T018 | WorkspaceReservationTests und RequestSchedulerTests: Session-/Workspace-/globale Reservation, dritter Workspace, Unknown als belegter Slot; DispatchSafety-/Observationtests: keine Freigabe ohne bestätigtes Ende |
+| T019 | DispatchConcurrencyTests: exakt 100 eindeutige Originalkennungen über zehn Sitzungen, zwei kontrollierte Provider gleichzeitig gehalten; SC-005 exakt zwei laufend plus acht gleichzeitige Eingänge, drei zusätzliche Annahmen/fünf QueueFull. Keine laufenden Sends vor Barrierefreigabe beendet |
+| T020 | SessionSnapshot/RequestSnapshot/ExecutionReservation wiederverwendet; keine zusätzlichen bedeutungsgleichen Session-/Request-Domänenklassen ohne eigenes Verhalten eingeführt |
+| T021 | SessionCatalog: feste ordinale Registrierung, lokaler Snapshot vor externem Open; unbekanntes Profil und ungültige Registrierung typisiert, kein Fallback |
+| T022 | RequestAdmission: eingefrorene gültige Submission, Storecommit vor Receipt, bei bekannter Annahme Receipt trotz späterem Cancel; Runtime- und SQLitezyklen ergänzen die ursprünglichen Doubles |
+| T023 | RequestScheduler delegiert ausschließlich TryReserveHeadAsync; keine zweite Slotzählung, keine unbeschränkte Taskliste; Runtime besitzt fest begrenzte Worker |
+| T024 | ReservationPolicy bildet zuerst Sessionköpfe, filtert danach belegte Sitzungen/ordinale Schreibkeys; alle unfreigegebenen Slots zählen unabhängig vom lokalen Endzustand |
+| T028 | Scheduler, ReservationPolicy und Dispatcher am aktuellen Code erneut auf Verantwortlichkeiten/DRY/Magic Values geprüft: Auswahl bleibt rein, Atomizität beim Store, Provider-I/O beim Dispatcher, vorhandene Reply-/Observation-/Fristregeln wiederverwendet. Kein weiterer verhaltensloser Umbau begründet |
+| T029 | Chronologische echten Red-/Greenfälle oben sowie dieser konkrete Kennungs-/Barrierennachweis; ursprüngliche Grenzen und spätere Ergänzungen unterscheidbar |
+
+Die Lastfälle T019 waren bei ihrer Ergänzung bereits grüne Regressionen der zuvor
+fachlich rot entwickelten Scheduler-/Dispatcherregeln. Sie werden ausdrücklich
+nicht als eigene rote Lastzyklen behauptet. Der Q-06-Audit muss diese Einordnung
+bewerten; Checkboxen bestätigen implementierte lokale Aufgaben und deren ehrlichen
+Nachweis, keine nachträglich erfundene Historie.
+
+Geprüfte aktuelle SHA256: RequestScheduler
+7ff2178ac5379b7713260475af45ea90368f50a16985332bef114b56912183e3,
+ReservationPolicy 572cf1e25e51fbec1cb9e3c3646a576396f6a531c89fdd955b5278a78791fe19,
+RequestDispatcher 06019f376c82c683e0aaffd392569f18aadf55f334213b2942b9fa929bf15724,
+RequestAdmission 1be37a42532e240b21545aa0cc90ffad5aec23f4b620cb0d40cc7b42ae83806e,
+SessionCatalog 42e80c09dacc35c890b17f482e230443d65b936b8d3cf9b3d7aca0be6779c19c.
+Relevante gesamte Regression vor Abgleich: 996 Tests im Linuxvolltor
+ca1f7230bdc7416e81a0fc06ef35ea9b; Fullguard 429 Dateien/447 Typen ohne Befund.
+Zwei Hersteller werden hier durch kontrollierte registrierte Adapter dargestellt;
+kein Beleg echter OpenAI-/Gemini-Konten, nativer Rechte oder Stundenbetrieb daraus.
+Die seitdem ergänzte native Startupprüfung braucht weiterhin ihren eigenen Volltorlauf.

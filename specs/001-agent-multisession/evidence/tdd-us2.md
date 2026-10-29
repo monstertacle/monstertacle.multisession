@@ -470,3 +470,37 @@ Parsefehler/Skips. Kein Scope-/Schwellenwechsel. Erste Qualitätskette endete am
 Guard; nur session-metadata-quality-final.log belegt den vollständigen finalen Lauf.
 T031/T037 bleiben für Close ohne offene Arbeit und weitere Lebenszyklusregeln offen.
 SQLstempel sind Bestandteil T056/T060/T065; keine bereits existierende SQLpersistenz behauptet.
+
+## T043/T121: native Wiederaufnahme vor Workerstart
+
+Analyse vor Umsetzung: architecture/2026-10-29-startup-native-reopen.md, Basis5774e4f.
+`startup-native-red.log`: vier echte SQLite-Neuöffnungsfälle fachlich rot,
+ProviderUnavailable erwartet, tatsächlich None und wartende Arbeit ausführbar.
+Auth/Expiry/Unavailable und fremde Bindingrückgabe jeweils separat kontrolliert.
+Redquellstand vor Green mit HEAD/Diff/Untracked-Tar/SHA unter startup-native-red-source.
+
+RecoveryCoordinator verwendet nun den bestehenden Reopen-Port, ausschließlich für
+Open ohne fremde Sperre beziehungsweise die eigene erneut prüfbare Verfügbarkeit.
+Kein Open/Send/Bindingwechsel bei Ablehnung. Timeout aus RuntimeOptions/TimeProvider;
+Caller-Cancel bleibt Startup-Cancel. Andere Sitzung arbeitet unter Originalkennung.
+Nach Anpassung der benötigten Admission-/Diskfull-Testadapterfacetten 403 Integration-
+und211 Vertragstests bestanden. Die echte Diskfullprobe hatte vorher nur das noch
+absichtlich nicht implementierte Reopen im synthetischen Adapter getroffen; Assertions
+wurden nicht abgeschwächt.
+
+`startup-native-cause-red.log`: sechs echte Fehler/22 Regressionen grün; viermal
+fehlende öffentliche Ursache und zweimal akzeptierte korrumpierte Ursache. Passive
+AvailabilityError-Property war vorher als ausführbare Signatur vorhanden. Danach
+bereinigte Kategorie atomar im Snapshot, erfolgreicher Retry entfernt nur eigene
+Ursache, Preflight weist undefinierte Kategorie/Ursache ohne Herkunftsflag ab.
+Ein anschließender CA1068-Compilefehler wurde korrigiert; er ist kein fachlicher Red.
+35 relevante Startup-/Konsistenzfälle danach grün. Zusätzliche kontrollierte Deadline-
+und Fremdsperrenfälle sind ehrliche bereits grüne Regressionen, keine erfundenen Reds.
+
+Volltor linux/f68ffaaaf7814c7bbff55be528136ec1: 1006 Tests
+(359Unit/215Contract/405Integration/27Linuxplattform), 2899/2973 Zeilen=97.5109 %.
+Sourcehash d101f7c1127c0145e353b8c3eae5c70cabbfcfb0ba3c576c322297b07ee8bc2d.
+Fullguard 431Dateien/449Typen, keine Verstöße/Parsefehler/übersprungenen Dateien.
+Native Bestätigung folgt nach Push. T121 bleibt hinsichtlich genauer Modellprüfung
+und nativer Gesamtabnahme offen: Conversation-/Interaction-GET beweist vorhandenen
+Bezug/Zugang, keinen vollständigen Modellkatalog; Lazybinding behauptet keine HTTPprüfung.

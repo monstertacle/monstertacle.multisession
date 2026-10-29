@@ -27,6 +27,8 @@ public sealed record SessionSnapshot(
     public SessionLifecycle Lifecycle { get; init; } = SessionLifecycle.Opening;
     /// <summary>Gets the explicit reason for refusing further execution.</summary>
     public SessionBlockReason BlockReason { get; init; }
-    /// <summary>Gets whether this block was caused by missing local adapter configuration rather than native continuation evidence.</summary>
+    /// <summary>Gets whether this availability block can be cleared by checking the same configured native binding again.</summary>
     public bool ConfigurationUnavailable { get; init; }
+    /// <summary>Gets the sanitized reason from the last rejected availability check, absent after successful revalidation.</summary>
+    public ErrorCode? AvailabilityError { get; init; }
 }

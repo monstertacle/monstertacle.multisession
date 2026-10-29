@@ -651,3 +651,13 @@ Native CI des vorherigen Stands 7e33651 vollständig grün, Stundenläufe laufen
 T111-main-Protection tatsächlich gesetzt und per GET geprüft, siehe ci.md.
 Plattformteilmatrix in platforms.md unterscheidet Ubuntu, Server, Debian und
 fehlenden Windows-11-Host. Keine finale Freigabe oder Veröffentlichung.
+
+2026-10-29T21:31:16Z: US1-Aufgaben einzeln gegen aktuelle Tests/Produktregeln
+abgeglichen und lokale Umsetzung markiert, einschließlich ausdrücklich bereits grüner
+Lastregressionen. Kein globales Q-06-PASS daraus abgeleitet. T015 lokale Konfiguration
+und13Coverage-/4Sourcehashfälle abgeschlossen. Native Wiederaufnahme vor Workern nach
+vier echten SQLite-Rotfällen integriert; sechs weitere Rotfälle sichern öffentliche
+AvailabilityError und Korruptionsabwehr. Gesamtgate linux/f68ffaaaf7814c7bbff55be528136ec1
+1006 Tests, 97.5109 %, Sourcehash d101f7c1127c0145e353b8c3eae5c70cabbfcfb0ba3c576c322297b07ee8bc2d;
+Fullguard431Dateien/449Typen ohne Befund. T121 konkretisiert verbleibenden Modellprüfungs-
+und Nativeabnahmeumfang. Native CI nach Push, keine Liveaufrufe oder finale Freigabe.

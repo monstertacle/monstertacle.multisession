@@ -821,3 +821,16 @@ grün,DB/JournalbeiAblehnungbytegleich,keinePrüfkopien. Redbasis/TrackedDiff/Ha
 artifacts/tdd/native-journal-security-red-*. Windows-NeubelegfürTokenowner-Port steht
 nochvorProduktanpassungaus; gültigeöffentlicheDateieigentümerschaftnichtmitfremderACE
 verwechseln, keineVollabnahmeausLinux ableiten.
+
+## T055/T061/T121: persistierte Queue vor nativer Wiederaufnahme schützen
+
+Die neuen SQLite-Neuöffnungs- und Snapshotkorruptionszyklen stehen vollständig in
+tdd-us2.md, keine doppelten unabhängigen Redbehauptungen. Abgewiesener Reopen hält
+Originalrequest Queued und Binding unverändert, andere Sitzung beendet ihren eigenen
+Request. Öffentliche AvailabilityError ist nullable und wird im bestehenden Snapshot
+atomar mit der eigenen Verfügbarkeit gespeichert; kein neues SQLschema, keine Migration.
+Beim erneuten Start werden alte Snapshots ohne Property weiterhin als null gelesen,
+unbekannte Enumwerte oder Ursache ohne Herkunftsflag dagegen vor Mutation abgewiesen.
+Aktueller grüner Gesamtstand d101f7c1127c0145e353b8c3eae5c70cabbfcfb0ba3c576c322297b07ee8bc2d,
+1006 Tests und 97.5109 %. Die vollständige konkrete Modellverfügbarkeit ist weiterhin
+T121 zugeordnet; kein Hersteller-GET als universelle Modellverfügbarkeitsprüfung behauptet.

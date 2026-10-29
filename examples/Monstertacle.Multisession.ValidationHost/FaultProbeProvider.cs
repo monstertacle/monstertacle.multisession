@@ -9,7 +9,11 @@ internal sealed class FaultProbeProvider : ISessionProvider
     internal int Sends => Volatile.Read(ref _sends);
     public ProviderCapabilities Capabilities { get; } = new(true, true, false, false, false);
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken) => throw new NotSupportedException();
-    public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken) => throw new NotSupportedException();
+    public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(binding);
+    }
     public ValueTask<ProviderReply> SendAsync(ProviderCall request, ProviderBinding binding, Func<ProviderObservation, CancellationToken, ValueTask> observe, CancellationToken cancellationToken)
     {
         Interlocked.Increment(ref _sends);

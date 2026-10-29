@@ -59,11 +59,11 @@ internal static class SessionTransactions
         command.ExecuteNonQuery();
     }
 
-    internal static void Availability(SqliteConnection connection, SqliteStoreState state, Guid sessionId, bool available, CancellationToken token)
+    internal static void Availability(SqliteConnection connection, SqliteStoreState state, Guid sessionId, bool available, ErrorCode? failure, CancellationToken token)
         => SqliteTransactions.Run(connection, transaction =>
         {
             SessionSnapshot session = QueryTransactions.Session(connection, sessionId, transaction) ?? throw new SessionOperationException(new(ErrorCode.NotFound));
-            SessionSnapshot updated = SessionAvailabilityPolicy.ForConfiguration(session, available);
+            SessionSnapshot updated = SessionAvailabilityPolicy.ForConfiguration(session, available, failure);
             if (updated != session) { Update(connection, transaction, updated with { UpdatedUtc = state.Clock.GetUtcNow() }); }
             return true;
         }, token);

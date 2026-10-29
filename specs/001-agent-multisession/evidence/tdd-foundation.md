@@ -80,3 +80,12 @@ T014 ist damit fachlich geprüft und dokumentiert, die initiale Auditlücke blei
 explizit. T015-Konfiguration und elf Gate-Smokes sind vorhanden; die tatsächliche
 Coverage liegt noch unter 90 % und reale Linux-/GitHub-CI-Nachweise fehlen.
 Siehe coverage.md. Keine Phase oder Story als vollständig freigegeben dargestellt.
+
+T015-Abgleich am 2026-10-29T21:30:10Z: Lokale Konfiguration und Gateverhalten sind
+inzwischen wiederholt tatsächlich ausgeführt: 13 Coveragefälle einschließlich exakt
+87 %, darunter/ungültig/leer/fehlende Module sowie zeilenweiser Reportunion;
+vier Sourcehashfälle einschließlich Paketinputs und Outputausschluss. Letztes Volltor
+linux/ca1f7230bdc7416e81a0fc06ef35ea9b besteht mit 996 Tests und 97.5263 %.
+Alle sechs Bibliotheken sind im nativen Scopeinventar zugeordnet; fremdes OS wird
+nicht als lokal getestet ausgegeben. Konfiguration T015 damit abgeschlossen;
+final identische externe Abnahme bleibt T104/T111, initiale Historienlücke Q-06 offen.

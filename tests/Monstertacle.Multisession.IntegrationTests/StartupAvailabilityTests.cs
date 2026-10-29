@@ -49,7 +49,7 @@ public sealed class StartupAvailabilityTests
         }
         else
         {
-            await seed.Store.CommitConfigurationAvailabilityAsync(session.SessionId, false, CancellationToken.None);
+            await seed.Store.CommitConfigurationAvailabilityAsync(session.SessionId, false, CancellationToken.None, ErrorCode.AuthenticationFailed);
             await seed.Store.DisposeAsync();
         }
         AdmissionProvider provider = new()
@@ -66,6 +66,7 @@ public sealed class StartupAvailabilityTests
         Assert.Equal(RequestState.Succeeded, (await restored.CompletedAsync(accepted.RequestId)).State);
         SessionSnapshot saved = (await restored.Runtime.Sessions.GetSessionAsync(session.SessionId, CancellationToken.None))!;
         Assert.False(saved.ConfigurationUnavailable);
+        Assert.Null(saved.AvailabilityError);
         Assert.Equal(SessionBlockReason.None, saved.BlockReason);
         Assert.Equal(session.Binding?.SessionReference, saved.Binding?.SessionReference);
     }

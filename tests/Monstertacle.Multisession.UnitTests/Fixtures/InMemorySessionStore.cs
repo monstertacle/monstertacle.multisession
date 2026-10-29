@@ -68,13 +68,13 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
         }
         return ValueTask.CompletedTask;
     }
-    public ValueTask CommitConfigurationAvailabilityAsync(Guid sessionId, bool available, CancellationToken cancellationToken)
+    public ValueTask CommitConfigurationAvailabilityAsync(Guid sessionId, bool available, CancellationToken cancellationToken, ErrorCode? failure = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (State.Gate)
         {
             SessionSnapshot original = State.Sessions[sessionId];
-            SessionSnapshot updated = SessionAvailabilityPolicy.ForConfiguration(original, available);
+            SessionSnapshot updated = SessionAvailabilityPolicy.ForConfiguration(original, available, failure);
             if (updated != original) { State.Sessions[sessionId] = updated with { UpdatedUtc = Clock.GetUtcNow().ToUniversalTime() }; }
         }
         return ValueTask.CompletedTask;

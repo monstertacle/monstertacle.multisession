@@ -9,8 +9,8 @@ public interface ISessionStore : ISessionQueryStore, IStoreBootstrap, IRequestCa
     ValueTask<SessionSnapshot> CommitSessionBindingAsync(Guid sessionId, ProviderBinding binding, CancellationToken cancellationToken);
     /// <summary>Blocks further execution after an uncertain native open without deleting local identity.</summary>
     ValueTask MarkSessionBlockedAsync(Guid sessionId, SessionBlockReason reason, CancellationToken cancellationToken);
-    /// <summary>Updates only the locally caused configuration block, preserving native restrictions and recovery priority.</summary>
-    ValueTask CommitConfigurationAvailabilityAsync(Guid sessionId, bool available, CancellationToken cancellationToken);
+    /// <summary>Commits checked configuration/native availability and its sanitized cause, preserving other restrictions and recovery priority.</summary>
+    ValueTask CommitConfigurationAvailabilityAsync(Guid sessionId, bool available, CancellationToken cancellationToken, ErrorCode? failure = null);
     /// <summary>Commits input, sequence and queue capacity atomically.</summary>
     ValueTask<RequestReceipt> CommitAcceptanceAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken);
     /// <summary>Reserves an eligible FIFO head, respecting session, workspace and slot occupancy.</summary>

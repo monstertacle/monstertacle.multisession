@@ -44,6 +44,7 @@ internal static class SessionStoreConsistency
 
     private static bool StateMatches(SqliteDataReader reader, SessionSnapshot snapshot)
         => Enum.IsDefined(snapshot.Lifecycle) && Enum.IsDefined(snapshot.BlockReason)
+            && (snapshot.AvailabilityError is null || (snapshot.ConfigurationUnavailable && Enum.IsDefined(snapshot.AvailabilityError.Value)))
             && reader.GetInt32(10) == (int)snapshot.Lifecycle && reader.GetInt32(11) == (int)snapshot.BlockReason
             && snapshot.BindingRevision >= 0 && reader.GetInt64(12) == snapshot.BindingRevision
             && (snapshot.Lifecycle == SessionLifecycle.Closed) == (snapshot.ClosedUtc is not null)

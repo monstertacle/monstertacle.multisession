@@ -158,3 +158,13 @@ Codemetr 272 Dateien/278 Typen sauber. tdd-us3.md und Qualitätslauf
 bestätigter gegenüber ungewissem laufendem Ende und gemessene 2-s-Abnahme.
 CI des vorausgehenden Zustandscommits b2e6435 ist auf Windows/Ubuntu grün:
 quality 40874243471 und codemetr-guard 40874243585.
+
+### 2026-10-29T12:40:25Z: Lokalen Ausgang trotz Unknown erhalten
+
+T071/T075/T077/T080/T082 vertikal: Timeout/Cancel/Fehler werden nicht mehr als Crash
+umbenannt. Vier Deadline-/Caller-Cancel- und drei SQLfälle zuerst fachlich rot;
+jetzt richtige lokale Ausgänge bei weiter Unknown und belegtem Slot. Wiederöffnung
+und ConfirmEnded erhalten historischen Ausgang und Historie. 601 Tests grün,
+96,7221 % Gesamtabdeckung; Codemetr 274 Dateien/280 Typen sauber. tdd-us3.md,
+Qualitätslauf 8e1963773f544d67b45f944cbf5f3e9c. Laufender Cancel/Endbestätigung
+und vollständiger Lifecycle bleiben in den bestehenden Folgeaufgaben offen.

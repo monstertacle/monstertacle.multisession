@@ -114,3 +114,23 @@ cancel-observation-red.log; Fullprüfung run-capped.sh, Format/Build/alleTests/C
 T077 bleibt bis laufender Unterbrechung/native Endbestätigung/2-s-Messung offen. Der nächste
 T071/T077-Zyklus muss den gespeicherten Intent im Dispatcher beobachten; diese Teiländerung
 behauptet noch keine vollständige laufende Cancelgarantie. T072/T078/T079 bleiben Stop/Close.
+
+## T071/T075/T077/T080/T082: tatsächlicher lokaler Ausgang bei Unknown
+
+Architektur vor Code architecture/2026-10-29-uncertain-outcomes.md, Ausgang 81c0617.
+uncertain-outcome-red.log: bestehende vier offene Deadline-/Caller-Cancelfälle nach
+Sollkorrektur fachlich rot (Interrupted statt TimedOut/Cancelled), zwei andere grün.
+SQL-Theorie drei fachlich rot (Failed/TimedOut/Cancelled erwartet, Interrupted erhalten),
+Crash-Interrupted schon grün. Keine künstliche Änderung an der Produktseite für Red.
+Green: dieselben 6 Unit-/4 Integrationfälle. Gemeinsame RequestFailurePolicy.Uncertain
+bewahrt lokalen Ausgang und Unknown separat. SQL und kontrollierte Unitprojektion benutzen
+dieselbe Regel. Neustart, historische Resultate/Historie und explizite ConfirmEnded-Klärung
+für alle vier Ausgänge getestet; Unknown-Slot bleibt bis Bestätigung belegt, kein Replay.
+
+Vollständig grün artifacts/quality/linux/8e1963773f544d67b45f944cbf5f3e9c,
+SourceHash 27954b0154dbafc5909da5f4a9e13fe529ca5742070c52729ea582e94f268059.
+601 Tests (271 Unit,195 Contract,134 Integration,1 Plattform), null Fehler/Skips,
+2036/2105 Produktzeilen = 96,7221 %. Codemetr 274 Dateien/280 Typen, null
+Verstöße/Parsefehler/Skips. Vollbefehl unverändert run-capped.sh, Format/Guard/Invoke-Quality;
+Logs artifacts/tdd/uncertain-outcome-{red,green,quality}.log. Offene 2-s-Ausführungs-/
+native Cancel-/Stop-/Close-Abnahme verbleibt ausdrücklich bei T071/T077/T078/T079/T082.

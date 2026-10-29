@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Requests;
 
 namespace Monstertacle.Multisession.Storage.Sqlite;
 
@@ -15,12 +16,13 @@ internal static class UnknownTransactions
         ExecutionReservation reservation = stored.Snapshot.Reservation;
         DateTimeOffset now = state.Clock.GetUtcNow();
         PublicError error = failure with { SessionId = reservation.SessionId, RequestId = reservation.RequestId, Certainty = ExecutionCertainty.Unknown };
+        ProviderReply result = RequestFailurePolicy.Uncertain(error);
         RequestSnapshot request = QueryTransactions.Request(connection, reservation.RequestId, transaction)! with
         {
-            State = RequestState.Interrupted,
+            State = result.Outcome,
             Certainty = ExecutionCertainty.Unknown,
             EndedUtc = now,
-            Result = new(RequestState.Interrupted, ExecutionCertainty.Unknown, string.Empty, false, null, error),
+            Result = result,
         };
         ResultTransactions.Write(connection, transaction, request, stored.Snapshot.Submission.Input, now);
         SessionSnapshot session = QueryTransactions.Session(connection, reservation.SessionId, transaction)!;

@@ -51,7 +51,7 @@ public sealed class DispatchDeadlineTests
         finish.TrySetResult(DispatchScenario.Success(scenario.Session.Binding!));
         await ended.Task.WaitAsync(TimeSpan.FromSeconds(5));
         RequestSnapshot? request = await ((ISessionStore)scenario.Store).GetRequestAsync(receipt.RequestId, CancellationToken.None);
-        Assert.Equal(RequestState.Interrupted, request?.State);
+        Assert.Equal(timeout ? RequestState.TimedOut : RequestState.Cancelled, request?.State);
         Assert.Equal(ExecutionCertainty.Unknown, request?.Certainty);
         Assert.Empty(scenario.Store.DispatchState.History);
         Assert.False(await scenario.Dispatcher.TryDispatchAsync(CancellationToken.None));

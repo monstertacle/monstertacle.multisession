@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Requests;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
@@ -7,12 +8,12 @@ internal static class ControlledRequestFinalization
 {
     public static void Unknown(ControlledStoreState state, ExecutionReservation reservation, PublicError failure)
     {
+        ProviderReply result = RequestFailurePolicy.Uncertain(failure);
         state.Requests[reservation.RequestId] = state.Requests[reservation.RequestId] with
         {
-            State = RequestState.Interrupted,
+            State = result.Outcome,
             Certainty = ExecutionCertainty.Unknown,
-            Result = new(RequestState.Interrupted, ExecutionCertainty.Unknown, string.Empty, false, null,
-                failure with { Certainty = ExecutionCertainty.Unknown }),
+            Result = result,
         };
         state.Sessions[reservation.SessionId] = state.Sessions[reservation.SessionId] with
         {

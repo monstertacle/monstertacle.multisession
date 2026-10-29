@@ -48,3 +48,24 @@ auchWindowsTestklassen gemessen. Präprozessorumhüllungen derPlattformtestklass
 explizite TFM-Compileauswahl ersetzt, damitStandaloneGuard alleKlassen analysiert.
 NativeWindowsausführung desfolgendenCommits wird erst alsRed anerkannt, wenn die
 konkreten ausgeführtenTestfehler vorliegen; Produktfähigkeit bisdahin nichtimplementiert.
+
+## T086/T090 Common-Hostkomposition und Stop während Open
+
+Architektur `architecture/2026-10-29-host-composition.md`. HostCompositionTests zunächst
+1/1fachlichrot: Stop gibtEigentumfrei, öffentlicheOpenaufgabe bleibtnochunfertig. Keine
+Compile-/InfrastrukturfehleralsRed. RuntimeOperations registriert jetztdenöffentlichen
+Openablauf atomarmitRunningzulassung, StoplinkedCancellation undDrain vorStorecleanup.
+SessionCatalog wartet aufOpen mitCancelgrenze undspeichertdanachUnknownopening, bevor
+Eigentumfreigegebenwird. SpäterfertigerProviderOpen hatkeinen lokalenBindpfadmehr.
+UnkooperativeexterneArbeit wirdnichtalsbeendetbehauptet. Danach204Contractfällegrün.
+
+Zwei zusätzliche sofortgrüneRegressionsfälle: zweiCommon-RuntimesmitgetrenntenStores/
+Leasen undidentischenRegistrierungsnamen haltenModelle/Settings/IDs/Historygetrennt;
+fremdeKennungen liefernnull, spätereEingänge nachIdleohneNeustart, StopvonA berührtBnicht.
+CommonAssembly hatkeinePlattform-/SQLite-/Hostingframeworkabhängigkeit. Diese schon
+korrektenEigenschaften werdennichtnachträglichalsRed ausgegeben. Alle3gezieltenFälle
+grün, Codemetr382Dateien/393TypenohneBefunde. Volltor/nativeNachprüfungfolgen.
+
+DieserSchnittverfolgtöffentlicheCreateSession-Provideroperationen. RecoveryInspect/Resolve,
+Close-/Startfristen undweitereRaces bleibenimvorhandenenT076/T079/T083-Audit ausdrücklich
+offen; dasOperationsregister ist ihrWiederverwendungspunkt, keineGesamtabnahme.

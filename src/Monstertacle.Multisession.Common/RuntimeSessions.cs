@@ -7,8 +7,7 @@ internal sealed class RuntimeSessions(RuntimeLifecycle lifecycle, SessionCatalog
 {
     public ValueTask<SessionSnapshot> CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
     {
-        lifecycle.RequireRunning();
-        return catalog.CreateSessionAsync(agentProfileId, context, cancellationToken);
+        return lifecycle.RunOperation(token => catalog.CreateSessionAsync(agentProfileId, context, token), cancellationToken);
     }
     public ValueTask<SessionSnapshot?> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken)
     {

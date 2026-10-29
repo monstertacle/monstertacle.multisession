@@ -39,7 +39,7 @@ public sealed class SessionCatalog : ISessions
         ProviderBinding binding;
         try
         {
-            binding = await registration.Provider.OpenAsync(providerContext, cancellationToken);
+            binding = await registration.Provider.OpenAsync(providerContext, cancellationToken).AsTask().WaitAsync(cancellationToken);
         }
         catch (Exception failure)
         {

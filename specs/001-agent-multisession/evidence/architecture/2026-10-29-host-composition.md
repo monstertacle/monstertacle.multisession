@@ -1,0 +1,25 @@
+# T086/T090 Hostkomposition und offene Eröffnung beim Stop
+
+Bestandsprüfung2026-10-29T17:26:33Z an127df3a. SessionRuntime SHA256
+5a3bfa80d8327ba712b7bf74e3e2378108de16d9fb18bfd4534e59e9570879b3,
+RuntimeLifecyclee56f4df29f1c9f73a68ea7de56954eba874fb507652e1ebcedd15e9ee83be204,
+ProviderCatalogf37277094427ebfce25196ae4e37846d841e2d2bd1b579bedf0d6f041c9780ae.
+Katalog friert Registrierungen/Profile einschließlichSettings ein; Runtime hat nur
+instanzbezogeneKomponenten. RuntimeSessions.CreateSessionAsync prüftRunning lediglich
+amEintritt, SessionCatalog wartet direkt aufProvider.Open. Stop verfolgt nurDispatcher-
+worker undschließtStore/Lease ohne aktiveöffentlicheOpenoperationen. Damitkann ein
+unkooperativerOpen nachStop erfolgreich lokalbinden (Double) beziehungsweise nach
+Leasefreigabe aufdisposedStore zugreifen (SQLite). RecoveryInspect/Resolve haben
+entsprechende externeI/O-Lebenszyklen. Provideraufgaben sind nichtnativeEndbelege.
+
+Entscheidung vorErweiterung: erst Common-only Isolations-/Idle-/Konfigurations-
+regressionen undkontrollierten Open-vsStop-Fall beobachten. Kein erfundenesRed für
+bereitsfunktionierendeInstanztrennung. Für tatsächlicheLücke: eigenes instanzbezogenes
+Operationsregister inRuntimeShutdown, Zulassung atomarunterLifecyclegate, Stop sperrt
+Zulassung undsignalisiert eigenenCanceltoken ohneunvertrauenswürdigeCallbacks synchron
+unterLifecyclegateauszuführen. Scope jeOpen-/Recoveryoperation, Caller+StoplinkedToken;
+Stopwartetinnerhalb bestehenderGesamtfrist auf lokalenAbschluss vorStorecleanup.
+SessionCatalog wartet aufOpen mitWaitAsync(Token), beiAbbruch vorlokalemBind denselben
+persistiertenOpening-Recoveryfall, keinLateBind nachRückkehr. KeineBehauptungexternen
+Endes, kein neuerProviderOpen undkeinRetry. NativeOperationkannweiterlaufen, bleibtUnknown.
+MöglicheweitereLifecycleschnitte verbleibenT076/T079/T083; keineFrist-/Coverageänderung.

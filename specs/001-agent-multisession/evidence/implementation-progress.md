@@ -411,3 +411,13 @@ Codemetr376Dateien/387Typen ohneBefunde. Voriger075d4e2 nativbeidseitiggrün:
 40919459445/40919459473. README-Nachweistabelle aktualisiert, recovery.md mit aktueller
 Abnahmematrix ergänzt; T064 nach Regel-/SQL-/Testabgleichabgeschlossen. OffeneUS5-
 Gesamtaudits undnativeWindows-/Zielsystempflichten weiter aktiv, keine Gesamtfreigabe.
+
+T086/T090 offeneCreateSession-beiStop-Lücke nachreproduzierbaremRed korrigiert:
+Openoperationen instanzbezogenverfolgt, Stopcancel undlokalerUnknownabschluss vordem
+Store-/Leasecleanup. Instanztrennung/Idle/Commonabhängigkeiten zusätzlichgrün.
+Volltor linux/3f9648cf510f40c49094f1d47eb1d5b7 erfolgreich,Sourcehash
+19c186170f778c20434d7d0f2e51c56248c3e4b6160dd66bb0d073ca00731026,
+2839/2916Zeilen=97.3594%,940Tests;Codemetr382Dateien/393TypenohneBefunde.
+NativeNachprüfung diesesSchnittsfolgt gemeinsammitWindowslease; T076/T079/T083-
+Recovery-/Start-/Closelifecycleschnitte weiteroffen. WindowsRedstand127df3a ist ausdrücklich
+keinRelease, nativeFehlerprotokolle von40921348366 vorWindowsimplementierungauswerten.

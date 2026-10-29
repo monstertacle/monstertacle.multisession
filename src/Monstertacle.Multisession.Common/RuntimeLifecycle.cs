@@ -25,6 +25,14 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
     {
         if (!IsRunning) { throw Error(ErrorCode.InvalidConfiguration); }
     }
+    internal ValueTask<T> RunOperation<T>(Func<CancellationToken, ValueTask<T>> operation, CancellationToken caller)
+    {
+        lock (_gate)
+        {
+            RequireRunning();
+            return new(_shutdown.Operations.Run(operation, caller));
+        }
+    }
     internal void RequireReadable()
     {
         if (_state is not (RuntimeState.Running or RuntimeState.Stopping)) { throw Error(ErrorCode.InvalidConfiguration); }
@@ -117,6 +125,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             if (_state is RuntimeState.Created or RuntimeState.Starting) { throw Error(ErrorCode.InvalidConfiguration); }
             _state = RuntimeState.Stopping;
         }
+        _shutdown.Operations.Stop();
         try { await _shutdown.EnterAsync(linked.Token); }
         catch (Exception) { throw Error(ErrorCode.StorageUnavailable); }
         try
@@ -184,6 +193,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
 
     private async Task CleanupCoreAsync()
     {
+        await _shutdown.Operations.DrainAsync();
         if (_components is { } components) { await components.Statistics.DisposeAsync(); }
         await host.Store.DisposeAsync();
         await host.Lease.DisposeAsync();

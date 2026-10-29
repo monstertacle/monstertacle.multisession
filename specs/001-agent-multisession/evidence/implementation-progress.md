@@ -92,3 +92,8 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   explizites Create/Open ohne Ersatz/Migration, Vorprüfung und privater Journalkopiepfad.
   Gesamt478 Tests/94,3043 Prozent, Guard206 Dateien/208 Typen sauber. Domainports/Bootstrap
   sind noch Gerüste; nächster Auftrag echter Journalprozess, dann Annahme/DBqueue.
+- T048-Gerüst und echte Hotjournalregression: zwei harte Kindprozessabbrüche, bestätigter
+  Bestand zurückgerollt bzw. beide Originaldateien bei unbekanntem Format unverändert.
+  Portable Fixturemarkerrechte nach echtem umask022-Red. Gesamt480 Tests/94,3043 Prozent,
+  Guard210 Dateien/213 Typen sauber. Fachliche Crashpunkte/SC-009 bleiben offen.
+  Format1df4b05 CI auf Windows/Ubuntu grün; nächster Auftrag Annahme/DBqueue.

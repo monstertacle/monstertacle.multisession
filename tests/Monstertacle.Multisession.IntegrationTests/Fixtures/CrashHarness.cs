@@ -1,0 +1,70 @@
+using System.Diagnostics;
+using System.Reflection;
+using System.Text.Json;
+using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.ValidationHost;
+
+namespace Monstertacle.Multisession.IntegrationTests.Fixtures;
+
+// A real process boundary; cleanup always kills a child that has not already exited.
+internal sealed class CrashHarness(Process process) : IAsyncDisposable
+{
+    private static readonly TimeSpan _processLimit = TimeSpan.FromSeconds(30);
+    public CrashSignal? Signal { get; private set; }
+
+    public static async Task<CrashHarness> StartAsync(IStateDirectoryLease lease, string point)
+    {
+        string stateDirectory = lease.StateDirectory;
+        string token = Guid.NewGuid().ToString("N");
+        await lease.PrepareFileAsync(CrashProtocol.MarkerFileName, StateFileMode.CreateNew, CancellationToken.None);
+        await File.WriteAllTextAsync(Path.Combine(stateDirectory, CrashProtocol.MarkerFileName), token);
+        ProcessStartInfo start = new("dotnet")
+        {
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            WorkingDirectory = stateDirectory,
+        };
+        start.ArgumentList.Add(FindWorker());
+        start.ArgumentList.Add(CrashProtocol.WorkerArgument);
+        start.ArgumentList.Add(stateDirectory);
+        start.ArgumentList.Add(token);
+        start.ArgumentList.Add(point);
+        Process child = new() { StartInfo = start };
+        CrashHarness harness = new(child);
+        try
+        {
+            if (!child.Start()) { throw new InvalidOperationException("Crash worker could not start."); }
+            string? line = await child.StandardOutput.ReadLineAsync().WaitAsync(_processLimit);
+            harness.Signal = line is null ? null : JsonSerializer.Deserialize<CrashSignal>(line);
+            if (harness.Signal is not { Barrier: CrashProtocol.JournalBarrier } || harness.Signal.ProcessId != child.Id)
+            {
+                throw new InvalidOperationException("Crash worker did not reach the expected barrier.");
+            }
+            return harness;
+        }
+        catch { await harness.DisposeAsync(); throw; }
+    }
+
+    public async Task KillAsync()
+    {
+        if (!process.HasExited) { process.Kill(true); }
+        await process.WaitForExitAsync().WaitAsync(_processLimit);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await KillAsync();
+        process.Dispose();
+    }
+
+    private static string FindWorker()
+    {
+        DirectoryInfo? root = new(AppContext.BaseDirectory);
+        while (root is not null && !File.Exists(Path.Combine(root.FullName, "Monstertacle.Multisession.slnx"))) { root = root.Parent; }
+        if (root is null) { throw new InvalidOperationException("Crash probe requires its repository build."); }
+        string configuration = typeof(CrashHarness).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()!.Configuration;
+        string worker = Path.Combine(root.FullName, "examples", "Monstertacle.Multisession.ValidationHost", "bin", configuration, "net10.0", "Monstertacle.Multisession.ValidationHost.dll");
+        return File.Exists(worker) ? worker : throw new InvalidOperationException("Crash worker has not been built.");
+    }
+}

@@ -148,3 +148,40 @@ vollständig erneut geprüft. Nur sqlite-format-quality-final.log belegt finalen
 T049/T056 bleiben für vollständige Binding-/Crashabnahme offen; nächster konkreter Auftrag
 T048 echte Journalbarriere, danach T050/T054/T057/T058. Owner ausführende Sitzung.
 1ab4726 auf Windows/Ubuntu erfolgreich: quality40855398948,Guard40855398914.
+
+## T048: echte Hotjournalbarriere und hartes Prozessende
+
+Voranalyse architecture/2026-10-29-crash-journal-harness.md. CrashHarness startet den
+gebauten nicht produktiven ValidationHost in markierter privater Ablage. Child schreibt
+wirkliche uncommittete SQLitepages bei kleinem Cache, meldet Phase/PID/UTC und wird nach
+Barriere hart als Prozessbaum beendet. Hotjournalmagic wird an tatsächlichen Dateibytes
+geprüft. Zwei Fälle sofort grün mit existierender Factory, keine Produktkorrektur/kein
+künstliches Red: gültiger Store rollt zurück, StoreId bleibt erhalten, uncommittete Tabelle
+verschwindet; unbekannte Metadataversion lässt Original-DB und -Journal bytegleich.
+Probekopien werden entfernt. Keine SC-009-/Reservations-/NativeLeaseabnahme behauptet.
+
+Zusatzregression für Fixtureprivatheit: Marker unter lokaler gemessener umask0077 schon
+0600, gleicher Test unter022 zweimal fachlich rot mit0644. Harness erhält nun vorhandene
+Lease und bereitet Marker ausschließlich per PrepareFileAsync/CreateNew vor; unter022
+31 Integrationfälle grün. Kein globaler Umaskwechsel im Produkt/Testharness.
+Befehle run-capped dotnet test IntegrationTests -c Release --no-restore --filter
+FullyQualifiedName~CrashJournalTests; Marker-Red/Green im bash-Prozess mit umask022.
+Manifeste aus src/tests/examples einschließlich SQL, UTC aus LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| crash-journal, ergänzend grün | 2026-10-29T10:25:45.5519254Z | 7d5e7d7f9749decd168aef966ba8468c8ed9f9f3c2848ad1935805ae84b954bf |
+| crash-marker-default-umask, grün | 2026-10-29T10:26:43.9476024Z | b4be9686af74635d7ca590507e58f10e5e09d3f4c0f38ae396ee87a1fe19b9ed |
+| crash-marker-red,022 | 2026-10-29T10:27:34.2427727Z | b4be9686af74635d7ca590507e58f10e5e09d3f4c0f38ae396ee87a1fe19b9ed |
+| crash-marker-green,022 | 2026-10-29T10:27:57.9042712Z | 03324dfcd1e77b15adbf84181148666e85be996c58c1518f10facfbf36c7873e |
+
+Volle lokale Qualität Exit0: artifacts/quality/linux/75042a1064b04160ac26b6072ca45640,
+Sourcehash261734a0c50d457aec518d213caae9d45da861b7dc2894c9b902b5bb9f1a545d.
+TRX gezählt480:253 Unit/195 Contract/31 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1308/1387 Produktzeilen=94,3043 Prozent. Full-Guard210 Dateien/213 Typen,
+0 Verstöße/Parsefehler/Skips. Host/Fixture im Guard, Host bleibt kein Produktcoveragecode.
+Keine Pin-/Scopeänderung. Restore nach neuer Buildabhängigkeit ohne Lockfileänderung.
+T048 bleibt für fachliche Annahme-/Dispatch-/Resultatbarrieren offen, nächster Auftrag
+T050/T054/T057/T058. Crashmodus ist interne Infrastruktur, kein fertiger Szenariohost T094.
+Formatstand1df4b05 auf Windows/Ubuntu-CI grün: quality40857368718,Guard40857368737.

@@ -7,7 +7,14 @@ internal sealed class ControlledDispatchState
 {
     private readonly HashSet<Guid> _cancellationRequests = [];
     private readonly List<HistoryEntry> _history = [];
+    private readonly List<(Guid DispatchId, ProviderObservation Observation)> _observations = [];
 
+    public Func<ProviderObservation, CancellationToken, ValueTask>? Observing { get; init; }
+    public IReadOnlyList<(Guid DispatchId, ProviderObservation Observation)> Observations => _observations;
+    public Action? Completed { get; init; }
+    public Func<CancellationToken, ValueTask>? MarkingUncertain { get; init; }
+    public Func<CancellationToken, ValueTask>? Reading { get; init; }
+    public Func<CancellationToken, ValueTask>? Committing { get; init; }
     public Dictionary<Guid, ReservedDispatch> Snapshots { get; } = [];
     public IReadOnlyList<HistoryEntry> History => _history;
 
@@ -15,6 +22,9 @@ internal sealed class ControlledDispatchState
 
     // Setup hook used synchronously between store operations, not a production cancellation API.
     public void RequestCancellation(Guid requestId) => _cancellationRequests.Add(requestId);
+
+    public void RecordObservation(Guid dispatchId, ProviderObservation observation)
+        => _observations.Add((dispatchId, observation));
 
     public void RecordCompletion(ReservedDispatch snapshot, ProviderReply reply)
         => _history.Add(new HistoryEntry(snapshot.Reservation.SessionId, snapshot.Reservation.RequestId,

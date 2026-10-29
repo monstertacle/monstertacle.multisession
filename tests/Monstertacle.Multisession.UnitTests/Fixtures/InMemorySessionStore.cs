@@ -12,7 +12,7 @@ internal sealed class InMemorySessionStore : ISessionStore
     private readonly Dictionary<Guid, SubmitRequest> _submissions = [];
     private readonly Dictionary<Guid, DateTimeOffset> _acceptedUtc = [];
     private readonly Dictionary<Guid, ExecutionReservation> _reservations = [];
-    public ControlledDispatchState DispatchState { get; } = new();
+    public ControlledDispatchState DispatchState { get; init; } = new();
     public Action? CommittingBinding { get; init; }
     public Action? BlockingSession { get; init; }
     public Func<SubmitRequest, CancellationToken, ValueTask>? CommittingAcceptance { get; init; }
@@ -56,8 +56,12 @@ internal sealed class InMemorySessionStore : ISessionStore
         return ValueTask.CompletedTask;
     }
 
-    ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)
+    async ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)
     {
+        if (DispatchState.Reading is not null)
+        {
+            await DispatchState.Reading(cancellationToken);
+        }
         cancellationToken.ThrowIfCancellationRequested();
         lock (_admissionGate)
         {
@@ -65,10 +69,10 @@ internal sealed class InMemorySessionStore : ISessionStore
                 || _requests[reservation.RequestId].State != RequestState.Running
                 || DispatchState.IsCancellationRequested(reservation.RequestId))
             {
-                return ValueTask.FromResult<ReservedDispatch?>(null);
+                return null;
             }
 
-            return ValueTask.FromResult(DispatchState.Snapshots.GetValueOrDefault(dispatchId));
+            return DispatchState.Snapshots.GetValueOrDefault(dispatchId);
         }
     }
 
@@ -163,14 +167,32 @@ internal sealed class InMemorySessionStore : ISessionStore
             return reservation;
         }
     }
-    public ValueTask CommitObservationAsync(Guid dispatchId, ProviderObservation observation, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
-    public ValueTask CommitCompletionAsync(Guid dispatchId, ProviderReply reply, CancellationToken cancellationToken)
+    public async ValueTask CommitObservationAsync(Guid dispatchId, ProviderObservation observation, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        if (reply.Certainty != ExecutionCertainty.ConfirmedEnded)
+        if (DispatchState.Observing is not null)
         {
-            throw new NotImplementedException("Controlled completion models confirmed results only.");
+            await DispatchState.Observing(observation, cancellationToken);
+        }
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_admissionGate)
+        {
+            if (!_reservations.ContainsKey(dispatchId))
+            {
+                throw new SessionOperationException(new PublicError(ErrorCode.RevisionConflict));
+            }
+            DispatchState.RecordObservation(dispatchId, observation);
+        }
+    }
+    public async ValueTask CommitCompletionAsync(Guid dispatchId, ProviderReply reply, CancellationToken cancellationToken)
+    {
+        if (DispatchState.Committing is not null)
+        {
+            await DispatchState.Committing(cancellationToken);
+        }
+        cancellationToken.ThrowIfCancellationRequested();
+        if (reply.Certainty is not (ExecutionCertainty.ConfirmedEnded or ExecutionCertainty.NotStarted))
+        {
+            throw new NotImplementedException("Controlled completion requires confirmed end or no-start evidence.");
         }
         lock (_admissionGate)
         {
@@ -198,11 +220,15 @@ internal sealed class InMemorySessionStore : ISessionStore
             _sessions[reservation.SessionId] = updated;
             _reservations.Remove(dispatchId);
         }
+        DispatchState.Completed?.Invoke();
 
-        return ValueTask.CompletedTask;
     }
-    public ValueTask MarkUncertainAsync(Guid dispatchId, PublicError failure, CancellationToken cancellationToken)
+    public async ValueTask MarkUncertainAsync(Guid dispatchId, PublicError failure, CancellationToken cancellationToken)
     {
+        if (DispatchState.MarkingUncertain is not null)
+        {
+            await DispatchState.MarkingUncertain(cancellationToken);
+        }
         cancellationToken.ThrowIfCancellationRequested();
         lock (_admissionGate)
         {
@@ -216,8 +242,6 @@ internal sealed class InMemorySessionStore : ISessionStore
             };
             _sessions[reservation.SessionId] = _sessions[reservation.SessionId] with { BlockReason = SessionBlockReason.RecoveryRequired };
         }
-
-        return ValueTask.CompletedTask;
     }
     public ValueTask ResolveReservationAsync(RecoveryDecision decision, CancellationToken cancellationToken)
         => throw new NotImplementedException();

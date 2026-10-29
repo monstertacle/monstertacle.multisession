@@ -66,3 +66,13 @@ Artefakte `artifacts/quality/linux/b83d5853697d45c5aa01d3a26f4d8883/`.
 13 Coverage-Gateverhaltensfälle bestanden. Vollständiger Codemetr-Guard: 76 Typen,
 0 Verstöße/Parsefehler/übersprungene Typen. TDD und Grenzen: [tdd-us1.md](tdd-us1.md).
 Kein Windows-/Ubuntu-Zielsystem-/CI-Nachweis für diesen Stand; keine Produktfreigabe.
+
+## T025: Dispatcher
+
+Vollständiger nativer Linuxrunner: Exit 0, **376/400 = 94,0 %** Produkt-Zeilenabdeckung.
+Sourcehash `790529a286d607b236aa25aabba02462a5f17a4ed289d3ca61143404349f8916`;
+Originalberichte `artifacts/quality/linux/00ee4f74a76e4f64be51e24f8308be76/`.
+223 .NET-Tests und 13 Gateverhaltensfälle bestanden, 0 fehlgeschlagen/nicht ausgeführt.
+Full-Codemetr 0.1.0: 88 Dateien/89 Typen, 0 Verstöße/Parsefehler/übersprungene Typen.
+TDD, Selbstprüfung und Freigabegrenzen: [tdd-us1.md](tdd-us1.md), Abschnitt T025.
+Kein neuer Windows-/CI-/Zielsystem-/Liveprovider-/Paketabnahmenachweis.

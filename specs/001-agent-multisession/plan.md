@@ -252,9 +252,10 @@ Migrations-/Rückkehrplan. Es wird hier kein unzureichend spezifizierter Updater
 ## Konkretisierte Orchestrierungsverträge und Umsetzungsvoraussetzungen
 
 Verbindliche Details: [contracts/orchestration-details.md](contracts/orchestration-details.md).
-Die dort geplanten C#-Vertragsänderungen sind **noch nicht implementiert**. Aktuelle
-ISessionStore-/IRecovery-Signaturen und Doubles werden erst nach fachlichem Red erweitert;
-T009/T010 belegen nur ihren damaligen Signaturumfang, nicht die neuen Ergänzungen.
+ReservedDispatch samt Query ist in T112 und der Dispatcher in T025 lokal umgesetzt;
+Nachweise in evidence/tdd-us1.md. Die Recovery-/Annahme-/Pagingänderungen T113–T115
+bleiben offen und werden erst nach fachlichem Red ergänzt. T009/T010 belegen nur
+ihren damaligen Signaturumfang, keine vollständige Implementierung der Ergänzungen.
 
 | Befund | Architekturentscheidung | Voraussetzung vor Green |
 | --- | --- | --- |
@@ -263,8 +264,9 @@ T009/T010 belegen nur ihren damaligen Signaturumfang, nicht die neuen Ergänzung
 | U4 | Vorab erzeugte Kandidatenkennung in RequestAcceptance; AdmissionStatus getrennt von externer Gewissheit, bestätigter Commit liefert Receipt | T114 vor T058/T076 |
 | A2 | Gemeinsame Seitengrenzen und bereichsgebundene Keysetcursor; HistoryOrdinal/HistoryId und eigene Recoveryfallsnapshots | T115 vor Pagingteilen T026/T037/T063 |
 
-Für die nächste Dispatchervertikale gilt: aktueller Deep-Dive → T112-Red/Green → passende
-T016–T019- und Dispatch-Red-Fälle → T025/T026. Die bestehenden Storytasks bleiben bis
+T112 und T025 sind lokal nachgewiesen. Für die nächste Runtimevertikale T026 gelten
+ein aktueller Deep-Dive und passende noch fehlende Red-Fälle; Pagingteile setzen
+T113/T115 voraus. Die bestehenden Storytasks bleiben bis
 zu ihrer vollständigen Abnahme offen; einzelne vorgezogene Teilfälle schließen keine Story.
 T112–T115 sind fachliche Ergänzungszyklen, kein gemeinsamer Block, der vor jeder weiteren
 Arbeit vollständig abgeschlossen werden muss. Jeder Schnitt benötigt nur seine relevanten

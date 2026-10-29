@@ -190,12 +190,17 @@ angenommene/validierte Queued-Datensätze mit Sequence/AcceptedUtc; WriteWorkspa
 nur für Schreibaufträge gesetzt. Auswahl und anschließende Reservierung müssen unter
 derselben Transaktion erfolgen. Ein Policyaufruf allein reserviert nichts.
 `RequestScheduler.TryReserveAsync` delegiert eine solche Operation an den Store;
-die Runtime-/Dispatcherintegration ist noch nicht implementiert.
+RequestDispatcher.TryDispatchAsync verarbeitet eine frische Reservierung mit deren
+ReservedDispatch und fixierten Registrierungen. False bedeutet kein zulässiger Dispatch;
+true bestätigt ein gespeichertes lokales Endergebnis, auch ein bestätigtes Fehlerergebnis.
+Storefehler werden als Fehler gemeldet, nicht als leere Queue. Callbackbestätigung,
+Bindingidentität und Ausgabegrenze werden vor Completion geprüft; unbestätigte Arbeit
+behält ihre Reservierung. SessionRuntime-/Workerkomposition bleibt T026.
 
 Der in derselben Reservierungstransaktion gespeicherte ReservedDispatch ist über
 GetReservedDispatchAsync lesbar und trägt Eingabe, Timeout, eingefrorenen Sitzungskontext
 und BindingRevision. Öffentliche RequestSnapshots ersetzen diesen Datensatz nicht.
-Die aktuelle C#-Queryschnittstelle erhält diese Operation in T112; Vertrag siehe
+Die C#-Queryschnittstelle besitzt diese Operation seit T112; Vertrag siehe
 orchestration-details.md §1. Die Annahme erhält in T114 RequestAcceptance mit vorab
 erzeugter Kandidatenkennung; nur Sequence/Queuekapazität bleiben Storeautorität (§3).
 

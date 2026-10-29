@@ -29,11 +29,13 @@ Ausführliche Regeln stehen in [AGENTS.md](AGENTS.md), der
 ## Übergabe an einen Remote-Agenten
 
 Repository: <https://github.com/monstertacle/monstertacle.multisession>.
-**Nächster begrenzter Implementierungsauftrag: T025** mit den zugehörigen noch fehlenden
-Red-Fällen aus T016–T019, nicht alle offenen Tasks.
-T112 (ReservedDispatch-Vertrag) ist umgesetzt; Nachweise und Grenzen stehen in
+**Nächster begrenzter Implementierungsauftrag: T026**, Runtimekomposition und öffentliche
+Queries. Pagingteile erst nach den Vertragszyklen T113/T115; passende fehlende Red-Fälle
+aus T016–T019 beachten, nicht alle offenen Tasks umsetzen.
+T112 (ReservedDispatch) und T025 (Dispatcher) sind lokal umgesetzt; Nachweise und Grenzen stehen in
 [evidence/tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md).
-Der kontrollierte Store ist weiterhin keine SQLite-Persistenz, die Runtime noch kein fertiger Dispatcher.
+Der kontrollierte Store ist weiterhin keine SQLite-Persistenz; SessionRuntime ist noch
+nicht mit Scheduler und Dispatcher komponiert.
 
 1. Eigenen Arbeitsbranch aus dem aktuellen Remote-Stand erstellen; keine parallelen
    Änderungen mehrerer Agenten im selben Arbeitsbaum.
@@ -57,10 +59,11 @@ Die Codex-Skills liegen bereits unter `.agents/skills/`. Bei einem Client mit di
 Skill-Unterstützung lautet der Agentenauftrag (kein Shellbefehl):
 
 ```text
-$speckit-implement Nur den nächsten T025-Dispatcherzyklus samt passenden Red-Fällen bearbeiten.
+$speckit-implement Nur den nächsten T026-Runtimezyklus samt passenden Red-Fällen bearbeiten.
+Pagingteile setzen T113/T115 voraus.
 Vor Umsetzung aktuellen Deep-Dive dokumentieren,
 fachliches Red vor Green beobachten, Regression, native Qualitätsprüfung und vollständigen
-Codemetr-Guard ausführen. T112 wiederverwenden; keine anderen Storys umsetzen.
+Codemetr-Guard ausführen. T112/T025 wiederverwenden; keine anderen Storys umsetzen.
 Änderungen und Prüfnachweise
 auf einem Arbeitsbranch zur Überprüfung zurückliefern; kein Merge, Deployment oder NuGet-Push.
 ```

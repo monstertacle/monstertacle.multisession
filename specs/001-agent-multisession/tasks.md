@@ -76,9 +76,10 @@ diese ganzen Storytasks bleiben offen. Keine Phase durch vorgezogene Teilfälle 
 erledigt darstellen. Vor nächster Erweiterung neuer aktueller Deep-Dive erforderlich.
 RequestAdmission.Submit/GetRequest sind als begrenzte Teile von T016/T022 umgesetzt;
 Commitbarriere, unveränderter Input und Annahmevalidierung sind in `evidence/tdd-us1.md`
-nachgewiesen. Paging/Cancel/Timer/Dispatch/Persistenz fehlen weiterhin; T022 bleibt offen.
+nachgewiesen. Paging/Cancel/Admissiontimer und echte Persistenz fehlen weiterhin;
+T022 bleibt offen. Der separate Dispatcher ist in T025 belegt.
 Vorbereitende Teilfälle T034/T042 prüfen die generische Ausgabegrenze direkt mit
-`ProviderReplyBoundaryTests`; `ProviderReplyPolicy` ist noch nicht in einen Dispatcher
+`ProviderReplyBoundaryTests`; `ProviderReplyPolicy` ist jetzt in T025 in den Dispatcher
 eingebunden. Nachweis `evidence/tdd-us2.md`. T034/T035/T042 bleiben insgesamt offen.
 FIFO-/Reservierungsregeln und einzelne atomare Schedulerzulassungen sind als Teile von
 T017–T019/T023/T024 umgesetzt (`ReservationPolicy`, `RequestScheduler`, kontrollierter
@@ -105,7 +106,7 @@ Keine Sends/Completion/Freigabe oder echte SQLite-Persistenz, daher ganze Tasks 
 - [ ] T022 [US1] Nach passendem Red aus T016/T017 Annahme und Receipt in `src/Monstertacle.Multisession.Common/Requests/RequestAdmission.cs` umsetzen; atomare CommitAcceptance-Operation für Eingabe/RequestId/Sequence/Queuelimit verlangen und Receipt erst nach erfolgreichem Store-Commit liefern; im Demonstrator nur Fake-Store, SQLite-Haltbarkeit bleibt US5.
 - [ ] T023 [US1] Nach T017–T019 FIFO-Zulassung und globale Slots in `src/Monstertacle.Multisession.Common/Scheduling/RequestScheduler.cs` implementieren; ausschließlich TryReserveHead verwenden, keine unbeschränkte Taskliste, keine feste globale Wartezeit-/Starvation-Zusage und keine Ausführung blockierter Sitzungsköpfe.
 - [ ] T024 [US1] Nach T018 Workspace- und Sitzungsreservierung in `src/Monstertacle.Multisession.Common/Scheduling/ReservationPolicy.cs` implementieren; deklarierte kanonische Hostschlüssel verwenden, keinen Dateizugriff aus Modelltext erschließen und reservierte ungewisse Slots niemals als frei behandeln.
-- [ ] T025 [US1] Nach den passenden Red-Fällen Providerdispatch und atomaren erfolgreichen Abschluss in `src/Monstertacle.Multisession.Common/Requests/RequestDispatcher.cs` ergänzen; nur neue Nachricht plus bestätigtes Binding übergeben, Dispatch/Reservierung vor Send sichern, Ausgabe und neues Binding gemeinsam committen und erst bestätigt freigeben.
+- [X] T025 [US1] Nach den passenden Red-Fällen Providerdispatch und atomaren erfolgreichen Abschluss in `src/Monstertacle.Multisession.Common/Requests/RequestDispatcher.cs` ergänzen; nur neue Nachricht plus bestätigtes Binding übergeben, Dispatch/Reservierung vor Send sichern, Ausgabe und neues Binding gemeinsam committen und erst bestätigt freigeben.
 
 **Voraussetzung des nächsten Dispatcher-Green**: T112 liefert nach eigenem Red den
 ReservedDispatch-/GetReservedDispatchAsync-Vertrag einschließlich BindingRevision.

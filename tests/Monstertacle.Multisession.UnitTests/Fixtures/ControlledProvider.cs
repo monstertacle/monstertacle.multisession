@@ -7,6 +7,8 @@ internal sealed class ControlledProvider : ISessionProvider
     public TaskCompletionSource<ProviderCall> Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public TaskCompletionSource<ProviderReply> Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public ProviderCapabilities Capabilities { get; init; } = new(true, true, false, false, false);
+    public Func<ProviderCall, ProviderBinding, Func<ProviderObservation, CancellationToken, ValueTask>, CancellationToken, ValueTask<ProviderReply>>? Sending { get; init; }
+    public Func<ProviderSessionContext, ProviderBinding>? BindingForContext { get; init; }
     public Action<ProviderSessionContext>? Opening { get; init; }
     public ProviderBinding OpeningBinding { get; init; } = new("controlled", 1, null, null);
 
@@ -14,7 +16,7 @@ internal sealed class ControlledProvider : ISessionProvider
     {
         cancellationToken.ThrowIfCancellationRequested();
         Opening?.Invoke(context);
-        return ValueTask.FromResult(OpeningBinding);
+        return ValueTask.FromResult(BindingForContext?.Invoke(context) ?? OpeningBinding);
     }
 
     public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken)
@@ -31,6 +33,10 @@ internal sealed class ControlledProvider : ISessionProvider
     {
         cancellationToken.ThrowIfCancellationRequested();
         Started.TrySetResult(request);
+        if (Sending is not null)
+        {
+            return await Sending(request, binding, observe, cancellationToken);
+        }
         return await Completion.Task.WaitAsync(cancellationToken);
     }
 

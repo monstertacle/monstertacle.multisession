@@ -68,8 +68,11 @@ ohne native Öffnung, Send oder erfundene Endbestätigung.
 
 RecoveryDecision enthält DecisionId, **Target statt RequestId**, ExpectedRevision, Kind,
 Explanation und EvidenceReference. Der Store verwendet eine atomare ResolveRecoveryAsync-
-Operation für beide Targetarten; die bisherige requestgebundene ResolveReservationAsync-
-Signatur ist in T113 entsprechend abzulösen. Ein unbekanntes/fremdes Target ergibt NotFound.
+Operation für beide Targetarten; die frühere requestgebundene ResolveReservationAsync-
+Signatur ist seit T113 abgelöst. Der Store erhält neben der Entscheidung ein optionales
+confirmedBinding aus dem vorab ausgeführten Reopen. Dieses gehört nicht zur öffentlichen
+Operatorentscheidung: der Service prüft native Identität/Adapter/Format, der Store prüft
+ExpectedRevision erneut und veröffentlicht Klärung und bestätigtes Binding gemeinsam. Ein unbekanntes/fremdes Target ergibt NotFound.
 
 Revision ist eine positive persistierte long-Zahl je Target: erster Fall Revision 1,
 jede angenommene zustands-/beweisrelevante Falländerung erhöht sie genau um 1. Auch nach

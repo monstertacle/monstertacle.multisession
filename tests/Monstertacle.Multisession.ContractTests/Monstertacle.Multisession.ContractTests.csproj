@@ -7,6 +7,10 @@
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/InMemorySessionStore.cs" Link="Fixtures/InMemorySessionStore.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledProvider.cs" Link="Fixtures/ControlledProvider.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledStoreState.cs" Link="Fixtures/ControlledStoreState.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledQueryStore.cs" Link="Fixtures/ControlledQueryStore.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledRecoveryState.cs" Link="Fixtures/ControlledRecoveryState.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledDispatchState.cs" Link="Fixtures/ControlledDispatchState.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/SchedulingData.cs" Link="Fixtures/SchedulingData.cs" />
   </ItemGroup>

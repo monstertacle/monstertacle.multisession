@@ -8,6 +8,8 @@ internal sealed class ControlledProvider : ISessionProvider
     public TaskCompletionSource<ProviderReply> Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public ProviderCapabilities Capabilities { get; init; } = new(true, true, false, false, false);
     public Func<ProviderCall, ProviderBinding, Func<ProviderObservation, CancellationToken, ValueTask>, CancellationToken, ValueTask<ProviderReply>>? Sending { get; init; }
+    public Func<ProviderSessionContext, ProviderBinding, CancellationToken, ValueTask<ProviderBinding>>? Reopening { get; init; }
+    public Func<ProviderSessionContext, string, CancellationToken, ValueTask<ProviderReply>>? Inspecting { get; init; }
     public Func<ProviderSessionContext, ProviderBinding>? BindingForContext { get; init; }
     public Action<ProviderSessionContext>? Opening { get; init; }
     public ProviderBinding OpeningBinding { get; init; } = new("controlled", 1, null, null);
@@ -22,7 +24,7 @@ internal sealed class ControlledProvider : ISessionProvider
     public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return ValueTask.FromResult(binding);
+        return Reopening is null ? ValueTask.FromResult(binding) : Reopening(context, binding, cancellationToken);
     }
 
     public async ValueTask<ProviderReply> SendAsync(
@@ -41,7 +43,7 @@ internal sealed class ControlledProvider : ISessionProvider
     }
 
     public ValueTask<ProviderReply> InspectAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)
-        => ValueTask.FromResult(Unsupported());
+        => Inspecting is null ? ValueTask.FromResult(Unsupported()) : Inspecting(context, operationId, cancellationToken);
 
     public ValueTask<ProviderReply> CancelAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)
         => ValueTask.FromResult(Unsupported());

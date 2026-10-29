@@ -15,6 +15,8 @@ public interface ISessionQueryStore
     ValueTask<RequestSnapshot?> GetRequestAsync(Guid requestId, CancellationToken cancellationToken);
     /// <summary>Lists accepted session requests, including those whose receipt was lost.</summary>
     ValueTask<Page<RequestSnapshot>> ListRequestsAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken);
-    /// <summary>Lists requests that still require explicit recovery.</summary>
-    ValueTask<Page<RequestSnapshot>> ListRecoveryCasesAsync(int pageSize, string? cursor, CancellationToken cancellationToken);
+    /// <summary>Reads current recovery evidence without changing it.</summary>
+    ValueTask<RecoveryCaseSnapshot?> GetRecoveryCaseAsync(RecoveryTarget target, CancellationToken cancellationToken);
+    /// <summary>Lists open recovery cases.</summary>
+    ValueTask<Page<RecoveryCaseSnapshot>> ListRecoveryCasesAsync(int pageSize, string? cursor, CancellationToken cancellationToken);
 }

@@ -20,5 +20,5 @@ public interface ISessionStore : ISessionQueryStore
     /// <summary>Records an uncertain result without releasing its reservation.</summary>
     ValueTask MarkUncertainAsync(Guid dispatchId, PublicError failure, CancellationToken cancellationToken);
     /// <summary>Applies a revision-bound resolution without changing failure into success.</summary>
-    ValueTask ResolveReservationAsync(RecoveryDecision decision, CancellationToken cancellationToken);
+    ValueTask ResolveRecoveryAsync(RecoveryDecision decision, ProviderBinding? confirmedBinding, CancellationToken cancellationToken);
 }

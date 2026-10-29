@@ -23,6 +23,9 @@ internal sealed class ControlledDispatchState
     // Setup hook used synchronously between store operations, not a production cancellation API.
     public void RequestCancellation(Guid requestId) => _cancellationRequests.Add(requestId);
 
+    public string? OperationReference(Guid dispatchId)
+        => _observations.LastOrDefault(item => item.DispatchId == dispatchId && item.Observation.Kind == ProviderObservationKind.OperationAccepted).Observation?.Reference;
+
     public void RecordObservation(Guid dispatchId, ProviderObservation observation)
         => _observations.Add((dispatchId, observation));
 

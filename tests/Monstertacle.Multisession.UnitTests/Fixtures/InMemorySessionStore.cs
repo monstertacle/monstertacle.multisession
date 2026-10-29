@@ -4,30 +4,27 @@ using Monstertacle.Multisession.Scheduling;
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
 // Controlled test state only. In-memory admission does not establish SQLite or crash durability.
-internal sealed class InMemorySessionStore : ISessionStore
+internal sealed class InMemorySessionStore : ControlledQueryStore, ISessionStore
 {
-    private readonly Dictionary<Guid, SessionSnapshot> _sessions = [];
-    private readonly object _admissionGate = new();
-    private readonly Dictionary<Guid, RequestSnapshot> _requests = [];
-    private readonly Dictionary<Guid, SubmitRequest> _submissions = [];
-    private readonly Dictionary<Guid, DateTimeOffset> _acceptedUtc = [];
-    private readonly Dictionary<Guid, ExecutionReservation> _reservations = [];
-    public ControlledDispatchState DispatchState { get; init; } = new();
+    private readonly ControlledStoreState _state = new();
+    protected override ControlledStoreState State => _state;
+    public ControlledRecoveryState RecoveryState => State.Recovery;
+    public ControlledDispatchState DispatchState { get => State.Dispatch; init => State.Dispatch = value; }
     public Action? CommittingBinding { get; init; }
     public Action? BlockingSession { get; init; }
     public Func<SubmitRequest, CancellationToken, ValueTask>? CommittingAcceptance { get; init; }
     public Action<RequestReceipt>? Accepted { get; init; }
-    public IReadOnlyDictionary<Guid, SubmitRequest> Submissions => _submissions;
-    public IReadOnlyDictionary<Guid, ExecutionReservation> Reservations => _reservations;
-    public TimeProvider Clock { get; init; } = TimeProvider.System;
+    public IReadOnlyDictionary<Guid, SubmitRequest> Submissions => State.Submissions;
+    public IReadOnlyDictionary<Guid, ExecutionReservation> Reservations => State.Reservations;
+    public TimeProvider Clock { get => State.Clock; init => State.Clock = value; }
     public Func<CancellationToken, ValueTask>? Reserving { get; init; }
 
-    public SessionSnapshot? FindSession(Guid sessionId) => _sessions.GetValueOrDefault(sessionId);
+    public SessionSnapshot? FindSession(Guid sessionId) => State.Sessions.GetValueOrDefault(sessionId);
 
     public ValueTask CreateSessionAsync(SessionSnapshot session, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        _sessions.Add(session.SessionId, session);
+        State.Sessions.Add(session.SessionId, session);
         return ValueTask.CompletedTask;
     }
 
@@ -35,10 +32,10 @@ internal sealed class InMemorySessionStore : ISessionStore
     {
         cancellationToken.ThrowIfCancellationRequested();
         CommittingBinding?.Invoke();
-        lock (_admissionGate)
+        lock (State.Gate)
         {
-            SessionSnapshot session = _sessions[sessionId];
-            _sessions[sessionId] = session with
+            SessionSnapshot session = State.Sessions[sessionId];
+            State.Sessions[sessionId] = session with
             {
                 Binding = binding,
                 Lifecycle = SessionLifecycle.Open,
@@ -52,52 +49,18 @@ internal sealed class InMemorySessionStore : ISessionStore
     {
         cancellationToken.ThrowIfCancellationRequested();
         BlockingSession?.Invoke();
-        _sessions[sessionId] = _sessions[sessionId] with { BlockReason = reason };
+        lock (State.Gate)
+        {
+            SessionSnapshot session = State.Sessions[sessionId] with { BlockReason = reason };
+            State.Sessions[sessionId] = session;
+            if (reason == SessionBlockReason.RecoveryRequired && session.Lifecycle == SessionLifecycle.Opening)
+            {
+                RecoveryState.Open(session, null, Clock.GetUtcNow(), null);
+            }
+        }
         return ValueTask.CompletedTask;
     }
 
-    async ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)
-    {
-        if (DispatchState.Reading is not null)
-        {
-            await DispatchState.Reading(cancellationToken);
-        }
-        cancellationToken.ThrowIfCancellationRequested();
-        lock (_admissionGate)
-        {
-            if (!_reservations.TryGetValue(dispatchId, out ExecutionReservation? reservation)
-                || _requests[reservation.RequestId].State != RequestState.Running
-                || DispatchState.IsCancellationRequested(reservation.RequestId))
-            {
-                return null;
-            }
-
-            return DispatchState.Snapshots.GetValueOrDefault(dispatchId);
-        }
-    }
-
-    ValueTask<SessionSnapshot?> ISessionQueryStore.GetSessionAsync(Guid sessionId, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        return ValueTask.FromResult(FindSession(sessionId));
-    }
-
-    ValueTask<Page<SessionSnapshot>> ISessionQueryStore.ListSessionsAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
-    ValueTask<Page<HistoryEntry>> ISessionQueryStore.ReadHistoryAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
-    ValueTask<RequestSnapshot?> ISessionQueryStore.GetRequestAsync(Guid requestId, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        lock (_admissionGate)
-        {
-            return ValueTask.FromResult(_requests.GetValueOrDefault(requestId));
-        }
-    }
-    ValueTask<Page<RequestSnapshot>> ISessionQueryStore.ListRequestsAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
-    ValueTask<Page<RequestSnapshot>> ISessionQueryStore.ListRecoveryCasesAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
     public ValueTask<RequestReceipt> CommitAcceptanceAsync(SubmitRequest request, int maxQueuedRequests, CancellationToken cancellationToken)
         => AcceptAsync(request, maxQueuedRequests, cancellationToken);
 
@@ -110,9 +73,9 @@ internal sealed class InMemorySessionStore : ISessionStore
 
         cancellationToken.ThrowIfCancellationRequested();
         RequestReceipt receipt;
-        lock (_admissionGate)
+        lock (State.Gate)
         {
-            if (!_sessions.TryGetValue(request.SessionId, out SessionSnapshot? session))
+            if (!State.Sessions.TryGetValue(request.SessionId, out SessionSnapshot? session))
             {
                 throw new SessionOperationException(new PublicError(ErrorCode.NotFound, SessionId: request.SessionId));
             }
@@ -122,17 +85,17 @@ internal sealed class InMemorySessionStore : ISessionStore
                 throw new SessionOperationException(new PublicError(ErrorCode.SessionBlocked, SessionId: request.SessionId));
             }
 
-            if (_requests.Values.Count(item => item.State == RequestState.Queued) >= maxQueuedRequests)
+            if (State.Requests.Values.Count(item => item.State == RequestState.Queued) >= maxQueuedRequests)
             {
                 throw new SessionOperationException(new PublicError(ErrorCode.QueueFull, SessionId: request.SessionId));
             }
 
-            long sequence = _requests.Values.Where(item => item.SessionId == request.SessionId)
+            long sequence = State.Requests.Values.Where(item => item.SessionId == request.SessionId)
                 .Select(item => item.Sequence).DefaultIfEmpty().Max() + 1;
             Guid requestId = Guid.NewGuid();
-            _requests.Add(requestId, new RequestSnapshot(requestId, request.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null));
-            _submissions.Add(requestId, request);
-            _acceptedUtc.Add(requestId, Clock.GetUtcNow());
+            State.Requests.Add(requestId, new RequestSnapshot(requestId, request.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null));
+            State.Submissions.Add(requestId, request);
+            State.AcceptedUtc.Add(requestId, Clock.GetUtcNow());
             receipt = new RequestReceipt(requestId, sequence);
         }
 
@@ -147,13 +110,13 @@ internal sealed class InMemorySessionStore : ISessionStore
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        lock (_admissionGate)
+        lock (State.Gate)
         {
-            QueuedRequest[] queued = _requests.Values.Where(request => request.State == RequestState.Queued)
+            QueuedRequest[] queued = State.Requests.Values.Where(request => request.State == RequestState.Queued)
                 .Select(request => new QueuedRequest(request.RequestId, request.SessionId, request.Sequence,
-                    _acceptedUtc[request.RequestId], _submissions[request.RequestId].WriteIntent ? _submissions[request.RequestId].WorkspaceKey : null))
+                    State.AcceptedUtc[request.RequestId], State.Submissions[request.RequestId].WriteIntent ? State.Submissions[request.RequestId].WorkspaceKey : null))
                 .ToArray();
-            QueuedRequest? head = ReservationPolicy.SelectHead(queued, _reservations.Values.ToArray(), _sessions.Values.ToArray(), maxConcurrentRequests);
+            QueuedRequest? head = ReservationPolicy.SelectHead(queued, State.Reservations.Values.ToArray(), State.Sessions.Values.ToArray(), maxConcurrentRequests);
             if (head is null)
             {
                 return null;
@@ -161,9 +124,9 @@ internal sealed class InMemorySessionStore : ISessionStore
 
             ExecutionReservation reservation = new(Guid.NewGuid(), head.RequestId, head.SessionId, head.WriteWorkspaceKey, Clock.GetUtcNow());
             DispatchState.Snapshots.Add(reservation.DispatchId, new ReservedDispatch(reservation,
-                _sessions[head.SessionId], _submissions[head.RequestId], head.Sequence, _sessions[head.SessionId].BindingRevision));
-            _reservations.Add(reservation.DispatchId, reservation);
-            _requests[head.RequestId] = _requests[head.RequestId] with { State = RequestState.Running, Certainty = ExecutionCertainty.InProgress };
+                State.Sessions[head.SessionId], State.Submissions[head.RequestId], head.Sequence, State.Sessions[head.SessionId].BindingRevision));
+            State.Reservations.Add(reservation.DispatchId, reservation);
+            State.Requests[head.RequestId] = State.Requests[head.RequestId] with { State = RequestState.Running, Certainty = ExecutionCertainty.InProgress };
             return reservation;
         }
     }
@@ -174,9 +137,9 @@ internal sealed class InMemorySessionStore : ISessionStore
             await DispatchState.Observing(observation, cancellationToken);
         }
         cancellationToken.ThrowIfCancellationRequested();
-        lock (_admissionGate)
+        lock (State.Gate)
         {
-            if (!_reservations.ContainsKey(dispatchId))
+            if (!State.Reservations.ContainsKey(dispatchId))
             {
                 throw new SessionOperationException(new PublicError(ErrorCode.RevisionConflict));
             }
@@ -194,31 +157,31 @@ internal sealed class InMemorySessionStore : ISessionStore
         {
             throw new NotImplementedException("Controlled completion requires confirmed end or no-start evidence.");
         }
-        lock (_admissionGate)
+        lock (State.Gate)
         {
-            if (!_reservations.TryGetValue(dispatchId, out ExecutionReservation? reservation)
-                || _requests[reservation.RequestId].State != RequestState.Running
-                || DispatchState.Snapshots[dispatchId].BindingRevision != _sessions[reservation.SessionId].BindingRevision)
+            if (!State.Reservations.TryGetValue(dispatchId, out ExecutionReservation? reservation)
+                || State.Requests[reservation.RequestId].State != RequestState.Running
+                || DispatchState.Snapshots[dispatchId].BindingRevision != State.Sessions[reservation.SessionId].BindingRevision)
             {
                 throw new SessionOperationException(new PublicError(ErrorCode.RevisionConflict));
             }
 
             ReservedDispatch snapshot = DispatchState.Snapshots[dispatchId];
-            SessionSnapshot session = _sessions[reservation.SessionId];
+            SessionSnapshot session = State.Sessions[reservation.SessionId];
             SessionSnapshot updated = reply.Binding is null ? session : session with
             {
                 Binding = reply.Binding,
                 BindingRevision = checked(session.BindingRevision + 1),
             };
-            _requests[reservation.RequestId] = _requests[reservation.RequestId] with
+            State.Requests[reservation.RequestId] = State.Requests[reservation.RequestId] with
             {
                 State = reply.Outcome,
                 Certainty = reply.Certainty,
                 Result = reply,
             };
             DispatchState.RecordCompletion(snapshot, reply);
-            _sessions[reservation.SessionId] = updated;
-            _reservations.Remove(dispatchId);
+            State.Sessions[reservation.SessionId] = updated;
+            State.Reservations.Remove(dispatchId);
         }
         DispatchState.Completed?.Invoke();
 
@@ -230,19 +193,27 @@ internal sealed class InMemorySessionStore : ISessionStore
             await DispatchState.MarkingUncertain(cancellationToken);
         }
         cancellationToken.ThrowIfCancellationRequested();
-        lock (_admissionGate)
+        lock (State.Gate)
         {
-            ExecutionReservation reservation = _reservations[dispatchId];
-            _requests[reservation.RequestId] = _requests[reservation.RequestId] with
+            ExecutionReservation reservation = State.Reservations[dispatchId];
+            State.Requests[reservation.RequestId] = State.Requests[reservation.RequestId] with
             {
                 State = RequestState.Interrupted,
                 Certainty = ExecutionCertainty.Unknown,
                 Result = new(RequestState.Interrupted, ExecutionCertainty.Unknown, string.Empty, false, null,
                     failure with { Certainty = ExecutionCertainty.Unknown }),
             };
-            _sessions[reservation.SessionId] = _sessions[reservation.SessionId] with { BlockReason = SessionBlockReason.RecoveryRequired };
+            State.Sessions[reservation.SessionId] = State.Sessions[reservation.SessionId] with { BlockReason = SessionBlockReason.RecoveryRequired };
+            RecoveryState.Open(State.Sessions[reservation.SessionId], reservation, Clock.GetUtcNow(), DispatchState.OperationReference(dispatchId));
         }
     }
-    public ValueTask ResolveReservationAsync(RecoveryDecision decision, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+    public ValueTask ResolveRecoveryAsync(RecoveryDecision decision, ProviderBinding? confirmedBinding, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            RecoveryState.Resolve(decision, confirmedBinding, State.Sessions, State.Requests, State.Reservations);
+        }
+        return ValueTask.CompletedTask;
+    }
 }

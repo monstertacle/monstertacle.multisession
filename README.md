@@ -29,9 +29,9 @@ Ausführliche Regeln stehen in [AGENTS.md](AGENTS.md), der
 ## Übergabe an einen Remote-Agenten
 
 Repository: <https://github.com/monstertacle/monstertacle.multisession>.
-**Nächster begrenzter Implementierungsauftrag: T026**, Runtimekomposition und öffentliche
-Queries. Pagingteile erst nach den Vertragszyklen T113/T115; passende fehlende Red-Fälle
-aus T016–T019 beachten, nicht alle offenen Tasks umsetzen.
+**Aktiver Auftrag: alle offenen Speckit-Tasks autonom implementieren.**
+Arbeitsstand und Abhängigkeiten: [Gesamtimplementierung](specs/001-agent-multisession/evidence/implementation-progress.md).
+Zuerst T113/T115 für Recovery und Paging, dann Runtimekomposition und übrige Storys.
 T112 (ReservedDispatch) und T025 (Dispatcher) sind lokal umgesetzt; Nachweise und Grenzen stehen in
 [evidence/tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md).
 Der kontrollierte Store ist weiterhin keine SQLite-Persistenz; SessionRuntime ist noch
@@ -59,11 +59,11 @@ Die Codex-Skills liegen bereits unter `.agents/skills/`. Bei einem Client mit di
 Skill-Unterstützung lautet der Agentenauftrag (kein Shellbefehl):
 
 ```text
-$speckit-implement Nur den nächsten T026-Runtimezyklus samt passenden Red-Fällen bearbeiten.
-Pagingteile setzen T113/T115 voraus.
+$speckit-implement Alle offenen Tasks nach ihren Abhängigkeiten implementieren.
+T113/T115 sind Voraussetzungen für Recovery- und Pagingteile der Runtime.
 Vor Umsetzung aktuellen Deep-Dive dokumentieren,
 fachliches Red vor Green beobachten, Regression, native Qualitätsprüfung und vollständigen
-Codemetr-Guard ausführen. T112/T025 wiederverwenden; keine anderen Storys umsetzen.
+Codemetr-Guard ausführen. T112/T025 wiederverwenden; alle offenen Storys weiterführen.
 Änderungen und Prüfnachweise
 auf einem Arbeitsbranch zur Überprüfung zurückliefern; kein Merge, Deployment oder NuGet-Push.
 ```

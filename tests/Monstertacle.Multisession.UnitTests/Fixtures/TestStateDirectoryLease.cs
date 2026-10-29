@@ -6,6 +6,8 @@ namespace Monstertacle.Multisession.UnitTests.Fixtures;
 internal sealed class TestStateDirectoryLease(string stateDirectory) : IStateDirectoryLease
 {
     public string StateDirectory { get; } = stateDirectory;
+    public bool IsHeld => !IsDisposed;
+    public bool Matches(string directory) => Path.GetFullPath(directory) == Path.GetFullPath(StateDirectory);
     public bool IsDisposed { get; private set; }
 
     public ValueTask DisposeAsync()

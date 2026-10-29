@@ -19,6 +19,8 @@ public static class RuntimeDefaults
     public static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(600);
     /// <summary>Default controlled shutdown deadline.</summary>
     public static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(10);
+    /// <summary>Bounded polling recovers progress after lost coalesced worker wakeups.</summary>
+    public static readonly TimeSpan SchedulerPollInterval = TimeSpan.FromSeconds(1);
     /// <summary>Default database busy timeout.</summary>
     public static readonly TimeSpan DbBusyTimeout = TimeSpan.FromSeconds(1);
     /// <summary>Largest finite delay supported by the .NET timer APIs used by the runtime.</summary>

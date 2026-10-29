@@ -7,8 +7,11 @@
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/InMemorySessionStore.cs" Link="Fixtures/InMemorySessionStore.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/TestStateDirectoryLease.cs" Link="Fixtures/TestStateDirectoryLease.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/DispatchClock.cs" Link="Fixtures/DispatchClock.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledProvider.cs" Link="Fixtures/ControlledProvider.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledStoreBootstrap.cs" Link="Fixtures/ControlledStoreBootstrap.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledRequestFinalization.cs" Link="Fixtures/ControlledRequestFinalization.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledStoreState.cs" Link="Fixtures/ControlledStoreState.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledPageProjection.cs" Link="Fixtures/ControlledPageProjection.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledQueryStore.cs" Link="Fixtures/ControlledQueryStore.cs" />

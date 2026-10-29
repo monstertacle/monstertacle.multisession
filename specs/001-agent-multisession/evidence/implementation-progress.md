@@ -47,3 +47,5 @@ Branchchecks/finale Freigabe bleiben gesondert zu prüfen. Kein NuGet-Push, Depl
 SharpClaw-Produktwechsel oder stilles Merge aus dem Implementierungsauftrag ableiten.
 Offene externe Gates erst nach konkreter vorbereiteter Abnahme auflösen, während unabhängige
 Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abgeschlossen.
+
+- T026/T027 lokal abgeschlossen: 279 Tests, 95,4674 % Produktcoverage; Runtimekomposition, öffentliche Parallelvertikale, konservativer kontrollierter Storestart. Vollständiger Stop/Cancel bleibt offen. Nächste Arbeit T030/T036. Nachweis tdd-us1.md.

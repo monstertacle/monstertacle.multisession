@@ -22,12 +22,15 @@ internal sealed class InMemorySessionStore : ControlledQueryStore, ISessionStore
     public TimeProvider Clock { get => State.Clock; init => State.Clock = value; }
     public Func<CancellationToken, ValueTask>? Reserving { get; init; }
 
-    public SessionSnapshot? FindSession(Guid sessionId) => State.Sessions.GetValueOrDefault(sessionId);
+    public SessionSnapshot? FindSession(Guid sessionId)
+    {
+        lock (State.Gate) { return State.Sessions.TryGetValue(sessionId, out SessionSnapshot? session) ? session : null; }
+    }
 
     public ValueTask CreateSessionAsync(SessionSnapshot session, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        State.Sessions.Add(session.SessionId, session);
+        lock (State.Gate) { State.Sessions.Add(session.SessionId, session); }
         return ValueTask.CompletedTask;
     }
 
@@ -85,6 +88,10 @@ internal sealed class InMemorySessionStore : ControlledQueryStore, ISessionStore
         RequestReceipt receipt;
         lock (State.Gate)
         {
+            if (!State.Accepting)
+            {
+                throw new SessionOperationException(new PublicError(ErrorCode.SessionClosed, SessionId: request.SessionId, RequestId: acceptance.RequestId, AdmissionStatus: AdmissionStatus.NotAccepted));
+            }
             if (!State.Sessions.TryGetValue(request.SessionId, out SessionSnapshot? session))
             {
                 throw new SessionOperationException(new PublicError(ErrorCode.NotFound, SessionId: request.SessionId, AdmissionStatus: AdmissionStatus.NotAccepted));
@@ -210,15 +217,7 @@ internal sealed class InMemorySessionStore : ControlledQueryStore, ISessionStore
         lock (State.Gate)
         {
             ExecutionReservation reservation = State.Reservations[dispatchId];
-            State.Requests[reservation.RequestId] = State.Requests[reservation.RequestId] with
-            {
-                State = RequestState.Interrupted,
-                Certainty = ExecutionCertainty.Unknown,
-                Result = new(RequestState.Interrupted, ExecutionCertainty.Unknown, string.Empty, false, null,
-                    failure with { Certainty = ExecutionCertainty.Unknown }),
-            };
-            State.Sessions[reservation.SessionId] = State.Sessions[reservation.SessionId] with { BlockReason = SessionBlockReason.RecoveryRequired };
-            RecoveryState.Open(State.Sessions[reservation.SessionId], reservation, Clock.GetUtcNow(), DispatchState.OperationReference(dispatchId));
+            ControlledRequestFinalization.Unknown(State, reservation, failure);
         }
     }
     public ValueTask ResolveRecoveryAsync(RecoveryDecision decision, ProviderBinding? confirmedBinding, CancellationToken cancellationToken)

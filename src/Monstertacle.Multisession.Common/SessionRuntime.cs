@@ -1,20 +1,39 @@
+using System.Collections.Frozen;
 using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession;
 
-/// <summary>Public runtime signatures; lifecycle behavior is implemented only after its Red tests.</summary>
+/// <summary>In-process host composition with explicit store, ownership and provider configuration.</summary>
 public sealed class SessionRuntime : IAsyncDisposable
 {
-    /// <summary>Gets session operations once a runtime has been composed.</summary>
-    public ISessions Sessions => throw new NotImplementedException();
-    /// <summary>Gets request operations once a runtime has been composed.</summary>
-    public IRequests Requests => throw new NotImplementedException();
-    /// <summary>Gets explicit recovery operations once a runtime has been composed.</summary>
-    public IRecovery Recovery => throw new NotImplementedException();
-    /// <summary>Starts validated state ownership; not implemented by this signature scaffold.</summary>
-    public ValueTask StartAsync(RuntimeOptions options, CancellationToken cancellationToken) => throw new NotImplementedException();
-    /// <summary>Stops acceptance and preserves visible state; not implemented by this scaffold.</summary>
-    public ValueTask StopAsync(TimeSpan deadline, CancellationToken cancellationToken) => throw new NotImplementedException();
-    /// <summary>Releases resources after controlled stop; not implemented by this scaffold.</summary>
-    public ValueTask DisposeAsync() => throw new NotImplementedException();
+    private readonly RuntimeLifecycle _lifecycle;
+
+    /// <summary>Freezes host configuration. Store/lease lifetime transfers only after successful preparation.</summary>
+    public SessionRuntime(ISessionStore store, IStateDirectoryLease lease, IReadOnlyList<ProviderRegistration> providers,
+        IReadOnlyList<AgentProfile> profiles, TimeProvider? clock = null)
+    {
+        ArgumentNullException.ThrowIfNull(store);
+        ArgumentNullException.ThrowIfNull(lease);
+        ArgumentNullException.ThrowIfNull(providers);
+        ArgumentNullException.ThrowIfNull(profiles);
+        AgentProfile[] frozenProfiles = profiles.Select(profile => profile with
+        {
+            Settings = profile.Settings with { Values = profile.Settings.Values.ToFrozenDictionary(StringComparer.Ordinal) },
+        }).ToArray();
+        _lifecycle = new(new(store, lease, providers.ToArray(), frozenProfiles, clock ?? TimeProvider.System));
+    }
+    /// <summary>Gets session operations once the runtime has started.</summary>
+    public ISessions Sessions => _lifecycle.Components.Sessions;
+    /// <summary>Gets request operations once the runtime has started.</summary>
+    public IRequests Requests => _lifecycle.Components.Requests;
+    /// <summary>Gets explicit recovery operations once the runtime has started.</summary>
+    public IRecovery Recovery => _lifecycle.Components.Recovery;
+    /// <summary>Gets the observed lifetime of the bounded background workers.</summary>
+    public Task Completion => _lifecycle.Completion;
+    /// <summary>Starts validated ownership and bounded execution workers.</summary>
+    public ValueTask StartAsync(RuntimeOptions options, CancellationToken cancellationToken) => _lifecycle.StartAsync(options, cancellationToken);
+    /// <summary>Stops acceptance and preserves visible durable state.</summary>
+    public ValueTask StopAsync(TimeSpan deadline, CancellationToken cancellationToken) => _lifecycle.StopAsync(deadline, cancellationToken);
+    /// <summary>Releases resources after controlled stop, without deleting stored state.</summary>
+    public ValueTask DisposeAsync() => _lifecycle.DisposeAsync();
 }

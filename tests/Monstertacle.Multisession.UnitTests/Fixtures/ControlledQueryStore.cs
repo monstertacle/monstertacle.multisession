@@ -3,9 +3,41 @@ using Monstertacle.Multisession.Queries;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
-internal abstract class ControlledQueryStore : ISessionQueryStore
+internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IAsyncDisposable
 {
+    private bool _ownsState;
+    private bool _disposed;
     protected abstract ControlledStoreState State { get; }
+
+    ValueTask IStoreBootstrap.StartAsync(IStateDirectoryLease lease, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            if (_disposed || !lease.IsHeld) { throw new SessionOperationException(new PublicError(ErrorCode.InvalidConfiguration)); }
+            if (State.Started) { throw new SessionOperationException(new PublicError(ErrorCode.StoreAlreadyOwned)); }
+            ControlledStoreBootstrap.Recover(State);
+            State.Started = true;
+            State.Accepting = true;
+            _ownsState = true;
+        }
+        return ValueTask.CompletedTask;
+    }
+    ValueTask IStoreBootstrap.StopAcceptanceAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate) { State.Accepting = false; }
+        return ValueTask.CompletedTask;
+    }
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        lock (State.Gate)
+        {
+            if (_ownsState) { State.Started = false; State.Accepting = false; _ownsState = false; }
+            _disposed = true;
+        }
+        return ValueTask.CompletedTask;
+    }
 
     async ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)
     {

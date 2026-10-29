@@ -1,7 +1,7 @@
 namespace Monstertacle.Multisession.Contracts;
 
 /// <summary>Atomic domain writes; provider I/O never occurs inside these transactions.</summary>
-public interface ISessionStore : ISessionQueryStore
+public interface ISessionStore : ISessionQueryStore, IStoreBootstrap, IAsyncDisposable
 {
     /// <summary>Persists local session identity before an external open attempt.</summary>
     ValueTask CreateSessionAsync(SessionSnapshot session, CancellationToken cancellationToken);

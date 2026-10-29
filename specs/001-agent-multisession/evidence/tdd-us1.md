@@ -375,3 +375,56 @@ SHA256 `67284079818b2686f64170bb6b0abe473cf31b47e75c51eee35e4bb5ba62b439`.
 
 Keine offenen T025-Abnahmeblocker. Andere Storytasks werden durch erfolgreiche lokale
 Regressions-/Lastfälle nicht pauschal geschlossen. Keine Änderung historischer Belege.
+
+## T026/T027: öffentliche Runtimekomposition
+
+Updated: 2026-10-29T07:41:18Z
+Vorabanalyse: architecture/2026-10-29-runtime-composition.md, Basis 86ea819.
+SpecKit-Prerequisites erneut erfolgreich; Checklisten unverändert vollständig geprüft.
+
+Alle folgenden dotnet-Aufrufe liefen über run-capped, Release/no-restore.
+Zuerst ParallelSessionsTests: zwei ausführbare fachliche Fehler (Runtimefacetten/Start
+noch Stubs), danach 2/2 grün. Keine Compiler-/Analyzerfehler als Red gewertet.
+Manifest-SHA256 Red `1bf7be4432194f346869359ab7f942df5873ea89aa9fbbbb6267c791acb1b0a0`,
+Green `33ef04b083fd1a6c1f0be57aa4b2f9c3581b76b57e9c1a3ebd5e483ca645d95f`.
+Befehl: `dotnet test tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~ParallelSessionsTests`.
+Zehn Sitzungen, je zwei geordnete Ergebnisse, zwei herstellerübergreifend überlappende
+Sends unter Limit zwei; lokale Identitäten, Modelle, Inhalte und History isoliert.
+
+RuntimeStartupTests: vier fehlende Verhaltenspfade rot, ein bereits grüner Queued-Fall
+nur Regression. Fehlende Opening-/Running-Recovery, Storebesitz und Annahmestopp danach
+mit öffentlicher Komposition 7/7 grün. Manifest Red
+`e8da62c3ee4c4a1a6bc53fc3191f4d52f82dba31650a30b0f74c22bfb6b457d9`, Green
+`5ac650017772db76d9a1d0040b565eaabc38fd311148789fb826a506f754ab1b`.
+Zusätzlicher Hintergrundfehlerfall: Assertion erwartete Unknown, bekam NotStarted.
+Nach bereinigter konservativer Fehlermappingkorrektur gesamte Vertragssuite 52/52 grün.
+Manifest Red `4f0863b850b2b69f2f676f229d49ae78519df83b4743c2d01f97ee7f99ef1bce`,
+Regression `a7f09156a7194119d1a628d0a7b89acfb1b3cd687c154dc80768bf1ee23f5119`.
+Die Ownership-/Admissionstop-/Workerfehlerfälle liegen nach grünem Refactor in
+RuntimeOwnershipTests; gemeinsame Konfiguration im RuntimeTestComposition-Fixture.
+
+SessionRuntime komponiert kleine Facetten/Lifecycle und begrenzte Worker. Store bleibt
+alleinige Reservierungsautorität; Wakeup plus endlicher Poll verhindert Signallücken.
+IStoreBootstrap/Leasestatus sind explizite Host-/Storegrenzen. Storestart im Double
+blockiert alte Running/Opening konservativ, ohne Send/Open/Reopen. Native Persistenz
+und Rechte folgen T055–T066/T087–T093. Fehler der Hintergrundarbeit sind über Completion
+beobachtbar; Resources werden nach Workerende freigegeben. Keine globale Registry.
+
+Finaler lokaler Qualitätslauf Exit 0:
+`artifacts/quality/linux/001dbaee9abd4abe8c56095e8deed37f/`, Sourcehash
+`c182c6e2a5813ff671b4e34a546042bc607a5f7a3e3781d2e6ca703c70fef627`.
+Maschinell aus vier TRX: 279/279 Tests, 225 Unit/52 Contract/je 1 Infrastrukturtest;
+keine Fehler/Skips. 13 Coveragegatefälle, Locked-Restore, Build, Analyzer/Format und
+transitiver Audit grün. 674/706 Produktzeilen = 95,4674 %, Mindestwert 87 %.
+Voller Codemetr-Guard Exit 0, 129 Dateien/131 Typen, keine Verstöße/Parsefehler/Skips;
+Originalbericht artifacts/tdd/runtime-codemetr-final.json. SDK/Toolpins/Scope unverändert.
+Debian 13 ist kein Nachweis aller Zielsysteme. T114-CI auf Windows/Ubuntu erfolgreich
+(quality 40834562210, codemetr 40834562137); neuer Runtime-CI-Nachweis folgt nach Push.
+
+T026-Komposition und T027-Ablauf umgesetzt. Vollständiger Stop/Cancel/Close und Diagnose
+bleiben T070–T085 mit Owner ausführende Gesamtimplementierungssitzung: zuerst deren
+Red-Fälle, danach dauerhafte Queuefinalisierung/native Endbestätigung, begrenzte Stopfrist,
+Regression an SQLite. Idle-Stop ist keine vollständige Stopabnahme. T021–T024 und die
+zugehörigen Tests werden im US1-Gesamtabgleich einzeln gegen ihre Abnahme geprüft;
+keine pauschale Storyfreigabe. Nächste konkrete Arbeit: T030/T036 Konfiguration und
+US2-Adapter, danach SQLite, Lifecycle und Plattform/Konsum gemäß implementation-progress.md.

@@ -119,3 +119,15 @@ Quellen vor Änderung gemessen2026-10-29T15:19:18Z: ci.yml
 4fb4450715c8f19dd83336573b06489c3f30a5cbe9c76f47255da035ac6ea036,
 DiskFullStorageTests6dc440cfef4bb20cd7f725f63da3c46e5483286cca118c59702c6914b75e8a1c,
 DiskFullWindowsVolumea963d7f2de2bc7a2da67725daae3382bdb9940c56568e2b3d34df50975299a2d.
+
+Kontrollierte native Diagnose zu08a4cab, gemessener Abruf2026-10-29T15:29:19Z:
+format64/128/256/512 alle Exit0, alle zugehörigen detach Exit0. Größe/Sektorwahl erklärt
+also den ursprünglichen Fehler nicht. Sonden unterscheiden sich insbesondere durch
+geerbte Admin/SYSTEMrechte im Imagecontainer gegenüber SID-only der privaten DBfixture.
+Nächste eng begrenzte Fassung: ausschließlich eigener VHD-Image-Unterordner bekommt
+aktuellen Owner plus LocalSystem FullControl, damit native Diskmanagementdienste den
+Backingfile öffnen können. Anwendungs-StateDirectory im Volume bleibt SID-only;
+keine Produktlease-/HostACLänderung. VHD wieder64MiB, da genau dieser Umfang nativ
+nachweislich formatierbar war; Füllerlimit128MiB bleibt. Diagnosematrix bei erneutem
+Fehler um SID-only und SID+SYSTEM bei64MiB ergänzen, um Rechtehypothese explizit zu prüfen.
+Noch keine abschließende Ursachenzusage: echte komplette Disk-full-Probe erneut nötig.

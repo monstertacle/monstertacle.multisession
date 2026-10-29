@@ -62,17 +62,40 @@ function Invoke-PrivateDiskpart([string] $Name, [string] $Commands) {
 }
 
 try {
-    foreach ($size in @(64, 128, 256, 512)) {
-        $image = Join-Path $probeRoot "fresh-$size.vhd"
+    $cases = @(
+        @{ Size = 64; Mode = 'inherited' }, @{ Size = 128; Mode = 'inherited' },
+        @{ Size = 256; Mode = 'inherited' }, @{ Size = 512; Mode = 'inherited' },
+        @{ Size = 64; Mode = 'private' }, @{ Size = 64; Mode = 'system' }
+    )
+    foreach ($case in $cases) {
+        $size = $case.Size
+        $mode = $case.Mode
+        $name = "$size-$mode"
+        $imageRoot = Join-Path $probeRoot $name
+        if ($mode -eq 'inherited') { [IO.Directory]::CreateDirectory($imageRoot) | Out-Null }
+        else {
+            $owner = [Security.Principal.WindowsIdentity]::GetCurrent().User
+            $security = [Security.AccessControl.DirectorySecurity]::new()
+            $security.SetOwner($owner)
+            $security.SetAccessRuleProtection($true, $false)
+            $inherit = [Security.AccessControl.InheritanceFlags]::ContainerInherit -bor [Security.AccessControl.InheritanceFlags]::ObjectInherit
+            $security.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($owner, 'FullControl', $inherit, 'None', 'Allow'))
+            if ($mode -eq 'system') {
+                $systemSid = [Security.Principal.SecurityIdentifier]::new([Security.Principal.WellKnownSidType]::LocalSystemSid, $null)
+                $security.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($systemSid, 'FullControl', $inherit, 'None', 'Allow'))
+            }
+            [IO.FileSystemAclExtensions]::Create([IO.DirectoryInfo]::new($imageRoot), $security)
+        }
+        $image = Join-Path $imageRoot 'fresh.vhd'
         if ([IO.File]::Exists($image)) { throw 'The diagnostic image already exists.' }
         try {
             $commands = "create vdisk file=`"$image`" maximum=$size type=expandable`nattach vdisk`ncreate partition primary`nfilesystems`nformat fs=ntfs quick label=msprobe`nexit`n"
-            $result = Invoke-PrivateDiskpart "format-$size" $commands
-            Write-Host "Diagnostic size=$size MiB formatted=$($result.ExitCode -eq 0); this does not replace the quality gate."
+            $result = Invoke-PrivateDiskpart "format-$name" $commands
+            Write-Host "Diagnostic size=$size MiB mode=$mode formatted=$($result.ExitCode -eq 0); this does not replace the quality gate."
         }
         finally {
             if ([IO.File]::Exists($image)) {
-                $null = Invoke-PrivateDiskpart "detach-$size" "select vdisk file=`"$image`"`ndetach vdisk`nexit`n"
+                $null = Invoke-PrivateDiskpart "detach-$name" "select vdisk file=`"$image`"`ndetach vdisk`nexit`n"
                 [IO.File]::Delete($image) # A still attached image must fail cleanup visibly.
             }
         }
@@ -80,5 +103,5 @@ try {
 }
 finally {
     # Leave a failed attachment visible instead of claiming successful resource cleanup.
-    if (@([IO.Directory]::EnumerateFiles($probeRoot, '*.vhd')).Count -eq 0) { [IO.Directory]::Delete($probeRoot, $true) }
+    if (@([IO.Directory]::EnumerateFiles($probeRoot, '*.vhd', [IO.SearchOption]::AllDirectories)).Count -eq 0) { [IO.Directory]::Delete($probeRoot, $true) }
 }

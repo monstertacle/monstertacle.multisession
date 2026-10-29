@@ -312,3 +312,13 @@ läuft vor jedem Recoverywrite. Fehler bereinigt, DBhash nach abgelehntem Start 
 Volltor linux/0b3c80bdf2d746e1b42e74e959a1c0bb konsistent grün; Codemetr338Dateien/
 348Typen ohne Befunde. Architektur und tdd-us5 nennen begrenzten Schnitt; weitere
 Session-/Result-/History-/Casekonsistenz verbleibt in T065, Gesamtauftrag weiter aktiv.
+
+Native Formatdiagnose40900891930: alle vier geerbten Imagecontainer mit64/128/256/512MiB
+formatieren und detach erfolgreich; isolierter Disk-full-Test meldet weiterhin Formatfehler.
+Nach Isolation keine zusätzlichen Admission-/Stopfristfehler in diesem nativen Lauf.
+Gezielte nächste Fassung gibt nur eigenem VHD-Backingcontainer aktuellen Owner plus
+LocalSystem, StateDirectory innerhalb Volume bleibt SID-only. VHD wieder64MiB nach
+realer erfolgreicher Größenprobe. Bei erneutem Windowsfehler zusätzliche64MiB-ACLmatrix
+private versus SYSTEM; keine sichere ACLursache behauptet, vollständige Nativeprüfung
+steht aus. Linuxvolltor017b5c6239504df0b030aa342d9cece0 konsistent grün; keine native
+Windowsexekution durch lokale Syntaxprüfung ersetzt. Füllerlimit128MiB unverändert.

@@ -11,7 +11,7 @@ namespace Monstertacle.Multisession.IntegrationTests.Fixtures;
 internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncDisposable
 {
     private const string _probeLetters = "ZYXWVUTSRQP";
-    private readonly string _image = Path.Combine(root, "disk-full.vhd");
+    private readonly string _image = Path.Combine(root, "volume-image", "disk-full.vhd");
     private readonly string _label = "ms" + nonce[..8];
     private bool _mayOwnImage;
     internal string StateDirectory { get; private set; } = string.Empty;
@@ -19,23 +19,36 @@ internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncD
     internal async Task CreateAsync()
     {
         if (File.Exists(_image)) { throw new InvalidOperationException("Probe disk already exists."); }
+        string imageDirectory = Path.GetDirectoryName(_image)!;
+        if (Directory.Exists(imageDirectory)) { throw new InvalidOperationException("Probe image container already exists."); }
+        CreatePrivateDirectory(imageDirectory, true);
         _mayOwnImage = true;
         string[] used = Environment.GetLogicalDrives();
         char letter = _probeLetters.First(candidate => !used.Contains(candidate + @":\", StringComparer.OrdinalIgnoreCase));
         string drive = letter + @":\";
-        string script = $"create vdisk file=\"{_image}\" maximum=128 type=expandable\nattach vdisk\ncreate partition primary\nfilesystems\nformat fs=ntfs quick label={_label}\nassign letter={letter}\nexit\n";
+        string script = $"create vdisk file=\"{_image}\" maximum=64 type=expandable\nattach vdisk\ncreate partition primary\nfilesystems\nformat fs=ntfs quick label={_label}\nassign letter={letter}\nexit\n";
         ProbeProcessResult created = await DiskpartAsync("create-volume.txt", script);
         if (created.ExitCode != 0) { throw new InvalidOperationException($"Private VHD preparation failed: {created.Output} {created.Error}"); }
         DriveInfo info = new(drive);
         if (!info.IsReady || info.VolumeLabel != _label || info.TotalSize > 128L * 1024 * 1024) { throw new InvalidOperationException("Private VHD identity is not confirmed."); }
         StateDirectory = Path.Combine(drive, "multisession-" + nonce);
+        CreatePrivateDirectory(StateDirectory, false);
+    }
+
+    private static void CreatePrivateDirectory(string path, bool nativeImage)
+    {
         SecurityIdentifier owner = WindowsIdentity.GetCurrent().User!;
         DirectorySecurity security = new();
         security.SetOwner(owner);
         security.SetAccessRuleProtection(true, false);
         security.AddAccessRule(new FileSystemAccessRule(owner, FileSystemRights.FullControl,
             InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-        new DirectoryInfo(StateDirectory).Create(security);
+        if (nativeImage)
+        {
+            security.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), FileSystemRights.FullControl,
+                InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+        }
+        new DirectoryInfo(path).Create(security);
     }
 
     public async ValueTask DisposeAsync()

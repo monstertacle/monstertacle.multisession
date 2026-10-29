@@ -596,3 +596,13 @@ nach Wartbarkeitsbefund strukturerhaltend getrennt. T084/T097 dokumentiert und
 markiert; eingebettetes C#-Beispiel separat gegen echte NuGets kompiliert und
 mit zwei Typen ohne Befund gemessen. Übrige Lifecycle-/Diagnose-/Zielsystem-
 Abnahmen bleiben ausdrücklich offen. Kontrollierte Timer für T011 folgen.
+
+2026-10-29T20:29:38Z: Kontrollierte Timer nach zwei echten BCL-Rotfällen
+integriert; 359 Unit-Tests und gesamtes Linux-Tor mit 994 Tests grün.
+Sourcehash 092e97c3bd19c54bc3a0a405e67ca270998da3c9842865fc0a793a0e055e8026,
+Vollbericht linux/bcb6572a68e44fb3854736f253b428f3, 97.4838 %,
+Codemetr 426 Dateien/443 Typen ohne Befund. Neues Microsoft-Testpaket 10.7.0
+nur in UnitTests mit PrivateAssets=all; keine bestehende Version geändert.
+Native Lauf 40947706248 scheitert in der Windows-Routingannahme am korrekt
+signalisierten AdmissionTimedOut, nicht an Publish. Gezielte Ressourcenisolation
+wird als nächste T094/T099-Probenkorrektur untersucht; Fristen bleiben bestehen.

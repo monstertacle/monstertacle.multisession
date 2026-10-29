@@ -108,3 +108,8 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   Gesamt513 Tests/95,5105 Prozent, Guard230 Dateien/234 Typen sauber. History/Recovery
   folgen ihren Schreibvertikalen. Nächster Auftrag T051/T059/T060 Dispatch/Abschluss.
   Annahmestand4113798 auf Windows/Ubuntu-CI grün.
+- T059/T060 lokal umgesetzt: atomarer FrozenDispatch/Observation und bekannter Abschluss
+  mit Result/History/Binding/Release,19 neue SQL-/Dispatcherfälle. Gesamt532 Tests/
+  96,0674 Prozent, Guard242 Dateien/247 Typen sauber. T051/T053-Crashumfang bleibt offen.
+  Windows-CI an427691b fand Sharingverletzung nach echtem Kill; Harness bounded Dateifreigabe
+  ergänzt, native Neubestätigung folgt neuer CI. Nächster Auftrag Unknown/Start-Recovery/CAS.

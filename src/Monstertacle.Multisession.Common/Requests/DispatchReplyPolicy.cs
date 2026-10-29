@@ -3,10 +3,10 @@ using Monstertacle.Multisession.Contracts;
 namespace Monstertacle.Multisession.Requests;
 
 /// <summary>Checks terminal evidence and immutable binding identity before any completion commit.</summary>
-internal static class DispatchReplyPolicy
+public static class DispatchReplyPolicy
 {
-    internal static ProviderReply Normalize(ProviderReply reply, ProviderRegistration registration,
-        ProviderBinding original, string? observedSessionReference, int maximumOutputBytes)
+    /// <summary>Normalizes output, terminal evidence and identity against the already validated original binding.</summary>
+    public static ProviderReply Normalize(ProviderReply reply, ProviderBinding original, string? observedSessionReference, int maximumOutputBytes)
     {
         reply = ProviderReplyPolicy.NormalizeOutput(reply, maximumOutputBytes);
         bool terminal = reply.Outcome is RequestState.Succeeded or RequestState.Failed or RequestState.Cancelled
@@ -18,7 +18,7 @@ internal static class DispatchReplyPolicy
         }
 
         if (reply.Binding is { } binding
-            && (binding.AdapterId != registration.AdapterId || binding.FormatVersion != registration.ContractVersion
+            && (binding.AdapterId != original.AdapterId || binding.FormatVersion != original.FormatVersion
                 || (original.SessionReference is { } stable && binding.SessionReference != stable)
                 || (observedSessionReference is { } observed && binding.SessionReference != observed)))
         {

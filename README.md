@@ -98,7 +98,13 @@ SQLite unterstützt explizites `SqliteStoreFactory.CreateNewAsync` beziehungswei
 Metadaten, Trustscope, Header und tatsächliches Schema werden vor Nutzung geprüft.
 Wiederöffnung erhält wartende Eingaben und Sequenzen. Native DB-Busyzeit ist zunächst
 fest eine Sekunde; andere Werte werden ausdrücklich vor Dateizugriff abgewiesen.
-Dispatch/Abschluss, vollständige Queries und Start-Recovery sind weiterhin offen;
+Unknown, Recoveryentscheidungen und Start-Recovery sind weiterhin offen;
 eine SQLite-Runtime ist damit noch nicht vollständig nutzbar. Alte Opening/Running
 werden bis zur Recoveryumsetzung sicher abgewiesen. Fachliche Crash-/Recovery- und native
 Besitznachweise bleiben offen; [Nachweise](specs/001-agent-multisession/evidence/tdd-us5.md).
+
+Der SQLite-Dispatchschnitt sichert Reservierung und unveränderte Eingabe vor Versand,
+native Kennungs-Callbacks vor Bestätigung und bekannte Abschlüsse atomar mit Ergebnis,
+History, Bindungsfortschritt und Freigabe. Session-/Request-/Historyseiten sind verfügbar.
+Unknown, vollständige Start-Recovery und explizite Recoveryentscheidungen sind noch offen;
+die Gesamt-Runtime bleibt bis dahin unvollständig und nicht freigegeben.

@@ -40,12 +40,20 @@ internal static class SessionTransactions
                 UpdatedUtc = state.Clock.GetUtcNow(),
                 BindingRevision = original.Binding is null ? original.BindingRevision : checked(original.BindingRevision + 1),
             };
-            using SqliteCommand command = SqliteStatements.Create(connection, transaction,
-                "UPDATE Sessions SET AdapterId=$adapter,ContractVersion=$version,Lifecycle=$lifecycle,UpdatedUtc=$updated,BindingRevision=$revision,SnapshotJson=$snapshot WHERE SessionId=$id",
-                ("$adapter", binding.AdapterId), ("$version", binding.FormatVersion), ("$lifecycle", (int)session.Lifecycle),
-                ("$updated", StoreSerialization.Utc(session.UpdatedUtc)), ("$revision", session.BindingRevision),
-                ("$snapshot", StoreSerialization.Write(session)), ("$id", id.ToString("D")));
-            command.ExecuteNonQuery();
+            Update(connection, transaction, session);
             return session;
         }, token);
+
+    internal static void Update(SqliteConnection connection, SqliteTransaction transaction, SessionSnapshot session)
+    {
+        using SqliteCommand command = SqliteStatements.Create(connection, transaction,
+            """
+            UPDATE Sessions SET AdapterId=$adapter,ContractVersion=$version,Lifecycle=$lifecycle,BlockReason=$block,
+                UpdatedUtc=$updated,ClosedUtc=$closed,BindingRevision=$revision,SnapshotJson=$snapshot WHERE SessionId=$id
+            """, ("$adapter", session.Binding?.AdapterId), ("$version", session.Binding?.FormatVersion), ("$lifecycle", (int)session.Lifecycle),
+            ("$block", (int)session.BlockReason), ("$updated", StoreSerialization.Utc(session.UpdatedUtc)),
+            ("$closed", session.ClosedUtc is { } closed ? StoreSerialization.Utc(closed) : null), ("$revision", session.BindingRevision),
+            ("$snapshot", StoreSerialization.Write(session)), ("$id", session.SessionId.ToString("D")));
+        command.ExecuteNonQuery();
+    }
 }

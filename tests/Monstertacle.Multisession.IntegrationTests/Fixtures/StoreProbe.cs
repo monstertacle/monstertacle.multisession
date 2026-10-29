@@ -13,11 +13,12 @@ internal static class StoreProbe
         return command.ExecuteScalar();
     }
 
-    public static void Execute(string path, string sql)
+    public static void Execute(string path, string sql, params (string Name, object Value)[] parameters)
     {
         using SqliteConnection connection = Open(path, SqliteOpenMode.ReadWrite);
         using SqliteCommand command = connection.CreateCommand();
         command.CommandText = sql;
+        foreach (var (name, value) in parameters) { command.Parameters.AddWithValue(name, value); }
         command.ExecuteNonQuery();
     }
 

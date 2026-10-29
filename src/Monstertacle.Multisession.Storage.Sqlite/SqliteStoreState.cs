@@ -12,6 +12,15 @@ internal sealed class SqliteStoreState
     internal RuntimeOptions Options { get; }
     internal Guid StoreId { get; }
     internal TimeProvider Clock { get; } = TimeProvider.System;
+    internal bool IsStarted => _started;
+    internal bool CanDispatch
+    {
+        get
+        {
+            if (!_started) { throw StorageFailurePolicy.Error(ErrorCode.InvalidConfiguration, true, false); }
+            return _accepting;
+        }
+    }
 
     internal SqliteStoreState(SqliteConnection connection, IStateDirectoryLease lease, RuntimeOptions options)
     {

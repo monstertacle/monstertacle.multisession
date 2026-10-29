@@ -110,7 +110,7 @@ public sealed class RequestDispatcher
         {
             throw await PreserveAsync(reservation, observations.FailureCode);
         }
-        reply = DispatchReplyPolicy.Normalize(reply, registration, dispatch.Session.Binding!, observations.SessionReference, _maxOutputBytes);
+        reply = DispatchReplyPolicy.Normalize(reply, dispatch.Session.Binding!, observations.SessionReference, _maxOutputBytes);
         if (reply.Certainty == ExecutionCertainty.Unknown)
         {
             throw await PreserveAsync(reservation, reply.Error?.Code ?? ErrorCode.Interrupted);

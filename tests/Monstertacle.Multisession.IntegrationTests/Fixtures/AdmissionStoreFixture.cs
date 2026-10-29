@@ -14,13 +14,13 @@ internal sealed class AdmissionStoreFixture(PrivateStoreDirectory directory, ISe
         [new("profile-İ", "connection-I", "model-I-İ", ExecutionKind.ModelResponse,
             new("revision-İ", new Dictionary<string, string> { ["I"] = "frozen-İ\n🙂", ["i"] = "distinct" }))]);
 
-    public static async Task<AdmissionStoreFixture> CreateAsync(int maxQueued = 100, int maxInputBytes = 1024 * 1024, int dbCapacity = 256)
+    public static async Task<AdmissionStoreFixture> CreateAsync(int maxQueued = 100, int maxInputBytes = 1024 * 1024, int dbCapacity = 256, int maxOutputBytes = 4 * 1024 * 1024)
     {
         PrivateStoreDirectory directory = new();
         ISessionStore? store = null;
         try
         {
-            RuntimeOptions options = directory.Options with { MaxQueuedRequests = maxQueued, MaxInputBytes = maxInputBytes, DbWorkQueueCapacity = dbCapacity };
+            RuntimeOptions options = directory.Options with { MaxQueuedRequests = maxQueued, MaxInputBytes = maxInputBytes, DbWorkQueueCapacity = dbCapacity, MaxOutputBytes = maxOutputBytes };
             store = await SqliteStoreFactory.CreateNewAsync(directory, directory.TrustScopeId, options, CancellationToken.None);
             await store.StartAsync(directory, CancellationToken.None);
             return new(directory, store, options);

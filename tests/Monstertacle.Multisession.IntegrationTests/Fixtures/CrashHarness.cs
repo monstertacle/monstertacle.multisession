@@ -10,6 +10,9 @@ namespace Monstertacle.Multisession.IntegrationTests.Fixtures;
 internal sealed class CrashHarness(Process process) : IAsyncDisposable
 {
     private static readonly TimeSpan _processLimit = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan _fileReleasePollInterval = TimeSpan.FromMilliseconds(20);
+    private const int _sharingViolation = 32;
+    private const int _lockViolation = 33;
     public CrashSignal? Signal { get; private set; }
 
     public static async Task<CrashHarness> StartAsync(IStateDirectoryLease lease, string point)
@@ -50,6 +53,27 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
     {
         if (!process.HasExited) { process.Kill(true); }
         await process.WaitForExitAsync().WaitAsync(_processLimit);
+        await WaitForFileReleaseAsync(process.StartInfo.WorkingDirectory);
+    }
+
+    private static async Task WaitForFileReleaseAsync(string directory)
+    {
+        using CancellationTokenSource deadline = new(_processLimit);
+        while (true)
+        {
+            try
+            {
+                using FileStream database = new(Path.Combine(directory, "multisession.db"), FileMode.Open, FileAccess.Read, FileShare.Read);
+                string journal = Path.Combine(directory, "multisession.db-journal");
+                if (File.Exists(journal)) { using FileStream released = new(journal, FileMode.Open, FileAccess.Read, FileShare.Read); }
+                return;
+            }
+            catch (IOException failure) when (OperatingSystem.IsWindows()
+                && (failure.HResult & ushort.MaxValue) is _sharingViolation or _lockViolation)
+            {
+                await Task.Delay(_fileReleasePollInterval, deadline.Token);
+            }
+        }
     }
 
     public async ValueTask DisposeAsync()

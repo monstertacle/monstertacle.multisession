@@ -11,12 +11,14 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
         => State.Queue.WriteAsync(connection => State.Start(connection, lease), cancellationToken);
     ValueTask IStoreBootstrap.StopAcceptanceAsync(CancellationToken cancellationToken)
         => State.Queue.WriteAsync(_ => State.StopAcceptance(), cancellationToken);
-    ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken) => throw new NotImplementedException();
+    ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)
+        => new(State.Queue.ExecuteAsync(connection => State.IsStarted ? StoredDispatchAccess.Read(connection, dispatchId)?.Snapshot : null, cancellationToken));
     ValueTask<SessionSnapshot?> ISessionQueryStore.GetSessionAsync(Guid sessionId, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => QueryTransactions.Session(connection, sessionId), cancellationToken));
     ValueTask<Page<SessionSnapshot>> ISessionQueryStore.ListSessionsAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => SqlitePageQueries.Sessions(connection, State.StoreId, pageSize, cursor), cancellationToken));
-    ValueTask<Page<HistoryEntry>> ISessionQueryStore.ReadHistoryAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken) => throw new NotImplementedException();
+    ValueTask<Page<HistoryEntry>> ISessionQueryStore.ReadHistoryAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
+        => new(State.Queue.ExecuteAsync(connection => SqlitePageQueries.History(connection, State.StoreId, sessionId, pageSize, cursor), cancellationToken));
     ValueTask<RequestSnapshot?> ISessionQueryStore.GetRequestAsync(Guid requestId, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => QueryTransactions.Request(connection, requestId), cancellationToken));
     ValueTask<Page<RequestSnapshot>> ISessionQueryStore.ListRequestsAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)

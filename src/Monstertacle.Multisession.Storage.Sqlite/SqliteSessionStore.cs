@@ -12,9 +12,12 @@ internal sealed class SqliteSessionStore(SqliteStoreState state) : SqliteQuerySt
     public ValueTask MarkSessionBlockedAsync(Guid sessionId, SessionBlockReason reason, CancellationToken cancellationToken) => throw new NotImplementedException();
     public ValueTask<RequestReceipt> CommitAcceptanceAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken)
         => AcceptanceTransactions.CommitAsync(State, acceptance, maxQueuedRequests, cancellationToken);
-    public ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken) => throw new NotImplementedException();
-    public ValueTask CommitObservationAsync(Guid dispatchId, ProviderObservation observation, CancellationToken cancellationToken) => throw new NotImplementedException();
-    public ValueTask CommitCompletionAsync(Guid dispatchId, ProviderReply reply, CancellationToken cancellationToken) => throw new NotImplementedException();
+    public ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken)
+        => new(State.Queue.ExecuteAsync(connection => ReservationTransactions.Reserve(connection, State, maxConcurrentRequests, cancellationToken), cancellationToken));
+    public ValueTask CommitObservationAsync(Guid dispatchId, ProviderObservation observation, CancellationToken cancellationToken)
+        => State.Queue.WriteAsync(connection => ObservationTransactions.Commit(connection, dispatchId, observation, cancellationToken), cancellationToken);
+    public ValueTask CommitCompletionAsync(Guid dispatchId, ProviderReply reply, CancellationToken cancellationToken)
+        => State.Queue.WriteAsync(connection => CompletionTransactions.Commit(connection, State, dispatchId, reply, cancellationToken), cancellationToken);
     public ValueTask MarkUncertainAsync(Guid dispatchId, PublicError failure, CancellationToken cancellationToken) => throw new NotImplementedException();
     public ValueTask ResolveRecoveryAsync(RecoveryDecision decision, ProviderBinding? confirmedBinding, CancellationToken cancellationToken) => throw new NotImplementedException();
 }

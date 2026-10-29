@@ -33,4 +33,17 @@ internal static class SqlitePageQueries
         return SqlitePages.Read(command, size, scope, reader =>
             (StoreSerialization.Read<RequestSnapshot>(reader.GetString(0)), new CursorKey(Guid.ParseExact(reader.GetString(2), "D"), reader.GetInt64(1))));
     }
+
+    internal static Page<HistoryEntry> History(SqliteConnection connection, Guid storeId, Guid sessionId, int size, string? cursor)
+    {
+        PageCursor.ValidateSize(size);
+        PageScope scope = new(storeId, PageListKind.History, sessionId);
+        CursorKey? last = PageCursor.Read(cursor, scope);
+        string seek = last is null ? string.Empty : "AND (HistoryOrdinal,HistoryId)>($ordinal,$id) ";
+        using SqliteCommand command = SqliteStatements.Create(connection, null,
+            "SELECT SnapshotJson,HistoryOrdinal,HistoryId FROM History WHERE SessionId=$session " + seek + "ORDER BY HistoryOrdinal,HistoryId COLLATE BINARY LIMIT $limit",
+            ("$session", sessionId.ToString("D")), ("$limit", size + 1), ("$ordinal", last?.Ordinal), ("$id", last?.Id.ToString("D")));
+        return SqlitePages.Read(command, size, scope, reader =>
+            (StoreSerialization.Read<HistoryEntry>(reader.GetString(0)), new CursorKey(Guid.ParseExact(reader.GetString(2), "D"), reader.GetInt64(1))));
+    }
 }

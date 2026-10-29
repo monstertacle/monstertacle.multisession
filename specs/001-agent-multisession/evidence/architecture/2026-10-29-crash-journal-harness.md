@@ -51,3 +51,22 @@ Lease statt nur den Pfad und verwendet deren bereits getestete PrepareFileAsync-
 CreateNewoperation vor dem Schreiben. Kein globaler Umaskwechsel im Produkt oder Harness;
 die umask022 wird ausschließlich im Testprozessstarter gesetzt. Anschließend gleiche
 Probe unter022 und komplette Regression/Guard. Keine Änderung an produktiver Vorprüfung.
+
+## Windows-CI: Dateifreigabe nach hartem Ende
+
+Gemessen2026-10-29T11:35:20Z. CrashHarness.cs SHA256
+fdef88d68460cdbd8de146204b362ecd3a66d6e9c3d1414763f97462b548e73c.
+CI quality40863911503 an427691b, Windows, HandlesActualHotJournalAfterForcedProcessEnd(false)
+ist fachlich rot: File.ReadAllBytesAsync unmittelbar nach Kill/WaitForExitAsync meldet
+IOException „being used by another process“ an Journaldatei. Rohlog lokal unter
+artifacts/tdd/sqlite-pages-ci-failure.log. Welcher Prozess das verbleibende Handle hält,
+ist nicht gemessen; kein spekulativer Produktbefund daraus. Ubuntu/Guard sind getrennt.
+
+Harness wartete bisher ausschließlich auf Prozessende, nicht auf tatsächlich wieder
+lesbare Crashdateien. Vor der anschließenden Snapshotprüfung wird jetzt zusätzlich
+endliches Lesen von DB/Journal mit FileShare.Read verlangt. Ausschließlich Windows-
+Sharing-/Lockverletzung wird kurz gepollt; andere I/Ofehler bleiben Fehler. Gemeinsames
+30-s-Limit und asynchrones Delay, keine feste Pause als Freigabebehauptung. Kein Retry
+von Provider-, Admission- oder Produkt-SQLoperation, keine schwächere Abnahme. Der echte
+CI-Redbeleg liegt vor dieser Korrektur vor. Lokal können nur normale Crashregressionen
+laufen; native Windows-Green muss neue CI bestätigen und bleibt bis dahin offen.

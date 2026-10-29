@@ -288,3 +288,69 @@ T063 bleibt für vollständige Listen offen. Nächster konkreter Auftrag T051/T0
 persistierter ReservedDispatch, Beobachtung und atomarer Abschluss; Owner ausführende
 Gesamtimplementierungssitzung. Annahmestand4113798 Windows/Ubuntu-CI erfolgreich:
 quality40862468558,Guard40862468395. Keine ganze SQLite-Runtime-/Recoveryfreigabe.
+
+## T059/T060: ReservedDispatch und atomarer bekannter Abschluss
+
+Voranalyse architecture/2026-10-29-sqlite-dispatch.md. Elf Reservierungs-/Abschlussfälle
+fachlich rot an fehlendem TryReserve, weitere acht Callback-/Graphintegritätsfälle rot.
+CA1861 im ersten Callback-Build ist kein Red, getrennt unter sqlite-observation-build.
+Danach alle83 Integrationfälle grün,19 neue Verhaltensfälle. Gemeinsame Registrationprüfung
+vor Send bleibt; reine DispatchReplyPolicy wird mit bereits geprüftem Originalbinding
+auch im Storage benutzt, statt Outcome-/Identity-/Outputregeln zu kopieren.
+
+ReservationPolicy entscheidet in derselben SQLtransaktion über Sessionhead, globale
+Slots/Workspace; Running/InProgress, StartedUtc, DispatchId, BindingRevision und Snapshot
+werden gemeinsam veröffentlicht. Private StoredDispatch-Envelope hält unveränderten
+Snapshot und separat acknowledged Session-/Operationsbezug. Keine DDLänderung nötig.
+GetReservedDispatch verweigert nach Reopen/vor Bootstrap altes Sendrecht, bei spätem
+Bindingupdate bleibt FrozenSnapshot unverändert. Gegen widersprüchliche Graphids gibt es
+StorageUnavailable statt Input für falsche Session. Gleichzeitige Reservierer überbuchen
+weder globale Kapazität noch dieselbe Session, blockierter Workspace wird übersprungen.
+
+Callbacks sind vor Rückkehr gespeichert und bestätigen allein keinen neuen Head.
+Öffentlicher RequestDispatcher verarbeitet erste/Folgeeingabe mit bestätigtem neuen Head;
+Providerfixture kann unabhängige Schreibtransaktion eröffnen und sieht committed Marker:
+kein Provider-I/O in Produkt-DBtransaktion. Native Hersteller werden hier nicht aufgerufen.
+Bekannter Abschluss schreibt Result/EndedUtc, unveränderte lokale Ein-/Ausgabehistory,
+HistoryOrdinal/HistoryId, Binding/Revision/Blockgrund und Reservationrelease zusammen.
+Endgültiger lokaler Resultattyp bleibt vorhandener RequestSnapshot.Result mit EndedUtc
+und Results.CompletedUtc; keine zweite gleichbedeutende RequestResult-Klasse anlegen.
+Opaque Operationbeleg bleibt dispatchgebunden im gespeicherten Envelope, nicht als Secret.
+
+Exaktes/zu großes UTF-8-Output, Contextfehler ohne Änderung früherer Einträge, fortsetzbare
+Historykeysets, doppelte/racende Completion und stale BindingRevision geprüft. Echter SQL-
+Trigger nach Result-/Historywrites rollt gesamten Abschluss zurück: null Teilresultate,
+Originalbinding/Running und aktive Reservation erhalten. Unknown wird hier ausdrücklich
+nicht freigegeben; T052/T061/T062 folgen. Keine fachliche Kill-/SC-009-Abnahme vorgezogen.
+
+Befehle run-capped dotnet test IntegrationTests -c Release --no-restore mit Filtern
+ReservationPersistenceTests|CompletionPersistenceTests und
+DispatchCallbackTests|ReservedSnapshotIntegrityTests, danach komplette Integration/Qualität.
+Manifeste vor Tests, UTC aus LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| sqlite-dispatch-red | 2026-10-29T11:20:54.8679059Z | 56aa25d80112741005e7817a51098f7e756ef37d288d608c6a00c08a4c3754d6 |
+| sqlite-observation-red | 2026-10-29T11:24:08.1880394Z | 7857306efbd0b2ec28d9a043b21ac11cf9135a33fceb61ae0957dd683c4c20ef |
+| sqlite-dispatch-green | 2026-10-29T11:27:32.5888745Z | 6556fa09133ef6635e35cabe06e4eeb4281ea20c7ea17446b36503f2d54a9007 |
+
+Volle Qualität vor CIharnessnachzug erfolgreich: artifacts/quality/linux/7fb1d3951846455b9d691b155b184106,
+Sourcehash80ac71c23366779c3875bd6578adc6eec5bc6078117d59b6220a3c5888420289.
+Danach Windows-Red an vorigem427691b gefunden: quality40863911503, CrashJournalTests
+(false), sharing violation beim Journalread unmittelbar nach Kill/WaitForExitAsync.
+Unbekannter tatsächlicher Handlebesitzer; keine erfundene Ursache. Vor Änderung dokumentiert
+in architecture/2026-10-29-crash-journal-harness.md. Nur Harness wartet jetzt endliche
+Windows-Sharing-/Lockfreigabe vor Lesen. Kein Produktretry, keine feste Pausenscheinabnahme.
+Lokale Regression bestätigt normale Fälle, nativer Windows-Green bleibt bis neuer CI offen.
+
+Finale gesamte lokale Qualität nach diesem Nachzug Exit0:
+artifacts/quality/linux/8ae3c9e4ec1144dc98b5abc092fdca42,
+Sourcehash29dbc44e48f253e6692ea0a82fda6f2910e2add1f627a6813c0b8490ca8c0162.
+TRX gezählt532 bestanden:253 Unit/195 Contract/83 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1710/1780 Produktzeilen=96,0674 Prozent. Full-Guard242 Dateien/247 Typen,
+0 Verstöße/Parsefehler/Skips, keine Pin-/Scope-/Grenzwertänderung.
+T059/T060 lokal umgesetzt. T051/T053 bleiben für fachliche Crashbarrieren/Gesamtabnahme
+offen; T063 jetzt auch History, Recoveryliste folgt mit ihren Writes. Nächster konkreter
+Auftrag T052/T061/T062: Unknown/Openingfälle, konservativer Bootstrap und CAS, Owner
+Gesamtimplementierungssitzung. Windows-CIharnessnachweis T104/T111 am neuen Kopf verfolgen.

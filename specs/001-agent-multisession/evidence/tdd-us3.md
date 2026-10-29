@@ -85,3 +85,32 @@ request-state-sql-red.log, request-state-green.log und request-state-quality.log
 artifacts/tdd; vollständiger Format/Build/Test/Coverage-/Guardlauf über run-capped.sh.
 T070/T075 bleiben für ihre vollständigen Cancel-/Intent-/Finalisierungszusagen offen;
 T071/T077/T078/T079 tragen die nächsten konkreten Schritte mit unveränderter Abnahme.
+
+## T070/T077: öffentlicher wartender Cancel und dauerhafte Absicht
+
+Architektur vor Erweiterung: architecture/2026-10-29-request-cancellation.md, Ausgang b2e6435.
+request-cancellation-red: drei ausführbare Tests fachlich rot an den verhaltenslosen
+Ports (Queued bleibt ohne Abbruch, Running ohne Intent, fehlende ID ohne definierten Fehler).
+Minimales Green: verpflichtende IRequestCancellationStore-Facette, öffentliche Delegation,
+reine gemeinsame Intentregel und atomarer SQLpfad. Queued ist Cancelled/NotStarted samt
+Result/History und unverändertem Input; Running bleibt InProgress reserviert mit erstem
+Intentzeitpunkt. Terminale Aufrufe ändern weder Ergebnis noch Gewissheit. Bekannter Abschluss
+bleibt auch nach Intent commitfähig. Keine Herstelleraufrufe innerhalb einer SQLtransaktion.
+
+Zusätzlicher echter Redzyklus cancel-observation-red: OperationAccepted nach Intent wurde
+mit RevisionConflict abgewiesen. Nach erneutem Source-/Architekturabgleich Observationlesen
+auch bei Intent erlaubt, während Running/Dispatchbindung weiter schützt. Green sichert native
+Operations-ID im Unknown-Fall, nie Reservationsfreigabe allein durch Absicht.
+Weitere sofort grüne Regressionen: Teilwritefehler am Intent rollt Result/History komplett
+zurück; beide Cancel-/Reserve-Reihenfolgen bewahren atomaren Zustand, keine Sendeerlaubnis
+für abgebrochene Queued. Drei initiale Canceltests plus vier Ergänzungsfälle sind integriert.
+
+Vollständig grün: artifacts/quality/linux/6568798978784b7db0e62ecc19f147d5,
+SourceHash 297e9c0769a414ab37ca92d23f890a13e843367fd12a135df2c907847b318250.
+597 Tests (271 Unit,195 Contract,130 Integration,1 Plattform), null Fehler/Skips.
+2027/2096 Produktzeilen = 96,7080 %, Codemetr 0.1.0: 272 Dateien/278 Typen,
+null Verstöße/Parsefehler/Skips. Logs artifacts/tdd/request-cancellation-{red,green,quality}.log,
+cancel-observation-red.log; Fullprüfung run-capped.sh, Format/Build/alleTests/Coverage/Guard.
+T077 bleibt bis laufender Unterbrechung/native Endbestätigung/2-s-Messung offen. Der nächste
+T071/T077-Zyklus muss den gespeicherten Intent im Dispatcher beobachten; diese Teiländerung
+behauptet noch keine vollständige laufende Cancelgarantie. T072/T078/T079 bleiben Stop/Close.

@@ -70,7 +70,7 @@ public sealed class RequestAdmission : IRequests
         => new RequestQueries(_store).ListRequestsAsync(sessionId, pageSize, cursor, cancellationToken);
     /// <inheritdoc />
     public ValueTask CancelRequestAsync(Guid requestId, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new RequestCancellation(_store).CancelAsync(requestId, cancellationToken);
 
     private static RequestReceipt ValidateReceipt(RequestReceipt receipt, Guid candidateId)
         => receipt.RequestId == candidateId && receipt.Sequence > 0 ? receipt

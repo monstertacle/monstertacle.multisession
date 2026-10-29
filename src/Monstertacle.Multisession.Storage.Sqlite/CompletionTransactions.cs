@@ -10,7 +10,7 @@ internal static class CompletionTransactions
     internal static void Commit(SqliteConnection connection, SqliteStoreState state, Guid dispatchId, ProviderReply reply, CancellationToken token)
         => SqliteTransactions.Run(connection, transaction =>
         {
-            StoredDispatch stored = StoredDispatchAccess.Read(connection, dispatchId, transaction)
+            StoredDispatch stored = StoredDispatchAccess.Read(connection, dispatchId, transaction, true)
                 ?? throw new SessionOperationException(new(ErrorCode.RevisionConflict));
             ReservedDispatch snapshot = stored.Snapshot;
             SessionSnapshot session = QueryTransactions.Session(connection, snapshot.Session.SessionId, transaction)!;

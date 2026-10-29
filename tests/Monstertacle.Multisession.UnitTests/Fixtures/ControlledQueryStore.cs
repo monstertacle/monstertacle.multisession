@@ -1,9 +1,10 @@
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.Queries;
+using Monstertacle.Multisession.Requests;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
-internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IAsyncDisposable
+internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, IAsyncDisposable
 {
     private bool _ownsState;
     private bool _disposed;
@@ -29,6 +30,28 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
         lock (State.Gate) { State.Accepting = false; }
         return ValueTask.CompletedTask;
     }
+    ValueTask<RequestSnapshot> IRequestCancellationStore.RequestCancellationAsync(Guid requestId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            RequestSnapshot before = State.Requests.GetValueOrDefault(requestId)
+                ?? throw new SessionOperationException(new(ErrorCode.NotFound, RequestId: requestId));
+            RequestSnapshot updated = RequestCancellationPolicy.Apply(before, State.Clock.GetUtcNow());
+            if (updated == before) { return ValueTask.FromResult(before); }
+            State.Requests[requestId] = updated;
+            if (before.State == RequestState.Queued)
+            {
+                ExecutionReservation local = new(Guid.NewGuid(), requestId, before.SessionId, null, updated.EndedUtc!.Value);
+                State.Dispatch.RecordCompletion(new(local, State.Sessions[before.SessionId], State.Submissions[requestId], before.Sequence,
+                    State.Sessions[before.SessionId].BindingRevision), updated.Result!);
+            }
+            else { State.Dispatch.RequestCancellation(requestId); }
+            return ValueTask.FromResult(updated);
+        }
+    }
+
+
     ValueTask IAsyncDisposable.DisposeAsync()
     {
         lock (State.Gate)

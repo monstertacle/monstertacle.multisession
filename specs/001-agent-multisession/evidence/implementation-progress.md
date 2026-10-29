@@ -145,3 +145,16 @@ genau ein dauerhaftes Ergebnis/Historieneintrag, Unknown behält den Slot.
 590 Tests grün, 96,6200 % Gesamtabdeckung, Codemetr 267 Dateien/273 Typen sauber.
 Nachweis tdd-us3.md; Qualitätslauf b9adac26d0fa45a5875878f4aa400dcc. Offene vollständige
 Cancel-/Timeout-/Stop-/Close-Abnahme bleibt den bestehenden T070–T085 zugeordnet.
+
+### 2026-10-29T12:37:10Z: Dauerhafter öffentlicher Cancel-Intent
+
+Wartender Cancel ist über IRequests implementiert, dauerhaft/idempotent und ohne Send.
+Running erhält separat persistierte Absicht; keine implizite Endbestätigung/Freigabe.
+Bekannte Abschlüsse und späte native ID-Beobachtungen bleiben trotz Absicht commitfähig.
+Native-ID-Verlust zunächst fachlich rot reproduziert. Sieben Integrationsfälle einschließlich
+Rollback und Reserve-Races; 597 Tests insgesamt grün, 96,7080 % Produktabdeckung,
+Codemetr 272 Dateien/278 Typen sauber. tdd-us3.md und Qualitätslauf
+6568798978784b7db0e62ecc19f147d5. Restauftrag T071/T077: Dispatcherunterbrechung,
+bestätigter gegenüber ungewissem laufendem Ende und gemessene 2-s-Abnahme.
+CI des vorausgehenden Zustandscommits b2e6435 ist auf Windows/Ubuntu grün:
+quality 40874243471 und codemetr-guard 40874243585.

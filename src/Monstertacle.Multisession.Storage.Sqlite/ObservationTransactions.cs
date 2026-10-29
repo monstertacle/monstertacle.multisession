@@ -8,7 +8,7 @@ internal static class ObservationTransactions
     internal static void Commit(SqliteConnection connection, Guid dispatchId, ProviderObservation observation, CancellationToken token)
         => SqliteTransactions.Run(connection, transaction =>
         {
-            StoredDispatch stored = StoredDispatchAccess.Read(connection, dispatchId, transaction)
+            StoredDispatch stored = StoredDispatchAccess.Read(connection, dispatchId, transaction, true)
                 ?? throw new SessionOperationException(new(ErrorCode.RevisionConflict));
             string? stable = stored.Snapshot.Session.Binding?.SessionReference ?? stored.SessionReference;
             bool reference = !string.IsNullOrWhiteSpace(observation.Reference);

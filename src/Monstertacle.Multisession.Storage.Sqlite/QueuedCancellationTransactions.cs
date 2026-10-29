@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Requests;
 
 namespace Monstertacle.Multisession.Storage.Sqlite;
 
@@ -17,20 +18,9 @@ internal static class QueuedCancellationTransactions
         }
         foreach (var (snapshot, input) in queued)
         {
-            ProviderReply result = new(RequestState.Cancelled, ExecutionCertainty.NotStarted, string.Empty, false, null,
-                new(ErrorCode.Cancelled, ExecutionCertainty.NotStarted, snapshot.SessionId, snapshot.RequestId));
-            RequestSnapshot cancelled = snapshot with
-            {
-                State = RequestState.Cancelled,
-                Certainty = ExecutionCertainty.NotStarted,
-                Result = result,
-                EndedUtc = now,
-                CancellationRequestedUtc = now,
-            };
+            RequestSnapshot cancelled = RequestCancellationPolicy.Apply(snapshot, now);
             ResultTransactions.Write(connection, transaction, cancelled, input.Input, now);
-            using SqliteCommand intent = SqliteStatements.Create(connection, transaction, "UPDATE Requests SET CancellationRequestedUtc=$now WHERE RequestId=$id",
-                ("$now", StoreSerialization.Utc(now)), ("$id", cancelled.RequestId.ToString("D")));
-            intent.ExecuteNonQuery();
+            CancellationTransactions.SaveIntent(connection, transaction, cancelled);
         }
     }
 }

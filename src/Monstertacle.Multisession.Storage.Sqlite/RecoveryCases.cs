@@ -45,11 +45,4 @@ internal static class RecoveryCases
         Save(connection, transaction, item);
     }
 
-    internal static bool OtherOpen(SqliteConnection connection, SqliteTransaction transaction, Guid sessionId, RecoveryTarget except)
-    {
-        using SqliteCommand command = SqliteStatements.Create(connection, transaction,
-            "SELECT count(*) FROM RecoveryCases WHERE SessionId=$session AND Status=$open AND NOT (TargetKind=$kind AND TargetId=$target)",
-            ("$session", sessionId.ToString("D")), ("$open", (int)RecoveryCaseStatus.Open), ("$kind", (int)except.Kind), ("$target", except.Id.ToString("D")));
-        return (long)command.ExecuteScalar()! != 0;
-    }
 }

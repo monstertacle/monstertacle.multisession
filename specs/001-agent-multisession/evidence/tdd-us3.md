@@ -252,3 +252,60 @@ zur vollständigen Testzahl addiert wird. Vorheriger 7dd8bec Windows/Ubuntu-CI g
 quality 40877481208, codemetr-guard 40877480850.
 T072/T078 bleiben bis abschließendem Lifecycleaudit und Close-Abnahme T079 offen;
 T085/T104 behalten vollständige finale SC-/Plattformfreigabe, keine Produktfreigabe.
+
+## T031/T037/T072/T079/T082: öffentlicher Session-Close
+
+Architektur vor Code architecture/2026-10-29-session-close.md, Ausgang42fc164.
+session-close-red: 5 ausführbare Fälle fachlich rot am Stub; erweiterter Satz
+session-close-final-red: 8/8 fachlich rot einschließlich Idle/Queued, Unknown, fehlend/
+Caller-Cancel, Opening/lateBinding, echter Teilwritefehler und bestätigtes/unbestätigtes
+Running bei unabhängiger Arbeit. Minimales Green zunächst5/8; drei fehlerhafte neue
+Testvergleiche hielten deserialisierte Dictionaryreferenzen für recordgleiche Werte.
+Die Persistenzassertion vergleicht jetzt unveränderte gespeicherte Snapshotdaten und
+ClosedUtc, kein Produktfehler als Red erfunden. Acht Fälle danach grün.
+
+ISessionClosureStore hält Schließabsicht und neue Prüfung getrennt. Neue Annahme und spätes
+Binding nach Closing/Closed abgewiesen; Queued und Running-Intent atomar. Gemeinsame
+SessionClosurePolicy und SQLprojektion prüfen aktive Arbeit, jede Unknown-Anfrage,
+unfreigegebene Reservation und offene Fälle. Completion kann Closure nach Freigabe selbst
+abschließen. Recovery benutzt dieselbe Regel ohne historischen Erfolg nachzutragen.
+Callerabbruch nach gesichertem Intent bleibt ohne Rücknahme; zusätzlicher sofort grüner
+Runtimefall bestätigt automatisches Closed nach späterem Native-Endbeleg trotz verlassenem
+Caller. Keine Löschung oder externe Close-/Deleteaktion. Kontrollierte Storefacetten nach
+grünen283 Unit-/201 Contract-/21 relevanten SQLfällen ausgerichtet, gemeinsame Cancelregel
+wiederverwendet. Codemetr meldete danach Komplexität26>25 in ControlledRecoveryState.Resolve;
+33 relevante Verträge vor/nach reiner Zerlegung grün, Grenze unverändert. Ursprünglicher
+Guardbefund artifacts/tdd/session-close-codemetr-red.json.
+
+## T078/T082: tatsächlicher Windowsbefund und atomarer Sammelabbruch
+
+CI40879343516 auf42fc164: Windows-Stop mit102 Queued überschreitet seine10s-Frist und
+meldet StorageUnavailable; keine native Freigabe für diesen Kopf. Protokoll
+artifacts/tdd/stop-ci-failure.log. 27s Gesamtfall sind kein isolierter Stopmesswert;
+keine ungeprüfte Hardwareursache behauptet. Architektur ergänzt vor Änderung:
+architecture/2026-10-29-controlled-stop.md. Minimaler Port in bestehender Cancellation-
+Facette, ein SQLitecommit je Sitzung statt je Input, intern bounded Sequence-Keysetseiten.
+Dieselbe Fachregel und derselbe Code auch für Close/Recovery-Close; Cancellation wird pro
+Seite/Eintrag ausgewertet, kein Provider-I/O im Lock. Zehn-Sekunden-, Journal- und
+synchronous-Garantien unverändert. Vorhandene echte Windowsregression ist der Rednachweis,
+kein künstlicher lokaler Timingfehler. Zusätzliche sofort grüne Regression verschiebt den
+Fehler auf den zweiten Queueeintrag: auch dessen bereits bearbeiteter Vorgänger bleibt
+nach Rollback Queued, kein Result-/Historienpräfix wurde committet.
+
+Vollständig lokal grün artifacts/quality/linux/e0d078cd30aa42df8c04d1742ec0c926,
+SourceHash103248be6ab7a1175652fcb4ca600a149a7ae5c1fe2be652e79baed5096f7e4d.
+635 Tests (283 Unit,201 Contract,150 Integration,1 Plattform), null Fehler/Skips;
+2230/2303 Produktzeilen =96,8302 %. Codemetr292 Dateien/298 Typen, null Verstöße/
+Parsefehler/Skips. Reale Stopmessung im Integration-TRX:102 Queued27,322ms, aktiver
+bestätigter Send21,803ms, unbestätigt1002,896ms. NativeCI muss den neuen Stand noch
+bestätigen; lokaler Wert ersetzt den Windowsnachweis nicht. Logs session-close-quality.log
+und stop-batch-green unter artifacts/tdd, kompletter Format/Guard/Invoke-Quality-Lauf über
+run-capped.sh. Vorherige lokale Zwischenläufe0f5f2e7d4a60460f9b3f2b1d89430521 und
+22508e3f33d74af3bf978a5268e2507a bleiben nachvollziehbar, sind kein finaler Quellstand.
+
+Befundabgleich: Close-Lücken und lateBind sind mit Änderung/Tests behoben; Windows-Stop
+lokal korrigiert, native Nachprüfung gehört weiterhin T078/T082/T104. Bei Retentionanalyse
+übernommener Optionsbefund hat konkreten bereiten Folgeauftrag T118 mit Owner, Quellen,
+Schritten und überprüfbarer Abnahme in tasks.md: Factory-/Runtimeoptions dürfen vor T064
+nicht unabhängig wirksam sein. T076 behält den vollständigen Frist-/Dispatchaudit;
+T070–T085 bleiben bis Story-/TDD-/Diagnostikabnahme offen. Kein Produktabschluss behauptet.

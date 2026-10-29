@@ -72,7 +72,7 @@ public sealed class SessionCatalog : ISessions
         => new SessionQueries(_store).ReadHistoryAsync(sessionId, pageSize, cursor, cancellationToken);
     /// <inheritdoc />
     public ValueTask CloseSessionAsync(Guid sessionId, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionClosure(_store, _clock).CloseAsync(sessionId, cancellationToken);
     /// <inheritdoc />
     public ValueTask DeleteSessionAsync(Guid sessionId, CancellationToken cancellationToken)
         => throw new NotImplementedException();

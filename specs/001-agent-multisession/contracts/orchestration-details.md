@@ -211,3 +211,21 @@ RecoveryRequired und nicht markierte native Fortsetzungsrestriktionen bleiben be
 Registry-/Binding-/Executionkind-/Workspaceprüfung erfolgt nach Bootstrap vor Workers.
 Opaque Modell-/Settingsdaten bleiben unverändert; native Auth-/Modellverfügbarkeit wird
 nicht durch einen erfundenen lokalen Featurekatalog vorgetäuscht.
+
+## 5. Atomare lokale Cancel-/Close-Facetten
+
+ISessionStore erbt die schmalen Facetten IRequestCancellationStore und ISessionClosureStore.
+RequestCancellationAsync speichert bei Running nur den ersten CancellationRequestedUtc;
+Queued wird atomar Cancelled/NotStarted samt Result/History. Finale Ergebnisse bleiben
+unverändert. CancelQueuedSessionAsync verarbeitet die Menge noch wartender Einträge einer
+lokalen Session in einem Commit mit begrenzten Sequence-Keysetseiten; eine leere Treffer-
+menge ist ein erfolgreicher leerer Sammelabbruch. Dieser Storeport ist kein öffentlicher
+Close oder Ersatz für IRequests.CancelRequestAsync mit dessen NotFound-Vertrag.
+
+BeginSessionCloseAsync sperrt Annahme, finalisiert Queued und speichert Running-Intent
+zusammen. RefreshSessionCloseAsync prüft aktive/ungewisse Requests, unfreigegebene
+Reservierungen und offene Fälle. Closed benötigt die Abwesenheit aller dieser Hindernisse;
+ClosedUtc wird einmal gesetzt. Opening bekommt einen eigenen Fall. Ein später Binding-
+Commit darf Closing/Closed nicht wieder öffnen. Der SessionClosure-Kern beobachtet den
+Fortschritt begrenzt; Completion beziehungsweise Recovery aktualisieren Closing auch ohne
+wartenden Caller. Keine dieser Transaktionen ruft einen Provider auf oder löscht dessen Daten.

@@ -34,9 +34,14 @@ Arbeitsstand und Abhängigkeiten: [Gesamtimplementierung](specs/001-agent-multis
 T112–T115, Dispatcher und öffentliche Runtimekomposition sind umgesetzt; Nachweise und Grenzen
 stehen in [tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md) und den anderen Storynachweisen.
 Conversations/Responses und stabile Gemini-Interactions sind gegen lokale HTTP-Fixtures implementiert;
-[Providervertrag und Grenzen](docs/providers.md). Als Nächstes folgen öffentliche Adapterintegration, SQLite,
-vollständiger Cancel-/Stop-/Close-Lebenszyklus sowie Plattform- und Konsumabnahmen.
-Der kontrollierte Store ist weiterhin keine SQLite-Persistenz. Keine Produktfreigabe.
+[Providervertrag und Grenzen](docs/providers.md). Öffentliche Adapterintegration, SQLite-Transaktionen,
+Crash-Recovery sowie Cancel, Stop und Close sind inzwischen mit echten lokalen Storetests umgesetzt;
+Nachweise und verbleibende Abnahmegrenzen stehen in
+[tdd-us3.md](specs/001-agent-multisession/evidence/tdd-us3.md) und
+[tdd-us5.md](specs/001-agent-multisession/evidence/tdd-us5.md).
+Als Nächstes folgen der verbindliche Bootstrap-Optionsabgleich, lokale Retention/Löschung,
+Diagnostik sowie native Plattform- und Konsumabnahmen. Der kontrollierte Store bleibt eine
+Testprojektion. Keine Produktfreigabe.
 
 1. Eigenen Arbeitsbranch aus dem aktuellen Remote-Stand erstellen; keine parallelen
    Änderungen mehrerer Agenten im selben Arbeitsbaum.

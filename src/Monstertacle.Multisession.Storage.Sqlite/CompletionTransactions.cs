@@ -38,6 +38,7 @@ internal static class CompletionTransactions
                 "UPDATE Reservations SET ReleasedUtc=$time,ReleaseReason=$reason WHERE DispatchId=$id AND ReleasedUtc IS NULL",
                 ("$time", StoreSerialization.Utc(completed)), ("$reason", normalized.Certainty.ToString()), ("$id", dispatchId.ToString("D")));
             release.ExecuteNonQuery();
+            SessionCloseTransactions.Refresh(connection, transaction, state, session.SessionId);
             return true;
         }, token);
 }

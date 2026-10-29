@@ -70,3 +70,26 @@ kontrollierter Stop mit Cancelled und ausschließlich neuer expliziter Folgeanfr
 müssen dieselbe ursprüngliche native Session behalten und lokale Konfigurationsblockierung
 lösen. Kein Abschwächen der Recoveryregel und keine neue Produktfunktion; Fehlbeleg bleibt
 im genannten Qualitätslauf. Echte Kindprozess-Crashmatrix unverändert zusätzlich ausführen.
+
+## Windows-CI: Einzelcommits überschreiten Stopbudget
+
+Gemessen 2026-10-29T13:23:16Z. Lauf 40879343516, Kopf42fc164: Windows-Integration
+StopsAcceptanceAndFinalizesAllQueuedPages schlägt beim Stop mit StorageUnavailable fehl,
+während Linux grün war. Fehlerbeleg artifacts/tdd/stop-ci-failure.log und CI-TRX;
+keine native Windows-Freigabe für diesen Kopf. Der Ablauf hat 102 separat haltbare
+Cancelcommits unter derselben 10-s-Frist. 27s gesamte Testdauer ist ausdrücklich kein
+isolierter Stopmesswert; das CIprotokoll allein belegt keine Hardwareursache.
+RuntimeShutdown.cs SHA256 490c7db9c1d7d0fbb326b8ed3dc23856c2732b2ee73e900b232d2fe0577008a9,
+QueuedCancellationTransactions.cs 7d58b211946bf54b61c1120674c6ba24c60283940e5f3fbc2e397441640fe92a,
+CancellationTransactions.cs f79cc78e00b79301d74ca0a370e47be733f1d6397fc18c1eefc35b1df1f8991d.
+
+Entscheidung vor Änderung: bestehende schmale CancellationStore-Facette um atomaren
+Queued-Sammelabbruch einer Sitzung ergänzen. RuntimeStop liest weiterhin begrenzte
+Sessionseiten, aber führt pro Sitzung einen Commit aus. Bestehende reine Abbruchregel
+und QueuedCancellationTransactions wiederverwenden; innerhalb der SQLtransaktion in
+Sequence-Keysetseiten mit PageLimits.MaximumSize lesen und pro Seite schreiben, statt
+alle Inputs zugleich zu laden. Kein Netzaufruf im Lock, keine Lockerung von synchronous/
+Journal/10-s-Budget, keine neue breite Storemethode. Callerabbruch vor Commit rollt den
+Sitzungssammelabschluss zurück; ein späterer bestätigter Commit bleibt final. Auch der
+bestehende Close-/Recovery-Close-Code benutzt diese begrenzte Transaktion. T078/T082
+decken diesen konkreten Folgeauftrag einschließlich nativeCI-Nachprüfung ab.

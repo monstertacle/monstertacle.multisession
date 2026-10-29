@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Sessions;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
@@ -63,29 +64,33 @@ internal sealed class ControlledRecoveryState
             if (item.DispatchId is { } dispatchId) { reservations.Remove(dispatchId); }
             updated = updated with { Status = RecoveryCaseStatus.Resolved, Certainty = ExecutionCertainty.ConfirmedEnded, BlockReason = SessionBlockReason.None };
             bool otherOpen = _cases.Values.Any(other => other.Target != item.Target && other.SessionId == item.SessionId && other.Status == RecoveryCaseStatus.Open);
-            bool remaining = requests.Values.Any(request => request.SessionId == item.SessionId && request.State is RequestState.Queued or RequestState.Running);
-            SessionLifecycle lifecycle = AfterResolution(session.Lifecycle, otherOpen, remaining);
-            sessions[item.SessionId] = session with
+            var (remaining, unknown) = Pending(item.SessionId, requests.Values, reservations.Values);
+            bool uncertain = otherOpen || unknown;
+            SessionSnapshot updatedSession = session with
             {
-                Lifecycle = lifecycle,
-                BlockReason = otherOpen ? SessionBlockReason.RecoveryRequired : SessionBlockReason.None,
+                Lifecycle = session.Lifecycle == SessionLifecycle.Closing ? SessionLifecycle.Closing : SessionLifecycle.Open,
+                BlockReason = uncertain ? SessionBlockReason.RecoveryRequired : SessionBlockReason.None,
                 Binding = confirmedBinding ?? session.Binding,
                 BindingRevision = confirmedBinding is null ? session.BindingRevision : checked(session.BindingRevision + 1),
                 UpdatedUtc = now,
-                ClosedUtc = lifecycle == SessionLifecycle.Closed ? now : null,
+                ClosedUtc = null,
             };
+            sessions[item.SessionId] = SessionClosurePolicy.Refresh(updatedSession, remaining, uncertain, now);
         }
         else { throw Failure(ErrorCode.InvalidInput); }
         _cases[item.Target] = updated;
         _decisions.Add(decision.DecisionId);
     }
 
-    private static SessionLifecycle AfterResolution(SessionLifecycle current, bool otherOpen, bool remaining)
-        => current == SessionLifecycle.Closing ? (otherOpen || remaining ? SessionLifecycle.Closing : SessionLifecycle.Closed) : SessionLifecycle.Open;
-
     private static bool Compatible(ProviderBinding? original, ProviderBinding? reopened)
         => original?.SessionReference is not null && reopened is not null
             && original.AdapterId == reopened.AdapterId && original.FormatVersion == reopened.FormatVersion
             && original.SessionReference == reopened.SessionReference;
+
+    private static (bool Active, bool Unknown) Pending(Guid sessionId, IEnumerable<RequestSnapshot> requests, IEnumerable<ExecutionReservation> reservations)
+        => (requests.Any(request => request.SessionId == sessionId && request.State is RequestState.Queued or RequestState.Running)
+                || reservations.Any(reservation => reservation.SessionId == sessionId),
+            requests.Any(request => request.SessionId == sessionId && request.Certainty == ExecutionCertainty.Unknown));
+
     private static SessionOperationException Failure(ErrorCode code) => new(new PublicError(code, ExecutionCertainty.Unknown));
 }

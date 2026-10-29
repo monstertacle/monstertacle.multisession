@@ -203,3 +203,22 @@ Crash-Annahme in tdd-us3.md. 626 Tests vollständig grün, 96,6905 % Gesamtdecku
 Codemetr 283 Dateien/289 Typen sauber; Qualitätslauf 3a17979ae310492b86e671119298bc1a.
 Stopmessungen 535,000 ms für102 Queued, 33,066 ms bestätigter und1004,673 ms unbestätigter
 aktiver Send. Anschließend T079 Session-Close, dann Lifecycle-/TDD-Abgleich vor Taskabschluss.
+
+### 2026-10-29T13:28:39Z: Close und atomarer Stop-Sammelabbruch
+
+Acht neue Closefälle zuerst fachlich rot, dann öffentlicher Close mit atomarer Absicht,
+Queued-Cancel, begrenzter Endbeobachtung und gemeinsamer Closing/Closed-Regel. Unknown
+bleibt Closing/RecoveryRequired reserviert; spätes Binding öffnet nicht wieder. Bestätigtes
+Ende schließt auch nach Callerabbruch automatisch. Recovery und Testprojektion benutzen
+dieselbe Fachregel. Details/Guardzerlegung und tatsächliche TDD-Belege in tdd-us3.md.
+
+Windows-CI des Vorgängers42fc164 meldete Stopfehler bei102 Queued unter Einzelcommits.
+Vorab analysiert und durch atomaren Sitzungssammelabbruch mit begrenzten SQLseiten
+korrigiert; native Wiederholung am neuen Kopf bleibt erforderlich. Lokal635 Tests grün,
+96,8302 % Abdeckung, Codemetr292 Dateien/298 Typen sauber. Lauf
+e0d078cd30aa42df8c04d1742ec0c926; Stop102 Queued27,322ms. Frist/SQLitegarantien unverändert.
+
+Neuer konkreter Folgeauftrag T118 (Owner diese Gesamtimplementierung, bereit vorT064):
+Factory- und Runtimeoptions vor Startup verbindlich vergleichen, insbesondere Retention.
+Danach lokale Löschung/Retention T054/T064, verbleibende Diagnostik/Lifecycleaudits und
+Plattform-/Konsumabnahmen. Keine vollständige Story- oder Produktfreigabe.

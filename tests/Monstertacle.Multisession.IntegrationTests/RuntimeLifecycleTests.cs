@@ -60,9 +60,11 @@ public sealed class RuntimeLifecycleTests(ITestOutputHelper output)
         SessionSnapshot session = await setup.CreateSessionAsync();
         RequestReceipt receipt = await new RequestAdmission(setup.Store, setup.Options).SubmitAsync(
             new(session.SessionId, "must remain", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt second = await new RequestAdmission(setup.Store, setup.Options).SubmitAsync(
+            new(session.SessionId, "must also remain", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         await setup.Store.DisposeAsync();
         await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, []);
-        StoreProbe.Execute(setup.Directory.DatabasePath, "CREATE TRIGGER FailStop AFTER UPDATE OF CancellationRequestedUtc ON Requests BEGIN SELECT RAISE(FAIL,'private-stop-marker'); END;");
+        StoreProbe.Execute(setup.Directory.DatabasePath, "CREATE TRIGGER FailStop AFTER UPDATE OF CancellationRequestedUtc ON Requests WHEN NEW.Sequence=2 BEGIN SELECT RAISE(FAIL,'private-stop-marker'); END;");
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => host.Runtime.StopAsync(TimeSpan.FromSeconds(10), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
         Assert.DoesNotContain("private-stop-marker", failure.ToString(), StringComparison.Ordinal);
@@ -71,6 +73,7 @@ public sealed class RuntimeLifecycleTests(ITestOutputHelper output)
         StoreProbe.Execute(setup.Directory.DatabasePath, "DROP TRIGGER FailStop");
         await setup.ReopenAsync();
         Assert.Equal(RequestState.Queued, (await setup.Store.GetRequestAsync(receipt.RequestId, CancellationToken.None))?.State);
+        Assert.Equal(RequestState.Queued, (await setup.Store.GetRequestAsync(second.RequestId, CancellationToken.None))?.State);
     }
 
     /// <summary>Stop cancels queued followers while only confirmed external termination releases the active slot.</summary>

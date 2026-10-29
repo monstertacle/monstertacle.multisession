@@ -6,6 +6,13 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class CancellationTransactions
 {
+    internal static void CancelQueued(SqliteConnection connection, SqliteStoreState state, Guid sessionId, CancellationToken token)
+        => SqliteTransactions.Run(connection, transaction =>
+        {
+            QueuedCancellationTransactions.CancelSession(connection, transaction, sessionId, state.Clock.GetUtcNow(), token);
+            return true;
+        }, token);
+
     internal static RequestSnapshot Request(SqliteConnection connection, SqliteStoreState state, Guid requestId, CancellationToken token)
         => SqliteTransactions.Run(connection, transaction =>
         {

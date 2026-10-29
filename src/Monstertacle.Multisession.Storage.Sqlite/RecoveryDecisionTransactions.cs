@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Sessions;
 
 namespace Monstertacle.Multisession.Storage.Sqlite;
 
@@ -20,7 +21,7 @@ internal static class RecoveryDecisionTransactions
             RecoveryCaseSnapshot updated = item with { Revision = checked(item.Revision + 1) };
             if (decision.Kind == RecoveryDecisionKind.CloseSession)
             {
-                QueuedCancellationTransactions.CancelSession(connection, transaction, session.SessionId, now);
+                QueuedCancellationTransactions.CancelSession(connection, transaction, session.SessionId, now, token);
                 SessionTransactions.Update(connection, transaction, session with { Lifecycle = SessionLifecycle.Closing, BlockReason = SessionBlockReason.RecoveryRequired, UpdatedUtc = now, ClosedUtc = null });
             }
             else
@@ -57,22 +58,17 @@ internal static class RecoveryDecisionTransactions
                 ("$now", StoreSerialization.Utc(now)), ("$reason", RecoveryDecisionKind.ConfirmEnded.ToString()), ("$id", dispatchId.ToString("D")));
             release.ExecuteNonQuery();
         }
-        bool otherOpen = RecoveryCases.OtherOpen(connection, transaction, session.SessionId, item.Target);
-        using SqliteCommand remaining = SqliteStatements.Create(connection, transaction,
-            "SELECT (SELECT count(*) FROM Requests WHERE SessionId=$id AND State IN ($queued,$running))+(SELECT count(*) FROM Reservations WHERE SessionId=$id AND ReleasedUtc IS NULL)",
-            ("$id", session.SessionId.ToString("D")), ("$queued", (int)RequestState.Queued), ("$running", (int)RequestState.Running));
-        bool pending = !Equals(remaining.ExecuteScalar(), 0L);
-        SessionLifecycle lifecycle = session.Lifecycle == SessionLifecycle.Closing
-            ? (otherOpen || pending ? SessionLifecycle.Closing : SessionLifecycle.Closed) : SessionLifecycle.Open;
-        SessionTransactions.Update(connection, transaction, session with
+        var (active, uncertain) = SessionCloseProjection.Read(connection, transaction, session.SessionId, item.Target);
+        SessionSnapshot updated = session with
         {
-            Lifecycle = lifecycle,
-            BlockReason = otherOpen ? SessionBlockReason.RecoveryRequired : SessionBlockReason.None,
+            Lifecycle = session.Lifecycle == SessionLifecycle.Closing ? SessionLifecycle.Closing : SessionLifecycle.Open,
+            BlockReason = uncertain ? SessionBlockReason.RecoveryRequired : SessionBlockReason.None,
             Binding = binding ?? session.Binding,
             BindingRevision = binding is null ? session.BindingRevision : checked(session.BindingRevision + 1),
             UpdatedUtc = now,
-            ClosedUtc = lifecycle == SessionLifecycle.Closed ? now : null,
-        });
+            ClosedUtc = null,
+        };
+        SessionTransactions.Update(connection, transaction, SessionClosurePolicy.Refresh(updated, active, uncertain, now));
     }
 
     private static void ConfirmRequest(SqliteConnection connection, SqliteTransaction transaction, Guid requestId)

@@ -41,6 +41,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
         lock (State.Gate)
         {
             SessionSnapshot session = State.Sessions[sessionId];
+            if (session.Lifecycle is SessionLifecycle.Closing or SessionLifecycle.Closed) { throw new SessionOperationException(new(ErrorCode.SessionClosed)); }
             State.Sessions[sessionId] = session with
             {
                 Binding = binding,

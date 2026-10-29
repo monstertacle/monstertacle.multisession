@@ -34,6 +34,7 @@ internal static class SessionTransactions
         => SqliteTransactions.Run(connection, transaction =>
         {
             SessionSnapshot original = QueryTransactions.Session(connection, id, transaction) ?? throw new SessionOperationException(new(ErrorCode.NotFound));
+            if (original.Lifecycle is SessionLifecycle.Closing or SessionLifecycle.Closed) { throw new SessionOperationException(new(ErrorCode.SessionClosed)); }
             SessionSnapshot session = original with
             {
                 Binding = binding,

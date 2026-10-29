@@ -3,7 +3,7 @@ using Monstertacle.Multisession.Contracts;
 namespace Monstertacle.Multisession.Storage.Sqlite;
 
 // Serial read delegation; dispatch/history/recovery ports remain separate behavioral cycles.
-internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, IAsyncDisposable
+internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, IAsyncDisposable
 {
     protected SqliteStoreState State { get; } = state;
 
@@ -30,6 +30,13 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
 
     ValueTask<RequestSnapshot> IRequestCancellationStore.RequestCancellationAsync(Guid requestId, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => CancellationTransactions.Request(connection, State, requestId, cancellationToken), cancellationToken));
+    ValueTask IRequestCancellationStore.CancelQueuedSessionAsync(Guid sessionId, CancellationToken cancellationToken)
+        => State.Queue.WriteAsync(connection => CancellationTransactions.CancelQueued(connection, State, sessionId, cancellationToken), cancellationToken);
+
+    ValueTask<SessionSnapshot> ISessionClosureStore.BeginSessionCloseAsync(Guid sessionId, CancellationToken cancellationToken)
+        => new(State.Queue.ExecuteAsync(connection => SessionCloseTransactions.Begin(connection, State, sessionId, cancellationToken), cancellationToken));
+    ValueTask<SessionSnapshot> ISessionClosureStore.RefreshSessionCloseAsync(Guid sessionId, CancellationToken cancellationToken)
+        => new(State.Queue.ExecuteAsync(connection => SessionCloseTransactions.Refresh(connection, State, sessionId, cancellationToken), cancellationToken));
 
     public ValueTask DisposeAsync() => State.Queue.DisposeAsync();
 }

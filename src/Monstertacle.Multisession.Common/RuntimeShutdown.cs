@@ -18,23 +18,9 @@ internal sealed class RuntimeShutdown(ISessionStore store) : IDisposable
         do
         {
             Page<SessionSnapshot> page = await store.ListSessionsAsync(PageLimits.MaximumSize, cursor, token).AsTask().WaitAsync(token);
-            foreach (SessionSnapshot session in page.Items) { await CancelSessionQueuedAsync(session.SessionId, token); }
+            foreach (SessionSnapshot session in page.Items) { await store.CancelQueuedSessionAsync(session.SessionId, token).AsTask().WaitAsync(token); }
             cursor = page.NextCursor;
         } while (cursor is not null);
     }
 
-    private async ValueTask CancelSessionQueuedAsync(Guid sessionId, CancellationToken token)
-    {
-        string? cursor = null;
-        do
-        {
-            Page<RequestSnapshot> page = await store.ListRequestsAsync(sessionId, PageLimits.MaximumSize, cursor, token).AsTask().WaitAsync(token);
-            foreach (RequestSnapshot request in page.Items)
-            {
-                if (request.State != RequestState.Queued) { continue; }
-                await store.RequestCancellationAsync(request.RequestId, token).AsTask().WaitAsync(token);
-            }
-            cursor = page.NextCursor;
-        } while (cursor is not null);
-    }
 }

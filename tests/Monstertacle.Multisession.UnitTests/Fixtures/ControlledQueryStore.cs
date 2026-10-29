@@ -1,10 +1,9 @@
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.Queries;
-using Monstertacle.Multisession.Requests;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
-internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, IAsyncDisposable
+internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, IAsyncDisposable
 {
     private bool _ownsState;
     private bool _disposed;
@@ -36,22 +35,33 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
         cancellationToken.ThrowIfCancellationRequested();
         lock (State.Gate)
         {
-            RequestSnapshot before = State.Requests.GetValueOrDefault(requestId)
-                ?? throw new SessionOperationException(new(ErrorCode.NotFound, RequestId: requestId));
-            RequestSnapshot updated = RequestCancellationPolicy.Apply(before, State.Clock.GetUtcNow());
-            if (updated == before) { return ValueTask.FromResult(before); }
-            State.Requests[requestId] = updated;
-            if (before.State == RequestState.Queued)
-            {
-                ExecutionReservation local = new(Guid.NewGuid(), requestId, before.SessionId, null, updated.EndedUtc!.Value);
-                State.Dispatch.RecordCompletion(new(local, State.Sessions[before.SessionId], State.Submissions[requestId], before.Sequence,
-                    State.Sessions[before.SessionId].BindingRevision), updated.Result!);
-            }
-            else { State.Dispatch.RequestCancellation(requestId); }
-            return ValueTask.FromResult(updated);
+            return ValueTask.FromResult(ControlledRequestCancellation.Apply(State, requestId));
         }
     }
+    ValueTask IRequestCancellationStore.CancelQueuedSessionAsync(Guid sessionId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            foreach (RequestSnapshot request in State.Requests.Values.Where(item => item.SessionId == sessionId && item.State == RequestState.Queued).ToArray())
+            {
+                ControlledRequestCancellation.Apply(State, request.RequestId);
+            }
+        }
+        return ValueTask.CompletedTask;
+    }
 
+
+    ValueTask<SessionSnapshot> ISessionClosureStore.BeginSessionCloseAsync(Guid sessionId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate) { return ValueTask.FromResult(ControlledSessionClosure.Begin(State, sessionId)); }
+    }
+    ValueTask<SessionSnapshot> ISessionClosureStore.RefreshSessionCloseAsync(Guid sessionId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate) { return ValueTask.FromResult(ControlledSessionClosure.Refresh(State, sessionId)); }
+    }
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {

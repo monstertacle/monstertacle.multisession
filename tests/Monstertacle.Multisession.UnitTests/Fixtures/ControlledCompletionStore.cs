@@ -64,6 +64,7 @@ internal abstract class ControlledCompletionStore : ControlledQueryStore
                 UpdatedUtc = State.Clock.GetUtcNow().ToUniversalTime(),
             };
             State.Reservations.Remove(dispatchId);
+            ControlledSessionClosure.Refresh(State, reservation.SessionId);
         }
         DispatchState.Completed?.Invoke();
 

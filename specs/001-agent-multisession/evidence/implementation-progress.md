@@ -615,3 +615,12 @@ Codemetr 426 Dateien/443 Typen ohne Befund. Native Neubestätigung folgt.
 Vorangehender Start/Dispose-Stand 0aeed6a besteht inzwischen beide nativen
 CI-Jobs einschließlich Paket- und veröffentlichter Szenarioproben (40948989913),
 Guard 40948989712 grün. Kein finaler Stunden-/Live-/Windows-11-Beleg.
+
+2026-10-29T20:43:15Z: Native Windows-Negativmatrix um 30 Fälle ergänzt:
+lexikalische Pfade/Dateinamen, Junction, Hardlink, breite Datei-ACL, Root-ACL-
+Änderung und Lifetime-Rename. Keine Produktänderung; vorhandenes Verhalten wird
+als Regression geprüft. Lokales Volltor linux/356c193bc2a7473cbe132a9b048d7ae6:
+994 Tests, 97.4838 %, Sourcehash
+5ce4ba7061d6eb9ca5ae3939b981d5884fedacdc2f511f35c0b1bbb0ec6e8cca.
+Codemetr 428 Dateien/445 Typen ohne Befund. Windows-Code übersetzbar, tatsächliche
+Ausführung steht noch aus; keine Linuxausführung als Windows-PASS ausgegeben.

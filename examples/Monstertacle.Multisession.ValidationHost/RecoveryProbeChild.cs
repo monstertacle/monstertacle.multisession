@@ -36,7 +36,7 @@ internal sealed class RecoveryProbeChild(Process process, CrashStateManifest man
     private static async Task EndAsync(Process child)
     {
         if (!child.HasExited) { child.Kill(entireProcessTree: true); }
-        await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(30));
+        await ProcessExitWait.WaitAsync(child, TimeSpan.FromSeconds(30));
         if (OperatingSystem.IsWindows())
         {
             bool signaled = child.WaitForExit(0);

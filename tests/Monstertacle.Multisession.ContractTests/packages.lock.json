@@ -107,13 +107,13 @@
       "monstertacle.multisession.providers.gemini": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[1.0.0, )"
+          "Monstertacle.Multisession.Common": "[0.1.0, )"
         }
       },
       "monstertacle.multisession.providers.openai": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[1.0.0, )"
+          "Monstertacle.Multisession.Common": "[0.1.0, )"
         }
       },
       "Microsoft.Extensions.Logging.Abstractions": {

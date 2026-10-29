@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.Json;
+using Microsoft.Data.Sqlite;
 using Monstertacle.Multisession.IntegrationTests.Fixtures;
 using Xunit;
 
@@ -82,6 +84,11 @@ public sealed class ValidationScenarioTests
         using JsonDocument report = JsonDocument.Parse(result.Output);
         Assert.Equal("PASS", report.RootElement.GetProperty("Status").GetString());
         Assert.Equal(scenario, report.RootElement.GetProperty("Scenario").GetString());
+        Assert.Equal(RuntimeInformation.OSDescription, report.RootElement.GetProperty("OperatingSystem").GetString());
+        Assert.Equal(Environment.Version.ToString(), report.RootElement.GetProperty("RuntimeVersion").GetString());
+        using SqliteConnection version = new("Data Source=:memory:");
+        version.Open();
+        Assert.Equal(version.ServerVersion, report.RootElement.GetProperty("SqliteVersion").GetString());
         string database = Path.Combine(Assert.Single(Directory.GetDirectories(root)), "multisession.db");
         if (!requireDatabase) { return Path.GetDirectoryName(database)!; }
         Assert.True(File.Exists(database));

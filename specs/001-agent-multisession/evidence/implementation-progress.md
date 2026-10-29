@@ -569,3 +569,21 @@ archiviert; reine Belegkopien tragen Program.cs.txt, damit keine doppelten
 Deklarationen in den unveränderten Full-Context gelangen. Tatsächliches
 Consumer-Program.cs bleibt gebaut und explizit gemessen. Lokaler Smoke grün,
 Fullguard wieder 423 Dateien/440 Typen ohne Befund und ohne Kontextwarnungen.
+
+2026-10-29T20:12:32Z: Framework-dependent Publish für linux-x64/win-x64 grün.
+Alle 14 endlichen Szenarien liefen aus einer tatsächlichen Linux-Publishkopie
+außerhalb des Quellbaums erfolgreich, darunter zehn native Recovery-Kills.
+Lokales System ist Debian 13, Runtime 10.0.14, SQLite 3.53.3; dies ist kein
+Ubuntu-/Windows-Nachweis. Neue PASS-Umgebungsfelder nach fachlichem Rotfall
+integriert; 41 CLI-/Rootregressionen grün. Volltor linux/f752108e060344fc92563ff29f67f567:
+990 Tests, 97.5677 %, Sourcehash
+70de4335d7e4b7c1b07703d8e5772ed87c2a5ba2e1d7ac2bfe5e6a49b37a5a29,
+Codemetr 423 Dateien/440 Typen ohne Befund. Keine externen NuGet-Versionen
+geändert; nur eigene Versionsbereiche und notwendige RID-Einträge nachgezogen.
+CI führt diese veröffentlichten Szenarien künftig ebenfalls nativ aus.
+
+Native CI 40944762866 für 06fd25f ist auf Windows Server 2025 und Ubuntu 24.04
+vollständig grün einschließlich echter NuGet-Konsumenten. Identischer Sourcehash
+351537e447b1704b73b31be6b432cf1405cddb98d9a1f934309ef01af2d0e1ac;
+Linux 97.5677 %, Windows 97.3887 %. Guard 40944762791 grün. Diese Nachweise
+sind ein geprüfter Zwischenstand, keine finale Zielsystem-/Stunden-/Livefreigabe.

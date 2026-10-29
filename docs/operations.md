@@ -172,3 +172,8 @@ Metadaten können Herstelleraliase beschreiben; die Bibliothek speichert daraus 
 neue Modellauswahl. Ein erfolgreicher Read ist ein Zugangs-/Existenzbeleg zu diesem
 Zeitpunkt, keine Zusage künftiger Quote oder Generierung. Der direkte Lazy-Reopen von
 Gemini bleibt ohne HTTP; die zusätzliche Verfügbarkeitsfacette ist ausdrücklich getrennt.
+
+`SubmitRequest.Timeout` ist die maßgebliche Frist jedes ausdrücklich eingereichten
+Auftrags. Ein Host kann seinen Default aus `RuntimeOptions.RequestTimeout` übernehmen;
+dieser Optionswert begrenzt außerdem die Startup-Reopen-/Availability- und Recoveryreads.
+Ein bereits angenommener Auftrag verbraucht seine Ausführungsfrist während Queued nicht.

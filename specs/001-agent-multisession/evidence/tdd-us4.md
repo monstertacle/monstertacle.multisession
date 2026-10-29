@@ -305,3 +305,32 @@ Fullguard 434Dateien/452Typen, keine Verstöße/Parsefehler/übersprungenen Date
 Native CI folgt; Windows-11-/Netzwerkfilesystem-Abnahme bleibt unbehauptet.
 Gemessener Sourcehash dieses vollständigen grünen Stands:
 `a55d178360a2c11c9a5427a693cffb7d1d130c64928d7eb1187318e11b62d1e0`.
+
+## T124: exakt derselbe kanonische Paketstand
+
+NativeProduzent40962572345 hatte bei identischem Sourcehash unterschiedliche sechs
+Windows-/Linuxarchive, einschließlich unterschiedlicher DLL-/XMLbytes; deshalb kein
+identischer Paketkonsum daraus behauptet. Analyse vor Änderung
+architecture/2026-10-29-canonical-package-consumption.md. Nach Quality lädt jetzt ein
+zweiter nativer Consumerjob je OS dasselbe Linux-Artefakt desselben Workflowruns.
+
+`canonical-package-hashes-red.log`: lax ausführbarer Prüfer akzeptiert sechs tatsächlich
+manipulierte/fehlende/zusätzliche/doppelte/ungültige/fehlgeschlagene Produzentenfälle;
+6fachlichrot/1positivgrün. Vor Green HEAD/Diff/Untracked-Tar archiviert. Minimaler
+Hashprüfer kontrolliert exaktes Dateiset vor Hash-I/O und alle sechs Archivdigests;
+NuGetlayout bleibt bei bestehendem Test-PackageLayout, keine doppelte Regel.
+Ein Parserfehler im ersten Greenversuch war kein fachlicher Red; positiver Testfall
+verhinderte korrekt einen falschen Gesamtpass trotz sechs negativer Exitcodes.
+
+Echter Produzentenreport enthält zusätzlich vier Inputhashes. Zuerst separater echter
+Redfall canonical-producer-input-hashes-red.log: gültiges10er-Metadatenmanifest wird
+abgewiesen (1rot/7grün). Danach ausschließlich dessen sechs nupkg-Einträge ausgewählt,
+alle acht Verhaltenstests und echter zuvor abgewiesener Produzentreport grün. Beide
+Redquellstände archiviert. Tests laufen künftig in beiden vollen nativen Qualitätstoren.
+YAML mit tatsächlichem Rubyparser auf Producerupload/needs-Graph geprüft, Exit0.
+Keine Library-/Paketversions-/Consumerimplementierungsänderung.
+
+Volltor linux/31cfc003e1ea48dc9c72ee8037ada854:1036C#Tests und zusätzliche acht
+Hashprüferfälle bestanden,97.5796 %. Fullguard440Dateien/458Typen ohne Befund.
+Native neue Consumerjobs und RequiredChecks folgen erst nach tatsächlichem Green.
+Stundenbelege älterer Sourcehashes bleiben Checkpoints, kein Ersatz für neuen Lieferstand.

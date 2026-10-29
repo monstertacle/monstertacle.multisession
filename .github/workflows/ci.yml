@@ -68,3 +68,42 @@ jobs:
             artifacts/publish/
             artifacts/validation-scenarios/
           if-no-files-found: error
+
+  canonical-consumer:
+    needs: quality
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+        include:
+          - os: ubuntu-24.04
+            platform: linux
+          - os: windows-latest
+            platform: windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages-and-consumer-linux
+          path: artifacts/canonical-input
+      - name: Verify and consume identical producer package bytes
+        shell: pwsh
+        run: |
+          dotnet tool restore
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
+          $manifests = @(Get-ChildItem artifacts/canonical-input/package-smoke -Filter manifest.json -Recurse -File)
+          if ($manifests.Count -ne 1) { throw 'Expected exactly one successful package producer manifest.' }
+          ./eng/Test-CanonicalPackageHashes.ps1 -ProducerManifest $manifests[0].FullName -PackageDirectory artifacts/canonical-input/packages > artifacts/canonical-package-source.json
+          ./eng/PackageSmoke.ps1 -PackageDirectory artifacts/canonical-input/packages
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: canonical-consumer-${{ matrix.platform }}
+          path: |
+            artifacts/canonical-package-source.json
+            artifacts/package-smoke/
+          if-no-files-found: error

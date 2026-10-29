@@ -45,6 +45,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Coverage gate behavior tests failed.' }
     & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-SourceHash.Tests.ps1
     if ($LASTEXITCODE -ne 0) { throw 'Source hash behavior tests failed.' }
+    & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-CanonicalPackageHashes.Tests.ps1
+    if ($LASTEXITCODE -ne 0) { throw 'Canonical package hash behavior tests failed.' }
 
     # A new directory per invocation prevents old reports from contributing to this run.
     foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests')) {

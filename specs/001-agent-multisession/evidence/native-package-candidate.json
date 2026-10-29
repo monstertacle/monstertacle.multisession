@@ -1,0 +1,43 @@
+{
+  "SourceHash": "95780bfa75c745cd0adb804e0a1ac3dfcea6474169900c8ab402990248e40f5b",
+  "Workflow": 40962572345,
+  "MeasuredUtc": "2026-10-29T22:18:56.1340783+00:00",
+  "Packages": [
+    {
+      "Name": "Monstertacle.Multisession.Common.0.1.0.nupkg",
+      "LinuxSha256": "5e5a7f1f2205370a1342aa07bf456d3dc2d2d59b18b595fdc4e948be6ff735fd",
+      "WindowsSha256": "b0a55d990d96baed59e6bee560acb706ba4266333462c6c43f13a4399bf3f7d1",
+      "Identical": false
+    },
+    {
+      "Name": "Monstertacle.Multisession.Linux.0.1.0.nupkg",
+      "LinuxSha256": "38261f651b57267779ab45076424616f2818322b1b59ddfc96263f6ce753088d",
+      "WindowsSha256": "4a7354f5963eeee721cac37c27e6ad5adb49a322c614c9a317b785363fda976a",
+      "Identical": false
+    },
+    {
+      "Name": "Monstertacle.Multisession.Providers.Gemini.0.1.0.nupkg",
+      "LinuxSha256": "237c730aa92fa1a2934664048948b82a15570d145d7486f6c368e4b4489bec4f",
+      "WindowsSha256": "5ba083f16cf3a2655a7b593025f1e0e528545c51ca4fcb9c33f73d6b73fc26ac",
+      "Identical": false
+    },
+    {
+      "Name": "Monstertacle.Multisession.Providers.OpenAI.0.1.0.nupkg",
+      "LinuxSha256": "862db99a072e058528d0d127e9b18497f6010179252e2cd3f827adeac4fcf4cd",
+      "WindowsSha256": "8675dcf08dd381e9cdb0a6fbbaf5b258596de9cd8338d10389bbca2e1d6fddbd",
+      "Identical": false
+    },
+    {
+      "Name": "Monstertacle.Multisession.Storage.Sqlite.0.1.0.nupkg",
+      "LinuxSha256": "a26f3ca72c282e4d6fafc3d52fe1a3bbdc2906096dd0b0413d01e2f6bbea0246",
+      "WindowsSha256": "9c52cb9a2850620fbab042147f3bca54c667131a41aaf84b18156a6c27cfa413",
+      "Identical": false
+    },
+    {
+      "Name": "Monstertacle.Multisession.Windows.0.1.0.nupkg",
+      "LinuxSha256": "94192727fb58eb1701b5ff4c8016d95c9f746173ca30e3552c0f550e3fdd21ab",
+      "WindowsSha256": "dee5923b58a2a71507ce88f3e4bb106a7c714dfe9f4289337c6bcb674401e834",
+      "Identical": false
+    }
+  ]
+}

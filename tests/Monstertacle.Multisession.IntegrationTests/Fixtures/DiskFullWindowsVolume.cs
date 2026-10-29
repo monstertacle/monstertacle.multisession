@@ -25,7 +25,7 @@ internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncD
         string drive = letter + @":\";
         string script = $"create vdisk file=\"{_image}\" maximum=64 type=expandable\nattach vdisk\ncreate partition primary\nformat fs=ntfs unit=4096 quick label={_label}\nassign letter={letter}\nexit\n";
         ProbeProcessResult created = await DiskpartAsync("create-volume.txt", script);
-        if (created.ExitCode != 0) { throw new InvalidOperationException("Private VHD preparation failed."); }
+        if (created.ExitCode != 0) { throw new InvalidOperationException($"Private VHD preparation failed: {created.Output} {created.Error}"); }
         DriveInfo info = new(drive);
         if (!info.IsReady || info.VolumeLabel != _label || info.TotalSize > 128L * 1024 * 1024) { throw new InvalidOperationException("Private VHD identity is not confirmed."); }
         StateDirectory = Path.Combine(drive, "multisession-" + nonce);
@@ -41,6 +41,7 @@ internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncD
     public async ValueTask DisposeAsync()
     {
         if (!_mayOwnImage || !File.Exists(_image)) { return; }
+        await Task.Delay(TimeSpan.FromSeconds(15)); // Diskpart requires shutdown time between scripts.
         await DiskpartAsync("detach-volume.txt", $"select vdisk file=\"{_image}\"\ndetach vdisk\nexit\n");
         File.Delete(_image); // A remaining attachment must surface as a cleanup failure.
         _mayOwnImage = false;
@@ -49,7 +50,8 @@ internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncD
     private async Task<ProbeProcessResult> DiskpartAsync(string name, string script)
     {
         string path = Path.Combine(root, name);
-        await File.WriteAllTextAsync(path, script, Encoding.Unicode);
+        if (script.Any(character => character > 127)) { throw new InvalidOperationException("Diskpart probe requires an ASCII temporary path."); }
+        await File.WriteAllTextAsync(path, script.Replace("\n", "\r\n", StringComparison.Ordinal), Encoding.ASCII);
         ProcessStartInfo start = new("diskpart.exe") { WorkingDirectory = root };
         start.ArgumentList.Add("/s");
         start.ArgumentList.Add(path);

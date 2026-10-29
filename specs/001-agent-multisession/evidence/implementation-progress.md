@@ -258,3 +258,11 @@ vorbereitet, nativeCI noch offen; ursprünglicher Retentioncommitf838da6 ist nat
 sauber; Qualitätslauf84e356af705e4681bdfcd3aec1f9a23e. Tdd-us5 und Vorabanalyse erläutern
 Isolation, Grenzen, Quellen und genaue Erstfarben. Nach nativer Nachprüfung verbleiben
 Matrix-/TDDaudit, Fristen/Fehlerisolation/Diagnostik sowie native Ownership/Konsum/Freigaben.
+
+Native Speicherfehler-Fixture nach CI40893625049 korrigiert: Ubuntu blockiert Usernamespace,
+privater Mount mit sofortiger Benutzerabgabe geprüft; Windows Diskpart ASCII/CRLF und
+15sDetachabstand, stdout/stderr bei Vorbereitungsfehler. Lokaler explizit erzwungener
+privilegierter Mountpfad1/1grün. Volltor linux/bc0d6159bdba4a1da538b9ba03dc86e6:
+664Tests,0Fehler/Skips,2271/2343=96.9270%,Codemetr ohne Befunde.
+Windows-/Ubuntu-Wiederholung bleibt bis zum neuen nativen Lauf offen; kein Produktfix,
+kein fachlicher Red aus dem Namespace-/Diskpartfehler abgeleitet.

@@ -30,7 +30,9 @@ internal static class DiskFullHarness
             await File.WriteAllTextAsync(Path.Combine(root.StateDirectory, DiskFullProtocol.MarkerFile), nonce);
             await File.WriteAllTextAsync(Path.Combine(root.StateDirectory, DiskFullProtocol.ManifestFile),
                 JsonSerializer.Serialize(new DiskFullManifest(seed.Host.Directory.TrustScopeId, seed.Session.SessionId, seed.Receipt.RequestId, state)));
-            ProcessStartInfo start = BuildStart(root.StateDirectory, nonce);
+            ProcessStartInfo start = OperatingSystem.IsLinux()
+                ? await DiskFullLinuxProcess.BuildAsync(root.StateDirectory, nonce)
+                : BuildStart(root.StateDirectory, nonce);
             return await ProbeProcess.RunAsync(start);
         }
         finally { if (OperatingSystem.IsWindows() && windows is not null) { await windows.DisposeAsync(); } }
@@ -39,13 +41,8 @@ internal static class DiskFullHarness
     private static ProcessStartInfo BuildStart(string root, string nonce)
     {
         string worker = ValidationHostBuild.WorkerPath();
-        ProcessStartInfo start = new(OperatingSystem.IsWindows() ? "dotnet" : "unshare") { WorkingDirectory = root };
-        if (OperatingSystem.IsLinux())
-        {
-            string script = "set -eu; umask 077; mount -t tmpfs -o size=8m,mode=700,nodev,nosuid,noexec tmpfs \"$1/volume\"; printf '%s' \"$3\" > \"$1/volume/.disk-full-marker\"; exec dotnet \"$2\" --disk-full-worker \"$1\" \"$3\"";
-            foreach (string argument in new[] { "--user", "--map-root-user", "--mount", "--propagation", "private", "sh", "-c", script, "multisession-disk-full", root, worker, nonce }) { start.ArgumentList.Add(argument); }
-        }
-        else if (OperatingSystem.IsWindows())
+        ProcessStartInfo start = new("dotnet") { WorkingDirectory = root };
+        if (OperatingSystem.IsWindows())
         {
             foreach (string argument in new[] { worker, DiskFullProtocol.WorkerArgument, root, nonce }) { start.ArgumentList.Add(argument); }
         }

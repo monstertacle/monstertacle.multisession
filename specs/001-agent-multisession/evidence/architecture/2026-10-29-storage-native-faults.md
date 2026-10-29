@@ -60,3 +60,22 @@ fokussieren/abtrennen, keine vorhandene Disk auswählen. Quelle für Sequenz att
 partition→format→assign: MicrosoftLearn
 https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/boot-to-vhd--native-boot--add-a-virtual-hard-disk-to-the-boot-menu?view=windows-11
 und assign-Syntax oben. Scriptdateien in UTF16 für Windows, Prozessargumente strukturiert.
+
+## Native CI-Fixturekorrektur vor Umsetzung
+
+Gemessen2026-10-29T14:46:42Z, Ausgang33b262a. DiskFullHarness SHA256
+0056f1b2f783bdb290c1f625be56f78b74bdcc8ff1486d62666cb1fa729e2ebd,
+DiskFullWindowsVolume d969346707cc45b591d95d507be5e91a94473e7097ada70b6a546d4bf4db82f7.
+Qualitätslauf40893625049: Ubuntu uid_map EPERM vor Workerstart; Windows VHDpreparation
+Exit!=0 ohne bisher ausreichende Diagnose. Produktgraph unverändert, kein fachlicher Red.
+Fixtureentscheidung: zuerst nebenwirkungsfreie rootlose Namespaceprobe; wenn nicht verfügbar,
+sudo-n mit harter äußerer50sFrist, private Mountnamespace, tmpfs uid/gid des ursprünglichen
+Benutzers; vor Worker exec setpriv reuid/regid/clear-groups. Kein globales sysctl/AppArmorändern,
+kein Worker mit Rootrechten, kein Mount im Hostnamespace. Fehlende sudo/setpriv bleiben Fehler.
+Gezielte lokale Probe muss auch diesen Pfad tatsächlich ausführen.
+Windows Script ohne BOM als ASCII und CRLF, da offizielles MicrosoftSupport-Beispiel
+https://support.microsoft.com/it-it/servicing/os/windows/2024/02/kb5035679-instructions-to-run-a-script-to-resize-the-recovery-partition-to-install-a-winre-update
+Diskpart-Dateien mit Out-File-Encoding-ascii schreibt. Nicht darstellbare Pfade explizit
+abweisen statt ersetzen. Bei Fehler begrenzte stdout/stderr der eigenen Diskpartprobe zeigen.
+MicrosoftLearn diskpart-scripts-and-examples fordert15s zwischen zwei Scriptaufrufen;
+diese Pause gilt auch vor dem eigenen Detach. Native CI erneut nötig; kein WindowsPASS lokal.

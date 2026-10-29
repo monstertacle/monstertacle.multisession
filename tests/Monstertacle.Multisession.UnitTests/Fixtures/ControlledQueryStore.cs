@@ -3,47 +3,20 @@ using Monstertacle.Multisession.Queries;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
-internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, ISessionRetentionStore, IAsyncDisposable
+internal abstract class ControlledQueryStore : ControlledStoreLifetime, ISessionQueryStore, IRequestCancellationStore, ISessionClosureStore, ISessionRetentionStore, ISessionStatisticsStore
 {
-    private bool _ownsState;
-    private bool _disposed;
-    protected abstract ControlledStoreState State { get; }
-    public Func<ValueTask>? Disposing { get; init; }
-    public Func<RuntimeOptions, CancellationToken, ValueTask>? ValidatingOptions { get; init; }
-
-    async ValueTask IStoreBootstrap.ValidateRuntimeOptionsAsync(RuntimeOptions options, CancellationToken cancellationToken)
+    public Func<CancellationToken, ValueTask<RuntimeStatistics>>? ReadingStatistics { get; init; }
+    ValueTask<RuntimeStatistics> ISessionStatisticsStore.GetRuntimeStatisticsAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (ValidatingOptions is not null) { await ValidatingOptions(options, cancellationToken); }
-        cancellationToken.ThrowIfCancellationRequested();
-        if (options.Validate() is { } failure) { throw new SessionOperationException(failure); }
+        if (ReadingStatistics is not null) { return ReadingStatistics(cancellationToken); }
         lock (State.Gate)
         {
-            if (State.Started) { throw new SessionOperationException(new(ErrorCode.StoreAlreadyOwned)); }
-            State.RuntimeOptions = options;
+            return ValueTask.FromResult(new RuntimeStatistics(State.Requests.Values.Count(item => item.State == RequestState.Queued),
+                State.Reservations.Count, State.Reservations.Values.Count(item => State.Requests[item.RequestId].Certainty == ExecutionCertainty.Unknown)));
         }
     }
 
-    ValueTask IStoreBootstrap.StartAsync(IStateDirectoryLease lease, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        lock (State.Gate)
-        {
-            if (_disposed || !lease.IsHeld) { throw new SessionOperationException(new PublicError(ErrorCode.InvalidConfiguration)); }
-            if (State.Started) { throw new SessionOperationException(new PublicError(ErrorCode.StoreAlreadyOwned)); }
-            ControlledStoreBootstrap.Recover(State);
-            State.Started = true;
-            State.Accepting = true;
-            _ownsState = true;
-        }
-        return ValueTask.CompletedTask;
-    }
-    ValueTask IStoreBootstrap.StopAcceptanceAsync(CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        lock (State.Gate) { State.Accepting = false; }
-        return ValueTask.CompletedTask;
-    }
     ValueTask<RequestSnapshot> IRequestCancellationStore.RequestCancellationAsync(Guid requestId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -82,16 +55,6 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
         cancellationToken.ThrowIfCancellationRequested();
         lock (State.Gate) { ControlledSessionDeletion.Apply(State, sessionId); }
         return ValueTask.CompletedTask;
-    }
-
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        if (Disposing is not null) { await Disposing(); }
-        lock (State.Gate)
-        {
-            if (_ownsState) { State.Started = false; State.Accepting = false; _ownsState = false; }
-            _disposed = true;
-        }
     }
 
     async ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)

@@ -123,4 +123,4 @@ Optionale Diagnosen werden über ein hosteigenes `SessionDiagnostics` an `Sessio
 liefern strukturierte ILogger-Ereignisse und Activities mit lokalen Kennungen, Zustand,
 Gewissheit, Dauer und öffentlicher Fehlerkategorie. Eingaben, Ausgaben, Bindungen und
 Workspaceinhalte werden nicht gemeldet. Logger-/Listenerexceptions sind isoliert;
-`FailureCount` zählt sie. Metriken und die vollständige Diagnoseabnahme sind noch offen.
+`FailureCount` zählt sie. Ein eigenes Diagnoseobjekt je Runtime hält außerdem BCL-Dauerhistogramme, einen Zähler beobachteter Abschlüsse und gecachte Queue-/Reservierungsgauges. Der Monitor liest initial und mit einer Sekunde Pause; fehlende oder veraltete Werte werden bei Lesefehler/Stop zurückgezogen. Die vollständige Diagnoseabnahme ist noch offen.

@@ -262,3 +262,22 @@ explizites Reopen darf eine neue gültige Hostkonfiguration wählen. Löschung e
 lokale Resultate, Historie, freigegebene Reservierungen sowie aufgelöste Fälle/Entscheidungen
 nur dieser Sitzung. Andere Sessions und Storemetadaten bleiben erhalten. Keine Zusage
 physischer SQLite-Seitensäuberung, externer Herstellerlöschung oder Backupentfernung.
+
+## 8. Optionale lokale Diagnosen
+
+Ein hosteigenes `SessionDiagnostics` je Runtime wird als optionaler sechster
+Konstruktorparameter übergeben und vom Host erst nach Runtimeende entsorgt.
+`SourceName` identifiziert ActivitySource und Meter. `InstanceId` korreliert Logs/Traces;
+bei Metriken unterscheidet `Meter.Scope` die lokale Instrumentinstanz. Messlabels
+enthalten ausschließlich `request.state`, `execution.certainty` und `error.code`,
+keine lokalen oder nativen IDs. `FailureCount` zählt abgefangene Senken-/Samplingfehler.
+
+Annahme-/Ausführungsdauerhistogramme verwenden Sekunden. `multisession.requests.completed`
+zählt beobachtete, bestätigt gespeicherte Abschlüsse dieser Instrumentierung; historische
+Ergebnisse und verlorene Commitbestätigungen sind keine zusätzlich behaupteten Events.
+Queue-/Occupied-/Unknown-Gauges beruhen auf `ISessionStatisticsStore.GetRuntimeStatisticsAsync`
+als einer konsistenten lokalen Leseprojektion. Occupied schließt Unknown ein. Der Runtime-
+Monitor aktualisiert initial und nach jeweils einer Sekunde Pause. Observablecallbacks
+lesen nur den atomaren Cache, blockieren keine DBqueue. Bis zur ersten Probe, bei Fehler
+und nach Stop werden Werte zurückgezogen, nicht als Null interpretiert. Cachewerte sind
+keine Kapazitätsentscheidung. Die vollständige Lifecycle-Diagnoseabnahme ist weiterhin offen.

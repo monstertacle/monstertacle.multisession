@@ -35,3 +35,50 @@ Bekannter Commit muss trotz Logger-/Activityfehler sein Receipt/Result behalten.
 nur nach erfolgreich bestätigtem MarkUncertain melden, nicht nach verlorenem Storewrite.
 BCL-Metriken/aktuelle Queue-/Reservierungsstände und komplette US3-Matrix bleiben nach
 besonderem nachfolgenden Testschritt offen; T074/T081 erst nach gesamter Abnahme schließen.
+
+## Metrikschnitt vor Umsetzung
+
+Bestand b80e47c. SessionDiagnostics meldet bereits nach bestätigten Writes, Dispatcher
+Kopplung39: dort keine weitere Mess-/Storeverantwortlichkeit ergänzen. BCL-Metriken in
+separate SessionMeasurements, mit hosteigenem Meter, zwei Sekundenhistogrammen und
+Ergebniszähler; Labels nur definierte endliche Outcome-/Certainty-/Fehlerkategorien.
+Keine Instanz-/Session-/Request-/Dispatch-/Workspace-/Providerkennungen als Labels.
+Jeder synchrone Listenerfehler getrennt abfangen und über FailureCount sichtbar machen.
+ObservableGauges lesen ausschließlich einen atomar veröffentlichten RuntimeStatistics-
+Snapshot, niemals synchron Store-/Provider-I/O. Unbekannter Stand gibt keine Messung,
+kein erfundenes Null. Aktive Reservierungen bedeutet alle belegten Slots, Unknown ist
+Teilmenge davon. Neue readonly Storefacette liest Queue/Reservations/Unknown als einen
+konsistenten SQLsnapshot; keine fachlichen Writes oder Schemanummeränderung.
+Primärquelle https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-instrumentation
+empfiehlt Histogramme für Zeiten, schnell gelesene Cachewerte in Observablecallbacks und
+synchronisierten Zugriff. Erst separate Metriktests gegen fehlende Instrumente rot,
+dann Port-/SQLtests gegen verhaltenslose Signatur rot. Runtime-Statistikrefresh separat
+mit beobachtetem Red; kein unawaiteter Hosttask ohne Stop-/Disposegrenze. Alle neuen
+Messungen bleiben für Steuerungsentscheidungen unmaßgeblich.
+Messung2026-10-29T14:59:09Z: SessionDiagnostics80705420e29fc12a2625cb5fce584d142cf54fefb06f68642cc0778b83a36d3f,
+RuntimeLifecycle2abd5163c991872403bc1550da2d9c6d489f55ee038789fb15086483f477a9fa,
+SqliteQueryStore02309f558810f91c809ed1210c181e64ab998d5b016cf1c01d9069100f287fea,
+ControlledQueryStore0e98242d99e01bf05b53ab832e72b80e014c0562b4769bc0bc1ad8c06dc6183e.
+Schema Reservations behält freigegebene Zeilen: Gauges müssen ReleasedUtcISNULL filtern;
+Unknown kommt aus zugehöriger Request.Certainty, nicht aus Anzahl Recoveryfälle.
+
+Runtime-Refreshentscheidung vor Produktcode: eigener RuntimeStatisticsMonitor in
+RuntimeComponents als sechste Komponente (Lifecycle bleibt8Felder). Nur bei vorhandenem
+SessionDiagnostics wird ein eigener beobachteter Task gestartet. Anfangssample, dann
+1sPause; GetRuntimeStatistics per await plus Monitorstop-Token-WaitAsync. Keine fachliche
+Workerzählung/Signalslotänderung. Readfehler ziehen veralteten Cache zurück, zählen
+Diagnosefehler, werfen nicht in fachliche Worker. Cleanup cancelt/awaitet Monitor vor
+Store-/Leasefreigabe. Ignoriert ein Test-/Drittstore das Token, beendet WaitAsync nur den
+Monitorawait; keine weiteren Reads nach Stop. SQLitequeue bleibt selbst verantwortlich
+für ihre eigenen begrenzten Reads und Dispose. Native QueueOrder-Stateindex wird für
+Queued genutzt; aktive Reservationindizes und Request-PK für Unknownjoin.
+Neue Monitor-Redfälle: kein Sample ohne Hook, fehlende Fehlerisolation, fehlendes
+Stopawait/Cachewithdrawal; separater Stopfall mit absichtlich tokenignorierendem Read.
+
+Codemetr nach Metrikschnitt meldet Kopplung43>40 im kontrollierten QueryStore. Bestehender
+Teststore mischt Bootstrap-/Disposeownership mit Query-/Lifecycleprojektionen. Vor reiner
+Zerlegung bestehen16Diagnose-/Monitor- und3SQLstatistikfälle. Ownership/Bootstrap werden
+als gemeinsame abstrakte Basisklasse herausgezogen; bestehende Übergänge und Locks bleiben
+wörtlich erhalten. InMemory→Completion→Query→Lifetime ergibt Tiefe3 innerhalb bestehendem
+Limit3; alle Consumer verlinken denselben Lifetimequelltext. Guardgrenzen unverändert,
+keine neue Produktfunktion; vollständige Vertragsregression nach Refactoring erforderlich.

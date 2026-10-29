@@ -19,6 +19,7 @@
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledPageProjection.cs" Link="Fixtures/ControlledPageProjection.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledCompletionStore.cs" Link="Fixtures/ControlledCompletionStore.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledQueryStore.cs" Link="Fixtures/ControlledQueryStore.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledStoreLifetime.cs" Link="Fixtures/ControlledStoreLifetime.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledRecoveryState.cs" Link="Fixtures/ControlledRecoveryState.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledDispatchState.cs" Link="Fixtures/ControlledDispatchState.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/SchedulingData.cs" Link="Fixtures/SchedulingData.cs" />

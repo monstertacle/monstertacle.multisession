@@ -23,7 +23,7 @@ internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncD
         string[] used = Environment.GetLogicalDrives();
         char letter = _probeLetters.First(candidate => !used.Contains(candidate + @":\", StringComparer.OrdinalIgnoreCase));
         string drive = letter + @":\";
-        string script = $"create vdisk file=\"{_image}\" maximum=64 type=expandable\nattach vdisk\ncreate partition primary\nformat fs=ntfs quick label={_label}\nassign letter={letter}\nexit\n";
+        string script = $"create vdisk file=\"{_image}\" maximum=128 type=expandable\nattach vdisk\ncreate partition primary\nfilesystems\nformat fs=ntfs quick label={_label}\nassign letter={letter}\nexit\n";
         ProbeProcessResult created = await DiskpartAsync("create-volume.txt", script);
         if (created.ExitCode != 0) { throw new InvalidOperationException($"Private VHD preparation failed: {created.Output} {created.Error}"); }
         DriveInfo info = new(drive);

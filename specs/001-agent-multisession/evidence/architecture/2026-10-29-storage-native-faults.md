@@ -89,3 +89,11 @@ keine Kapazitätsgrenze aufweiten. Primärbeleg für VHD512/VHDX4096physicaldefa
 https://learn.microsoft.com/en-us/windows-server/administration/performance-tuning/role/hyper-v-server/storage-io-performance .
 Format-Defaults: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/format .
 Gleiche native Testabnahme bleibt zwingend; Formatversagen bleibt Fehler.
+
+Lauf40896833128 nach b80e47c: VHD64MiB wird ebenfalls erfolgreich erstellt/attached,
+FormatNTFS-default erneut parameterincorrect. Gemessener Quellen-/Logabruf2026-10-29T15:03:48Z,
+artifacts/tdd/storage-vhd-ci-failure.log. Sektorhypothese reicht als Erklärung nicht aus.
+Nächste isolierte Sondierung128MiB innerhalb bestehender harter128MiBGrenze; diskpart
+filesystems vor Format liefert auf dem echten Host die Formatmöglichkeiten. Kein Fallenlassen
+von NTFS-ACL, kein Skip und kein Weiten des Füllerlimits. Wenn weiterhin Fehler, Diagnose
+am Host fortsetzen; dieser Zustand ist keine native Abnahme.

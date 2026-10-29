@@ -58,7 +58,8 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             RequestAdmission admission = new(host.Store, options, host.Clock);
             RecoveryService recovery = new(host.Store, host.Providers, options);
             _components = new(new RuntimeSessions(this, catalog), new RuntimeRequests(this, admission, host.Diagnostics),
-                new RuntimeRecovery(this, recovery), new(host.Store, host.Providers, options, host.Clock, host.Diagnostics), options);
+                new RuntimeRecovery(this, recovery), new(host.Store, host.Providers, options, host.Clock, host.Diagnostics), options,
+                new(host.Store, host.Diagnostics));
             lock (_gate)
             {
                 _stop = new();
@@ -183,6 +184,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
 
     private async Task CleanupCoreAsync()
     {
+        if (_components is { } components) { await components.Statistics.DisposeAsync(); }
         await host.Store.DisposeAsync();
         await host.Lease.DisposeAsync();
         lock (_gate)

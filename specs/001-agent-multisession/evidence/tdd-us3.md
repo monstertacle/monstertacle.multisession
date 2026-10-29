@@ -335,3 +335,36 @@ BCL-Metriken, Queue-/Reservierungsprojektion und weitere Lifecycleübergänge fe
 T074/T081 bleiben ausdrücklich offen. Volltor a9fcc13f43c84e61b7e3388fd5883066 hatte
 alle Tests grün, verwarf seinen Gesamtnachweis aber korrekt wegen zwischenzeitlicher
 Quelländerung. Es ist kein finaler grüner Qualitätslauf; unveränderten Stand erneut prüfen.
+
+## T074/T081 Metriken und lokale Statistik
+
+Architektur vor Erweiterung im selben Diagnosenachweis, Quellhashes und primäre BCLquelle
+angegeben. Tatsächlich ausführbare Redläufe (Exit1): metrics-red2/2 mangels Histogrammen/
+Zähler, statistics-red2/2 wegen falscher Nullbelegung und ignorierter Cancelreads,
+gauges-red1/1 wegen fehlender Cacheinstrumente, statistics-monitor-red3/3 wegen fehlendem
+Sampleaufruf. Vorherige Analyzer-/Compilefehler sind kein fachliches Red.
+Green: metrics-green12/12Diagnosefälle, statistics-green2/2SQLfälle,
+statistics-monitor-green16/16Diagnose-/Monitorfälle. statistics-runtime-green3/3 ist
+der echte SQLitewiederanlauf mit Queue1/Occupied1/Unknown1, zusätzlich sofort grüne
+Regression, kein rückwirkend behauptetes Red. Der erste SQLgreen-Versuch verfehlte
+ConfirmEnded wegen eines fehlenden Bindungsbelegs im Test; Test nutzt nun ausdrücklich
+bestätigte ursprüngliche Bindung, keine Aufweichung der Recoveryregel.
+
+Readonly ISessionStatisticsStore mit einem atomaren SELECT, ReleasedUtcISNULL und
+Request.CertaintyUnknown statt Recoveryfallanzahl. RuntimeStatisticsMonitor hat einen
+beobachteten eigenen Task, initiales Sample und1sPause. Datenlesefehler isoliert mit
+FailureCount/Cachewithdrawal; Cleanup cancelt/awaitet vor Store-/Leasefreigabe. Kein I/O
+in Observablecallback und keine unendliche Stopabhängigkeit von tokenignorierendem Read.
+Metriksnapshot ist Diagnose, niemals Scheduling-/Kapazitätsautorität.
+
+Metriken: multisession.admission.duration und .execution.duration inSekunden,
+multisession.requests.completed als Zähler bestätigter beobachteter Abschlüsse;
+multisession.requests.queued, multisession.reservations.occupied/.uncertain als Gauges.
+Unknown ist Teilmenge von occupied. Vor erstem Sample, bei Readfehler und nach Stop keine
+Messung, kein falsches Null. Labels nur state/certainty/error. Meter.Scope unterscheidet
+lokale Instrumentinstanzen ohne ID-Messlabels. Pro Runtime ein eigenes hosteigenes
+SessionDiagnostics; zwei getrennte Scopes erhalten ihre eigenen Cachewerte.
+Zähler beschreibt beobachtete bestätigte Abschlüsse, keine rückwirkende Inventur aller
+historischen Ergebnisse. Direkt im Store aufgelöste/abgebrochene Fälle erzeugen keine
+nachträglich erfundenen Dispatcherereignisse. Vollständige Übergangs-/Observabilitymatrix
+und T074/T081-Abschluss bleiben im laufenden Auftrag offen.

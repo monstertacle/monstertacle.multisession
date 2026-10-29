@@ -274,3 +274,13 @@ Grenzen; Metriken und volle Diagnose-/Lifecycleabnahme bleiben offen. Windowsfix
 nach echter Formatfehlermeldung auf64MiB-VHD/NTFSdefault angepasst, native Wiederholung
 bleibt erforderlich. Volltor linux/f695c4964904416c9da7baff259e4bc2 ist konsistent grün;
 Codemetr319Dateien/329Typen ohne Befunde. Keine Vollabnahme oder Produktfreigabe.
+
+Metrikschnitt T074/T081 lokal vollständig grün: readonly Statistikfacette und ein
+konsistenter SQLsnapshot, eigene beobachtete Monitorlaufzeit, cached ObservableGauges,
+Sekundenhistogramme/Ergebniszähler und keine ID-Messlabels. Die beobachteten Redzyklen
+2+2+1+3 sowie sofort grünen zusätzlichen Regressionen stehen in tdd-us3. Volltor
+linux/5b3677e13b6342788e42ebd64c0fc1c2 konsistent erfolgreich. Codemetr330Dateien/
+340Typen ohne Befunde; QueryStore-Testownership nach Guard43>40 in eigene gemeinsame
+Basisklasse getrennt, Tiefe3 innerhalb Grenze3. Windows128MiB-VHDprobe mit unverändertem
+128MiB-Füllerlimit folgt nativ; vorherige64MiB-Formatfehler sind ausdrücklich nicht grün.
+T074/T081 und Gesamtauftrag bleiben bis zum vollständigen Audit offen.

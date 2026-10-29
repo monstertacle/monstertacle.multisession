@@ -462,3 +462,12 @@ aktuellerDateiportistweiterstriktUser-only. NativeCIDefaultownerf7915dc istkeinG
 40928760771 zeigtprivatesSQLitejournalmitOS-DefaultownerAdministrators,5/6Fällegrün.
 KorrigierteOS-Ownerassertion plus unveränderteUser-onlyDACL undneuer Originaljournal-
 Portfall werdenjetztnativgeprüft, ProduktWindowsOwnerpolicynichtvorRedanpassen.
+
+T089/T094 embedded-consumer-Hostflow nach3/3fachlichemRoot-/Ausführungsred integriert.
+29CLI-/Root-/Consumerfällegrün; echteNativeRunablage, zweiunabhängigeLäufe mitje5Requests/
+5History/4Succeeded/1Cancelled/0Reservations, ersteRunDateienbytegleicherhalten. Fremde
+belegteRoots/FileRoots ohneÄnderungabgewiesen, nurmarkierteoderleereprivateBasis genutzt.
+Volltor linux/a64566446a3c419aa41adb1aec7d30b8 erfolgreich,972Tests,97.5677%,
+Sourcehashf06cf36528ac8f907a724522f5ac5855dd2fa92d9d15bc4cb777f65481c97e8c,
+Codemetr401Dateien/414TypenohneBefunde. RestlicheSzenarienbleibenehrlichNOT RUN,
+NativeWindowsjournal-/Paket-/finaleZielmatrix weiterhinaktiv. KeineVollfreigabe.

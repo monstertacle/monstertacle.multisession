@@ -147,3 +147,22 @@ ErsterfachlichausführbarerFallsofortgrün, keineProduktkorrektur undkeinerdicht
 VorherigeCA1861-AnalyzerfehlerderTestarraysausdrücklichkeinRed; statischreadonlyerwartete
 Werte. Logembedded-consumer-observed.log:1/1in440msgrün. NativeLease-/NuGetnachweis
 bleibtgetrennt; kontrollierterRetainedTestLease behauptetkeinenOSbesitz.
+
+## T089/T094 echte Hostausführung in privater Runablage
+
+ValidationStateRootTests:3/3fachlichrot amfehlendenAusführungs-/Rootvertrag, erwartetes
+FAIL/2oderPASS/0 tatsächlichNOT RUN/3. Redbasis/TrackedDiff/neueTestdatei-Tar/Hashes und
+Messzeit2026-10-29T18:39:19Z unterartifacts/tdd/validation-state-root-red-* gesichert.
+NachGreen29/29CLI-/Root-/Consumerfällegrün. SharedConsumerOwnedProvider wirdim
+nichtproduktivenHost ausdemkonsumierendenTestprojektquelltextmitkompiliert, nurBCL/
+öffentlicheCommonverträge, keineXunit-/Testassembly-/Bibliotheksinternenabhängigkeit.
+
+NativeValidationbasis neuprivaterzeugen odervorhandeneleere/privatebeziehungsweise
+markierteBasisverwenden; belegteunmarkierteAblagevorLock-/Markeränderung abweisen.
+Rootdateiniereparieren/ersetzen. JeLaufeigenesprivatesrun-GUID-Verzeichnis; Host prüft
+2paralleleSessions/Followups/Status/Cancel/Stop/Reopen und5OriginalIDs, erstannPASS/0.
+ZweimaligeHostausführung: getrennteRunIDs, je2Sessions/5Requests/5History/4Succeeded/
+1Cancelled/0aktiveReservations; alleDateibytes deserstenLaufsbleibenunverändert.
+PrivateProbeablagen bleibenzurInspektionerhalten; vorhandeneElternverzeichnisse nötig,
+keineunsichereCreateDirectory-Kette durchAliase. FehlendeSzenarien weiterNOT RUN,
+Live ohneFreigabe ohneState-/Provider-I/O. KeinNuGet-/Live-/vollständigesT094-Häkchen.

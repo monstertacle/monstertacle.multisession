@@ -409,3 +409,7 @@ Neustart/History. Gültige Benutzereingaben werden nicht heuristisch bereinigt o
 Keine rückwirkende Rekonstruktion/Änderung historischer Inhalte. T119 wartet noch auf
 passende vollständige lokale/native Lieferstandnachweise; andere offene Aufgaben bleiben
 bestehen.
+
+T119 nativ bestätigt zu9189574: Qualität40907585230 auf Windows/Ubuntu und Guard40907585258
+vollständig grün. Damit expliziter UTF8-Integritätsauftrag umgesetzt und geprüft; Markierung
+in tasks.md folgt. Allgemeine Produkt-/US3-/Plattform-/Liveabnahmen bleiben davon getrennt.

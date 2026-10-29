@@ -735,3 +735,21 @@ nebenbei UTF8Defaultreplacement für unpaarige UTF16-Surrogate; als konkreten Fo
 T119 mit Owner/Abhängigkeit/Schritten/Abnahme festgehalten, nicht stillschweigend
 als strikte Kodierung bezeichnet. FrozenDispatch-/Reservation-/Recoverycasegraph bleibt
 nächster benannter Schritt in T065, kein Abschluss behauptet.
+
+## T065 eingefrorene Dispatch-/Reservierungsbeziehungen
+
+Architektur/Quellen vor Erweiterung: architecture/2026-10-29-dispatch-storage-consistency.md.
+dispatch-consistency-red.log40/40 tatsächlich rot, je Drift bei Unknown und bekannt
+freigegebenem Dispatch: gefrorene IDs/Sequenz/Input/Modell/Profil/Settings/Revision,
+Ackreferenzen sowie SQLworkspace/-zeit/-fehlmetadaten/-verschwundene Reservation.
+Besonders Unknown mit fehlender oder freigegebener Reservation wurde bisher akzeptiert.
+Nach Streamingprüfung dispatch-consistency-green117/117Storagefälle grün.
+
+Dispatchfelder müssen vollständig mit genau passender Reservation zusammenhängen;
+Unknown braucht unreleased Row. Immutable Context-/Settingsvergleiche ordinal als
+Schlüssel-/Wertmenge, ursprüngliche Submission exakt gleich. Aktuelle bestätigte
+Bindungsrevision darf höher sein, alte ContinuationHeads bleiben unverändert. Native
+Sessionidentität/acknowledgedRefs konsistent, UTC/StartedUtc/ReservedUtc und ReleaseReason
+passen. Archivprüfung erteilt keinerlei Sendrecht; aktiver öffentliche Read bleibt
+Running/neu reserviert. Keine neue Herstellerwahl/IDs/Replay. DBhash nach Ablehnung gleich.
+Recoverycase-/Decisiongraph bleibt konkret nächster T065-Schritt.

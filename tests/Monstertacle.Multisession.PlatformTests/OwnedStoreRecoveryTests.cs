@@ -1,6 +1,4 @@
-using System.Runtime.Versioning;
 using Monstertacle.Multisession.Contracts;
-using Monstertacle.Multisession.Linux;
 using Monstertacle.Multisession.PlatformTests.Fixtures;
 using Monstertacle.Multisession.Storage.Sqlite;
 using Monstertacle.Multisession.ValidationHost;
@@ -8,14 +6,15 @@ using Xunit;
 
 namespace Monstertacle.Multisession.PlatformTests;
 
-/// <summary>Actual process exclusion and kill recovery with native Linux ownership and real SQLite state.</summary>
-[SupportedOSPlatform("linux")]
+/// <summary>Actual process exclusion and kill recovery with native ownership and real SQLite state.</summary>
 public sealed class OwnedStoreRecoveryTests : IDisposable
 {
-    private readonly string _path = Path.Combine(Path.GetTempPath(), OwnershipProtocol.DirectoryPrefix + Guid.NewGuid().ToString("N"));
+    private readonly string _path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "dev", ".agenttemp", OwnershipProtocol.DirectoryPrefix + Guid.NewGuid().ToString("N"));
     private readonly Guid _scope = Guid.NewGuid();
     private readonly string _token = Guid.NewGuid().ToString("N");
     private RuntimeOptions Options => new() { StateDirectory = _path, Retention = new(true, null) };
+    /// <summary>Creates only the shared test parent, leaving the private state leaf to the native lease.</summary>
+    public OwnedStoreRecoveryTests() => Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
     /// <summary>Removes only the newly created test store.</summary>
     public void Dispose() { if (Directory.Exists(_path)) { Directory.Delete(_path, true); } }
 
@@ -23,7 +22,7 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
     [Fact]
     public async Task SecondProcessReceivesStoreAlreadyOwned()
     {
-        await using LinuxStateDirectoryLease lease = LinuxStateDirectoryLease.CreateNew(_path);
+        await using NativeLease lease = NativeLease.CreateNew(_path);
         await WriteMarkerAsync(lease);
         await using OwnershipProcess child = await OwnershipProcess.StartAsync(_path, _token, _scope);
         Assert.False(child.Signal!.Acquired);
@@ -37,7 +36,7 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
     {
         Guid requestId = Guid.NewGuid();
         ExecutionReservation original;
-        await using (LinuxStateDirectoryLease lease = LinuxStateDirectoryLease.CreateNew(_path))
+        await using (NativeLease lease = NativeLease.CreateNew(_path))
         {
             await WriteMarkerAsync(lease);
             await using ISessionStore store = await SqliteStoreFactory.CreateNewAsync(lease, _scope, Options, CancellationToken.None);
@@ -52,18 +51,18 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
             await store.CommitAcceptanceAsync(new(requestId, new(sessionId, "preserve input", TimeSpan.FromMinutes(1), "owned-workspace", true)), 100, CancellationToken.None);
             original = (await store.TryReserveHeadAsync(1, CancellationToken.None))!;
             await store.MarkUncertainAsync(original.DispatchId, new(ErrorCode.Interrupted, ExecutionCertainty.Unknown, sessionId, requestId), CancellationToken.None);
-            Assert.Equal((UnixFileMode)384, File.GetUnixFileMode(Path.Combine(_path, "multisession.db")));
+            NativeFileAssertions.Private(Path.Combine(_path, "multisession.db"));
         }
         await using OwnershipProcess child = await OwnershipProcess.StartAsync(_path, _token, _scope);
         Assert.True(child.Signal!.Acquired);
         string journal = Path.Combine(_path, "multisession.db-journal");
         Assert.True(File.Exists(journal));
-        Assert.Equal((UnixFileMode)384, File.GetUnixFileMode(journal));
+        NativeFileAssertions.Private(journal);
         Assert.Null(child.Signal.Failure);
         Assert.Equal(ErrorCode.StoreAlreadyOwned,
-            Assert.Throws<SessionOperationException>(() => LinuxStateDirectoryLease.OpenExisting(_path)).Failure.Code);
+            Assert.Throws<SessionOperationException>(() => NativeLease.OpenExisting(_path)).Failure.Code);
         await child.KillAsync();
-        await using LinuxStateDirectoryLease reopened = LinuxStateDirectoryLease.OpenExisting(_path);
+        await using NativeLease reopened = NativeLease.OpenExisting(_path);
         await using ISessionStore recovered = await SqliteStoreFactory.OpenExistingAsync(reopened, _scope, Options, CancellationToken.None);
         await recovered.StartAsync(reopened, CancellationToken.None);
         RequestSnapshot request = (await recovered.GetRequestAsync(requestId, CancellationToken.None))!;
@@ -78,9 +77,10 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
         Assert.Equal(ExecutionCertainty.Unknown, history.Result.Certainty);
     }
 
-    private async Task WriteMarkerAsync(LinuxStateDirectoryLease lease)
+    private async Task WriteMarkerAsync(NativeLease lease)
     {
         await lease.PrepareFileAsync(OwnershipProtocol.MarkerFileName, StateFileMode.CreateNew, CancellationToken.None);
         await File.WriteAllTextAsync(Path.Combine(_path, OwnershipProtocol.MarkerFileName), _token);
     }
+
 }

@@ -95,3 +95,15 @@ undUbuntu erfolgreich,Guard40924127596 grün. Damit3WindowsACL-/Besitzfälle tat
 nativbestanden, außerdemCommon-Hostkomposition undOpen-/Stop-Korrektur. T086/T090
 abgeschlossen; übrigePlattform-/Paket-/Lifecycleaufträge bleibenoffen. T087/T091 benötigen
 weitereAlias-/Reparse-/Zweitprozessabnahme undechteWindows11-Zielsystemprobe.
+
+## T093 Windowsprozessprobe: Redvorbereitung
+
+NativeWindowsgrundfähigkeit0d19631 beidseitiggrün, danachvorhandeneLinux-Prozessprobe
+TFMneutralvorbereitet: nativeLeasealias ausdemjeweiligenProjekt, gemeinsamerWorkerlocator
+wähltdasnativeTFM, ACL-/Unixrechte inNativeFileAssertions getrennt. VorherLinux26/26grün,
+nachmechanischerVorbereitung erneut26/26grün, WindowsTFM-Buildgrün. ErsterGuard fand
+Kopplung47imRecoverytest nachACLaufnahme; nativeRechteverantwortungindasbenannteFixture
+ausgelagert, dann389Dateien/400TypenohneBefunde. KeinGrenzwert-/Scopewechsel.
+Windows-Ownershipworkerroute weiterhinfehlend; erstkonkretenWindowsReddiesesfolgenden
+Stands beobachten, dannbestehendenWorker plattformübergreifendverdrahten. Architektur
+`architecture/2026-10-29-windows-process-recovery.md`. KeineCompilefehler alsRed gewertet.

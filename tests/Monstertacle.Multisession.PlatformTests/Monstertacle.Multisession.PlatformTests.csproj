@@ -10,11 +10,13 @@
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
-    <Compile Remove="LinuxOwnershipTests.cs;LinuxOwnershipRejectionTests.cs;OwnedStoreRecoveryTests.cs;Fixtures/OwnershipProcess.cs" />
+    <Compile Remove="LinuxOwnershipTests.cs;LinuxOwnershipRejectionTests.cs" />
+    <Using Include="Monstertacle.Multisession.Windows.WindowsStateDirectoryLease" Alias="NativeLease" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Windows/Monstertacle.Multisession.Windows.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <Compile Remove="WindowsOwnershipTests.cs" />
+    <Using Include="Monstertacle.Multisession.Linux.LinuxStateDirectoryLease" Alias="NativeLease" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Linux/Monstertacle.Multisession.Linux.csproj" />
   </ItemGroup>
 </Project>

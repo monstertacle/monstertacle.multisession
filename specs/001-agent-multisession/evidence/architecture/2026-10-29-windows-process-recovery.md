@@ -1,0 +1,24 @@
+# T093 dieselbe echte Prozess-/Journalprobe unter Windows
+
+Ausgang603dce4; letzte nativeBasis0d19631 mitgrünenWindowsACL-/Besitzfällen.
+Bisher istOwnedStoreRecoveryTests Linux-only: gleicheoffeneVerträge, aberUnixmodeasserts
+unddirekterLinuxLeasebezug. OwnershipProcess istplattformneutral; ValidationHostBuild
+wähltfälschlichimmernet10.0-Worker, WindowsNativefall benötigtnet10.0-windows.
+Program unterstütztOwnershipworkerroute bisher nurimLinuxTFM. KeinWindowsprozessnachweis.
+
+Entscheidung vorErweiterung: dieselben2Prozess-/Kill-/Unknown-/Journaltests auchim
+WindowsTFM kompilieren. TFMabhängigerMSBuild-Usingalias NativeLease wähltdasvorhandene
+öffentlichePlattformpaket, keineReflection/ServiceLocator/zusätzlicheProduktlogik und
+keinPräprozessorverstecken eigenerKlassen vorCodemetr. Modusasserts durchkleine native
+PrivateFileassertion ersetzen(Unix0600 beziehungsweiseOwner-SID-onlyACL); Rootunter
+UserProfile/dev/.agenttemp mitvorhandenemParent, neuemtestpräfigiertemLeaf.
+Workerlocator wähltaufWindowsdaspassendeTFM; bestehendeCrash-/Diskfullproben erneutprüfen.
+ErstWindowsRed amfehlendenOwnershipsignalbeobachten; nativeACL-/Storeöffnung müssen
+vorhergelingen, sonstkeinProzess-Red. DanachvorhandenenLinuxworker mitdemselbenTFM-
+Alias fürbeidePlattformenwiederverwenden undunkonditionierteProgramroute; keine neue
+Produktcapability. Linux26Testszuvorgrün, mechanischeVorbereitung erneutprüfen.
+FremdUID-/Alias-/Windows11-/Soakmatrix bleibtweiter inT087/T088/T099/T100 offen.
+GemesseneQuellen2026-10-29T17:51:20Z: OwnedStoreRecoveryTests SHA256
+9204076738aae9684e0f6fea018d65b45520b53fa4a1ed7b57d60f71b7a68513,
+ValidationHostBuild30f8364df0535feb7fb003572ae7812396bd3d3a534dd81a6a2a49dbbffd46a5,
+Program9922dca5d505160def88f9749ce7ea66e325f7b884277f7cf94af053aa9f3147.

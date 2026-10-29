@@ -59,3 +59,29 @@ Annahme mit Crash-/Wiederanlaufgrenzen bleibt T050/T058 (Owner US5, persistierte
 und Sequenzabnahme). Vollständige Cancellation-/Stop-/Fristpersistenz bleibt T070–T082
 (Owner laufende Gesamtimplementierung, native Zustands-/Zeit-/Stoptests). Kein offener
 lokaler T114-Abnahmeblocker. Folgearbeit läuft weiter, kein Ende des Gesamtauftrags.
+
+## T070/T075: gültige Kombinationen und einmalige lokale Finalisierung
+
+Architektur vor Umsetzung: architecture/2026-10-29-request-state.md, Ausgang cc1546a.
+Ausführbare verhaltenslose RequestStateMachine: request-state-red-final, 10 Tests,
+9 fachlich fehlgeschlagen (gültige Kombination/Terminalität/6 Übergänge und tatsächlich
+akzeptiertes Interrupted/NotStarted), einer bereits grün; vorausgehender Analyzerfehler
+wegen fehlender Schleifenklammern ist kein Red. SQL request-state-sql-red: 1/1 fachlich rot,
+CommitCompletion warf keinen Fehler und nahm den unmöglichen Endzustand an.
+
+Green: dieselben 10 Unitfälle und SQL-Abweisung, bestehende Completion/Recoverytests.
+Zentrale reine Regel statt unabhängiger Outcome-/Gewissheitsprüfung; SQL prüft Übergang
+vor Result/Historyschreiben und vor Recovery-Gewissheitsänderung. Kein nachträglicher Erfolg.
+Zwei zusätzliche konkurrierende Known/Unknown-Finalisierungen mit beiden Einreichreihenfolgen
+waren sofort grüne Regressionen, kein neuer Rednachweis. Genau ein Result/History und
+passende Reservationsbelegung bleiben nach Wiederöffnung erhalten.
+
+Vollständig grün: artifacts/quality/linux/b9adac26d0fa45a5875878f4aa400dcc,
+SourceHash b071b32651753302fbda299c18d4021ac2cdafc9164e29236b6dd2e96c868db1.
+590 Tests (271 Unit, 195 Contract, 123 Integration, 1 Plattform), null Fehler/Skips,
+2001/2071 Produktzeilen = 96,6200 %. Codemetr 0.1.0: 267 Dateien/273 Typen,
+null Verstöße/Parsefehler/Skips. Befehle: request-state-red-final.log,
+request-state-sql-red.log, request-state-green.log und request-state-quality.log unter
+artifacts/tdd; vollständiger Format/Build/Test/Coverage-/Guardlauf über run-capped.sh.
+T070/T075 bleiben für ihre vollständigen Cancel-/Intent-/Finalisierungszusagen offen;
+T071/T077/T078/T079 tragen die nächsten konkreten Schritte mit unveränderter Abnahme.

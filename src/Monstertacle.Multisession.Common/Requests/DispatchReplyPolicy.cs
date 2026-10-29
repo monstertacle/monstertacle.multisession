@@ -9,10 +9,8 @@ public static class DispatchReplyPolicy
     public static ProviderReply Normalize(ProviderReply reply, ProviderBinding original, string? observedSessionReference, int maximumOutputBytes)
     {
         reply = ProviderReplyPolicy.NormalizeOutput(reply, maximumOutputBytes);
-        bool terminal = reply.Outcome is RequestState.Succeeded or RequestState.Failed or RequestState.Cancelled
-            or RequestState.TimedOut or RequestState.Interrupted;
-        if (!terminal || reply.Certainty is not (ExecutionCertainty.ConfirmedEnded or ExecutionCertainty.NotStarted)
-            || (reply.Outcome == RequestState.Succeeded && reply.Certainty != ExecutionCertainty.ConfirmedEnded))
+        bool terminal = RequestStateMachine.IsTerminal(reply.Outcome);
+        if (!terminal || !RequestStateMachine.IsValid(reply.Outcome, reply.Certainty) || reply.Certainty is not (ExecutionCertainty.ConfirmedEnded or ExecutionCertainty.NotStarted))
         {
             return Uncertain(reply, reply.Error?.Code ?? ErrorCode.ExecutionFailed);
         }

@@ -7,6 +7,7 @@ internal static class ResultTransactions
 {
     internal static void Write(SqliteConnection connection, SqliteTransaction transaction, RequestSnapshot request, string input, DateTimeOffset completedUtc)
     {
+        RequestStateTransactions.AssertTransition(connection, transaction, request);
         using SqliteCommand ordinal = SqliteStatements.Create(connection, transaction,
             "SELECT COALESCE(MAX(HistoryOrdinal),0)+1 FROM History WHERE SessionId=$id", ("$id", request.SessionId.ToString("D")));
         HistoryEntry history = new(request.SessionId, request.RequestId, request.Sequence, input, request.Result!)

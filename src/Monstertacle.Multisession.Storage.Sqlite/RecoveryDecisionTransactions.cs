@@ -84,6 +84,7 @@ internal static class RecoveryDecisionTransactions
             Error = request.Result.Error is null ? null : request.Result.Error with { Certainty = ExecutionCertainty.ConfirmedEnded },
         };
         RequestSnapshot updated = request with { Certainty = ExecutionCertainty.ConfirmedEnded, Result = result };
+        RequestStateTransactions.AssertTransition(connection, transaction, updated);
         using SqliteCommand command = SqliteStatements.Create(connection, transaction,
             "UPDATE Requests SET Certainty=$certainty,SnapshotJson=$snapshot WHERE RequestId=$id; UPDATE Results SET ReplyJson=$reply WHERE RequestId=$id;",
             ("$certainty", (int)ExecutionCertainty.ConfirmedEnded), ("$snapshot", StoreSerialization.Write(updated)), ("$id", requestId.ToString("D")), ("$reply", StoreSerialization.Write(result)));

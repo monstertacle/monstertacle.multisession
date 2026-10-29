@@ -134,3 +134,14 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   96,6748 Prozent, Guard263 Dateien/269 Typen sauber. T048 vorbereitet/ausgeführt,
   nächster Auftrag T070/T075 Zustandsmatrix, danach Cancel/Stop/Close/Retention.
   SC009-Stand9fdbda7 CI auf Windows/Ubuntu grün; übrige Abnahme bleibt offen.
+
+### 2026-10-29T12:32:22Z: Zentrale Zustands- und Finalisierungsregel
+
+T070/T075 vertikal ergänzt, noch keine vollständige Storyabnahme. Unmögliches
+Interrupted/NotStarted zuerst am Validator und echten SQLite-Commit rot beobachtet,
+dann abgewiesen. Alle zulässigen Paare und Übergänge zentral; Recovery darf nur die
+Gewissheit desselben Endzustands klären. Konkurrierende Known/Unknown-Schreiber erzeugen
+genau ein dauerhaftes Ergebnis/Historieneintrag, Unknown behält den Slot.
+590 Tests grün, 96,6200 % Gesamtabdeckung, Codemetr 267 Dateien/273 Typen sauber.
+Nachweis tdd-us3.md; Qualitätslauf b9adac26d0fa45a5875878f4aa400dcc. Offene vollständige
+Cancel-/Timeout-/Stop-/Close-Abnahme bleibt den bestehenden T070–T085 zugeordnet.

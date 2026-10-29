@@ -561,3 +561,11 @@ Sourcehash 5d8d26931b35277fc40dc4ae1d700cb3b6da75a7e0a901380c8181b7e3a40b4b.
 Full-Codemetr misst nun auch die archivierte materialisierte Consumerdatei:
 424 Dateien/442 Typen, keine Verstöße/Parsefehler/übersprungenen Dateien.
 Native erneute Bestätigung und Erklärung der Intermittenz bleiben T094/T099 offen.
+
+2026-10-29T19:57:33Z: Neuer nativer Paketjob benötigt seinen eigenen gepinnten
+Toolrestore (Linux-Fehler in 40943329086/Job 123692087909 konkret belegt).
+CI korrigiert, Produktcode unverändert. Consumerreports werden auch bei Fehlern
+archiviert; reine Belegkopien tragen Program.cs.txt, damit keine doppelten
+Deklarationen in den unveränderten Full-Context gelangen. Tatsächliches
+Consumer-Program.cs bleibt gebaut und explizit gemessen. Lokaler Smoke grün,
+Fullguard wieder 423 Dateien/440 Typen ohne Befund und ohne Kontextwarnungen.

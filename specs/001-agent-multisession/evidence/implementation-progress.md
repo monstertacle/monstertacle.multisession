@@ -304,3 +304,11 @@ Windowsausführung hier ausdrücklich NOT RUN. Architektur enthält echte vorher
 Hostfehler und Quellenhashes. CA1711-Klassenbenennung im ersten lokalen Build korrigiert;
 dieser Compilefehler ist kein fachlicher Red. T054/T065/T071/T078/T104 behalten die
 konkreten nativen Format-/Deadlinebefunde im laufenden Gesamtauftrag.
+
+Requestgraph-Startschutz T065/T075:20/20 echte rote Korruptionsfälle vor Produktänderung,
+danach26/26inklusive sechs zusätzlicher sofort grüner Terminal-/UTCregressionen. Streaming-
+prüfung gemeinsamer StateMachine, SQL-/Snapshotidentität, UTCprojektion und finalem Ergebnis
+läuft vor jedem Recoverywrite. Fehler bereinigt, DBhash nach abgelehntem Start identisch.
+Volltor linux/0b3c80bdf2d746e1b42e74e959a1c0bb konsistent grün; Codemetr338Dateien/
+348Typen ohne Befunde. Architektur und tdd-us5 nennen begrenzten Schnitt; weitere
+Session-/Result-/History-/Casekonsistenz verbleibt in T065, Gesamtauftrag weiter aktiv.

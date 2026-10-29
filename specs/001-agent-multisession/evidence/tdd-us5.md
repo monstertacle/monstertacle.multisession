@@ -663,3 +663,22 @@ werden nicht als PASS/Skip umgedeutet. T054/T065 behalten native Nachprüfung/Ma
 T107 prüft ursprüngliche TDDabdeckung, zusätzliche grüne Proben ersetzen keine fehlenden
 historischen Redbelege. Retentioncommitf838da6 inzwischen Windows/Ubuntu grün:
 quality40887145758, Guard40887146227; T064 bleibt bis zugehörigem Speicheraudit offen.
+
+## T065/T075 Requestdatenprüfung vor Start-Recovery
+
+Architektur vor Produktcode: architecture/2026-10-29-request-storage-consistency.md mit
+Quellenhashes zu08a4cab. request-consistency-red.log zeigt20/20 tatsächlich ausgeführte
+rote Fälle: gültiges Schema akzeptiert ungültige gespeicherte State-/Certaintypaare,
+malformed/fehlende JSONfelder und Snapshot-/Spaltendrift. Erwartete bereinigte Ablehnung
+fehlte; keine Compilerfehler als Red. Nach Streamingprüfung im selben Recoverytransaction
+VOR jeder Mutation request-consistency-green20/20grün. Sechs zusätzliche unmittelbar
+grüne Terminal-/Runningzeitstempel-/UTCregressionen, kein rückwirkend erfundenes Red.
+
+RequestStateMachine bleibt die gemeinsame Zustandsregel. RequestId/SessionId/Sequence,
+State/Certainty, Accepted/Started/Ended/CancellationUtc und lokale Resultfinalisierung
+werden vor Replay-/Recoveryentscheidungen abgeglichen. UTCformat exakt/invariant, keine
+Annahme monotoner Wallclock. Inkonsistente/malformed Daten melden StorageUnavailable;
+DBhash bleibt nach fehlgeschlagenem Start unverändert. Kein Ersatzstore, keine stillen
+Datenkorrekturen oder Verlust früherer bestätigter Inhalte. Reader bleibt speicherbegrenzt;
+keine zusätzliche ganze Requestliste. Session-/Result-/History-/Casegraphvalidierung ist
+noch separat in T065 zu bearbeiten; kein vollständiger Korruptionsschutz behauptet.

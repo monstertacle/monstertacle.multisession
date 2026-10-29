@@ -435,3 +435,12 @@ Sourcehash75d5b32f4fa661ae0203e3bf26381c154a0825d557b584c17a197fa1c75c640e,
 2847/2918Zeilen=97.5668%,Codemetr388Dateien/399TypenohneBefunde.
 NächsterSchnittT093 echteWindowsprozess-/Kill-/Journalprobe; nativeLeasesweiterkeine
 vollständigeZielsystem-/Alias-/Soakfreigabe.
+
+T089/T094 CLI nach25/25fachlichemRed grün, RedzustandvorGreenarchiviert; unzulässige
+AufrufeFAIL/2, unfreigegebeneLiveprobenNOT RUN/3, keineRohargumente/Stateänderung.
+Volltor linux/e28c07986f86438b888cc5f89f0e22dd erfolgreich,967Tests,97.5668%,
+Sourcehashd35151a5dfe384d53755b991186ed5add6e87ec70a7f3b6e7d6bb2c9bd473d84,
+Codemetr394Dateien/405TypenohneBefunde. ÖffentlicheSzenarioausführung bleibtT094.
+WindowsT093Red zu468b401 nativin40926185397 belegt: genau2Prozessfehler anfehlender
+Ownershipbarriere,4bisherigePlattformfällegrün,0Skips. JetztvorhandenenWorker fürbeide
+Plattformenverdrahten; keinenativenGreenfolgengleichsetzen.

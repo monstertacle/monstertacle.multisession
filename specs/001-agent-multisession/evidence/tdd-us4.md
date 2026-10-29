@@ -107,3 +107,20 @@ ausgelagert, dann389Dateien/400TypenohneBefunde. KeinGrenzwert-/Scopewechsel.
 Windows-Ownershipworkerroute weiterhinfehlend; erstkonkretenWindowsReddiesesfolgenden
 Stands beobachten, dannbestehendenWorker plattformübergreifendverdrahten. Architektur
 `architecture/2026-10-29-windows-process-recovery.md`. KeineCompilefehler alsRed gewertet.
+
+## T089/T094 öffentliche CLI: Argumente und ehrliche Statusberichte
+
+Vorabanalyse `architecture/2026-10-29-validation-host-cli.md`, Basis468b401.
+VorGreenvollständigerRedzustand gesichert: Gitbasis invalidation-host-cli-red-base.txt,
+TrackedDiff undTar derunversioniertenTest-/Analysedateien unterartifacts/tdd/,
+SHA256manifest undgemessenerErfassungszeitpunkt2026-10-29T18:01:51Z. Anschließend
+originalerTRX validation-host-cli-red:25/25fachlichrot, erwarteteExit2/3tatsächlich0.
+KeineCompiler-/Restorerote alsTDDausgegeben. Greenvalidation-host-cli-green:25/25.
+
+KleinerArgumentparser/Szenariokatalog/JSONReport, alle17Quickstart-/Livenamen erkannt;
+relativeRoots, fehlende/doppelte/unbekannteArgumente undunbekannteSzenarien FAIL/2.
+KeineRohargumente oderAusnahmetexte imReport. UnfreigegebeneLivefälle NOT RUN/3 vor
+Netzwerk-/Credential-/State-I/O; fremdeTestdaten nachweislichunverändert. Nochfehlende
+Szenarien sindebenfalls NOT RUN/3, keinPASS ohneausgeführteProbe. InterneCrash-/Diskfull-
+Workerprotokolle weiterzuerstverdrahtet. TatsächlicheSzenarien/neueprivateUnterablagen/
+Consumer-/Paketprobe bleibenT089/T094/T096; dieseCLI-Teilprüfung istkeinSC-011-Nachweis.

@@ -4,5 +4,13 @@ namespace Monstertacle.Multisession.ValidationHost;
 internal static class Program
 {
     private static async Task<int> Main(string[] args)
-        => args.Length > 0 && args[0] == CrashProtocol.WorkerArgument ? await CrashWorker.RunAsync(args) : 0;
+    {
+        if (args.Length == 0) { return 0; }
+        return args[0] switch
+        {
+            CrashProtocol.WorkerArgument => await CrashWorker.RunAsync(args),
+            DiskFullProtocol.WorkerArgument => await DiskFullWorker.RunAsync(args),
+            _ => 0,
+        };
+    }
 }

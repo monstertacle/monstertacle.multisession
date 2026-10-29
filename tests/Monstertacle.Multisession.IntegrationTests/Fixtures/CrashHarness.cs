@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Reflection;
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ValidationHost;
@@ -28,7 +27,7 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
             RedirectStandardError = true,
             WorkingDirectory = stateDirectory,
         };
-        start.ArgumentList.Add(FindWorker());
+        start.ArgumentList.Add(ValidationHostBuild.WorkerPath());
         start.ArgumentList.Add(CrashProtocol.WorkerArgument);
         start.ArgumentList.Add(stateDirectory);
         start.ArgumentList.Add(token);
@@ -83,13 +82,4 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
         process.Dispose();
     }
 
-    private static string FindWorker()
-    {
-        DirectoryInfo? root = new(AppContext.BaseDirectory);
-        while (root is not null && !File.Exists(Path.Combine(root.FullName, "Monstertacle.Multisession.slnx"))) { root = root.Parent; }
-        if (root is null) { throw new InvalidOperationException("Crash probe requires its repository build."); }
-        string configuration = typeof(CrashHarness).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()!.Configuration;
-        string worker = Path.Combine(root.FullName, "examples", "Monstertacle.Multisession.ValidationHost", "bin", configuration, "net10.0", "Monstertacle.Multisession.ValidationHost.dll");
-        return File.Exists(worker) ? worker : throw new InvalidOperationException("Crash worker has not been built.");
-    }
 }

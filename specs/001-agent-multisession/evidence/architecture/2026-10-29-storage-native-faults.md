@@ -1,0 +1,62 @@
+# Native Read-only- und Disk-full-Proben
+
+Ausgangf838da6. Quellenmessung2026-10-29T14:02:07Z:
+StorageFailurePolicy.cs SHA256339fb6a3c9211628cb4f3bbd16f448154ff4bb9e7d5bba939e90bd303e6fbaa8;
+SqliteTransactions.cs bcdff74394f836f5d1c8171183b2ec92df273353b996a2968fb6da362964c261;
+StorageFailureTests.cs af615940ea8d2feaa43de7aedff352cf63784572b65829acfe0920f85f20e5e4.
+T054/T065. Bestehende Tests behandeln echte Busy-Sperren, begrenzte DBqueue, Cancellation,
+Commit-/Rollbackfehler und echte Prozesskills. Tatsächliche Betriebssystem-Schreibsperre
+und voller kleiner Datenträger fehlen. StorageFailurePolicy bereinigt Nativefehler und
+hält Unknown bei fehlendem Rollbacknachweis; keine neue Fachlogik ohne tatsächlichen Redfall.
+
+## Primärquellen vor Umsetzung
+
+- SQLite https://sqlite.org/c3ref/open.html: READWRITE darf bei OSschreibschutz auf Readonly
+  zurückfallen; bloße Open-Mode-Konfiguration beweist keine Schreibfähigkeit.
+- SQLite https://sqlite.org/rescode.html: READONLY8 für fehlendes Schreibrecht, FULL13 für
+  fehlenden Platz bei DB-/Tempwrites; IOERR ist ein eigener Code. Nur bereinigte öffentliche
+  Kategorie nach außen, keine erfundenen Exceptiontexte als Disk-full-Beleg.
+- Linux https://man7.org/linux/man-pages/man1/unshare.1.html und
+  https://man7.org/linux/man-pages/man7/mount_namespaces.7.html: eigene Mountnamespace mit
+  privater Propagation isoliert Mountänderungen; keine Shared-Propagation verwenden.
+- Linux https://man7.org/linux/man-pages/man5/tmpfs.5.html: size setzt endliche Kapazität,
+  uid/gid/mode private Ablage; niemals Default50%-Kapazität oder globales/tmp benutzen.
+- Windows https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/attach-vdisk
+  und https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/assign:
+  eigene VHD fokussieren, privater Mountpfad, keine System-/Bootvolumes verändern.
+
+## Entwurf vor Test-/Hosterweiterung
+
+Read-only: echte neue SQLiteverbindung nach vollständigem Schließen aller alten Handles,
+OSschreibschutz durch400 beziehungsweise ReadOnlyattribut; ein direkter neuer Schreibhandle
+muss bereits scheitern. Vorhandenen kooperativen CrashStateDirectoryLease für ausschließlich
+existierende Datei wiederverwenden, weil strikte PrivateStoreDirectory-600-Prüfung sonst
+bewusst vor SQLite abweist. Diese Brücke behauptet keine native Ownership-/Rechteabnahme.
+Nach Versuch Modus exakt wiederherstellen, DBhash und vorheriger Ergebnis-/Historygraph
+unverändert. Factory/Start oder Annahme darf nur bereinigt fehlschlagen, keine Quittung.
+Zuerst tatsächliche Farbe beobachten; bereits grüne Schutzlogik bleibt zusätzliche
+Regression, kein künstlicher Fehler für TDD. Produktlücke erst nach wirklichem Red beheben.
+
+Disk-full: separater markierter Kindprozess/kleines eigenes Dateisystem mit harten Grenzen,
+keine Befüllung existierender Volumes. Linux private Mountnamespace ist lokal per
+sudo-n-unshare erfolgreich sondiert; spätere eigentliche Fixture nur im neuen markierten
+.agenttemp-Root. Windows eigene eindeutig adressierte VHD und Mountdirectory, niemals
+selectdisk auf existierenden Datenträgern. Füller auch unabhängig vom Mount auf maximal128MiB
+begrenzt, tatsächliches ENOSPC/ERROR_DISK_FULL vor SQLiteversuch belegen. Parent/Childnonce,
+endliche Prozessfristen und Cleanup aller selbst angelegten Ressourcen. Vorherigen Erfolg
+sichern, unter vollem Volume neue Annahme versuchen, nach Freigabe Füller alte Daten und
+fehlende neue Anfrage prüfen, null zusätzliche Sends. Keine Produktbackdoor/Reflection oder
+falsches FULL durch Triggertext. Privileg-/Zielhostfehler sind NOT RUN/Fehler, niemals PASS;
+native Rechte-/Lockabnahme bleibtUS4. Auf Windows lokale Ausführung hier nicht behaupten.
+
+Weitere gemessene Sonden vor Disk-full-Code: rootloses unshare mit User-/Mountnamespace
+und privater Propagation funktioniert lokal; tmpfs1MiB meldet stat sowie .NETDriveInfo
+exakt1048576Bytes. Deshalb Linux ohne Maschinenroot und ohne Änderung fremder Mounts.
+Worker prüft Volumekapazität vor Füller zusätzlich auf maximal128MiB. Windows erhält
+statt eines nicht zuverlässig von DriveInfo auflösbaren Verzeichnismounts einen freien
+temporären Laufwerksbuchstaben; Diskpart assign scheitert bei Kollision, danach eigene
+Volumegröße und eigener Marker verifizieren. Nur neue VHDdatei im privaten Testroot
+fokussieren/abtrennen, keine vorhandene Disk auswählen. Quelle für Sequenz attach→create
+partition→format→assign: MicrosoftLearn
+https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/boot-to-vhd--native-boot--add-a-virtual-hard-disk-to-the-boot-menu?view=windows-11
+und assign-Syntax oben. Scriptdateien in UTF16 für Windows, Prozessargumente strukturiert.

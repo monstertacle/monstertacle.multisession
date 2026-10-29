@@ -618,3 +618,48 @@ weiter offen. Löschläufe ausschließlich in selbst erzeugten privaten Testfixt
 T118 jetzt abgeschlossen: derselbe Optionscommit6b0ed039d56763159ab3815a654c3f6a5573ffda
 ist nativ Windows/Ubuntu grün (quality40883956319, Guard40883956192). Damit ist die konkrete
 Optionsabhängigkeit vor Retentionabnahme erledigt; tasks.md entsprechend markiert.
+
+## T054/T065: tatsächliche Read-only- und Disk-full-Regressionsproben
+
+Architektur vor Host-/Testcode architecture/2026-10-29-storage-native-faults.md,
+Ausgangf838da6. ReadOnlyStorageTests verwendet eine vollständig neu geöffnete Verbindung
+auf OSgeschützter eigener Datei und verifiziert zuerst tatsächliche Verweigerung eines
+neuen Schreibhandles. Kooperatives vorhandenes Lease für existierende Datei, keine native
+Ownershipbehauptung. Nach Modusrücksetzung gleicher DBhash, ursprünglicher Erfolg und
+Historie erhalten. Tatsächlich erster ausführbarer Lauf grün; kein künstlicher Rednachweis.
+Ein vorausgehender falscher Testenumname Accepted statt Committed war nur Compilerfehler.
+
+DiskFullStorageTests startet getrennten Hostprozess mit eigener Fixturekopie. Linux nutzt
+rootlose User-/Mountnamespace, private Propagation und tmpfs8MiB; stat/.NETDriveInfo wurden
+vorher an1MiB gemessen. Windowsdriver bereitet ausschließlich eigene64MiB-VHD im privaten
+.agenttemp-Root vor, wählt freien temporären Buchstaben, prüft Label/Größe und detachiert
+nur diese Datei. Keine vorhandene Disk wird ausgewählt. Dateifüller prüft Kapazität und
+unabhängiges128MiB-Limit, nur tatsächliche plattformspezifische no-space-Codes gelten;
+Windows39/112 gemäß MicrosoftWinError.h, Linux28 lokal beobachtet. Quelle
+https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-.
+Marker/Nonce, endliche Prozesse, Cleanup; keine Triggernachricht als FULL und keine
+produktive Testbackdoor/Reflection. Unter vollem Dateisystem Submit über öffentliche
+Runtime; anschließend Füller entfernen, vorheriges Result/Historie und fehlenden Kandidaten
+prüfen, null zusätzliche Provider-Sends. Öffentliche Fehler nur stabile Kategorie.
+
+Tatsächlich erster ausführbarer Linux-Disk-full-Fall ebenfalls grün. Report im finalen
+Integration-TRX: MeasuredUtc2026-10-29T14:32:23.2356917Z, FullCode28, FilledBytes8273920,
+Stage verify, Verifiedtrue, StorageUnavailable/NotAccepted. Vorheriger erster ausführbarer
+Report14:26:33.7403242Z zeigte dasselbe. Produktive generische Fehlerlogik blieb unverändert;
+zusätzliche Regression statt nachträglich behauptetem TDD-Red. Ein Analyzerbefund bei einem
+neuen konstanten Testarray vor Ausführung wurde durch gemeinsame benannte OS-Code-Regel
+behoben, kein fachliches Red. Windows ist bis eigener CIausführung ausdrücklich NOT RUN.
+
+Vor reinem gemeinsamen Hostpfadrefactoring17 bestehende Prozess-/Crashfälle grün, danach
+vollständige Regression. Vollständig lokal grün
+artifacts/quality/linux/84e356af705e4681bdfcd3aec1f9a23e,
+SourceHashc94015980f5fc7836d679ce69eeda825cc089d8f4c0e8c18f1bff33bed197eb5.
+664 Tests (288 Unit,203 Contract,172 Integration,1 Plattform), null Fehler/Skips;
+Produktabdeckung unverändert2271/2343=96,9270 %. Codemetr313 Dateien/322 Typen, null
+Verstöße/Parsefehler/Skips, einschließlich aller neuen Host-/Fixtureklassen. Logs unter
+artifacts/tdd/read-only-observed.log, storage-native-observed.log, native-fault-quality.log.
+Fullbefehl run-capped.sh plus Format/Guard/Invoke-Quality. Privileg-/Namespace-/VHDfehler
+werden nicht als PASS/Skip umgedeutet. T054/T065 behalten native Nachprüfung/Matrixaudit;
+T107 prüft ursprüngliche TDDabdeckung, zusätzliche grüne Proben ersetzen keine fehlenden
+historischen Redbelege. Retentioncommitf838da6 inzwischen Windows/Ubuntu grün:
+quality40887145758, Guard40887146227; T064 bleibt bis zugehörigem Speicheraudit offen.

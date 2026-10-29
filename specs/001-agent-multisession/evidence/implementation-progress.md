@@ -245,3 +245,16 @@ grün,96,9270 % Abdeckung, Codemetr302 Dateien/308 Typen sauber. Lauf
 a5b4381b7f10494b8b60896e1840bca4, tdd-us5.md. Neue nativeCI sowie restliche T054-
 Speicherfehlerproben vor vollständiger Taskabnahme. Ausschließlich eigene Testdaten gelöscht.
 T118 ist mit nativen CIbelegen des identischen Kopfes6b0ed03 abgeschlossen und markiert.
+
+### 2026-10-29T14:35:11Z: Echte native Speicherfehler lokal nachgewiesen
+
+Zusätzliche Read-only- und Disk-full-Regressionsproben ohne Produktänderung: neue physisch
+geschützte Verbindung verweigert Write, Datei/alte Resultate unverändert. Linuxchild mit
+privatem8MiB-Dateisystem erreicht ENOSPC28 nach8273920Füllbytes, öffentliche Annahme
+StorageUnavailable/NotAccepted, Kandidat fehlt, alter Erfolg/Historie erhalten, keine neuen
+Provider-Sends. Beides tatsächlich sofort grün, kein erfundenes Red. Windows-VHDfixture
+vorbereitet, nativeCI noch offen; ursprünglicher Retentioncommitf838da6 ist nativ grün.
+664 Tests lokal vollständig grün,96,9270 % Produktabdeckung, Codemetr313 Dateien/322 Typen
+sauber; Qualitätslauf84e356af705e4681bdfcd3aec1f9a23e. Tdd-us5 und Vorabanalyse erläutern
+Isolation, Grenzen, Quellen und genaue Erstfarben. Nach nativer Nachprüfung verbleiben
+Matrix-/TDDaudit, Fristen/Fehlerisolation/Diagnostik sowie native Ownership/Konsum/Freigaben.

@@ -6,8 +6,9 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class DispatchStoreConsistency
 {
-    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction)
+    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
         AssertTopology(connection, transaction);
         using SqliteCommand command = SqliteStatements.Create(connection, transaction, """
             SELECT v.DispatchId,v.RequestId,v.SessionId,v.WorkspaceKey,v.ReservedUtc,v.ReleasedUtc,v.ReleaseReason,
@@ -18,6 +19,7 @@ internal static class DispatchStoreConsistency
         using SqliteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
+            token.ThrowIfCancellationRequested();
             ExecutionReservation reservation = new(Guid.ParseExact(reader.GetString(0), "D"), Guid.ParseExact(reader.GetString(1), "D"),
                 Guid.ParseExact(reader.GetString(2), "D"), reader.IsDBNull(3) ? null : reader.GetString(3),
                 DateTimeOffset.ParseExact(reader.GetString(4), "O", CultureInfo.InvariantCulture));

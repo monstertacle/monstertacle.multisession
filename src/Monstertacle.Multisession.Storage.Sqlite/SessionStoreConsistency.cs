@@ -5,8 +5,9 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class SessionStoreConsistency
 {
-    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction)
+    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
         using (SqliteCommand command = SqliteStatements.Create(connection, transaction, """
             SELECT SessionId,ProviderId,AgentProfileId,ModelId,SettingsRevision,AdapterId,ContractVersion,
                 CreatedUtc,UpdatedUtc,ClosedUtc,Lifecycle,BlockReason,BindingRevision,SnapshotJson
@@ -16,6 +17,7 @@ internal static class SessionStoreConsistency
         {
             while (reader.Read())
             {
+                token.ThrowIfCancellationRequested();
                 SessionSnapshot snapshot = StoreSerialization.Read<SessionSnapshot>(reader.GetString(13));
                 if (!IdentityMatches(reader, snapshot) || !StateMatches(reader, snapshot) || !BindingMatches(reader, snapshot.Binding)
                     || !StoredUtcRepresentation.Matches(reader, 7, snapshot.CreatedUtc)

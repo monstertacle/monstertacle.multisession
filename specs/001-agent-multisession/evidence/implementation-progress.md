@@ -378,3 +378,11 @@ Kein Provider-I/O/Replay während Prüfungen, DBhash bei Ablehnung gleich. Nativ
 40910032459 und Guard40910032634 zu c3acedd ebenfalls beidseitig grün. T065 bleibt bis
 vollständigem Abgleich offen; als nächstes Startup-Cancellation der Transaktion/Scans
 im vorhandenen T076-Fristaudit, keine präemptive Kill-/Submillisekundenzusage.
+
+Startup-Cancellation T076 nach2/2fachlichem Red durchgängig weitergereicht;171/171Storage-/
+Recovery-/Cancelfälle danach grün. Volltor linux/b7a2faaeae854feeb161f21ff179c634 konsistent
+erfolgreich; Codemetr360Dateien/370Typen ohne Befunde. Kein Recoverycommit nach bereits
+innerhalb laufender Vorbereitung erkanntem Cancel, Datei/Lease erhalten; erneuter Start
+mit frischem Token möglich. Native Einzelanweisungen bleiben kooperativ statt präemptiv.
+Vollständiger Deadline-/Lifecycleaudit bleibt offen; als nächstes T067 Kultur-/UTC-
+Writer-/Readerabgleich, dann T064–T069-Abnahmematrix und verbleibende US3/US4-Aufgaben.

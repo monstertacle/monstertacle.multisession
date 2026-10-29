@@ -7,8 +7,9 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 // Validate every request before startup recovery can change any row. Reader memory stays bounded.
 internal static class RequestStoreConsistency
 {
-    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction)
+    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
         using SqliteCommand command = SqliteStatements.Create(connection, transaction, """
             SELECT RequestId,SessionId,Sequence,State,Certainty,AcceptedUtc,StartedUtc,EndedUtc,CancellationRequestedUtc,SnapshotJson
             FROM Requests ORDER BY RequestId COLLATE BINARY
@@ -16,6 +17,7 @@ internal static class RequestStoreConsistency
         using SqliteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
+            token.ThrowIfCancellationRequested();
             RequestSnapshot snapshot = StoreSerialization.Read<RequestSnapshot>(reader.GetString(9));
             if (!IdentityMatches(reader, snapshot) || !RequestStateMachine.IsValid(snapshot.State, snapshot.Certainty)
                 || reader.GetInt32(3) != (int)snapshot.State || reader.GetInt32(4) != (int)snapshot.Certainty

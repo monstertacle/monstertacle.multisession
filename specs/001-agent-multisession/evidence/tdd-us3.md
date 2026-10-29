@@ -413,3 +413,20 @@ bestehen.
 T119 nativ bestätigt zu9189574: Qualität40907585230 auf Windows/Ubuntu und Guard40907585258
 vollständig grün. Damit expliziter UTF8-Integritätsauftrag umgesetzt und geprüft; Markierung
 in tasks.md folgt. Allgemeine Produkt-/US3-/Plattform-/Liveabnahmen bleiben davon getrennt.
+
+## T076 Cancellation nach Queuebeginn der Storevorbereitung
+
+Architektur/Quellen vor Änderung: architecture/2026-10-29-startup-cancellation.md.
+startup-cancellation-red.log2/2 echte rote Fälle: Token nach Übergang des Workitems zu
+running im bestehenden Leasecheck ausgelöst, Start committtete dennoch Recovery und
+warf keine OCE. Kein geschätzter Delay/Reflection/Produkttesthook. Danach Token von
+IStoreBootstrap über State.Start in Recoverytransaction und alle sieben Rowprüfungen
+weitergegeben, je Row/Recoveryeintrag und vor Commit geprüft. startup-cancellation-green
+171/171bestehende/neue Storage-/Recovery-/Cancelfälle grün. Cancellierte uncommittete
+Vorbereitung lässt DBhash/Running/History/Cases unverändert, Hostlease bleibt gehalten;
+frischer Token darf konservative Recovery genau einmal durchführen.
+
+Keine präemptive Unterbrechung einzelner SQLiteanweisungen/JSONrowparses behauptet;
+Cancel greift an kooperativen Grenzen. Bekannter Commit wird nicht rückwirkend gelöscht,
+andere fachliche Write-/Unknownregeln unverändert. Vollständiger Frist-/Lifecycleaudit
+T076/T083 und die übrige US3-Abnahme bleiben offen.

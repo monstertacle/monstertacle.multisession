@@ -30,11 +30,11 @@ internal sealed class SqliteStoreState
         Queue = new(connection, options.DbWorkQueueCapacity, lease);
     }
 
-    internal void Start(SqliteConnection connection, IStateDirectoryLease lease)
+    internal void Start(SqliteConnection connection, IStateDirectoryLease lease, CancellationToken token)
     {
         if (!ReferenceEquals(lease, _lease) || !lease.IsHeld) { throw StorageFailurePolicy.Error(ErrorCode.InvalidConfiguration, true, false); }
         if (_started) { throw StorageFailurePolicy.Error(ErrorCode.StoreAlreadyOwned, true, false); }
-        RecoveryTransactions.Prepare(connection, this);
+        RecoveryTransactions.Prepare(connection, this, token);
         _started = true;
         _accepting = true;
     }

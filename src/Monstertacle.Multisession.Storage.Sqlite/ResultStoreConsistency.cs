@@ -6,8 +6,9 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class ResultStoreConsistency
 {
-    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction)
+    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
         AssertRelations(connection, transaction);
         using SqliteCommand command = SqliteStatements.Create(connection, transaction, """
             SELECT r.SnapshotJson,r.SubmissionJson,t.CompletedUtc,t.ReplyJson,
@@ -18,6 +19,7 @@ internal static class ResultStoreConsistency
         using SqliteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
+            token.ThrowIfCancellationRequested();
             RequestSnapshot request = StoreSerialization.Read<RequestSnapshot>(reader.GetString(0));
             SubmitRequest submission = StoreSerialization.Read<SubmitRequest>(reader.GetString(1));
             ProviderReply result = StoreSerialization.Read<ProviderReply>(reader.GetString(3));

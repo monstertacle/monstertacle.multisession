@@ -6,8 +6,9 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class DecisionStoreConsistency
 {
-    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction)
+    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
         AssertResolvedHasDecisions(connection, transaction);
         using SqliteCommand command = SqliteStatements.Create(connection, transaction, """
             SELECT d.DecisionId,d.TargetKind,d.TargetId,d.AppliedUtc,d.DecisionJson,c.SnapshotJson
@@ -19,6 +20,7 @@ internal static class DecisionStoreConsistency
         bool confirmed = false;
         while (reader.Read())
         {
+            token.ThrowIfCancellationRequested();
             RecoveryDecision decision = StoreSerialization.Read<RecoveryDecision>(reader.GetString(4));
             RecoveryCaseSnapshot item = StoreSerialization.Read<RecoveryCaseSnapshot>(reader.GetString(5));
             if (group?.Target != item.Target) { AssertConfirmation(group, confirmed); group = item; confirmed = false; }

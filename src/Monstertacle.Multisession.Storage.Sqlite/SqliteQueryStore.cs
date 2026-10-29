@@ -13,7 +13,7 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
         => State.Queue.WriteAsync(_ => State.ValidateRuntimeOptions(options), cancellationToken);
 
     ValueTask IStoreBootstrap.StartAsync(IStateDirectoryLease lease, CancellationToken cancellationToken)
-        => State.Queue.WriteAsync(connection => State.Start(connection, lease), cancellationToken);
+        => State.Queue.WriteAsync(connection => State.Start(connection, lease, cancellationToken), cancellationToken);
     ValueTask IStoreBootstrap.StopAcceptanceAsync(CancellationToken cancellationToken)
         => State.Queue.WriteAsync(_ => State.StopAcceptance(), cancellationToken);
     ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)

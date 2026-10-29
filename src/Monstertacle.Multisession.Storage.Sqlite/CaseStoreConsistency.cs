@@ -5,8 +5,9 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class CaseStoreConsistency
 {
-    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction)
+    internal static void Assert(SqliteConnection connection, SqliteTransaction transaction, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
         using (SqliteCommand command = SqliteStatements.Create(connection, transaction, """
             SELECT c.TargetKind,c.TargetId,c.SnapshotJson,c.CreatedUtc,c.Revision,c.Status,c.SessionId,c.RequestId,c.DispatchId,
                 r.SessionId,r.DispatchId,r.Certainty,v.ReleasedUtc,r.ReservedDispatchJson,s.SnapshotJson,r.State
@@ -18,6 +19,7 @@ internal static class CaseStoreConsistency
         {
             while (reader.Read())
             {
+                token.ThrowIfCancellationRequested();
                 RecoveryCaseSnapshot item = StoreSerialization.Read<RecoveryCaseSnapshot>(reader.GetString(2));
                 SessionSnapshot session = StoreSerialization.Read<SessionSnapshot>(reader.GetString(14));
                 if (!HeaderMatches(reader, item) || (item.Status == RecoveryCaseStatus.Open && session.BlockReason != SessionBlockReason.RecoveryRequired)

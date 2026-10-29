@@ -41,6 +41,7 @@ internal static class RecoveryTransactions
             if (reader.Read()) { throw StorageFailurePolicy.Error(ErrorCode.StorageUnavailable, false, false); }
         }
         RequestStoreConsistency.Assert(connection, transaction);
+        SessionStoreConsistency.Assert(connection, transaction);
         using SqliteCommand missing = SqliteStatements.Create(connection, transaction,
             """
             SELECT count(*) FROM Requests r WHERE r.State=$running AND NOT EXISTS

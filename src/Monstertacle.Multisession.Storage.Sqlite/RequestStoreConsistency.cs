@@ -30,12 +30,8 @@ internal static class RequestStoreConsistency
             && reader.GetInt64(2) == snapshot.Sequence;
 
     private static bool TimesMatch(SqliteDataReader reader, RequestSnapshot snapshot)
-        => UtcMatches(reader, 5, snapshot.AcceptedUtc) && UtcMatches(reader, 6, snapshot.StartedUtc)
-            && UtcMatches(reader, 7, snapshot.EndedUtc) && UtcMatches(reader, 8, snapshot.CancellationRequestedUtc);
-
-    private static bool UtcMatches(SqliteDataReader reader, int ordinal, DateTimeOffset? timestamp)
-        => timestamp is null ? reader.IsDBNull(ordinal)
-            : timestamp.Value.Offset == TimeSpan.Zero && !reader.IsDBNull(ordinal) && reader.GetString(ordinal) == StoreSerialization.Utc(timestamp.Value);
+        => StoredUtcRepresentation.Matches(reader, 5, snapshot.AcceptedUtc) && StoredUtcRepresentation.Matches(reader, 6, snapshot.StartedUtc)
+            && StoredUtcRepresentation.Matches(reader, 7, snapshot.EndedUtc) && StoredUtcRepresentation.Matches(reader, 8, snapshot.CancellationRequestedUtc);
 
     private static bool FinalizationMatches(RequestSnapshot snapshot)
     {

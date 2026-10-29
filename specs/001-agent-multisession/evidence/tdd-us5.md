@@ -682,3 +682,21 @@ DBhash bleibt nach fehlgeschlagenem Start unverändert. Kein Ersatzstore, keine 
 Datenkorrekturen oder Verlust früherer bestätigter Inhalte. Reader bleibt speicherbegrenzt;
 keine zusätzliche ganze Requestliste. Session-/Result-/History-/Casegraphvalidierung ist
 noch separat in T065 zu bearbeiten; kein vollständiger Korruptionsschutz behauptet.
+
+## T065 Sitzungsprojektionen vor Recovery
+
+Architektur mit gemessenen Quellen vor Code: architecture/2026-10-29-session-storage-consistency.md.
+session-consistency-red.log22/22 echte rote Fälle gegen bestehenden Startpfad: ungeprüfte
+Open-Snapshots akzeptieren Identitäts-/Provider-/Profil-/Modell-/Bindungs-/State-/UTCdrift,
+malformed/missing JSON, widersprüchliche ClosedUtc und falsches NextSequence. Nach eigener
+Streamingprüfung im selben Starttransaction session-consistency-green48/48, einschließlich
+26unveränderter Requestschutzfälle. Gemeinsamen UTCtextvergleich ohne Verhaltensänderung
+in StoredUtcRepresentation herausgezogen. Fehler bereinigt und Datenbankhash unverändert;
+keine Wiederherstellung durch Überschreiben vorhandener Daten.
+
+Bindungsformat ist positive opake Adapterversion, keine Herstellerweiche/Format1annahme;
+lazy Root mit Binding aber ohne native SessionReference bleibt gültig. ClosedUtc ist genau
+für Closed gesetzt, Wallclockreihenfolge nicht erzwungen. NextSequence muss höchster noch
+persistierter Requestsequence plus1 entsprechen. Result-/History-/Recoverycasegraph und
+vollständiger Close-/Stopraceaudit bleiben ausdrücklich offene Schritte in T065/T079/T083;
+dieser Nachweis schließt sie nicht stillschweigend aus dem Gesamtauftrag aus.

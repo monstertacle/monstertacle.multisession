@@ -322,3 +322,15 @@ realer erfolgreicher Größenprobe. Bei erneutem Windowsfehler zusätzliche64MiB
 private versus SYSTEM; keine sichere ACLursache behauptet, vollständige Nativeprüfung
 steht aus. Linuxvolltor017b5c6239504df0b030aa342d9cece0 konsistent grün; keine native
 Windowsexekution durch lokale Syntaxprüfung ersetzt. Füllerlimit128MiB unverändert.
+
+Sitzungsprojektionen T065:22/22 echte Redfälle, danach48/48Request-/Sessionkonsistenzfälle.
+Volltor linux/fa6115318c3640009e31997deec0018d konsistent grün, Codemetr341Dateien/
+351Typen ohne Befunde. Identität/Kontext/Modell-/Profil-/Bindungsprojekte, Lifecycle-/
+UTCfelder und NextSequence abgeglichen, lazy native Root weiterhin zulässig. Result-/
+History-/Casegraph folgt im selben laufenden Auftrag; keine Vollabnahme behauptet.
+
+Native Windows-/Ubuntuqualität40902755784 und Codemetr40902755787 zu ea8ecd5 sind beide
+grün. Echte Disk-full-/Read-only-Fälle nun auch nativ erfolgreich nach getrenntem
+Owner+SYSTEM-Imagecontainer, Anwendungs-StateDirectory bleibt SID-only. Frühere roten
+Format-/Deadline-Läufe bleiben historische Befunde; kein rückwirkendes Grün. Produktive
+Windows-/Linuxleases und deren Alias-/Rechte-/Lifetimebesitznachweise bleiben US4-offen.

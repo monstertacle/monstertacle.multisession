@@ -428,3 +428,14 @@ Regression an SQLite. Idle-Stop ist keine vollständige Stopabnahme. T021–T024
 zugehörigen Tests werden im US1-Gesamtabgleich einzeln gegen ihre Abnahme geprüft;
 keine pauschale Storyfreigabe. Nächste konkrete Arbeit: T030/T036 Konfiguration und
 US2-Adapter, danach SQLite, Lifecycle und Plattform/Konsum gemäß implementation-progress.md.
+
+### Native CI-Korrektur der Testbarriere
+
+Updated: 2026-10-29T07:46:06Z
+Runtime-CI quality 40837103927 war auf Windows rot: ParallelSessionsTests Zeile 49
+beobachtete calls.Count=0 statt 2. Das allgemeine Started-Signal precediert den
+Sending-Delegate. Die neue eigene Eintrittsbarriere sitzt nach dessen Enqueue;
+keine Sleeps oder gelockerten Overlapassertions. Vorabanalyse im Runtime-Architekturbeleg.
+Alle weiteren Started.Task-Aufrufer geprüft: sie verlangen nur bereits geschehene
+Reservierung oder begonnenen Send, keinen späteren Delegateeintrag. Vertragssuite danach
+52/52 grün; Full-Guard erneut sauber (runtime-ci-guard.json). CI erneut nach Push nötig.

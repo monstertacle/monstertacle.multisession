@@ -8,13 +8,14 @@ namespace Monstertacle.Multisession.ContractTests;
 /// <summary>Consumes only the public runtime using controlled provider/store/lease contracts.</summary>
 public sealed class ParallelSessionsTests
 {
-    private static ControlledProvider Provider(Task release, ConcurrentQueue<ProviderCall> calls) => new()
+    private static ControlledProvider Provider(Task release, ConcurrentQueue<ProviderCall> calls, TaskCompletionSource entered) => new()
     {
         BindingForContext = context => new("controlled", 1, $"opaque-{context.SessionId:D}", null),
         Sending = async (call, binding, observe, token) =>
         {
             Assert.Equal($"opaque-{call.Session.SessionId:D}", binding.SessionReference);
             calls.Enqueue(call);
+            entered.TrySetResult();
             await release.WaitAsync(token);
             return new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, call.Input, true, binding with { ContinuationState = call.Input }, null);
         },
@@ -26,8 +27,10 @@ public sealed class ParallelSessionsTests
     {
         ConcurrentQueue<ProviderCall> calls = new();
         TaskCompletionSource release = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        ControlledProvider first = Provider(release.Task, calls);
-        ControlledProvider second = Provider(release.Task, calls);
+        TaskCompletionSource firstEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource secondEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        ControlledProvider first = Provider(release.Task, calls, firstEntered);
+        ControlledProvider second = Provider(release.Task, calls, secondEntered);
         InMemorySessionStore store = new();
         string directory = Path.GetTempPath();
         TestStateDirectoryLease lease = new(directory);
@@ -44,7 +47,7 @@ public sealed class ParallelSessionsTests
             RequestReceipt b = await runtime.Requests.SubmitAsync(new(session.SessionId, $"{i}-second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
             sessions.Add((session, a, b));
         }
-        await Task.WhenAll(first.Started.Task, second.Started.Task).WaitAsync(TimeSpan.FromSeconds(5));
+        await Task.WhenAll(firstEntered.Task, secondEntered.Task).WaitAsync(TimeSpan.FromSeconds(5));
         Assert.Equal(2, store.Reservations.Count);
         Assert.Equal(2, calls.Count);
         release.TrySetResult();

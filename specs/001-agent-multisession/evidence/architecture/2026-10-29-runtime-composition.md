@@ -62,3 +62,14 @@ und Ownership-/Hintergrundfehler sind unabhängige Testverantwortlichkeiten; sie
 in zwei Klassen mit gemeinsamem Kompositionsfixture getrennt. FindSession benötigt
 nur Dictionary.TryGetValue statt der zusätzlichen CollectionExtensions-Abhängigkeit.
 Keine Fachänderung, kein Grenzwert-/Scopewechsel. Danach beide Suiten und Full-Guard.
+
+CI-Nachprüfung vor Testkorrektur, gemessen 2026-10-29T07:46:06Z:
+Runtime-CI 40837103927 hat unter Windows einen fachlichen Testfehler: ParallelSessionsTests
+Zeile 49 erwartet calls.Count=2, tatsächlich 0. ControlledProvider.SendAsync setzt Started
+vor Aufruf des Sending-Delegates; Task.WhenAll(Started) ist deshalb keine Zusicherung,
+dass dessen calls.Enqueue schon ausgeführt wurde. Dieser Kontrollfluss ist am aktuellen
+ControlledProvider/ParallelSessionsTests geprüft. Kein Beleg für fehlerhafte Produktslots.
+Entscheidung: eigene TCS-Barriere je Testprovider unmittelbar nach Enqueue, darauf vor
+Overlapassertions warten. Allgemeines Fixture-Started bleibt unverändert, keine Sleeps,
+Assertions/Limits bleiben streng. CI-Rot ist beobachtet; Contractregression/Fullqualität
+und native CI am korrigierten Commit erneut. Kein weiterer Implementierungsblocker.

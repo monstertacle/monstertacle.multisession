@@ -63,9 +63,13 @@ public sealed class WindowsOwnershipRejectionTests : IDisposable
         await using WindowsStateDirectoryLease target = WindowsStateDirectoryLease.CreateNew(Path.Combine(_root, "target"));
         string link = Path.Combine(_root, "junction");
         await WindowsLinkProbe.CreateAsync("Junction", link, target.StateDirectory);
-        Assert.Throws<SessionOperationException>(() => WindowsStateDirectoryLease.CreateNew(Path.Combine(link, "child")));
-        Assert.False(Directory.Exists(Path.Combine(target.StateDirectory, "child")));
-        Assert.True(target.IsHeld);
+        try
+        {
+            Assert.Throws<SessionOperationException>(() => WindowsStateDirectoryLease.CreateNew(Path.Combine(link, "child")));
+            Assert.False(Directory.Exists(Path.Combine(target.StateDirectory, "child")));
+            Assert.True(target.IsHeld);
+        }
+        finally { Directory.Delete(link, recursive: false); }
     }
 
     /// <summary>A private file's hardlink is rejected without changing the original bytes.</summary>

@@ -624,3 +624,20 @@ als Regression geprüft. Lokales Volltor linux/356c193bc2a7473cbe132a9b048d7ae6:
 5ce4ba7061d6eb9ca5ae3939b981d5884fedacdc2f511f35c0b1bbb0ec6e8cca.
 Codemetr 428 Dateien/445 Typen ohne Befund. Windows-Code übersetzbar, tatsächliche
 Ausführung steht noch aus; keine Linuxausführung als Windows-PASS ausgegeben.
+
+2026-10-29T21:02:04Z: Erster tatsächlicher Stundenlauf des eingefrorenen
+Zwischenstands besteht auf Debian 13: 3600.0023019 monotone Sekunden, 60
+ursprüngliche bestätigte Erfolge, 60 Historyzeilen und keine offene Reservierung
+unabhängig per Readonly-SQLite geprüft. Rohbeleg/Methodengrenze in soak.md.
+T120 ergänzt nach echtem Offset-Rotfall einzelne monotone Receiptsamples;
+Zusatzprüfer kontrolliert alle 60 Minuten, IDs, Reopenzahl und Assemblydigest.
+Sieben Zeitplan-/Timerregressionen und synthetische Schema-/Negativproben grün;
+synthetische Daten werden ausdrücklich nicht als Stundenlauf gewertet.
+Neuer tatsächlicher Native-Stundenlauf steht noch aus.
+
+Volltor linux/8bc0789996094a7d8db491a284d156de: 994 Tests, 97.4838 %,
+Sourcehash 322c7a7ca2900d834776cd2da5026900f2093a2dfbf1126b4ec7fc99270c1454,
+Codemetr 428 Dateien/446 Typen ohne Befund. Enthält gezieltes nichtrekursives
+Aufräumen des eigenen Windows-Junctionfixtures nach konkretem CI-Cleanupfehler.
+Neuer separater Stundenworkflow startet ausschließlich bei ausdrücklicher
+Anforderung mit passendem gemessenem Sourcehash; keine Anbieterzugänge.

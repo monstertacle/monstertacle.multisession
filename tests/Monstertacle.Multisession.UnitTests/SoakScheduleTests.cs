@@ -30,6 +30,7 @@ public sealed class SoakScheduleTests
             Assert.True(schedule.NeedsRequest);
             Assert.False(schedule.IsComplete);
             schedule.RecordAccepted();
+            Assert.Equal(TimeSpan.FromMinutes(minute), schedule.LastAcceptedElapsed);
             Assert.Equal(minute + 1, schedule.AcceptedCount);
             Assert.False(schedule.IsComplete);
             Assert.Equal(TimeSpan.FromMinutes(1), schedule.UntilNext);

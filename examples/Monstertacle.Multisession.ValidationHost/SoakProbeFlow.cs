@@ -17,17 +17,19 @@ internal static class SoakProbeFlow
         DateTimeOffset startedUtc = clock.GetUtcNow();
         SessionSnapshot session = await host.CreateAsync("soak");
         List<Guid> requests = [];
+        List<SoakAcceptance> acceptances = [];
         while (schedule.NeedsRequest)
         {
             await Task.Delay(schedule.UntilNext, clock, CancellationToken.None);
             RequestReceipt receipt = await host.SubmitAsync(session.SessionId, "soak-" + schedule.AcceptedCount);
             schedule.RecordAccepted();
             requests.Add(receipt.RequestId);
+            acceptances.Add(new(receipt.RequestId, schedule.LastAcceptedElapsed.Ticks));
             ValidationCheck.Require((await host.EndAsync(receipt.RequestId)).State == RequestState.Succeeded, "SoakRequestDidNotSucceed");
         }
         while (schedule.UntilEnd > TimeSpan.Zero) { await Task.Delay(schedule.UntilEnd, clock, CancellationToken.None); }
         ValidationCheck.Require(schedule.IsComplete && requests.Count >= 60, "SoakDurationOrCountNotMet");
-        SoakRunEvidence evidence = new(startedUtc, clock.GetUtcNow(), schedule.Elapsed.Ticks, assemblyHash, requests);
+        SoakRunEvidence evidence = new(startedUtc, clock.GetUtcNow(), schedule.Elapsed.Ticks, assemblyHash, requests, acceptances);
         await host.Runtime.StopAsync(TimeSpan.FromSeconds(10), CancellationToken.None);
         await VerifyStoredAsync(state, host.Options, evidence);
     }
@@ -45,8 +47,14 @@ internal static class SoakProbeFlow
         ValidationCheck.Require((await store.GetRuntimeStatisticsAsync(CancellationToken.None)).OccupiedReservations == 0, "SoakRetainedUnexpectedReservation");
         const string name = "soak-evidence.json";
         await lease.PrepareFileAsync(name, StateFileMode.CreateNew, CancellationToken.None);
-        await File.WriteAllTextAsync(Path.Combine(state.Directory, name), JsonSerializer.Serialize(evidence));
+        await File.WriteAllTextAsync(Path.Combine(state.Directory, name), JsonSerializer.Serialize(evidence with { ReopenedRequests = evidence.RequestIds.Count }));
     }
 }
 
-internal sealed record SoakRunEvidence(DateTimeOffset StartedUtc, DateTimeOffset EndedUtc, long ElapsedTicks, string HostAssemblySha256, IReadOnlyList<Guid> RequestIds);
+internal sealed record SoakRunEvidence(DateTimeOffset StartedUtc, DateTimeOffset EndedUtc, long ElapsedTicks, string HostAssemblySha256,
+    IReadOnlyList<Guid> RequestIds, IReadOnlyList<SoakAcceptance> Acceptances)
+{
+    public int ReopenedRequests { get; init; }
+}
+
+internal sealed record SoakAcceptance(Guid RequestId, long ElapsedTicks);

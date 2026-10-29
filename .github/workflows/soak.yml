@@ -1,0 +1,93 @@
+name: native-hour-soak
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_hash:
+        description: Exact source hash of the requested candidate
+        required: true
+        type: string
+  push:
+    paths:
+      - .github/soak-request.json
+
+permissions:
+  contents: read
+
+jobs:
+  soak:
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+        include:
+          - os: ubuntu-24.04
+            platform: linux
+            framework: net10.0
+            rid: linux-x64
+          - os: windows-latest
+            platform: windows
+            framework: net10.0-windows
+            rid: win-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Validate the complete native candidate
+        shell: pwsh
+        run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}'
+      - name: Check requested source and consume candidate packages
+        shell: pwsh
+        env:
+          REQUESTED_SOURCE_HASH: ${{ inputs.source_hash }}
+        run: |
+          $expected = $env:REQUESTED_SOURCE_HASH
+          if ([string]::IsNullOrWhiteSpace($expected)) {
+            $expected = (Get-Content -Raw -LiteralPath .github/soak-request.json | ConvertFrom-Json).SourceHash
+          }
+          if ($expected -notmatch '^[0-9a-f]{64}$') { throw 'A measured candidate source hash is required.' }
+          $run = Get-ChildItem 'artifacts/quality/${{ matrix.platform }}' -Directory | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+          $actual = Get-Content -Raw -LiteralPath (Join-Path $run.FullName 'run.json') | ConvertFrom-Json
+          if ($actual.SourceHash -ne $expected) { throw 'Requested source differs from the validated candidate.' }
+          dotnet tool restore
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
+          dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.1.0
+          if ($LASTEXITCODE -ne 0) { throw 'Candidate package build failed.' }
+          ./eng/PackageSmoke.ps1
+          $null = New-Item artifacts/soak -ItemType Directory -Force
+          Copy-Item -LiteralPath (Join-Path $run.FullName 'run.json') -Destination artifacts/soak/candidate.json
+      - name: Publish native host
+        shell: pwsh
+        run: |
+          dotnet publish examples/Monstertacle.Multisession.ValidationHost -c Release -f '${{ matrix.framework }}' -r '${{ matrix.rid }}' --self-contained false --no-restore -o artifacts/publish/native
+          if ($LASTEXITCODE -ne 0) { throw 'Native candidate publish failed.' }
+      - name: Run a full monotonic hour and verify every receipt window
+        shell: pwsh
+        run: |
+          $base = Join-Path ([Environment]::GetFolderPath('UserProfile')) 'dev/.agenttemp'
+          $null = New-Item -Path $base -ItemType Directory -Force
+          $state = Join-Path $base ('multisession-hour-' + [Guid]::NewGuid().ToString('N'))
+          $hostPath = (Resolve-Path artifacts/publish/native/Monstertacle.Multisession.ValidationHost.dll).Path
+          dotnet $hostPath --scenario soak --state-root $state > artifacts/soak/report.json
+          if ($LASTEXITCODE -ne 0) { throw 'The actual one-hour scenario failed.' }
+          $report = Get-Content -Raw -LiteralPath artifacts/soak/report.json | ConvertFrom-Json
+          if ($report.Status -ne 'PASS') { throw 'The actual one-hour scenario did not pass.' }
+          $run = Join-Path $state ('run-' + ([Guid]$report.RunId).ToString('N'))
+          $evidence = Join-Path $run 'soak-evidence.json'
+          ./eng/Test-SoakProof.ps1 -Evidence $evidence -HostAssembly $hostPath -Summary artifacts/soak/verified.json
+          Copy-Item -LiteralPath $evidence -Destination artifacts/soak/soak-evidence.json
+          Copy-Item -LiteralPath (Join-Path $run 'multisession.db') -Destination artifacts/soak/multisession.db
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-hour-${{ matrix.platform }}
+          path: |
+            artifacts/quality/${{ matrix.platform }}/
+            artifacts/packages/
+            artifacts/package-smoke/
+            artifacts/publish/
+            artifacts/soak/
+          if-no-files-found: error

@@ -26,3 +26,13 @@ werden nicht repariert. Native Tests sind per TFM auf Windows beschränkt, aber
 sämtliche eigenen Klassen bleiben im unveränderten Full-Codemetr-Umfang.
 Linux-Build/Codermetr prüfen nur Übersetzbarkeit und Umfang; Ergebnisse dürfen
 erst aus tatsächlicher Windows-CI übernommen werden. Windows 11 bleibt NOT RUN.
+
+Lauf 40951619323 auf Windows Server 2025: 36/37 Plattformfälle bestanden;
+Junctiontest scheitert ausschließlich im Klassen-Dispose an rekursivem
+Directory.Delete mit IOException/Parameter incorrect. Quelle der ursprünglichen
+Behauptung blieb unverändert; kein fachlicher Sicherheits-Red wird behauptet.
+Entscheidung vor Fixturekorrektur: den explizit selbst erzeugten Junction-Link
+im Testfinally mit nicht rekursivem Directory.Delete entfernen. Zielverzeichnis
+und dessen Inhalte bleiben erhalten. Danach kann der normale Fixtureordner
+rekursiv gelöscht werden. Kein Rechte-/Token-/Systemeingriff und keine Änderung
+an der nativen Bibliothek. Native Wiederholung erforderlich.

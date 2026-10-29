@@ -472,3 +472,25 @@ Volltor linux/aae1cd7070554ae2bb0fe82fb6829caf: 991 Tests, 2867/2941 Zeilen,
 97.4838 %, Sourcehash
 9cd4dcc736dbc51b88d031e8ccf1936da94fca7aee46b8eba5b0fd38c5021657.
 T072/T078 bleiben für ihre übrigen Race-/Zielsystemkriterien offen.
+
+## T072/T078: begrenzter Stop bei blockierendem Callback
+
+Analyse vor Umsetzung: architecture/2026-10-29-stop-callback-deadline.md.
+Ausgangspunkt 7e33651. `StopCallbackDeadlineTests` reproduzierte fachlich rot:
+100-ms-Stop blieb bei gehaltenem Cancellationcallback länger als zwei Sekunden hängen;
+Test erhielt TimeoutException statt bereinigter SessionOperationException. Zuvor
+korrigierte Test-Compilefehler sind kein Red. Original `stop-callback-red.log`,
+HEAD/Tracked-Diff/Untracked-Tar vor Green unter `artifacts/tdd/stop-callback-red-source/`.
+
+Workerabbruch verwendet nun einmalig CancelAsync; Shutdown wartet vor Store-/Lease-
+Freigabe auf alle Callbacks und meldet Callbackfehler erst nach sicherer Bereinigung.
+Der Fehlerpfad der Worker nutzt denselben Abbruchweg. Alle 210 Vertragstests danach
+bestanden. Zusätzliche Variante mit fehlerwerfendem Callback ist eine Regression der
+bereits eingeführten Fehlerbehandlung, kein separater Redzyklus. Vollgate folgt.
+
+Volltor linux/ca1f7230bdc7416e81a0fc06ef35ea9b bestanden: 996 Tests
+(359 Unit, 211 Contract, 399 Integration, 27 Linuxplattform), 2878/2951 Zeilen,
+97.5263 %, unveränderte 87-%-Grenze. Sourcehash
+`daaa75afbe122f6642a84907eee028dd474bf3389d399f34eadc61bad870c0d6`.
+Fullguard: 429 Dateien/447 Typen, keine Verstöße/Parsefehler/übersprungenen Dateien.
+Native CI für diesen neuen Stand bleibt abzuwarten.

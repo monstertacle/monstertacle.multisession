@@ -641,3 +641,13 @@ Codemetr 428 Dateien/446 Typen ohne Befund. Enthält gezieltes nichtrekursives
 Aufräumen des eigenen Windows-Junctionfixtures nach konkretem CI-Cleanupfehler.
 Neuer separater Stundenworkflow startet ausschließlich bei ausdrücklicher
 Anforderung mit passendem gemessenem Sourcehash; keine Anbieterzugänge.
+
+2026-10-29T21:21:56Z: Stopcallback-Deadlock zuerst fachlich rot reproduziert,
+asynchronen Workerabbruch mit Callbackdrain vor Ressourcenfreigabe integriert.
+Volltor linux/ca1f7230bdc7416e81a0fc06ef35ea9b: 996 Tests, 97.5263 %,
+Sourcehash daaa75afbe122f6642a84907eee028dd474bf3389d399f34eadc61bad870c0d6,
+Codemetr 429 Dateien/447 Typen ohne Befund. T072/T078 bleiben im Gesamtaudit.
+Native CI des vorherigen Stands 7e33651 vollständig grün, Stundenläufe laufen.
+T111-main-Protection tatsächlich gesetzt und per GET geprüft, siehe ci.md.
+Plattformteilmatrix in platforms.md unterscheidet Ubuntu, Server, Debian und
+fehlenden Windows-11-Host. Keine finale Freigabe oder Veröffentlichung.

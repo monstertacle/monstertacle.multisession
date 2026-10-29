@@ -102,7 +102,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         catch (Exception)
         {
             _state = RuntimeState.Faulted;
-            _stop!.Cancel();
+            StopWorkers();
             throw Error(ErrorCode.StorageUnavailable);
         }
     }
@@ -197,7 +197,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
     {
         lock (_gate)
         {
-            if (_state is not (RuntimeState.Stopped or RuntimeState.Disposed)) { _stop?.Cancel(); }
+            if (_state is not (RuntimeState.Stopped or RuntimeState.Disposed) && _stop is not null) { _shutdown.CancelWorkers(_stop); }
         }
     }
 
@@ -208,7 +208,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
 
     private async Task CleanupCoreAsync()
     {
-        await _shutdown.Operations.DrainAsync();
+        await _shutdown.DrainAsync();
         if (_components is { } components) { await components.Statistics.DisposeAsync(); }
         await host.Store.DisposeAsync();
         await host.Lease.DisposeAsync();
@@ -218,6 +218,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             _stop?.Dispose();
             _state = RuntimeState.Stopped;
         }
+        _shutdown.RequireSuccessfulCancellation();
     }
 
     private static SessionOperationException Error(ErrorCode code)

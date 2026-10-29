@@ -197,3 +197,18 @@ Cancelled/ConfirmedEndedunter2s. UnabhängigeSendsnachweislichgleichzeitiggehalt
 Callanzahl/Originalinput/Model/Session/Request/Sequence/History stimmenüberein.
 CLItestsprüfenzusätzlichdieechteDBzählungnachProzessende. GenerischeBackendfakes sind
 keinnativerHerstellerprotokoll-/Livenachweis. WeitereSzenarienbleibenT094offen.
+
+## T094 capacity/workspace/shutdown/limits
+
+Vorabanalyse architecture/2026-10-29-host-boundaries.md, RedzustandvorGreenarchiviert
+unterartifacts/tdd/host-boundaries-red-* (Gitbasis/Diff/neueAnalyse/Tar/Hashes/Zeit).
+VierneueCLI-Fällefachlichrot,4bisherigeRegressionengrün; danach8/8Szenariofällegrünin6s.
+Kapazität2gehalteneRunning+8paralleleEingängebeiQueue3 ergibt5Accepted/5QueueFull mit
+NotAccepted; nurexaktdie5Acceptedgesendet. WorkspaceAgentTasksmitSchreibintent:2gleiche
+Keysnieparallel, unabhängigerKeyläuftimzweitenSlot, wartenderSharedrequestdanachFIFO.
+ShutdownabEingangunter10s:2QueuedCancelled/NotStarted,1UnknownmitReservationnach
+Stop/Reopen; unkooperativerBackendabschlussspätererzeugtkeinenErfolg/Replay.
+LimitsUTF8genau6Bytesinklusive/7Bytesexklusive, leerundkaputtesUTF16vorReceipt abgewiesen;
+2Success+1FailedOutputLimitExceededmitvollständigleererFehlerausgabe, frühereHistory
+unverändert. ÖffentlicheDBzählungenunabhängigvomReportgeprüft. KeinProduktsemantikwechsel,
+keineSchwellenlockerung; ProbeHostProfilekind gezieltAgentTaskfürWorkspace gewählt.

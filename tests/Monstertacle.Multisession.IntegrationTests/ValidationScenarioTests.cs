@@ -14,10 +14,39 @@ public sealed class ValidationScenarioTests
     [InlineData("routing", 10, 100, 100, 0, 0)]
     [InlineData("failures", 10, 10, 5, 5, 0)]
     [InlineData("cancellation", 1, 1, 0, 0, 1)]
+    [InlineData("capacity", 10, 5, 5, 0, 0)]
+    [InlineData("workspace", 3, 3, 3, 0, 0)]
+    [InlineData("limits", 1, 3, 2, 1, 0)]
     public async Task ExecutesSelectedWorkload(string scenario, int sessions, int requests, int succeeded, int failed, int cancelled)
     {
         await using PrivateStoreDirectory parent = new();
         string root = Path.Combine(parent.StateDirectory, "scenario-runs");
+        string database = await RunPassedAsync(scenario, root);
+        Assert.Equal((long)sessions, StoreProbe.Scalar(database, "SELECT count(*) FROM Sessions"));
+        Assert.Equal((long)requests, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests"));
+        Assert.Equal((long)requests, StoreProbe.Scalar(database, "SELECT count(*) FROM History"));
+        Assert.Equal((long)succeeded, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=2"));
+        Assert.Equal((long)failed, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=3"));
+        Assert.Equal((long)cancelled, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=4"));
+        Assert.Equal(0L, StoreProbe.Scalar(database, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
+    }
+
+    /// <summary>Controlled stop records queued non-starts while retaining uncertain external work after late provider completion.</summary>
+    [Fact]
+    public async Task ShutdownKeepsUnknownReservationAndCancelsQueuedWork()
+    {
+        await using PrivateStoreDirectory parent = new();
+        string database = await RunPassedAsync("shutdown", Path.Combine(parent.StateDirectory, "shutdown-runs"));
+        Assert.Equal(3L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests"));
+        Assert.Equal(3L, StoreProbe.Scalar(database, "SELECT count(*) FROM History"));
+        Assert.Equal(0L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State IN (0,1,2)"));
+        Assert.Equal(2L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=4 AND Certainty=0"));
+        Assert.Equal(1L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE Certainty=3"));
+        Assert.Equal(1L, StoreProbe.Scalar(database, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
+    }
+
+    private static async Task<string> RunPassedAsync(string scenario, string root)
+    {
         ProcessStartInfo start = new("dotnet");
         foreach (string argument in new[] { ValidationHostBuild.WorkerPath(), "--scenario", scenario, "--state-root", root })
         {
@@ -30,12 +59,6 @@ public sealed class ValidationScenarioTests
         Assert.Equal(scenario, report.RootElement.GetProperty("Scenario").GetString());
         string database = Path.Combine(Assert.Single(Directory.GetDirectories(root)), "multisession.db");
         Assert.True(File.Exists(database));
-        Assert.Equal((long)sessions, StoreProbe.Scalar(database, "SELECT count(*) FROM Sessions"));
-        Assert.Equal((long)requests, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests"));
-        Assert.Equal((long)requests, StoreProbe.Scalar(database, "SELECT count(*) FROM History"));
-        Assert.Equal((long)succeeded, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=2"));
-        Assert.Equal((long)failed, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=3"));
-        Assert.Equal((long)cancelled, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=4"));
-        Assert.Equal(0L, StoreProbe.Scalar(database, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
+        return database;
     }
 }

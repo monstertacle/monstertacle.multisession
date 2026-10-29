@@ -487,3 +487,11 @@ Codemetr409Dateien/424TypenohneBefunde. Vorigerd3d38f7 jetztendlichnativbeidseit
 40934964534/40934964497, einschließlichOriginaljournal-/Tokenowner-/Privacy-/Killfall.
 NächsteT094Schnitte Kapazität/Workspace/Shutdown/Limits, danachRest-/Paket-/Zielsystem-
 audit. FehlendeSzenarienweiterNOT RUN, keineLivefreigabeangenommen.
+
+T094capacity/workspace/shutdown/limits nach4neuenCLI-Rotfällen integriert;8/8Szenario-
+regressionengrün. Volltor linux/632a45d6dd224e5aae3e5afc9d71092e erfolgreich,980Tests,
+Sourcehash6c49eec07686294c53b478501da0bff1f0312b89f38e8a2b5e58abbdca46387a,
+97.5677%,Codemetr413Dateien/429TypenohneBefunde. SzenarioDispatcherhatnunComplexity20;
+vorweiterenRouten aufunveränderlicheCLIMethodentabelle refactoren, nichtRegelnlockern.
+NochfehlendeT094Flowsisolation/retention/extensions/native-context/recovery/soak und
+Livekonfiguration/Paket-/finalePlattform-/Lifecycleaufträgeweiteroffen.

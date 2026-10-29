@@ -17,7 +17,8 @@ internal static class ScenarioRunner
     private static async Task<ValidationReport> ExecuteAsync(ValidationArguments options)
     {
         if (ValidationScenarioCatalog.IsLive(options.Scenario)) { return ValidationReport.NotRun(options.Scenario, "LiveApprovalRequired"); }
-        if (options.Scenario is not ("embedded-consumer" or "deterministic" or "routing" or "failures" or "cancellation"))
+        if (options.Scenario is not ("embedded-consumer" or "deterministic" or "routing" or "failures" or "cancellation"
+            or "capacity" or "workspace" or "limits" or "shutdown"))
         {
             return ValidationReport.NotRun(options.Scenario, "ScenarioPendingImplementation");
         }
@@ -26,6 +27,10 @@ internal static class ScenarioRunner
             await using ValidationRunState state = await ValidationStateRoot.CreateRunAsync(options.StateRoot, CancellationToken.None);
             if (options.Scenario == "embedded-consumer") { await ConsumerProbeFlow.ExecuteAsync(state); }
             else if (options.Scenario == "cancellation") { await CancellationProbeFlow.ExecuteAsync(state); }
+            else if (options.Scenario == "capacity") { await CapacityProbeFlow.ExecuteAsync(state); }
+            else if (options.Scenario == "workspace") { await WorkspaceProbeFlow.ExecuteAsync(state); }
+            else if (options.Scenario == "limits") { await LimitsProbeFlow.ExecuteAsync(state); }
+            else if (options.Scenario == "shutdown") { await ShutdownProbeFlow.ExecuteAsync(state); }
             else { await WaveProbeFlow.ExecuteAsync(state, options.Scenario); }
             return ValidationReport.Pass(options.Scenario, state.RunId);
         }

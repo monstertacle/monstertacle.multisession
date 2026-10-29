@@ -23,8 +23,10 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
         => new(State.Queue.ExecuteAsync(connection => QueryTransactions.Request(connection, requestId), cancellationToken));
     ValueTask<Page<RequestSnapshot>> ISessionQueryStore.ListRequestsAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => SqlitePageQueries.Requests(connection, State.StoreId, sessionId, pageSize, cursor), cancellationToken));
-    ValueTask<RecoveryCaseSnapshot?> ISessionQueryStore.GetRecoveryCaseAsync(RecoveryTarget target, CancellationToken cancellationToken) => throw new NotImplementedException();
-    ValueTask<Page<RecoveryCaseSnapshot>> ISessionQueryStore.ListRecoveryCasesAsync(int pageSize, string? cursor, CancellationToken cancellationToken) => throw new NotImplementedException();
+    ValueTask<RecoveryCaseSnapshot?> ISessionQueryStore.GetRecoveryCaseAsync(RecoveryTarget target, CancellationToken cancellationToken)
+        => new(State.Queue.ExecuteAsync(connection => RecoveryCases.Read(connection, target), cancellationToken));
+    ValueTask<Page<RecoveryCaseSnapshot>> ISessionQueryStore.ListRecoveryCasesAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
+        => new(State.Queue.ExecuteAsync(connection => SqlitePageQueries.Recovery(connection, State.StoreId, pageSize, cursor), cancellationToken));
 
     public ValueTask DisposeAsync() => State.Queue.DisposeAsync();
 }

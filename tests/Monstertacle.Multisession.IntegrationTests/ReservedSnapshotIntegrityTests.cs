@@ -13,6 +13,7 @@ public sealed class ReservedSnapshotIntegrityTests
     [InlineData("session")]
     [InlineData("submission")]
     [InlineData("request")]
+    [InlineData("request-owner")]
     public async Task RejectsInconsistentReservedSnapshot(string corrupted)
     {
         await using PersistedDispatchFixture fixture = await PersistedDispatchFixture.CreateAsync();
@@ -22,6 +23,11 @@ public sealed class ReservedSnapshotIntegrityTests
         if (corrupted == "submission") { snapshot["Submission"]!["SessionId"] = Guid.NewGuid(); }
         if (corrupted == "request") { snapshot["Reservation"]!["RequestId"] = Guid.NewGuid(); }
         StoreProbe.Execute(fixture.Host.Directory.DatabasePath, "UPDATE Requests SET ReservedDispatchJson=$json", ("$json", envelope.ToJsonString()));
+        if (corrupted == "request-owner")
+        {
+            SessionSnapshot other = await fixture.Host.CreateSessionAsync();
+            StoreProbe.Execute(fixture.Host.Directory.DatabasePath, "UPDATE Requests SET SessionId=$owner", ("$owner", other.SessionId.ToString("D")));
+        }
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
             fixture.Host.Store.GetReservedDispatchAsync(fixture.Reservation.DispatchId, CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);

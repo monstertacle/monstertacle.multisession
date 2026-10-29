@@ -80,3 +80,15 @@ damit Storage und Dispatcher dieselbe Outcome-/Identity-/Outputregel anwenden. D
 behält seine vorherige Registrierungskontrolle, keine Hersteller- oder Provider-I/O-
 Abhängigkeit in Storage. Fehlende widerspruchsfreie Snapshotgraphen ergeben StorageUnavailable,
 kein Sendrecht. SQL-CurrentRead prüft Snapshot/Reservation/Session/Submission/Sequence/Revision.
+
+## Autoritative Requestsession gegen gespeicherten Graphen
+
+Nach Recoverygreen545 Tests ist StoredDispatchAccess.Read erneut geprüft. Es vergleicht
+Envelope mit den skalaren Reservationfeldern, liest aber r.SessionId nicht mit. Ein
+nachträglich inkonsistenter Request-Fremdschlüssel könnte daher bei intakter Envelope
+unentdeckt bleiben. Vor Korrektur neuer Regressionsteil request-owner: zweites echtes
+Sessionobjekt, nur Requests.SessionId per parametrisierter Probe auf dessen UUID ändern,
+GetReservedDispatch muss StorageUnavailable liefern statt Sendrecht. Danach Scalarowner
+in denselben Read aufnehmen/vergleichen; keine Lockerung/Repair/Nativeoperation. Source
+StoredDispatchAccess nach cancellationfähigem Read wird unmittelbar bei der Probe gehasht;
+kein bereits beobachteter Fehler behauptet, bis Red ausgeführt ist.

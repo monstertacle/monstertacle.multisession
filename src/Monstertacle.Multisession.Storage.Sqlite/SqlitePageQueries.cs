@@ -46,4 +46,19 @@ internal static class SqlitePageQueries
         return SqlitePages.Read(command, size, scope, reader =>
             (StoreSerialization.Read<HistoryEntry>(reader.GetString(0)), new CursorKey(Guid.ParseExact(reader.GetString(2), "D"), reader.GetInt64(1))));
     }
+
+    internal static Page<RecoveryCaseSnapshot> Recovery(SqliteConnection connection, Guid storeId, int size, string? cursor)
+    {
+        PageCursor.ValidateSize(size);
+        PageScope scope = new(storeId, PageListKind.Recovery);
+        CursorKey? last = PageCursor.Read(cursor, scope);
+        string seek = last is null ? string.Empty : "AND (CreatedUtc,TargetKind,TargetId)>($created,$kind,$id) ";
+        using SqliteCommand command = SqliteStatements.Create(connection, null,
+            "SELECT SnapshotJson,CreatedUtc,TargetKind,TargetId FROM RecoveryCases WHERE Status=$open " + seek + "ORDER BY CreatedUtc COLLATE BINARY,TargetKind,TargetId COLLATE BINARY LIMIT $limit",
+            ("$open", (int)RecoveryCaseStatus.Open), ("$limit", size + 1), ("$created", last?.Utc is { } utc ? StoreSerialization.Utc(utc) : null),
+            ("$kind", last?.TargetKind is { } kind ? (int)kind : null), ("$id", last?.Id.ToString("D")));
+        return SqlitePages.Read(command, size, scope, reader =>
+            (StoreSerialization.Read<RecoveryCaseSnapshot>(reader.GetString(0)), new CursorKey(Guid.ParseExact(reader.GetString(3), "D"),
+                Utc: DateTimeOffset.ParseExact(reader.GetString(1), "O", CultureInfo.InvariantCulture), TargetKind: (RecoveryTargetKind)reader.GetInt32(2))));
+    }
 }

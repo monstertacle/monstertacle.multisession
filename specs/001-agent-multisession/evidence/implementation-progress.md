@@ -113,3 +113,8 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   96,0674 Prozent, Guard242 Dateien/247 Typen sauber. T051/T053-Crashumfang bleibt offen.
   Windows-CI an427691b fand Sharingverletzung nach echtem Kill; Harness bounded Dateifreigabe
   ergänzt, native Neubestätigung folgt neuer CI. Nächster Auftrag Unknown/Start-Recovery/CAS.
+- T062/T063 und SQLbootstrap-Teilschnitt lokal umgesetzt: Unknown/Openingfälle, gebundene
+  native Belege, CAS/Schließabsicht/Endbeleg, vier Keysetlisten und Konsistenzprüfungen.
+  548 Tests/96,6051 Prozent, Guard252 Dateien/257 Typen sauber. Native Registrykoordination
+  T061, öffentliche Runtime-/echte fachliche Killabnahme T055/T066 bleiben offen.
+  Dispatch6072d52 CI auf Windows/Ubuntu erfolgreich, Windows-Sharingnachzug bestätigt.

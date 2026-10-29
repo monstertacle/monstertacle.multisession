@@ -34,14 +34,7 @@ internal sealed class SqliteStoreState
     {
         if (!ReferenceEquals(lease, _lease) || !lease.IsHeld) { throw StorageFailurePolicy.Error(ErrorCode.InvalidConfiguration, true, false); }
         if (_started) { throw StorageFailurePolicy.Error(ErrorCode.StoreAlreadyOwned, true, false); }
-        // Until the explicit recovery transaction is implemented, uncertain old work cannot start.
-        using SqliteCommand uncertain = SqliteStatements.Create(connection, null,
-            "SELECT (SELECT count(*) FROM Sessions WHERE Lifecycle=$opening)+(SELECT count(*) FROM Requests WHERE State=$running)",
-            ("$opening", (int)SessionLifecycle.Opening), ("$running", (int)RequestState.Running));
-        if (!Equals(uncertain.ExecuteScalar(), 0L))
-        {
-            throw StorageFailurePolicy.Error(ErrorCode.StorageUnavailable, true, false);
-        }
+        RecoveryTransactions.Prepare(connection, this);
         _started = true;
         _accepting = true;
     }

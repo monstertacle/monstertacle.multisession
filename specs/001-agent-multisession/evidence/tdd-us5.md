@@ -354,3 +354,66 @@ T059/T060 lokal umgesetzt. T051/T053 bleiben für fachliche Crashbarrieren/Gesam
 offen; T063 jetzt auch History, Recoveryliste folgt mit ihren Writes. Nächster konkreter
 Auftrag T052/T061/T062: Unknown/Openingfälle, konservativer Bootstrap und CAS, Owner
 Gesamtimplementierungssitzung. Windows-CIharnessnachweis T104/T111 am neuen Kopf verfolgen.
+
+## T052/T061/T062: Unknown, Bootstrap, CAS und offene Falllisten
+
+Voranalyse architecture/2026-10-29-sqlite-recovery.md, Ausgang6072d52.
+RecoveryPersistenceTests/RecoveryDecisionTests/RecoveryBootstrapTests: zwölf fachliche
+Fehler vor Green, ein bereits grüner konservativer Konsistenzfall. Danach96 Integration-
+fälle bestanden. Unknown schreibt Interrupted/Unknown mit Result/EndedUtc und neuer
+History, hält Reservation und bestätigt weder Head noch Erfolg. Native erste Session-ID
+und Operation bleiben getrennte Casebelege. Openingcase auch nach zuvor bestätigter
+Bindung vorhanden, kein Dummyrequest. Read/List sind rein lokal und begrenzt/keysetfähig.
+
+Bootstrap prüft FK/Markerbeziehungen, projiziert altes Running atomar zu Unknown, blockiert
+zugehörige Session und lässt unabhängige Queued in freiem Slot weiterarbeiten. Zweiter
+Start dupliziert weder Case/Revision/History. Diese Tests disposen/reopen ausdrücklich;
+sie sind keine echten Kindprozessabbrüche/SC-009. Registry-/Providerverfügbarkeit vor
+Runtimeworkers ist verbleibender konkreter T061/T066-Auftrag der ausführenden Sitzung.
+
+DecisionId/ExpectedRevision/Kind/Pflichtbelege werden im selben Commit geprüft. Gleichzeitige
+Entscheidungen haben einen Sieger, doppelte/veraltete IDs keine Teilwirkung. ConfirmEnded
+behält historischen Interrupted-Outcome, aktualisiert nur aktuelle Endgewissheit und
+Reservation/Case/Binding; alte History bleibt damaliger Beobachtungsbeleg. Closeintent
+hält Unknown, storniert nur Queued als Cancelled/NotStarted und setzt Closing. Erst nach
+separatem Endbeleg Closed mit ClosedUtc. Kein neuer Nativebezug für reine Schließung nötig.
+Native Reopen/Inspect bleibt im bereits geprüften Commonservice außerhalb SQL/CAS.
+
+Zusätzliche tatsächliche Regressionen vor Korrektur: request-owner änderte ausschließlich
+Requests.SessionId bei intakter Envelope und blieb unerkannt (1 rot/3 grün). Read vergleicht
+nun den autoritativen Requestowner. Zwei weitere rote Casesnapshot-Links (RequestId/
+DispatchId) werden gegen die scalarFKs und Targetart geprüft. Kein Sendrecht bzw. keine
+Operation auf widersprüchlicher Identität. Quellen/Entscheidungen vor Korrektur in
+architecture/2026-10-29-sqlite-dispatch.md und -sqlite-recovery.md.
+
+Befehle run-capped dotnet test IntegrationTests -c Release --no-restore, Redfilter
+RecoveryPersistenceTests|RecoveryDecisionTests|RecoveryBootstrapTests, danach
+ReservedSnapshotIntegrityTests bzw.RecoveryIntegrityTests, dann komplette Suite.
+Manifeste vor Tests, UTC aus LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| sqlite-recovery-red | 2026-10-29T11:44:48.6615376Z | 7ef8a0d98fc37b81a62502d0c571248cef8c3ac44d644fcdac38a37e1ab10581 |
+| sqlite-recovery-green | 2026-10-29T11:47:38.7521462Z | fba80cdd6363683c9963eae36e52e1f83f89c9fba55e183736643b6ad11c2d7e |
+| sqlite-owner-red | 2026-10-29T11:52:32.9425262Z | da7c3f9b900f62ab5a0dea60e3ea1636e32e284f01f23b3eebd83fc71958a3d4 |
+| sqlite-owner-green | 2026-10-29T11:53:05.3045498Z | fb3e652a14f34b7abeca3dd5b971651e4cd2f73533bf44bbc3f57e2fb25d50b2 |
+| sqlite-case-integrity-red | 2026-10-29T11:54:26.7576443Z | af8ebc7a64131b2739b1aa47f9c22083ebabf7667339487101d7f3f994344012 |
+| sqlite-case-integrity-green | 2026-10-29T11:55:11.3204321Z | de32954248afe851f03f26e50c093fce2e3db422109e72e7a9cf7b75d4541c9b |
+
+Erste gesamte Qualität scheiterte nach sauberem Guard an MSB4166 (MSBuildchild unerwartet
+beendet); angekündigter Diagnosetempordner anschließend nicht vorhanden. Kein fachlicher
+Fehler oder OOM als ungemessene Ursache behauptet. Frische Buildprozesse mit
+MSBUILDDISABLENODEREUSE=1/DOTNET_CLI_USE_MSBUILD_SERVER=0 liefen erfolgreich, danach jede
+geänderte Fassung vollständig neu geprüft. Keine Prüfungsabschwächung.
+Finale gesamte Qualität Exit0: artifacts/quality/linux/2aaef93961034c2fa26b9e8c2d33ac7d,
+Sourcehashc3901ce447771b6e60f6a42a6d22a820759d3c0b8191214a936d5923816e5576.
+TRX gezählt548 bestanden:253 Unit/195 Contract/99 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1935/2003 Produktzeilen=96,6051 Prozent. Full-Guard252 Dateien/257 Typen,
+0 Befunde/Parsefehler/Skips, keine Pin-/Scope-/Grenzwertänderung.
+T062 und komplette vier SQLkeysetlisten T063 lokal umgesetzt. T061 bleibt für generische
+Verfügbarkeitskoordination offen; T052/T055/T066 für ganze öffentliche/Kill-/SC-009-Abnahme.
+Nächster Auftrag: öffentliche Runtime mit echtem SQL und Verfügbarkeitsprüfung vor Workers,
+anschließend fachliche Crashbarrieren/zehn SC-009-Läufe. Owner ausführende Sitzung.
+6072d52 CI Windows/Ubuntu erfolgreich: quality40866982538,Guard40866982692; damit ist der
+Windows-Sharingnachzug aus dem vorherigen Abschnitt nativ bestätigt.

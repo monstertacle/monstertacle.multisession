@@ -38,3 +38,13 @@ enthält nuröffentlicheKategorie/PID undkeinRohfehlermaterial.
 Dasbelegt dieseLinuxprozess-/Journalschnitte lokal, nichtdiegesamteT093Matrix:
 Windows, allegefordertenZielsysteme undAlias-/FremdUID-/Mountproben bleiben inihren
 bestehendenAufträgenoffen. Kein vollständigesT088/T093-Häkchen gesetzt.
+
+## Windows T087/T091: native Redprüfung vorbereitet
+
+Drei WindowsOwnershipTests gegen noch nicht verfügbare Windowsfähigkeit, Architektur
+`architecture/2026-10-29-windows-ownership.md`. Windows-TFM-Build unterLinux erfolgreich,
+0Warnungen/Fehler, kein fachlicherRedbeleg. Codemetr378Dateien/389Typen ohneBefunde,
+auchWindowsTestklassen gemessen. Präprozessorumhüllungen derPlattformtestklassen durch
+explizite TFM-Compileauswahl ersetzt, damitStandaloneGuard alleKlassen analysiert.
+NativeWindowsausführung desfolgendenCommits wird erst alsRed anerkannt, wenn die
+konkreten ausgeführtenTestfehler vorliegen; Produktfähigkeit bisdahin nichtimplementiert.

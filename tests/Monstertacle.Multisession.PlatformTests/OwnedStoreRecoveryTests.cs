@@ -1,4 +1,3 @@
-#if !WINDOWS
 using System.Runtime.Versioning;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.Linux;
@@ -85,4 +84,3 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
         await File.WriteAllTextAsync(Path.Combine(_path, OwnershipProtocol.MarkerFileName), _token);
     }
 }
-#endif

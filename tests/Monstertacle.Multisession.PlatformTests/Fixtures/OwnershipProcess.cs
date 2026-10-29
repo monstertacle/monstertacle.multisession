@@ -1,4 +1,3 @@
-#if !WINDOWS
 using System.Diagnostics;
 using System.Text.Json;
 using Monstertacle.Multisession.IntegrationTests.Fixtures;
@@ -50,4 +49,3 @@ internal sealed class OwnershipProcess(Process process) : IAsyncDisposable
         process.Dispose();
     }
 }
-#endif

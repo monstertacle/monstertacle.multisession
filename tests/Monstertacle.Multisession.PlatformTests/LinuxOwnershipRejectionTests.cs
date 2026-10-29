@@ -1,4 +1,3 @@
-#if !WINDOWS
 using System.Runtime.Versioning;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.Linux;
@@ -96,4 +95,3 @@ public sealed class LinuxOwnershipRejectionTests : IDisposable
         Assert.True(lease.IsHeld);
     }
 }
-#endif

@@ -1,4 +1,3 @@
-#if !WINDOWS
 using System.Runtime.Versioning;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.Linux;
@@ -92,4 +91,3 @@ public sealed class LinuxOwnershipTests : IDisposable
         await Assert.ThrowsAsync<SessionOperationException>(() => lease.PrepareFileAsync("data", StateFileMode.CreateNew, CancellationToken.None).AsTask());
     }
 }
-#endif

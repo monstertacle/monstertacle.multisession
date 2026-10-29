@@ -454,3 +454,21 @@ aufdasselberegistrierteTask bezogen, PulseinnerhalbdieserOperation. Alle208Contr
 grün,keineTestfristverlängerung. Case/Historygewissheit undReservationunverändert,
 spätererProviderabschluss veröffentlichtkeineLateEntscheidung. Volltor/nativeCI folgen;
 übrigerStart-/Close-/Fehler-/Fristaudit bleibtimvorhandenenT076/T079/T083-Auftragoffen.
+
+## T072/T078: Dispose während Start
+
+2026-10-29T20:25:33Z: Öffentlicher Barrierentest zeigte fachlich rot, dass Dispose
+während noch gehaltener Storevalidierung bereits abgeschlossen war. Redstand
+unter start-dispose-red-* vor Green archiviert. Zwei Disposeaufrufe warten nun
+auf tatsächlichen Startupabschluss; nach Disposeanforderung werden keine Worker
+freigegeben. Store/Lease werden nach Übernahme genau einmal bereinigt. Created
+bleibt hostbesessen. Caller-Abbruch im roten Test verhinderte geleakte Worker.
+
+Danach 209 Vertragstests grün. Ein echter Wartbarkeitsbefund wurde durch Trennung
+der bestehenden Komponentenkomposition in RuntimePreparation behoben, ohne
+Zustands-/Ownershipregeln zu verlagern. Erneut 209 Verträge und Fullguard grün:
+425 Dateien/442 Typen, keine Verstöße/Parsefehler/übersprungenen Dateien.
+Volltor linux/aae1cd7070554ae2bb0fe82fb6829caf: 991 Tests, 2867/2941 Zeilen,
+97.4838 %, Sourcehash
+9cd4dcc736dbc51b88d031e8ccf1936da94fca7aee46b8eba5b0fd38c5021657.
+T072/T078 bleiben für ihre übrigen Race-/Zielsystemkriterien offen.

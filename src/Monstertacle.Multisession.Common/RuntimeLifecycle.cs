@@ -1,7 +1,4 @@
 using Monstertacle.Multisession.Contracts;
-using Monstertacle.Multisession.Recovery;
-using Monstertacle.Multisession.Requests;
-using Monstertacle.Multisession.Sessions;
 
 namespace Monstertacle.Multisession;
 
@@ -54,6 +51,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         {
             if (_state != RuntimeState.Created) { throw Error(ErrorCode.InvalidConfiguration); }
             _state = RuntimeState.Starting;
+            _shutdown.Startup = new(TaskCreationOptions.RunContinuationsAsynchronously);
         }
         bool prepared = false;
         try
@@ -61,15 +59,10 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             await host.Store.ValidateRuntimeOptionsAsync(options, cancellationToken).AsTask().WaitAsync(cancellationToken);
             await host.Store.StartAsync(host.Lease, cancellationToken);
             prepared = true;
-            SessionCatalog catalog = new(host.Store, host.Providers, host.Profiles, host.Clock);
-            await new RecoveryCoordinator(host.Store, host.Providers).PrepareAsync(cancellationToken);
-            RequestAdmission admission = new(host.Store, options, host.Clock);
-            RecoveryService recovery = new(host.Store, host.Providers, options);
-            _components = new(new RuntimeSessions(this, catalog), new RuntimeRequests(this, admission, host.Diagnostics),
-                new RuntimeRecovery(this, recovery), new(host.Store, host.Providers, options, host.Clock, host.Diagnostics), options,
-                new(host.Store, host.Diagnostics));
+            _components = await RuntimePreparation.PrepareAsync(host, this, options, cancellationToken);
             lock (_gate)
             {
+                if (_shutdown.DisposeRequested) { throw Error(ErrorCode.InvalidConfiguration); }
                 _stop = new();
                 _signal = new(0, options.MaxConcurrentRequests);
                 _state = RuntimeState.Running;
@@ -85,6 +78,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             if (startupFailure is SessionOperationException known) { throw new SessionOperationException(known.Failure); }
             throw Error(ErrorCode.InvalidConfiguration);
         }
+        finally { _shutdown.Startup!.TrySetResult(); }
     }
 
     private async Task WorkAsync()
@@ -161,8 +155,29 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         if (failure is not null) { throw failure; }
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
+        lock (_gate)
+        {
+            if (_state == RuntimeState.Disposed) { return ValueTask.CompletedTask; }
+            if (_shutdown.Disposal is { IsCompleted: false } pending) { return new(pending); }
+            _shutdown.DisposeRequested = true;
+            if (_state == RuntimeState.Created)
+            {
+                _state = RuntimeState.Disposed;
+                _shutdown.Dispose();
+                return ValueTask.CompletedTask;
+            }
+            if (_state == RuntimeState.Running) { _state = RuntimeState.Stopping; }
+            Task startup = _shutdown.Startup?.Task ?? Task.CompletedTask;
+            _shutdown.Disposal = Task.Run(() => DisposeCoreAsync(startup));
+            return new(_shutdown.Disposal);
+        }
+    }
+
+    private async Task DisposeCoreAsync(Task startup)
+    {
+        await startup;
         if (_state == RuntimeState.Disposed) { return; }
         if (_state == RuntimeState.Created || _components is null)
         {

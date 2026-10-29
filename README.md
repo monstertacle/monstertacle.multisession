@@ -25,6 +25,9 @@ Plattformpaket. Unter Windows ist `net10.0-windows`, unter Linux `net10.0` zu
 verwenden. Herstelleradapter sind optional; eigene Adapter implementieren
 `ISessionProvider` ausschließlich über die öffentlichen Verträge.
 Die Bibliothek wird im Prozess eingebettet und benötigt keinen zusätzlichen Dienst.
+Die [Einbettungsanleitung](docs/embedding.md) führt durch Paketbezug, eigene Adapter,
+Herstellerkonfiguration und Publish. [Betrieb und Recovery](docs/operations.md)
+beschreiben Fristen, Reservierungen, Diagnose und sichere Wiederaufnahme.
 
 ## Entwicklungsumgebung und Prüfungen
 

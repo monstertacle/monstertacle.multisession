@@ -587,3 +587,12 @@ vollständig grün einschließlich echter NuGet-Konsumenten. Identischer Sourceh
 351537e447b1704b73b31be6b432cf1405cddb98d9a1f934309ef01af2d0e1ac;
 Linux 97.5677 %, Windows 97.3887 %. Guard 40944762791 grün. Diese Nachweise
 sind ein geprüfter Zwischenstand, keine finale Zielsystem-/Stunden-/Livefreigabe.
+
+2026-10-29T20:25:33Z: Tatsächlichen Start/Dispose-Race zuerst rot reproduziert
+und behoben; 209 Verträge und vollständiges Linux-Tor mit 991 Tests grün.
+Sourcehash 9cd4dcc736dbc51b88d031e8ccf1936da94fca7aee46b8eba5b0fd38c5021657,
+97.4838 %, Codemetr 425 Dateien/442 Typen ohne Befund. Komponentenkomposition
+nach Wartbarkeitsbefund strukturerhaltend getrennt. T084/T097 dokumentiert und
+markiert; eingebettetes C#-Beispiel separat gegen echte NuGets kompiliert und
+mit zwei Typen ohne Befund gemessen. Übrige Lifecycle-/Diagnose-/Zielsystem-
+Abnahmen bleiben ausdrücklich offen. Kontrollierte Timer für T011 folgen.

@@ -8,6 +8,9 @@ internal sealed class RuntimeShutdown(ISessionStore store) : IDisposable
     private readonly SemaphoreSlim _stopGate = new(1, 1);
     internal Task? Cleanup { get; set; }
     internal PublicError? Failure { get; set; }
+    internal TaskCompletionSource? Startup { get; set; }
+    internal Task? Disposal { get; set; }
+    internal bool DisposeRequested { get; set; }
     internal RuntimeOperations Operations { get; } = new();
     internal Task EnterAsync(CancellationToken token) => _stopGate.WaitAsync(token);
     internal void Release() => _stopGate.Release();

@@ -1,109 +1,51 @@
-name: quality
-
+name: windows-recovery-diagnosis
 on:
-  pull_request:
   push:
-  merge_group:
-
+    branches: [diagnostics/windows-recovery-20261029]
 permissions:
   contents: read
-
 jobs:
-  quality:
+  diagnose:
+    runs-on: windows-latest
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
-        include:
-          - os: ubuntu-24.04
-            platform: linux
-          - os: windows-latest
-            platform: windows
-    runs-on: ${{ matrix.os }}
+        probe: [1, 2]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-      - name: Locked restore, build, format, tests, audit and 87 percent coverage
-        shell: pwsh
-        run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}'
-      - name: Diagnose bounded private VHD formatting after native failure
-        if: failure() && runner.os == 'Windows'
-        shell: pwsh
-        run: ./scripts/Measure-WindowsVolumeFormatting.ps1
-      - name: Pack and consume local library packages
+      - name: Build the instrumented native probe
         shell: pwsh
         run: |
-          dotnet tool restore
-          if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
-          dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.1.0
-          if ($LASTEXITCODE -ne 0) { throw 'Local package build failed.' }
-          ./eng/PackageSmoke.ps1
-      - name: Publish and validate native host outside the source tree
+          dotnet restore Monstertacle.Multisession.slnx --locked-mode
+          if ($LASTEXITCODE -ne 0) { throw 'Locked restore failed.' }
+          dotnet publish examples/Monstertacle.Multisession.ValidationHost -c Release -f net10.0-windows -r win-x64 --self-contained false --no-restore -o artifacts/diagnostic-host
+          if ($LASTEXITCODE -ne 0) { throw 'Native probe publish failed.' }
+      - name: Repeat unchanged kill and reopen assertions
         shell: pwsh
         run: |
-          $framework = if ($IsWindows) { 'net10.0-windows' } else { 'net10.0' }
-          $rid = if ($IsWindows) { 'win-x64' } else { 'linux-x64' }
-          $publish = "artifacts/publish/$rid"
-          dotnet publish examples/Monstertacle.Multisession.ValidationHost -c Release -f $framework -r $rid --self-contained false --no-restore -o $publish
-          if ($LASTEXITCODE -ne 0) { throw 'Native framework-dependent publish failed.' }
-          $outside = Join-Path ([Environment]::GetFolderPath('UserProfile')) ('dev/.agenttemp/multisession-publish-' + [Guid]::NewGuid().ToString('N'))
-          $null = New-Item -Path $outside -ItemType Directory
-          Get-ChildItem -LiteralPath $publish -Force | Copy-Item -Destination $outside -Recurse
-          ./eng/Invoke-ValidationScenarios.ps1 -HostAssembly (Join-Path $outside 'Monstertacle.Multisession.ValidationHost.dll')
+          $base = Join-Path $env:USERPROFILE 'dev/.agenttemp'
+          $null = New-Item $base -ItemType Directory -Force
+          $null = New-Item artifacts/diagnosis -ItemType Directory -Force
+          $hostPath = (Resolve-Path artifacts/diagnostic-host/Monstertacle.Multisession.ValidationHost.dll).Path
+          for ($iteration = 0; $iteration -lt 30; $iteration++) {
+            $state = Join-Path $base ('recovery-diagnosis-' + [Guid]::NewGuid().ToString('N'))
+            $report = "artifacts/diagnosis/report-$iteration.json"
+            $errors = "artifacts/diagnosis/phases-$iteration.log"
+            dotnet $hostPath --scenario recovery --state-root $state > $report 2> $errors
+            $exit = $LASTEXITCODE
+            Get-Content $errors
+            Get-Content $report
+            if ($exit -ne 0) { throw "Native diagnosis failed at repetition $iteration, state $state." }
+            $parsed = Get-Content -Raw $report | ConvertFrom-Json
+            if ($parsed.Status -ne 'PASS') { throw 'Native scenario did not pass.' }
+          }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: quality-${{ matrix.platform }}
-          path: artifacts/quality/${{ matrix.platform }}/
-          if-no-files-found: error
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: packages-and-consumer-${{ matrix.platform }}
-          path: |
-            artifacts/packages/
-            artifacts/package-smoke/
-            artifacts/publish/
-            artifacts/validation-scenarios/
-          if-no-files-found: error
-
-  canonical-consumer:
-    needs: quality
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, windows-latest]
-        include:
-          - os: ubuntu-24.04
-            platform: linux
-          - os: windows-latest
-            platform: windows
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          global-json-file: global.json
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages-and-consumer-linux
-          path: artifacts/canonical-input
-      - name: Verify and consume identical producer package bytes
-        shell: pwsh
-        run: |
-          dotnet tool restore
-          if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
-          $manifests = @(Get-ChildItem artifacts/canonical-input/package-smoke -Filter manifest.json -Recurse -File)
-          if ($manifests.Count -ne 1) { throw 'Expected exactly one successful package producer manifest.' }
-          ./eng/Test-CanonicalPackageHashes.ps1 -ProducerManifest $manifests[0].FullName -PackageDirectory artifacts/canonical-input/packages > artifacts/canonical-package-source.json
-          ./eng/PackageSmoke.ps1 -PackageDirectory artifacts/canonical-input/packages
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: canonical-consumer-${{ matrix.platform }}
-          path: |
-            artifacts/canonical-package-source.json
-            artifacts/package-smoke/
+          name: windows-recovery-diagnosis-${{ matrix.probe }}
+          path: artifacts/diagnosis/
           if-no-files-found: error

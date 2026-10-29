@@ -11,6 +11,7 @@ internal static class RecoveryProbeFlow
     {
         for (int iteration = 0; iteration < 10; iteration++)
         {
+            Console.Error.WriteLine($"Recovery phase=setup iteration={iteration} pid={Environment.ProcessId}");
             string directory = Path.Combine(state.Directory, "multisession-recovery-" + iteration);
             await using ValidationRunState setup = new(Guid.NewGuid(), NativeLease.CreateNew(directory));
             RuntimeOptions options = new() { StateDirectory = directory, Retention = new(true, null), MaxConcurrentRequests = 2 };
@@ -18,9 +19,13 @@ internal static class RecoveryProbeFlow
             await setup.Lease.PrepareFileAsync(CrashProtocol.ScopeFileName, StateFileMode.CreateNew, CancellationToken.None);
             await File.WriteAllTextAsync(Path.Combine(directory, CrashProtocol.ScopeFileName), setup.TrustScope.ToString("D"));
             await using RecoveryProbeChild child = await RecoveryProbeChild.StartAsync(setup);
+            Console.Error.WriteLine($"Recovery phase=barrier iteration={iteration} pid={Environment.ProcessId}");
             await child.KillAsync();
+            Console.Error.WriteLine($"Recovery phase=killed iteration={iteration} pid={Environment.ProcessId}");
             await using ValidationRunState reopened = new(setup.RunId, NativeLease.OpenExisting(directory), setup.TrustScope);
+            Console.Error.WriteLine($"Recovery phase=reopened iteration={iteration} pid={Environment.ProcessId}");
             await VerifyResumedAsync(reopened, child.Manifest);
+            Console.Error.WriteLine($"Recovery phase=verified iteration={iteration} pid={Environment.ProcessId}");
         }
     }
 

@@ -39,5 +39,8 @@ internal static class WindowsOwnershipLock
         catch { handle.Dispose(); throw; }
     }
     private static SessionOperationException Classify(int error)
-        => WindowsNative.Failure(error is _sharingViolation or _lockViolation ? ErrorCode.StoreAlreadyOwned : ErrorCode.StorageUnavailable);
+    {
+        Console.Error.WriteLine($"Ownership native-error={error} pid={Environment.ProcessId}");
+        return WindowsNative.Failure(error is _sharingViolation or _lockViolation ? ErrorCode.StoreAlreadyOwned : ErrorCode.StorageUnavailable);
+    }
 }

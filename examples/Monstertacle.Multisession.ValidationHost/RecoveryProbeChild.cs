@@ -37,6 +37,11 @@ internal sealed class RecoveryProbeChild(Process process, CrashStateManifest man
     {
         if (!child.HasExited) { child.Kill(entireProcessTree: true); }
         await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(30));
+        if (OperatingSystem.IsWindows())
+        {
+            bool signaled = child.WaitForExit(0);
+            Console.Error.WriteLine($"Recovery native-kernel-signaled={signaled} child={child.Id} pid={Environment.ProcessId}");
+        }
     }
     public async ValueTask DisposeAsync()
     {

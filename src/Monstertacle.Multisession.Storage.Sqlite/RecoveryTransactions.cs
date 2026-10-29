@@ -42,6 +42,7 @@ internal static class RecoveryTransactions
         }
         RequestStoreConsistency.Assert(connection, transaction);
         SessionStoreConsistency.Assert(connection, transaction);
+        SubmissionStoreConsistency.Assert(connection, transaction);
         ResultStoreConsistency.Assert(connection, transaction);
         using SqliteCommand missing = SqliteStatements.Create(connection, transaction,
             """

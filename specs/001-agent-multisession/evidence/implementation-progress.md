@@ -342,3 +342,11 @@ ohne Befunde. Historyzählung einmal gruppiert statt wiederholtem Vollscan je Re
 keine Schemaänderung. Weitere Submission-/Dispatch-/Casebeziehungen bleiben T065-offen.
 Native Sessionprojektion943dce0 durch Qualitätslauf40903893046 und Guard40903893090
 auf Windows/Ubuntu ebenfalls grün; frühere native Formatbefunde bleiben nachvollziehbar.
+
+Submissiongrundregeln T065 nach8rot/1grün gesichert,77/77Storagekonsistenzfälle danach
+grün. Volltor linux/b59a7fc1d09d46acbec721b15f6502cd konsistent erfolgreich; Codemetr
+346Dateien/356Typen ohne Befunde. Vorhandene vollständige Eingabe bleibt trotz später
+kleinerem Hostlimit reservierbar; aktuelle Lifecycle-/Blockprüfung nur bei neuer Annahme.
+T119 ist konkreter Folgeauftrag für gefundenes UTF8Defaultreplacement mit Owner, Schritten,
+Abhängigkeit und Abnahme; wird direkt nach diesem Schnitt bearbeitet. Noch offene
+FrozenDispatch-/Reservation-/Recoverycasebeziehungen gehören weiter zu T065.

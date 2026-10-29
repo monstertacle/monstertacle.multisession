@@ -720,3 +720,18 @@ Finalisierungsreihenfolge, nicht Sequence. UTC und IDs stimmen mit Spalten/Reque
 Fehler vor Mutation, DBhash gleich. Kein kryptographischer Manipulationsschutz oder
 vollständiger Submission-/ReservedDispatch-/Reservation-/Recoverycasegraph behauptet;
 diese bleiben konkrete nächste Schritte desselben T065-Auftrags.
+
+## T065 unveränderte gespeicherte Einreichungen
+
+Architektur vor Code: architecture/2026-10-29-submission-storage-consistency.md.
+submission-consistency-red.log8rot/1grün bei9tatsächlich ausgeführten Fällen:
+Queuedsubmission mit fremdem Owner, leerem/nullInput, malformed JSON, ungültigen
+Timeouts und fremdem Schreibworkspace wurden vor Start nicht abgewiesen. Bereits
+angenommene2000Byte mit späterem Hostlimit1Byte blieben schon korrekt reservierbar.
+Danach gemeinsamer ValidateFrozen-Schnitt für bestehende Input-/Deadline-/Workspace-
+regeln, Lifecycleprüfung nur bei neuer Annahme. Streamingprüfung vor Recoverywrite,
+keine neue Kürzung/Bytelimitanwendung auf historischen Inhalt. Quellenprüfung fand
+nebenbei UTF8Defaultreplacement für unpaarige UTF16-Surrogate; als konkreten Folgeauftrag
+T119 mit Owner/Abhängigkeit/Schritten/Abnahme festgehalten, nicht stillschweigend
+als strikte Kodierung bezeichnet. FrozenDispatch-/Reservation-/Recoverycasegraph bleibt
+nächster benannter Schritt in T065, kein Abschluss behauptet.

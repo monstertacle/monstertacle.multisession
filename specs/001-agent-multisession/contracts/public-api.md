@@ -201,7 +201,7 @@ Der in derselben Reservierungstransaktion gespeicherte ReservedDispatch ist übe
 GetReservedDispatchAsync lesbar und trägt Eingabe, Timeout, eingefrorenen Sitzungskontext
 und BindingRevision. Öffentliche RequestSnapshots ersetzen diesen Datensatz nicht.
 Die C#-Queryschnittstelle besitzt diese Operation seit T112; Vertrag siehe
-orchestration-details.md §1. Die Annahme erhält in T114 RequestAcceptance mit vorab
+orchestration-details.md §1. Die Annahme verwendet seit T114 RequestAcceptance mit vorab
 erzeugter Kandidatenkennung; nur Sequence/Queuekapazität bleiben Storeautorität (§3).
 
 Alle Listen folgen denselben PageLimits-/Cursorregeln aus orchestration-details.md §4:

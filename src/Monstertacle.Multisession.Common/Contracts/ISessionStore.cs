@@ -10,7 +10,7 @@ public interface ISessionStore : ISessionQueryStore
     /// <summary>Blocks further execution after an uncertain native open without deleting local identity.</summary>
     ValueTask MarkSessionBlockedAsync(Guid sessionId, SessionBlockReason reason, CancellationToken cancellationToken);
     /// <summary>Commits input, sequence and queue capacity atomically.</summary>
-    ValueTask<RequestReceipt> CommitAcceptanceAsync(SubmitRequest request, int maxQueuedRequests, CancellationToken cancellationToken);
+    ValueTask<RequestReceipt> CommitAcceptanceAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken);
     /// <summary>Reserves an eligible FIFO head, respecting session, workspace and slot occupancy.</summary>
     ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken);
     /// <summary>Persists acknowledged native identity before the adapter can continue.</summary>

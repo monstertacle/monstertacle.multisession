@@ -14,6 +14,8 @@ internal sealed class InMemorySessionStore : ControlledQueryStore, ISessionStore
     public Action? CommittingBinding { get; init; }
     public Action? BlockingSession { get; init; }
     public Func<SubmitRequest, CancellationToken, ValueTask>? CommittingAcceptance { get; init; }
+    public Func<RequestAcceptance, CancellationToken, ValueTask>? Accepting { get; init; }
+    public bool IgnoreAcceptanceCancellation { get; init; }
     public Action<RequestReceipt>? Accepted { get; init; }
     public IReadOnlyDictionary<Guid, SubmitRequest> Submissions => State.Submissions;
     public IReadOnlyDictionary<Guid, ExecutionReservation> Reservations => State.Reservations;
@@ -62,38 +64,49 @@ internal sealed class InMemorySessionStore : ControlledQueryStore, ISessionStore
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask<RequestReceipt> CommitAcceptanceAsync(SubmitRequest request, int maxQueuedRequests, CancellationToken cancellationToken)
-        => AcceptAsync(request, maxQueuedRequests, cancellationToken);
-
-    private async ValueTask<RequestReceipt> AcceptAsync(SubmitRequest request, int maxQueuedRequests, CancellationToken cancellationToken)
+    async ValueTask<RequestReceipt> ISessionStore.CommitAcceptanceAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken)
     {
+        if (Accepting is not null) { await Accepting(acceptance, cancellationToken); }
+        return await AcceptAsync(acceptance, maxQueuedRequests, cancellationToken);
+    }
+
+    public ValueTask<RequestReceipt> CommitAcceptanceAsync(SubmitRequest request, int maxQueuedRequests, CancellationToken cancellationToken)
+        => AcceptAsync(new RequestAcceptance(Guid.NewGuid(), request), maxQueuedRequests, cancellationToken);
+
+    private async ValueTask<RequestReceipt> AcceptAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken)
+    {
+        SubmitRequest request = acceptance.Submission;
         if (CommittingAcceptance is not null)
         {
             await CommittingAcceptance(request, cancellationToken);
         }
 
-        cancellationToken.ThrowIfCancellationRequested();
+        if (!IgnoreAcceptanceCancellation) { cancellationToken.ThrowIfCancellationRequested(); }
         RequestReceipt receipt;
         lock (State.Gate)
         {
             if (!State.Sessions.TryGetValue(request.SessionId, out SessionSnapshot? session))
             {
-                throw new SessionOperationException(new PublicError(ErrorCode.NotFound, SessionId: request.SessionId));
+                throw new SessionOperationException(new PublicError(ErrorCode.NotFound, SessionId: request.SessionId, AdmissionStatus: AdmissionStatus.NotAccepted));
             }
 
             if (session.Lifecycle != SessionLifecycle.Open || session.BlockReason != SessionBlockReason.None)
             {
-                throw new SessionOperationException(new PublicError(ErrorCode.SessionBlocked, SessionId: request.SessionId));
+                throw new SessionOperationException(new PublicError(ErrorCode.SessionBlocked, SessionId: request.SessionId, AdmissionStatus: AdmissionStatus.NotAccepted));
             }
 
             if (State.Requests.Values.Count(item => item.State == RequestState.Queued) >= maxQueuedRequests)
             {
-                throw new SessionOperationException(new PublicError(ErrorCode.QueueFull, SessionId: request.SessionId));
+                throw new SessionOperationException(new PublicError(ErrorCode.QueueFull, SessionId: request.SessionId, AdmissionStatus: AdmissionStatus.NotAccepted));
             }
 
             long sequence = State.Requests.Values.Where(item => item.SessionId == request.SessionId)
                 .Select(item => item.Sequence).DefaultIfEmpty().Max() + 1;
-            Guid requestId = Guid.NewGuid();
+            Guid requestId = acceptance.RequestId;
+            if (requestId == Guid.Empty || State.Requests.ContainsKey(requestId))
+            {
+                throw new SessionOperationException(new PublicError(ErrorCode.InvalidInput, SessionId: request.SessionId, RequestId: requestId, AdmissionStatus: AdmissionStatus.NotAccepted));
+            }
             State.Requests.Add(requestId, new RequestSnapshot(requestId, request.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null));
             State.Submissions.Add(requestId, request);
             State.AcceptedUtc.Add(requestId, Clock.GetUtcNow());

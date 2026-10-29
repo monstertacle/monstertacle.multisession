@@ -8,6 +8,10 @@
   <ItemGroup>
     <Compile Include="../../tests/Monstertacle.Multisession.IntegrationTests/Fixtures/ConsumerOwnedProvider.cs" Link="Consumer/ConsumerOwnedProvider.cs" />
     <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/ThirdContractProvider.cs" Link="Consumer/ThirdContractProvider.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/NativeWireFixture.cs" Link="Consumer/NativeWireFixture.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/NativeWireReply.cs" Link="Consumer/NativeWireReply.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/ScriptedHttpHandler.cs" Link="Consumer/ScriptedHttpHandler.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/FixtureCredentials.cs" Link="Consumer/FixtureCredentials.cs" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj" />

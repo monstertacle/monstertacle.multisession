@@ -513,3 +513,12 @@ linux/7dd6ea21db0f423895776a4cc29356e9: 984 Tests, 97.5677 % Produktabdeckung,
 Sourcehash a39a285d2c2b0537719a4a286d352f8151ce692e1743e406f316d3120b269b36.
 Codemetr 417 Dateien/433 Typen, keine Verstöße. Die Windows-Ursachen bleiben
 T094/T099/SC-009 zugeordnet; neue CI erhält die tatsächlichen Reportkategorien.
+
+2026-10-29T19:29:09Z: native-context nach CLI-Red umgesetzt; zwölf Szenariotests
+und 985 Tests im vollständigen Linux-Tor grün, Sourcehash
+76778b8c59bbdc76a523624123c4d515fd95a7abb1d336f2204162a12262f0dd,
+97.5677 %, Codemetr 418 Dateien/434 Typen ohne Befund.
+Native CI zu e051325 ist inzwischen auf Windows und Linux grün (40939549577),
+Guard 40939549327 grün. Frühere intermittierende Prozessfehler bleiben zur
+Eingrenzung T094/T099/SC-009 zugeordnet; neue Diagnosekategorien sind separat
+in 3e20a54 enthalten. Als Nächstes native Recovery-CLI mit zehn echten Kills.

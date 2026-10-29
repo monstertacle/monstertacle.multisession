@@ -233,3 +233,17 @@ Routing-Probe beziehungsweise ein Crash-Worker erreichten ihre erwarteten
 Abschlüsse nicht. Linux war jeweils grün. Die Fehler sind T094/T099 und dem
 SC-009-Auftrag zugeordnet; sie werden vor Abnahme untersucht. Ein bloßes
 Wiederholen oder ein grüner früherer Quellstand ersetzt diesen Nachweis nicht.
+
+## T094: native-context
+
+2026-10-29T19:29:09Z: fehlende CLI-Ausführung zunächst NOT RUN und damit
+fachlich rot; elf bisherige Fälle grün. Archiv native-context-host-red-* mit
+Gitbasis, Diff, neuer Analyse und Messzeit vor Green. Danach zwölf Szenariofälle
+grün. Echte Providerpakete mit kontrollierten HTTP-Handlern behalten Conversation
+beziehungsweise Interactions-Head und senden ausschließlich die neue Eingabe.
+Ein OpenAI-Kontextfehler bleibt ProviderContextLimit ohne Meldungstext oder Retry.
+Gemini-spezifische Kontextgrenzen bleiben ausdrücklich T034/T094/T105 offen.
+
+Volltor linux/426a0f712405424bad6294d5d6f87147: 985 Tests grün, 97.5677 %,
+Sourcehash 76778b8c59bbdc76a523624123c4d515fd95a7abb1d336f2204162a12262f0dd.
+Codemetr 418 Dateien/434 Typen, keine Verstöße oder ungemessenen Dateien.

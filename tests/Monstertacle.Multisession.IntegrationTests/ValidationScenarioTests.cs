@@ -19,6 +19,7 @@ public sealed class ValidationScenarioTests
     [InlineData("limits", 1, 3, 2, 1, 0)]
     [InlineData("isolation", 1, 1, 1, 0, 0)]
     [InlineData("extensions", 2, 3, 3, 0, 0)]
+    [InlineData("native-context", 3, 5, 4, 1, 0)]
     public async Task ExecutesSelectedWorkload(string scenario, int sessions, int requests, int succeeded, int failed, int cancelled)
     {
         await using PrivateStoreDirectory parent = new();

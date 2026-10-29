@@ -13,6 +13,8 @@ public sealed record SessionSnapshot(
     ProviderSessionContext Context,
     ProviderBinding? Binding)
 {
+    /// <summary>Gets the original UTC creation time used for stable session ordering.</summary>
+    public DateTimeOffset CreatedUtc { get; init; }
     /// <summary>Gets the monotonically advancing confirmed binding revision, initially zero.</summary>
     public long BindingRevision { get; init; }
     /// <summary>Gets the local lifecycle, separate from execution evidence and block reason.</summary>

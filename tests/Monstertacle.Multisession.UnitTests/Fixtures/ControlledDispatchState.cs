@@ -7,6 +7,7 @@ internal sealed class ControlledDispatchState
 {
     private readonly HashSet<Guid> _cancellationRequests = [];
     private readonly List<HistoryEntry> _history = [];
+    private readonly Dictionary<Guid, long> _historyOrdinals = [];
     private readonly List<(Guid DispatchId, ProviderObservation Observation)> _observations = [];
 
     public Func<ProviderObservation, CancellationToken, ValueTask>? Observing { get; init; }
@@ -30,6 +31,11 @@ internal sealed class ControlledDispatchState
         => _observations.Add((dispatchId, observation));
 
     public void RecordCompletion(ReservedDispatch snapshot, ProviderReply reply)
-        => _history.Add(new HistoryEntry(snapshot.Reservation.SessionId, snapshot.Reservation.RequestId,
-            snapshot.Sequence, snapshot.Submission.Input, reply));
+    {
+        long ordinal = checked(_historyOrdinals.GetValueOrDefault(snapshot.Reservation.SessionId) + 1);
+        _historyOrdinals[snapshot.Reservation.SessionId] = ordinal;
+        _history.Add(new HistoryEntry(snapshot.Reservation.SessionId, snapshot.Reservation.RequestId,
+            snapshot.Sequence, snapshot.Submission.Input, reply)
+        { HistoryOrdinal = ordinal, HistoryId = Guid.NewGuid() });
+    }
 }

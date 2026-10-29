@@ -206,7 +206,8 @@ erzeugter Kandidatenkennung; nur Sequence/Queuekapazität bleiben Storeautoritä
 
 Alle Listen folgen denselben PageLimits-/Cursorregeln aus orchestration-details.md §4:
 Seitengröße 1–100, versionierte bereichsgebundene Keysetcursor, keine seitenübergreifende
-Snapshotzusage. Diese Ergänzungen sind in T115 und den produktiven Queries testgetrieben umzusetzen.
+Snapshotzusage. Diese Regeln sind in T115 lokal testgetrieben umgesetzt; produktive SQLitequeries und
+Persistenzabnahmen bleiben T063.
 
 `IStateDirectoryLease` repräsentiert geprüften privaten Speicher und exklusiven Besitz.
 Windows-/Linux-Implementierungen prüfen Rechte, lokale Pfade und den Lifetime-Lock.

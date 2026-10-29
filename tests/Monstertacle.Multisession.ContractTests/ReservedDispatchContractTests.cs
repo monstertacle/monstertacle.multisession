@@ -166,7 +166,10 @@ public sealed class ReservedDispatchContractTests
         Assert.Equal(reply, result?.Result);
         Assert.Equal(RequestState.Succeeded, result?.State);
         Assert.Equal(ExecutionCertainty.ConfirmedEnded, result?.Certainty);
-        Assert.Equal(new HistoryEntry(reservation.SessionId, reservation.RequestId, 1, submission.Input, reply), Assert.Single(store.DispatchState.History));
+        HistoryEntry history = Assert.Single(store.DispatchState.History);
+        Assert.NotEqual(Guid.Empty, history.HistoryId);
+        Assert.Equal(new HistoryEntry(reservation.SessionId, reservation.RequestId, 1, submission.Input, reply)
+        { HistoryOrdinal = 1, HistoryId = history.HistoryId }, history);
         Assert.Equal(binding, store.FindSession(reservation.SessionId)?.Binding);
         Assert.Equal(1, store.FindSession(reservation.SessionId)?.BindingRevision);
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>

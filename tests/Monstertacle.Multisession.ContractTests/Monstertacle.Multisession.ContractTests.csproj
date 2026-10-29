@@ -9,6 +9,7 @@
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/InMemorySessionStore.cs" Link="Fixtures/InMemorySessionStore.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledProvider.cs" Link="Fixtures/ControlledProvider.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledStoreState.cs" Link="Fixtures/ControlledStoreState.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledPageProjection.cs" Link="Fixtures/ControlledPageProjection.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledQueryStore.cs" Link="Fixtures/ControlledQueryStore.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledRecoveryState.cs" Link="Fixtures/ControlledRecoveryState.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledDispatchState.cs" Link="Fixtures/ControlledDispatchState.cs" />

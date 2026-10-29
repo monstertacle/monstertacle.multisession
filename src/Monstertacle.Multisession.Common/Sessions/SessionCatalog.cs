@@ -7,16 +7,18 @@ namespace Monstertacle.Multisession.Sessions;
 public sealed class SessionCatalog : ISessions
 {
     private readonly ISessionStore _store;
+    private readonly TimeProvider _clock;
     private readonly FrozenDictionary<string, ProviderRegistration> _registrations;
     private readonly FrozenDictionary<string, AgentProfile> _profiles;
 
     /// <summary>Composes session catalog dependencies without selecting a vendor by name.</summary>
-    public SessionCatalog(ISessionStore store, IReadOnlyList<ProviderRegistration> registrations, IReadOnlyList<AgentProfile> profiles)
+    public SessionCatalog(ISessionStore store, IReadOnlyList<ProviderRegistration> registrations, IReadOnlyList<AgentProfile> profiles, TimeProvider? clock = null)
     {
         ArgumentNullException.ThrowIfNull(store);
         ArgumentNullException.ThrowIfNull(registrations);
         ArgumentNullException.ThrowIfNull(profiles);
         _store = store;
+        _clock = clock ?? TimeProvider.System;
         _registrations = registrations.ToFrozenDictionary(item => item.ProviderId, StringComparer.Ordinal);
         _profiles = profiles.ToFrozenDictionary(item => item.AgentProfileId, StringComparer.Ordinal);
     }
@@ -36,7 +38,7 @@ public sealed class SessionCatalog : ISessions
         ValidateExecution(profile.ExecutionKind, registration.Provider.Capabilities, context);
         Guid sessionId = Guid.NewGuid();
         ProviderSessionContext providerContext = new(sessionId, profile.ModelId, profile.ExecutionKind, context, profile.Settings.Values);
-        SessionSnapshot session = new(sessionId, registration.ProviderId, profile.AgentProfileId, providerContext, null);
+        SessionSnapshot session = new(sessionId, registration.ProviderId, profile.AgentProfileId, providerContext, null) { CreatedUtc = _clock.GetUtcNow() };
         await _store.CreateSessionAsync(session, cancellationToken);
         ProviderBinding binding;
         try
@@ -69,10 +71,10 @@ public sealed class SessionCatalog : ISessions
         => _store.GetSessionAsync(sessionId, cancellationToken);
     /// <inheritdoc />
     public ValueTask<Page<SessionSnapshot>> ListSessionsAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionQueries(_store).ListSessionsAsync(pageSize, cursor, cancellationToken);
     /// <inheritdoc />
     public ValueTask<Page<HistoryEntry>> ReadHistoryAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionQueries(_store).ReadHistoryAsync(sessionId, pageSize, cursor, cancellationToken);
     /// <inheritdoc />
     public ValueTask CloseSessionAsync(Guid sessionId, CancellationToken cancellationToken)
         => throw new NotImplementedException();

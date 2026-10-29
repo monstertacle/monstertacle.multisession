@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Queries;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
@@ -37,12 +38,38 @@ internal abstract class ControlledQueryStore : ISessionQueryStore
     ValueTask<Page<RecoveryCaseSnapshot>> ISessionQueryStore.ListRecoveryCasesAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        lock (State.Gate) { return ValueTask.FromResult(new Page<RecoveryCaseSnapshot>(State.Recovery.OpenCases.Take(pageSize).ToArray(), null)); }
+        lock (State.Gate)
+        {
+            return ValueTask.FromResult(ControlledPageProjection.Read(State.Recovery.OpenCases,
+                item => new CursorKey(item.Target.Id, Utc: item.CreatedUtc, TargetKind: item.Target.Kind),
+                new(State.StoreId, PageListKind.Recovery), pageSize, cursor));
+        }
     }
     ValueTask<Page<SessionSnapshot>> ISessionQueryStore.ListSessionsAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            return ValueTask.FromResult(ControlledPageProjection.Read(State.Sessions.Values,
+                item => new CursorKey(item.SessionId, Utc: item.CreatedUtc), new(State.StoreId, PageListKind.Sessions), pageSize, cursor));
+        }
+    }
     ValueTask<Page<HistoryEntry>> ISessionQueryStore.ReadHistoryAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            return ValueTask.FromResult(ControlledPageProjection.Read(State.Dispatch.History.Where(item => item.SessionId == sessionId),
+                item => new CursorKey(item.HistoryId, item.HistoryOrdinal), new(State.StoreId, PageListKind.History, sessionId), pageSize, cursor));
+        }
+    }
     ValueTask<Page<RequestSnapshot>> ISessionQueryStore.ListRequestsAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            return ValueTask.FromResult(ControlledPageProjection.Read(State.Requests.Values.Where(item => item.SessionId == sessionId),
+                item => new CursorKey(item.RequestId, item.Sequence), new(State.StoreId, PageListKind.Requests, sessionId), pageSize, cursor));
+        }
+    }
 }

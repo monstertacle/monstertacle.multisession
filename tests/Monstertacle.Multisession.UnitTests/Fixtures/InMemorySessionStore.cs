@@ -8,6 +8,7 @@ internal sealed class InMemorySessionStore : ControlledQueryStore, ISessionStore
 {
     private readonly ControlledStoreState _state = new();
     protected override ControlledStoreState State => _state;
+    public ControlledStoreState Data => State;
     public ControlledRecoveryState RecoveryState => State.Recovery;
     public ControlledDispatchState DispatchState { get => State.Dispatch; init => State.Dispatch = value; }
     public Action? CommittingBinding { get; init; }

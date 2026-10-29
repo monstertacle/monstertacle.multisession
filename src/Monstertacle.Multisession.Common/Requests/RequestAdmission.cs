@@ -71,7 +71,7 @@ public sealed class RequestAdmission : IRequests
 
     /// <inheritdoc />
     public ValueTask<Page<RequestSnapshot>> ListRequestsAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new RequestQueries(_store).ListRequestsAsync(sessionId, pageSize, cursor, cancellationToken);
 
     /// <inheritdoc />
     public ValueTask CancelRequestAsync(Guid requestId, CancellationToken cancellationToken)

@@ -5,6 +5,7 @@ namespace Monstertacle.Multisession.UnitTests.Fixtures;
 // Shared controlled state, never a persistence implementation.
 internal sealed class ControlledStoreState
 {
+    public Guid StoreId { get; } = Guid.NewGuid();
     public object Gate { get; } = new();
     public Dictionary<Guid, SessionSnapshot> Sessions { get; } = [];
     public Dictionary<Guid, RequestSnapshot> Requests { get; } = [];

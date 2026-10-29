@@ -18,7 +18,9 @@ projektlokale codemetr-guard sind geladen. Keine parallelen Subagenten beauftrag
   Falltargets, lesbare Revision, CAS und Reopen außerhalb der Storetransaktion vorhanden.
   233 .NET-Tests im vollständigen Linuxlauf grün, 95,4936 % Produktcoverage.
   Full-Codemetr 98 Dateien/99 Typen sauber. Nachweis: tdd-us5.md.
-- Danach T115 (Paging, verwendet T113), T026/T027 (öffentliche Runtimekomposition),
+- T115 lokal abgeschlossen: 263 .NET-Tests, 96,0821 % Coverage, 110 Dateien/112 Typen
+  im sauberen Full-Guard. T113 ist auch auf Linux/Windows-CI grün.
+- Als Nächstes T114 (Annahmegewissheit), dann T026/T027 (öffentliche Runtimekomposition),
   US2-Adapter, US5-SQLite/Recovery, US3-Lebenszyklus/Cancel/Diagnose, US4-Plattform-/
   Paket-/Konsumabnahme und schließlich gesamte Polish-/Freigabematrix.
 - T114 muss vor dauerhafter Annahme T058 und zugehörigen Fristen T076 umgesetzt werden.

@@ -138,7 +138,7 @@ für Nichtannahme. Es gibt keinen automatischen erneuten Submit oder späteren R
 
 Für alle Session-/Request-/History-/Recoverylisten gilt explizit `1 <= pageSize <= 100`;
 es wird weder still gekappt noch korrigiert. Die empfohlene Hostseitengröße ist 50,
-kein impliziter Parameterdefault. Gemeinsame benannte Konstanten stehen künftig in
+kein impliziter Parameterdefault. Gemeinsame benannte Konstanten stehen seit T115 in
 Contracts/PageLimits.cs. Cursor ist null für die erste Seite; ein leerer String ist ungültig.
 
 | Liste | Aufsteigender stabiler Sortierschlüssel |

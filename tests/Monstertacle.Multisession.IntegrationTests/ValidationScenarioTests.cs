@@ -8,6 +8,7 @@ using Xunit;
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>Scenario success is independently checked against the actual persisted dataset.</summary>
+[Collection("Exclusive storage volume")]
 public sealed class ValidationScenarioTests
 {
     /// <summary>Documented deterministic scenarios execute their real workload and persist every accepted terminal result.</summary>

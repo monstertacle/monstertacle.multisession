@@ -606,3 +606,12 @@ nur in UnitTests mit PrivateAssets=all; keine bestehende Version geändert.
 Native Lauf 40947706248 scheitert in der Windows-Routingannahme am korrekt
 signalisierten AdmissionTimedOut, nicht an Publish. Gezielte Ressourcenisolation
 wird als nächste T094/T099-Probenkorrektur untersucht; Fristen bleiben bestehen.
+
+2026-10-29T20:33:33Z: Vollständige Host-Szenariotests in vorhandene exklusive
+native Storage-Collection aufgenommen; sämtliche Produktfristen und Assertions
+unverändert. Volltor linux/f56de802a3cd45cab6f4f9c8bb6d5817: 994 Tests,
+97.4838 %, Sourcehash 7fb43cc43d646419d5d0f515626ac78d4c81a9077f5a873326a57e01ab511aed,
+Codemetr 426 Dateien/443 Typen ohne Befund. Native Neubestätigung folgt.
+Vorangehender Start/Dispose-Stand 0aeed6a besteht inzwischen beide nativen
+CI-Jobs einschließlich Paket- und veröffentlichter Szenarioproben (40948989913),
+Guard 40948989712 grün. Kein finaler Stunden-/Live-/Windows-11-Beleg.

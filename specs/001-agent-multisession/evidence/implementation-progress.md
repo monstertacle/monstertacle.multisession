@@ -334,3 +334,11 @@ grün. Echte Disk-full-/Read-only-Fälle nun auch nativ erfolgreich nach getrenn
 Owner+SYSTEM-Imagecontainer, Anwendungs-StateDirectory bleibt SID-only. Frühere roten
 Format-/Deadline-Läufe bleiben historische Befunde; kein rückwirkendes Grün. Produktive
 Windows-/Linuxleases und deren Alias-/Rechte-/Lifetimebesitznachweise bleiben US4-offen.
+
+Result-/Historygraph T065 nach19/20echtem Red integriert; legitime ConfirmEnded-
+Unknownhistory zuvor und danach grün.68/68Storagekonsistenzfälle, vollständiges konsistentes
+Volltor linux/dcb8cff937ba45789de98af9c9c5bac5 erfolgreich; Codemetr344Dateien/354Typen
+ohne Befunde. Historyzählung einmal gruppiert statt wiederholtem Vollscan je Request,
+keine Schemaänderung. Weitere Submission-/Dispatch-/Casebeziehungen bleiben T065-offen.
+Native Sessionprojektion943dce0 durch Qualitätslauf40903893046 und Guard40903893090
+auf Windows/Ubuntu ebenfalls grün; frühere native Formatbefunde bleiben nachvollziehbar.

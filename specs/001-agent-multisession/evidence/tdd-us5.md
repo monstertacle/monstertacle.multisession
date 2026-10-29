@@ -700,3 +700,23 @@ für Closed gesetzt, Wallclockreihenfolge nicht erzwungen. NextSequence muss hö
 persistierter Requestsequence plus1 entsprechen. Result-/History-/Recoverycasegraph und
 vollständiger Close-/Stopraceaudit bleiben ausdrücklich offene Schritte in T065/T079/T083;
 dieser Nachweis schließt sie nicht stillschweigend aus dem Gesamtauftrag aus.
+
+## T065 Result-/Historygraph
+
+Architektur zuerst: architecture/2026-10-29-result-storage-consistency.md mit Quellenhashes.
+result-consistency-red.log20Fälle tatsächlich ausgeführt,19rot/1grün: fehlende/zusätzliche
+Finalzeilen, ersetzte Ein-/Ausgabe, malformed JSON, fremde Historyidentität, falsche
+Completionzeit/Ordinalgaps wurden bislang beim Start akzeptiert. Legitime späte
+ConfirmEnded-Klärung mit unveränderter Unknownhistory war schon grün. Unnötiges using
+zuvor entfernt; dessen Analyzerfehler ist kein Red. Nach Relation-/Joinprüfung
+result-consistency-green68/68Storagefälle grün. Relationen zählen History einmal gruppiert
+statt pro Request ohne vorhandenen RequestId-Index die ganze History erneut zu scannen;
+vorheriger grüner68-Fallstand als Refactoringregression erhalten, keine Schemaänderung.
+
+Je Terminalrequest ein Result/History, kein Finaldatensatz für Queued/Running. CurrentResult
+und Results exakt gleich; History darf ausschließlich den später bestätigten Unknown-
+Endbeleg historisch behalten, niemals Outcome/Input/Output ändern. HistoryOrdinal folgt
+Finalisierungsreihenfolge, nicht Sequence. UTC und IDs stimmen mit Spalten/Request überein.
+Fehler vor Mutation, DBhash gleich. Kein kryptographischer Manipulationsschutz oder
+vollständiger Submission-/ReservedDispatch-/Reservation-/Recoverycasegraph behauptet;
+diese bleiben konkrete nächste Schritte desselben T065-Auftrags.

@@ -151,6 +151,12 @@ public sealed class RequestDispatcher
     {
         RequestSnapshot? request;
         try { request = await _store.GetRequestAsync(reservation.RequestId, cancellationToken).AsTask().WaitAsync(cancellationToken); }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            PublicError cancelled = new(ErrorCode.Cancelled, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);
+            await CommitAsync(reservation, new(RequestState.Cancelled, ExecutionCertainty.NotStarted, string.Empty, false, null, cancelled), trace);
+            throw new SessionOperationException(cancelled);
+        }
         catch (Exception) { throw Failure(reservation, ErrorCode.StorageUnavailable, ExecutionCertainty.Unknown); }
         if (request is not { State: RequestState.Running, CancellationRequestedUtc: not null }) { return false; }
         PublicError error = new(ErrorCode.Cancelled, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);

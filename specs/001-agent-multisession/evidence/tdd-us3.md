@@ -430,3 +430,14 @@ Keine präemptive Unterbrechung einzelner SQLiteanweisungen/JSONrowparses behaup
 Cancel greift an kooperativen Grenzen. Bekannter Commit wird nicht rückwirkend gelöscht,
 andere fachliche Write-/Unknownregeln unverändert. Vollständiger Frist-/Lifecycleaudit
 T076/T083 und die übrige US3-Abnahme bleiben offen.
+
+## T076 Stop unmittelbar vor Send: deterministische Regression
+
+Volltor27f597763ad14438be6e21ef915314b3 zeigte einen bestehenden Stop-Race im
+Metriktest. Kontrollierter GetRequest-Readhook liefert reproduzierbares fachliches Red
+`before-send-cancellation-red.log`: erwarteter Cancelled, tatsächlichStorageUnavailable.
+Keine Compilerfehler als Red gewertet. Korrektur analog zum benachbarten FrozenDispatch-
+Read: Caller-/StopOCE vor ProviderSend wird Cancelled/NotStarted ohne abgebrochenes
+Committoken gespeichert, Reservation freigegeben; originale Kennungen erhalten.
+Echte Readfehler bleiben StorageUnavailable; keine Frist aufgeweicht. Architekturbeleg
+`architecture/2026-10-29-before-send-cancellation.md`. Vollständiger T076-Audit bleibt offen.

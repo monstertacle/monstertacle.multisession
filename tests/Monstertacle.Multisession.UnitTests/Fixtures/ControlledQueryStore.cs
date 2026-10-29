@@ -6,6 +6,7 @@ namespace Monstertacle.Multisession.UnitTests.Fixtures;
 internal abstract class ControlledQueryStore : ControlledStoreLifetime, ISessionQueryStore, IRequestCancellationStore, ISessionClosureStore, ISessionRetentionStore, ISessionStatisticsStore
 {
     public Func<CancellationToken, ValueTask<RuntimeStatistics>>? ReadingStatistics { get; init; }
+    public Func<Guid, CancellationToken, ValueTask>? ReadingRequest { get; init; }
     ValueTask<RuntimeStatistics> ISessionStatisticsStore.GetRuntimeStatisticsAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -75,10 +76,11 @@ internal abstract class ControlledQueryStore : ControlledStoreLifetime, ISession
         cancellationToken.ThrowIfCancellationRequested();
         lock (State.Gate) { return ValueTask.FromResult(State.Sessions.GetValueOrDefault(sessionId)); }
     }
-    ValueTask<RequestSnapshot?> ISessionQueryStore.GetRequestAsync(Guid requestId, CancellationToken cancellationToken)
+    async ValueTask<RequestSnapshot?> ISessionQueryStore.GetRequestAsync(Guid requestId, CancellationToken cancellationToken)
     {
+        if (ReadingRequest is not null) { await ReadingRequest(requestId, cancellationToken); }
         cancellationToken.ThrowIfCancellationRequested();
-        lock (State.Gate) { return ValueTask.FromResult(State.Requests.GetValueOrDefault(requestId)); }
+        lock (State.Gate) { return State.Requests.GetValueOrDefault(requestId); }
     }
     ValueTask<RecoveryCaseSnapshot?> ISessionQueryStore.GetRecoveryCaseAsync(RecoveryTarget target, CancellationToken cancellationToken)
     {

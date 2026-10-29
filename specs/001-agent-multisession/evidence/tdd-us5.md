@@ -790,3 +790,8 @@ Inputs/Outputs/History, Metadata-Store-/Trustscope-ID sowie Cursor über Kulturw
 und echtes SQLite-Reopen erhalten. Datumsähnliche Settingstrings unverändert. Negativer
 NonUTC-Tamperfall bleibt rot im erwarteten Fehlerzweig, keine stille Altformatmigration.
 Native Kultur-/ICUprüfung dieses Schnitts noch erforderlich; Taskmarkierung erst danach.
+
+Native Folgeprüfung zu9f48f546c84ba186592bd06c2ab637745015244a: Qualität40918070122
+aufubuntu-24.04 undwindows-latest erfolgreich; Guard40918070182 ebenfallsgrün.
+T067 damit abgeschlossen. Das bestätigt die expliziten TimeZoneInfo-/Kulturwerte;
+keine Umstellung der globalen Hosttimezone behauptet.

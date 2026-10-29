@@ -17,13 +17,16 @@ internal sealed class RuntimeRecovery(RuntimeLifecycle lifecycle, RecoveryServic
     }
     public ValueTask<ProviderReply> InspectRecoveryAsync(RecoveryTarget target, CancellationToken cancellationToken)
     {
-        lifecycle.RequireRunning();
-        return recovery.InspectRecoveryAsync(target, cancellationToken);
+        return lifecycle.RunOperation(token => recovery.InspectRecoveryAsync(target, token), cancellationToken);
     }
-    public async ValueTask ResolveRecoveryAsync(RecoveryDecision decision, CancellationToken cancellationToken)
+    public ValueTask ResolveRecoveryAsync(RecoveryDecision decision, CancellationToken cancellationToken)
     {
-        lifecycle.RequireRunning();
-        await recovery.ResolveRecoveryAsync(decision, cancellationToken);
-        lifecycle.Pulse();
+        ValueTask<bool> operation = lifecycle.RunOperation(async token =>
+        {
+            await recovery.ResolveRecoveryAsync(decision, token);
+            lifecycle.Pulse();
+            return true;
+        }, cancellationToken);
+        return new(operation.AsTask());
     }
 }

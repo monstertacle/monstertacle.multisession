@@ -426,3 +426,12 @@ WindowsT087/T091 nach3nativausgeführtenRedfällen aus40921348366 implementiert.
 LokalerWindowsbuild/Wrongplatformprobe/Volltor grün: linux/64ff350be59d4f12a4beccf2e9e5426b,
 940Tests,97.3937%,Codemetr387Dateien/398TypenohneBefunde. NativeWindowsGreenprüfung
 folgtaufPush; Plattform-/Alias-/Prozessmatrixbleibtoffen. KeinevolleUS4-Freigabe.
+
+Windowsgrundbesitz undHostkomposition zu0d19631 nativbeidseitiggrün:
+Qualität40924127106/Guard40924127596; T086/T090abgeschlossen.
+Recovery-Inspect/Resolve-Stop nach2/2fachlichemRed und208Contractregressionengrün.
+Volltor linux/c985140d3ddc4e349972b87e68c9b1f9 erfolgreich,942Tests,
+Sourcehash75d5b32f4fa661ae0203e3bf26381c154a0825d557b584c17a197fa1c75c640e,
+2847/2918Zeilen=97.5668%,Codemetr388Dateien/399TypenohneBefunde.
+NächsterSchnittT093 echteWindowsprozess-/Kill-/Journalprobe; nativeLeasesweiterkeine
+vollständigeZielsystem-/Alias-/Soakfreigabe.

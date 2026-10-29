@@ -89,3 +89,9 @@ baec2245c1db6d5a9faed7c07fbc1d1cd290d11a89dd58445a95e9673ac01bdb,
 940/940Tests,2840/2916Zeilen=97.3937%. Codemetr387Dateien/398TypenohneBefunde/
 Parsefehler/Skips. DasmisstWindowsklassenstatisch undtestetCommon+Linuxnativ;
 Windows-Verhaltensgreen istnoch zuprüfen, keinT087/T091-Abschluss.
+
+NativeGreen zu0d196319dadc108c4af4d3e89108033ea3cd1930: Qualität40924127106 aufWindows
+undUbuntu erfolgreich,Guard40924127596 grün. Damit3WindowsACL-/Besitzfälle tatsächlich
+nativbestanden, außerdemCommon-Hostkomposition undOpen-/Stop-Korrektur. T086/T090
+abgeschlossen; übrigePlattform-/Paket-/Lifecycleaufträge bleibenoffen. T087/T091 benötigen
+weitereAlias-/Reparse-/Zweitprozessabnahme undechteWindows11-Zielsystemprobe.

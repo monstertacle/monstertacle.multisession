@@ -441,3 +441,16 @@ Read: Caller-/StopOCE vor ProviderSend wird Cancelled/NotStarted ohne abgebroche
 Committoken gespeichert, Reservation freigegeben; originale Kennungen erhalten.
 Echte Readfehler bleiben StorageUnavailable; keine Frist aufgeweicht. Architekturbeleg
 `architecture/2026-10-29-before-send-cancellation.md`. Vollständiger T076-Audit bleibt offen.
+
+## T076/T083 Recovery-I/O beim Stop
+
+Vorabanalyse `architecture/2026-10-29-recovery-stop-ownership.md`. Zwei fachlicheRedfälle
+`recovery-stop-ownership-red.log`: nachStop sindöffentlicheInspect-/Resolveaufgabennicht
+fertig, Eigentumaberfreigegeben. Beidejetzt übervorhandenesRuntimeOperationsregister;
+ServicebesitztbereitsToken-WaitAsync undRevisions-CAS. KeineÄnderunganderEntscheidung
+oderungeklärtenReservation. ErstesGreen schlossInspect, zeigteaberbeimResolve nocheinen
+äußerenasynchronenWrapper; dessenTask war nichtdieverfolgteTask. Rückgabe jetzt direkt
+aufdasselberegistrierteTask bezogen, PulseinnerhalbdieserOperation. Alle208Contracttests
+grün,keineTestfristverlängerung. Case/Historygewissheit undReservationunverändert,
+spätererProviderabschluss veröffentlichtkeineLateEntscheidung. Volltor/nativeCI folgen;
+übrigerStart-/Close-/Fehler-/Fristaudit bleibtimvorhandenenT076/T079/T083-Auftragoffen.

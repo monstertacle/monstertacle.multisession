@@ -40,7 +40,8 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
             if (!child.Start()) { throw new InvalidOperationException("Crash worker could not start."); }
             string? line = await child.StandardOutput.ReadLineAsync().WaitAsync(_processLimit);
             harness.Signal = line is null ? null : JsonSerializer.Deserialize<CrashSignal>(line);
-            if (harness.Signal is not { Barrier: CrashProtocol.JournalBarrier } || harness.Signal.ProcessId != child.Id)
+            string expectedBarrier = point == CrashProtocol.JournalPoint ? CrashProtocol.JournalBarrier : CrashProtocol.RecoveryBarrier;
+            if (harness.Signal is null || harness.Signal.Barrier != expectedBarrier || harness.Signal.ProcessId != child.Id)
             {
                 throw new InvalidOperationException("Crash worker did not reach the expected barrier.");
             }

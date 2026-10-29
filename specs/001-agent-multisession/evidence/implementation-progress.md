@@ -123,3 +123,8 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   setzt ursprünglichen Kandidaten fort. 560 Tests/96,6748 Prozent, Guard258 Dateien/
   263 Typen sauber. Recovery1bf65f1 CI auf Windows/Ubuntu grün. Nächster Auftrag echte
   fachliche Crashbarrieren und zehn SC-009-Läufe T048/T055/T066; native Authfehler T080.
+- Zehn echte SC-009-Kills lokal bestanden: exakt2 fertige/3 QueuedA/1 RunningB vor Kill,
+  ursprüngliche6 IDs erhalten, A-FIFO fortgesetzt, B Unknown und reserviert, kein Replay.
+  Zusätzliche sofort grüne Prozessregression, kein künstliches Red. Gesamt570 Tests/
+  96,6748 Prozent, Guard262 Dateien/268 Typen sauber. Feine Crashpunkte T048/T050/T051
+  und echte Zielsystem-/Rechteabnahme bleiben offen. be8cf38 Windows/Ubuntu-CI grün.

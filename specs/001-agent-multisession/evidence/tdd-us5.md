@@ -462,3 +462,42 @@ T061 lokal umgesetzt. T066 bleibt für komplette echte Prozessmatrix offen; näc
 konkreter AuftragT048/T055/T066 fachliche Crashbarrieren und zehn echte SC-009-Läufe,
 Owner ausführende Sitzung. Recovery1bf65f1 auf Windows/Ubuntu erfolgreich:
 quality40869457535,Guard40869457549. Keine native Rechte-/Live-/Produktfreigabe.
+
+## SC-009: zehn wirkliche Prozessabbrüche über öffentliche Runtime
+
+Voranalyse architecture/2026-10-29-sc009-process.md, Ausgangbe8cf38. Neuer markierter
+Childmodus session-recovery verwendet öffentliche Catalog-/Admission-/Dispatcherports
+und echten SQLitebestand, hält synthetisches Backend nach bestätigter Operations-ID.
+Parent kontrolliert je zwei Succeeded, drei Queued in A, ein Running in B, getrennte
+Workspaces und Limit2. Dann wirklich Process.Kill(entireProcessTree), nicht Dispose.
+Manifest enthält ursprüngliche IDs, keine Eingaben/Secrets. Wiederanlauf läuft über
+öffentliche SessionRuntime mit unabhängiger kontrollierter Lease und gleichem Adapterformat.
+
+Zehn benannte Theoryfälle0..9 im ursprünglichen TRX gezählt: executed10,passed10,failed0,
+notExecuted0,distinct10. Alle sechs angenommenen Identitäten je Fall erhalten; fertige
+Resultate A/B unverändert, alle drei A-Requests in ursprünglicher FIFO erfolgreich,
+B Interrupted/Unknown, Operationbeleg erhalten, null erneute B-Sends, ein belegter B-Slot/
+Workspace nach Wiederanlauf. Native Session-ID unverändert, kein neues Open.
+Der vollständige Prozessfall wurde mit bereits zuvor testgetriebener Recovery sofort grün;
+zusätzliche Integration/Crashregression, kein fingiertes TDD-Red. Kontrollierte Childlease
+beansprucht keine native Lock-/Alias-/Zielhostabnahme. Weitere einzelne Commitbarrieren
+bleiben T048/T050/T051-Auftrag, diese zehn Fälle ersetzen sie nicht.
+
+Befehl run-capped mit frischen MSBuildprozessen:
+dotnet test IntegrationTests -c Release --no-restore --filter
+FullyQualifiedName~PersistenceRecoveryTests --logger trx --results-directory artifacts/tdd/sc009-process.
+Vor Test erzeugtes Quellenmanifest inklusive examples und SQL, LastWriteTimeUtc
+2026-10-29T12:14:55.8144834Z, SHA256
+20c112419300aef8237fbb48bd21ea629278822a6d8e6da9737d35af5eac94b7.
+
+Gesamte Qualität Exit0: artifacts/quality/linux/73670216ed5e49afb1a1d03a886d039b,
+Sourcehashe33bced52a82ec6b732a8cd7ddb041adf95d8e5950f263ebfe255d7a5302a695.
+TRX gezählt570 bestanden:261 Unit/195 Contract/113 Integration/1 Plattform,0 Fehler/Skips.
+Die komplette Suite hat die zehn Prozessfälle erneut ausgeführt, ursprünglicher gezählter
+TRX bleibt separat erhalten.13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit
+sauber.1977/2045 Produktzeilen=96,6748 Prozent. Full-Guard262 Dateien/268 Typen,
+0 Befunde/Parsefehler/Skips, keine Pin-/Scope-/Grenzwertänderung. Host/Testinfra im Guard.
+T055/T066 bleiben für gesamte Punkt-/Plattformabnahme offen; SC-009 lokal zusätzlich
+beobachtet. Nächster konkreter Auftrag T048/T050/T051 feine Commit-/Übergabebarrieren,
+Owner ausführende Sitzung. be8cf38 auf Windows/Ubuntu-CI grün:
+quality40871066600,Guard40871066576. Keine Live-/Rechte-/Releasefreigabe.

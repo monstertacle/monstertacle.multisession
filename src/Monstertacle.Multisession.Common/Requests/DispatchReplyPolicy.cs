@@ -8,7 +8,7 @@ public static class DispatchReplyPolicy
     /// <summary>Normalizes output, terminal evidence and identity against the already validated original binding.</summary>
     public static ProviderReply Normalize(ProviderReply reply, ProviderBinding original, string? observedSessionReference, int maximumOutputBytes)
     {
-        reply = ProviderReplyPolicy.NormalizeOutput(reply, maximumOutputBytes);
+        reply = ProviderReplyPolicy.NormalizeOutput(ProviderFailurePolicy.NormalizeError(reply), maximumOutputBytes);
         bool terminal = RequestStateMachine.IsTerminal(reply.Outcome);
         if (!terminal || !RequestStateMachine.IsValid(reply.Outcome, reply.Certainty) || reply.Certainty is not (ExecutionCertainty.ConfirmedEnded or ExecutionCertainty.NotStarted))
         {

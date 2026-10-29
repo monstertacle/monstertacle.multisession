@@ -284,3 +284,13 @@ linux/5b3677e13b6342788e42ebd64c0fc1c2 konsistent erfolgreich. Codemetr330Dateie
 Basisklasse getrennt, Tiefe3 innerhalb Grenze3. Windows128MiB-VHDprobe mit unverändertem
 128MiB-Füllerlimit folgt nativ; vorherige64MiB-Formatfehler sind ausdrücklich nicht grün.
 T074/T081 und Gesamtauftrag bleiben bis zum vollständigen Audit offen.
+
+Providergrenze T073/T074/T080 nach tatsächlichem16/31Red implementiert; erlaubte
+Kategorien, keine fremden lokalen Fehlermetadaten, typisierte Exceptions konservativ
+Unknown. Fünf bestätigte Fehler/fünf Erfolge, vollständige Unknownbelegung und drei
+SQLpersistenzfälle zusätzlich grün. Volltor linux/2016d9c0a95a4f2ab3c99a743a396ea6
+konsistent erfolgreich; Codemetr334Dateien/344Typen ohne Befunde, Dispatcher Kopplung40
+innerhalb unveränderter40. Native Windowslauf40899122477 blieb rot:128MiB-Formatfehler
+und zusätzliche Admission-/Stopfristfehler bei parallelen Integrationsfällen. Dieser
+Lauf ist keine native Abnahme. Windows-Testressourcen/Volumeformat konkret weiter
+untersuchen; Produktfristen und Speichergarantien werden dafür nicht aufgeweicht.

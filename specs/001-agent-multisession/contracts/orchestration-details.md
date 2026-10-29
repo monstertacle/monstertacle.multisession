@@ -281,3 +281,11 @@ Monitor aktualisiert initial und nach jeweils einer Sekunde Pause. Observablecal
 lesen nur den atomaren Cache, blockieren keine DBqueue. Bis zur ersten Probe, bei Fehler
 und nach Stop werden Werte zurückgezogen, nicht als Null interpretiert. Cachewerte sind
 keine Kapazitätsentscheidung. Die vollständige Lifecycle-Diagnoseabnahme ist weiterhin offen.
+
+Providerantworten dürfen ausschließlich die in `ProviderFailurePolicy` ausdrücklich
+aufgeführten Kategorien liefern. Lokale Queue-/Ownership-/Store-/Admission-/CASkategorien
+und undefinierte Werte werden als ExecutionFailed behandelt. Fehlerobjekte erhalten die
+Gewissheit des Reply und keine providerseitig gelieferten lokalen IDs/Annahmestatus.
+Typisierte Providerexceptions erhalten eine erlaubte Kategorie, bleiben ohne gesonderten
+Endbeleg Unknown. Tatsächlich lokal erkannte Observation-/Speicherfehler behalten ihre
+lokale Kategorie; sie sind keine unbestätigte Behauptung des Adapters.

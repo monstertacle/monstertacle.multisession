@@ -108,9 +108,9 @@ public sealed class RequestDispatcher
             reply = await CompleteCancellationAsync(dispatch, registration, observations, sending, trace,
                 cancellation.HasFailed ? ErrorCode.StorageUnavailable : deadline.IsCancellationRequested ? ErrorCode.TimedOut : ErrorCode.Cancelled);
         }
-        catch (Exception)
+        catch (Exception failure)
         {
-            throw await PreserveAsync(reservation, observations.HasUnconfirmedObservations ? observations.FailureCode : ErrorCode.ExecutionFailed, trace);
+            throw await PreserveAsync(reservation, observations.HasUnconfirmedObservations ? observations.FailureCode : ProviderFailurePolicy.Classify(failure), trace);
         }
         finally
         {

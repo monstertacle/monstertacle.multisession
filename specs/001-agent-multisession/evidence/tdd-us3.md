@@ -368,3 +368,26 @@ Zähler beschreibt beobachtete bestätigte Abschlüsse, keine rückwirkende Inve
 historischen Ergebnisse. Direkt im Store aufgelöste/abgebrochene Fälle erzeugen keine
 nachträglich erfundenen Dispatcherereignisse. Vollständige Übergangs-/Observabilitymatrix
 und T074/T081-Abschluss bleiben im laufenden Auftrag offen.
+
+## T073/T074/T080 öffentliche Providerfehler und Restkapazität
+
+Architektur vor Erweiterung: architecture/2026-10-29-provider-failure-isolation.md.
+provider-failure-red.log: tatsächlich31Tests ausgeführt,16rot/15grün. Rote Assertions:
+lokale/undefinierte Kategorien passieren ungefiltert, typisierte Auth-/Rate-/Kontextfehler
+werden ExecutionFailed, fremde Kennungen/AdmissionStatus und widersprüchliche Gewissheit
+bleiben stehen. Keine Compiler-/Analyzerfehler als Red. Danach provider-failure-green31/31.
+Explizite erlaubte Kategorien aus Architektur umgesetzt; typisierte Exceptions bleiben
+Unknown mit belegter Reservierung, Kategorie liefert keinen externen Endbeleg.
+DispatchReplyPolicy wird auch durch direkte SQLitecompletion verwendet. Bestätigte lokale
+Observationfehler umgehen den Providerfilter bewusst, damit StorageUnavailable echt lokal
+bleibt. Keine Provider-/Exceptiontexte in PublicError. Herstellerwahl, Input und Bindung
+bleiben unverändert.
+
+failure-isolation-green.log33/33 einschließlich zweier neuer unmittelbar grüner Regressionen:
+fünf bestätigte unterschiedliche Fehler/fünf unabhängige Erfolge jeweils ein Send/Result,
+volle zwei Unknownslots lassen unabhängige Arbeit Queued; explizite ConfirmEnded-Klärung
+freigibt genau einen Slot, ursprüngliches Failed bleibt Failed. Diese beiden Fachregeln
+waren bereits vorhanden, kein künstliches Red für T073. provider-failure-sql-green.log3/3
+zusätzliche sofort grüne Persistenz-/Neustart-/Historyfälle für erlaubte, lokale und
+undefinierte Kategorien. T073/T074/T080 werden erst nach gesamter Story-/TDDprüfung
+abgeschlossen, nicht allein aus diesem Schnitt.

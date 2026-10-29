@@ -179,4 +179,21 @@ public sealed class StoreFormatTests
         else { await (await SqliteStoreFactory.OpenExistingAsync(directory, directory.TrustScopeId, directory.Options, CancellationToken.None)).DisposeAsync(); }
         Assert.Empty(Directory.GetFiles(directory.StateDirectory, ".format-check-*"));
     }
+
+    /// <summary>The native store cannot silently replace an unsupported busy duration with its fixed default.</summary>
+    [Fact]
+    public async Task RejectsUnsupportedBusyConfigurationBeforeFileAccess()
+    {
+        await using PrivateStoreDirectory directory = new();
+        ISessionStore? unexpected = null;
+        try
+        {
+            SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(async () =>
+                unexpected = await SqliteStoreFactory.CreateNewAsync(directory, directory.TrustScopeId,
+                    directory.Options with { DbBusyTimeout = TimeSpan.FromSeconds(2) }, CancellationToken.None));
+            Assert.Equal(ErrorCode.InvalidConfiguration, failure.Failure.Code);
+            Assert.Equal(0, directory.PreparedFiles);
+        }
+        finally { if (unexpected is not null) { await unexpected.DisposeAsync(); } }
+    }
 }

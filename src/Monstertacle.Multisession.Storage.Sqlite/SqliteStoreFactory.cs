@@ -20,7 +20,8 @@ public static class SqliteStoreFactory
         ArgumentNullException.ThrowIfNull(lease);
         ArgumentNullException.ThrowIfNull(options);
         cancellationToken.ThrowIfCancellationRequested();
-        if (options.Validate() is not null || trustScopeId == Guid.Empty || !lease.IsHeld || !lease.Matches(options.StateDirectory))
+        if (options.Validate() is not null || options.DbBusyTimeout != RuntimeDefaults.DbBusyTimeout
+            || trustScopeId == Guid.Empty || !lease.IsHeld || !lease.Matches(options.StateDirectory))
         {
             throw new SessionOperationException(new(ErrorCode.InvalidConfiguration));
         }
@@ -29,14 +30,14 @@ public static class SqliteStoreFactory
             await lease.PrepareFileAsync(SqliteConnectionPolicy.DatabaseFileName, mode, cancellationToken);
             string path = Path.Combine(lease.StateDirectory, SqliteConnectionPolicy.DatabaseFileName);
             if (mode == StateFileMode.OpenExisting) { await SqliteStorePreflight.ValidateAsync(path, lease, trustScopeId, cancellationToken); }
-            return await Task.Run(() => OpenValidated(path, lease, trustScopeId, mode, cancellationToken), cancellationToken);
+            return await Task.Run(() => OpenValidated(path, lease, trustScopeId, options, mode, cancellationToken), cancellationToken);
         }
         catch (OperationCanceledException) { throw; }
         catch (SessionOperationException failure) { throw new SessionOperationException(failure.Failure); }
         catch (Exception) { throw new SessionOperationException(new(ErrorCode.StorageUnavailable)); }
     }
 
-    private static SqliteSessionStore OpenValidated(string path, IStateDirectoryLease lease, Guid trustScopeId, StateFileMode mode, CancellationToken cancellationToken)
+    private static SqliteSessionStore OpenValidated(string path, IStateDirectoryLease lease, Guid trustScopeId, RuntimeOptions options, StateFileMode mode, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (!lease.IsHeld) { throw new SessionOperationException(new(ErrorCode.InvalidConfiguration)); }
@@ -45,7 +46,7 @@ public static class SqliteStoreFactory
         {
             SqliteConnectionPolicy.Configure(connection);
             if (mode == StateFileMode.CreateNew) { SqliteSchema.Initialize(connection, trustScopeId, DateTimeOffset.UtcNow); }
-            return new SqliteSessionStore(connection);
+            return new SqliteSessionStore(new(connection, lease, options));
         }
         catch { connection.Dispose(); throw; }
     }

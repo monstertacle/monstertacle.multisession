@@ -97,3 +97,9 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   Portable Fixturemarkerrechte nach echtem umask022-Red. Gesamt480 Tests/94,3043 Prozent,
   Guard210 Dateien/213 Typen sauber. Fachliche Crashpunkte/SC-009 bleiben offen.
   Format1df4b05 CI auf Windows/Ubuntu grün; nächster Auftrag Annahme/DBqueue.
+- T057/T058 lokal umgesetzt: bounded einzelner DBworker, persistierte Session/Bindung,
+  atomare Input-/Sequence-/Capacityannahme, Kulturroundtrips, Busy/Cancel/Dispose sowie
+  reale Teilwrite-/Commitfehler. 502 Tests/95,2351 Prozent, Guard227 Dateien/231 Typen sauber.
+  Alte Opening/Running werden vor Recoveryumsetzung sicher abgewiesen. Restliche SQLite-
+  Ports/Keysetqueries und fachliche Crashpunkte bleiben offen. Nächster Auftrag T063,
+  dann Dispatch/Abschluss/Recovery. Crashstand457e901 CI auf Windows/Ubuntu grün.

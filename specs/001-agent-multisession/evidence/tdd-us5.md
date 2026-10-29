@@ -185,3 +185,75 @@ Keine Pin-/Scopeänderung. Restore nach neuer Buildabhängigkeit ohne Lockfileä
 T048 bleibt für fachliche Annahme-/Dispatch-/Resultatbarrieren offen, nächster Auftrag
 T050/T054/T057/T058. Crashmodus ist interne Infrastruktur, kein fertiger Szenariohost T094.
 Formatstand1df4b05 auf Windows/Ubuntu-CI grün: quality40857368718,Guard40857368737.
+
+## T057/T058: echte Annahme über einzelnen begrenzten DBworker
+
+Voranalyse architecture/2026-10-29-sqlite-admission.md, Ausgang457e901.
+AcceptancePersistenceTests/SerializationCultureTests zuerst14 fachliche Fehler am fehlenden
+Storebootstrap; StorageFailureTests weitere5 fachliche Fehler vor Worker-/Annahmegreen.
+Eine ursprüngliche Negativerwartung für nichtleeren Whitespace war unzulässig und zählt
+nicht als Produktbefund: bereits Utf8MessageLimitsTests erlaubt ihn ausdrücklich. Die
+Erwartung wurde durch positive unveränderte Whitespaceannahme ersetzt. Ebenso prüft der
+Datenschutzfall jetzt Message/InnerException statt Namespaceworten im Stacktrace.
+Keine Fachregel für diese beiden falschen Erwartungen geändert, kein künstliches Red.
+
+Relevante Befehle immer run-capped, dotnet test IntegrationTests -c Release --no-restore:
+Redfilter FullyQualifiedName~AcceptancePersistenceTests|FullyQualifiedName~SerializationCultureTests
+sowie ~StorageFailureTests; nach Green vollständige Integrationssuite.
+Zusätzlicher tatsächlicher Redfall UpdatesSessionTimestampTogetherWithSequenceAssignment:
+NextSequence war verändert, UpdatedUtc noch die frühere Bindungszeit. Jetzt Timestamp und
+Sessionjson gemeinsam mit Request/Sequenz committen. 50 Integrationfälle danach grün.
+
+Worker führt SQLiteobjekte strikt seriell aus. Begrenzt TryWrite, nicht unbeschränkte
+Wartetasks; Queuevoll/Jobcancel vor Beginn/Disposal liefern belegte Nichtannahme. Bereits
+aktive Transaktion endet tatsächlich, danach erst Verbindung freigeben. Cancel wird nicht
+mit nativer Endbestätigung verwechselt; erfolgreiche Commitrückkehr gewinnt spätes Token.
+Eigener Parent hält reale konkurrierende Schreibtransaktion: Busy vor Begin verliert keinen
+Input/Sequence, Channelcap1 weist Überhang ab, wartender Cancel innerhalb2s beobachtet,
+Dispose schließt keine Verbindung während aktiver SQLarbeit. Dies ist kein SC-004-Nachweis
+für Providerabbruch bei verfügbarem Store. Common Inputregeln werden öffentlich rein
+wiederverwendet, nicht nachgebaut. UTF-8-Grenze inklusive/1Byte darüber und Injectionsyntax
+bleiben echte gebundene Daten. Je zwei gleiche Eingaben erhalten unterschiedliche IDs.
+Wiederöffnung behält IDs/FIFO/Model/Settings/Bindingversion7, nächste Sequence steigt weiter.
+Culture de-DE/en-US/tr-TR unverändert; tatsächliche Zielhost-Zeitzonenmatrix T067/T099 offen.
+
+DefaultTimeout/PRAGMA sind in erster nativer Version fest1s; abweichende gültige generische
+Option durfte zunächst still passieren (neuer Factoryfall fachlich rot). Jetzt explizit
+InvalidConfiguration vor Datei-I/O. Kein stiller Ersatzwert, allgemeine RuntimeOptions
+unverändert. Weitere Busywerte sind noch keine zugesicherte native Fähigkeit.
+Vor benannten Workstatuskonstanten50 Integrationfälle grün, Verhalten unverändert;
+danach volle Regression/Guard. Compiler-CA1068 und Format sind keine Redbelege.
+
+Zusätzliche AcceptanceFailureTests sofort grün mit bereits implementiertem Runner:
+echter AFTER UPDATE-Trigger scheitert nach Requestinsert, Rollback entfernt Row/Sequence
+und bestätigt NotAccepted. Tatsächlicher deferred ForeignKeyfehler erst bei COMMIT bleibt
+Unknown samt Kandidaten-ID über RequestAdmission, kein Receipt/automatischer Retry und
+keine SQL-/Inputmarker in Exceptions. Regressionsbelege, kein nachträgliches TDD-Red.
+
+Unmittelbare Manifeste src/tests/examples inklusive SQL, UTC aus LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| sqlite-admission-red | 2026-10-29T10:40:38.5363148Z | e11e4d8cd0cd6ed149ca789633a41a2a301bf7794a352deacace395afe4ef36b |
+| sqlite-work-red | 2026-10-29T10:41:46.5206019Z | 0106940a6576759e2e2d0f1525b9a667b6e0f2157bf807e7b540b417af9c3f8b |
+| sqlite-admission-time-red | 2026-10-29T10:49:18.1530703Z | 5aba0a477cc56744b1120fcccac1e3b7b248079736af38fbd5aae82b5dbcacd8 |
+| sqlite-admission-green-final | 2026-10-29T10:51:32.4495330Z | befd11651d2fbd7887c8fd27c9fc319707848b1071478892401ffec8f308fe0d |
+| sqlite-busy-option-red | 2026-10-29T10:53:24.6766044Z | ebffef52f9bf3fdf5d71f2b2e94e5a27489ee394d32fc06c25a0f547a28df752 |
+| sqlite-busy-option-green | 2026-10-29T10:54:10.6234993Z | 377bbff50c8e238e7544c49fc86b5b3f3a2dc2e7f0c06ba96ac3e99b56bb9521 |
+| sqlite-admission-faults, ergänzend grün | 2026-10-29T10:57:29.4800280Z | f73f0717f59c16d16360bffccb3003f06e3b4485248851a1a565c92b095ee7ea |
+
+Finale ganze Qualität Exit0: artifacts/quality/linux/0080ecd4009a4e17bdfc9303675309ac,
+Sourcehash8cc3ef27a780baf5638a7f1c571054186c37f4b6350d929c58c3d36ce8824bf1.
+TRX gezählt502 bestanden:253 Unit/195 Contract/53 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1519/1595 Produktzeilen=95,2351 Prozent. Full-Guard227 Dateien/231 Typen,
+0 Verstöße/Parsefehler/Skips, kein Scope-/Pin-/Grenzwertwechsel.
+
+T057/T058 lokal umgesetzt. T050 bleibt für echte fachliche Crash-/verlorene-Ack-Punkte
+und ListRequests offen; T054 für weitere Datenträger-/ReadOnlyfälle. T061 muss konservatives
+Start-Nein für alte Opening/Running durch geprüfte Recovery ersetzen; derzeit kein Replay.
+Nächster konkreter Auftrag T063 Session-/Requestkeysetqueries für Auffindbarkeit, dann
+T051/T059/T060 gespeicherter Dispatch/Abschluss und T052/T061/T062 Recovery. Owner ausführende
+Gesamtimplementierungssitzung. Keine SQLite-Runtime-/Gesamt-US5-Freigabe; übrige Ports noch
+Gerüste. Frühere Crashvertikale457e901 auf Windows/Ubuntu-CI grün:
+quality40858563809,Guard40858563778.

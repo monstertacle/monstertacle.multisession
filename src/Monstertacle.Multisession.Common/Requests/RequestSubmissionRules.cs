@@ -2,10 +2,11 @@ using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.Requests;
 
-// One definition of host submission rules, independent from admission waiting and commit certainty.
-internal static class RequestSubmissionRules
+/// <summary>Shared submission validation, independent from admission waiting and storage commit certainty.</summary>
+public static class RequestSubmissionRules
 {
-    internal static PublicError? Validate(SubmitRequest request, SessionSnapshot? session, RuntimeOptions options)
+    /// <summary>Checks the same frozen session and input rules at admission and within its storage transaction.</summary>
+    public static PublicError? Validate(SubmitRequest request, SessionSnapshot? session, RuntimeOptions options)
     {
         if (session is null) { return Error(ErrorCode.NotFound, request); }
         if (session.Lifecycle is SessionLifecycle.Closing or SessionLifecycle.Closed) { return Error(ErrorCode.SessionClosed, request); }

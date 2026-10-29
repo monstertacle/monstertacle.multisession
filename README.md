@@ -92,9 +92,13 @@ SharpClaw bleibt ein späterer Konsument, OpenCode **1.19.0** eine optionale Ref
 ergänzt um lokale Agentdaten, SQLite-Zustand und die ausdrückliche Aufnahme des Coverageinventars.
 Es werden keine Zugangsdaten, nativen Sessions oder produktiven Zustandsspeicher versioniert.
 
-SQLite hat eine erste Formatvertikale mit explizitem `SqliteStoreFactory.CreateNewAsync`
-beziehungsweise `OpenExistingAsync`. Der Leaseport bereitet private Dateien vor;
+SQLite unterstützt explizites `SqliteStoreFactory.CreateNewAsync` beziehungsweise
+`OpenExistingAsync`, Session-/Requestlookup, Session-/Bindingcommit und dauerhafte Annahme
+über einen begrenzten einzelnen DBworker. Der Leaseport bereitet private Dateien vor;
 Metadaten, Trustscope, Header und tatsächliches Schema werden vor Nutzung geprüft.
-Die fachlichen SQLiteports und Bootstrap sind noch Gerüste und können noch keine
-Runtime versorgen. Annahme-/Crash-/Recovery- sowie native Besitznachweise bleiben offen;
-[Formatnachweis](specs/001-agent-multisession/evidence/tdd-us5.md).
+Wiederöffnung erhält wartende Eingaben und Sequenzen. Native DB-Busyzeit ist zunächst
+fest eine Sekunde; andere Werte werden ausdrücklich vor Dateizugriff abgewiesen.
+Dispatch/Abschluss, vollständige Queries und Start-Recovery sind weiterhin offen;
+eine SQLite-Runtime ist damit noch nicht vollständig nutzbar. Alte Opening/Running
+werden bis zur Recoveryumsetzung sicher abgewiesen. Fachliche Crash-/Recovery- und native
+Besitznachweise bleiben offen; [Nachweise](specs/001-agent-multisession/evidence/tdd-us5.md).

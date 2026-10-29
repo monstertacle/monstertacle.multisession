@@ -391,3 +391,21 @@ waren bereits vorhanden, kein künstliches Red für T073. provider-failure-sql-g
 zusätzliche sofort grüne Persistenz-/Neustart-/Historyfälle für erlaubte, lokale und
 undefinierte Kategorien. T073/T074/T080 werden erst nach gesamter Story-/TDDprüfung
 abgeschlossen, nicht allein aus diesem Schnitt.
+
+## T119 Zeichenintegrität statt stiller UTF8-Ersetzung
+
+Architektur/Primärquellen/Hashes zuerst in architecture/2026-10-29-utf8-integrity.md.
+utf8-integrity-red.log11Fälle ausgeführt,10rot/1grün: ungültige hohe/niedrige UTF16-
+Surrogate wurden akzeptiert, ungültige Ausgabe als Succeeded gespeichert. Gültige Emoji/
+Whitespacegrenze7Byte schon korrekt. Kein ungültiges Literal in Source/InlineDatametadaten;
+Surrogate nur im Testprozess aus Codepoint erzeugt, keine Rohinhalte in Fehlern.
+Danach strikter gemeinsamer UTF8Encoding(false,true)-ByteCount mit bereinigtem
+EncoderFallbackfehler. InvalidInput vor Kandidat/Commit/Send; fehlerhafte Ausgabe
+ExecutionFailed/leer/OutputCompletefalse, vorherige Gewissheit unverändert. Legitimer
+leerer Auth-/anderer Fehlerreply wird nicht pauschal zur anderen Kategorie umgeschrieben.
+utf8-integrity-green28/28bestehende/neue UTF8fälle. Zusätzliche sofort grüne Regressionen
+bestätigen echte gültige U+FFFD-/Emoji-Scalars und direkte SQLiteannahme/-Completion/
+Neustart/History. Gültige Benutzereingaben werden nicht heuristisch bereinigt oder getrimmt.
+Keine rückwirkende Rekonstruktion/Änderung historischer Inhalte. T119 wartet noch auf
+passende vollständige lokale/native Lieferstandnachweise; andere offene Aufgaben bleiben
+bestehen.

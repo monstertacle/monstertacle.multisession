@@ -350,3 +350,12 @@ kleinerem Hostlimit reservierbar; aktuelle Lifecycle-/Blockprüfung nur bei neue
 T119 ist konkreter Folgeauftrag für gefundenes UTF8Defaultreplacement mit Owner, Schritten,
 Abhängigkeit und Abnahme; wird direkt nach diesem Schnitt bearbeitet. Noch offene
 FrozenDispatch-/Reservation-/Recoverycasebeziehungen gehören weiter zu T065.
+
+T119 nach10/11echtem Red implementiert: strikte UTF8zählung ohne Ersatzzeichen,
+InvalidInput vor Annahme, ExecutionFailed bei fehlerhaftem nichtleerem Output ohne
+Gewissheitsänderung. Gültige Emoji/Whitespace/U+FFFD und inklusive Grenzen bleiben
+unverändert. Zusätzliche SQLitegrenzen/Neustart-/Historyfälle grün. Volltor
+linux/fb4b2384b3984871b8f130def1044ea7 konsistent erfolgreich, Codemetr348Dateien/
+358Typen ohne Befunde. T119 wartet noch auf native Prüfung dieses Codes. Voriger
+Submissionstand39e1446 mit Qualität40906548007 und Guard40906548079 nativ beidseitig grün.
+Weiterer ReservedDispatch-/Reservation-/Recoverygraph bleibt im aktiven T065-Auftrag.

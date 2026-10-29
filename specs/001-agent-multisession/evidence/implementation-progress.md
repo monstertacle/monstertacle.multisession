@@ -85,3 +85,6 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   Sperre im kontrollierten Abschluss, native Flags und öffentliche Queueregression.
   444 Tests/95,4992 Prozent, Full-Guard195 Dateien/197 Typen sauber. SQLite/Close folgen
   T060/T065/T037/T079. Voriger Stand6344816 CI auf Windows/Ubuntu grün.
+- T031/T037-Metadatenteilschnitt lokal grün: eingefrorene Revision, autoritative
+  UpdatedUtc-/ClosedUtc-Snapshots, sechs neue Redfälle. 450 Tests/95,5248 Prozent,
+  Full-Guard196 Dateien/198 Typen sauber. Close und reale SQLpersistenz bleiben offen.

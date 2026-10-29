@@ -6,7 +6,7 @@ public interface ISessionStore : ISessionQueryStore, IStoreBootstrap, IAsyncDisp
     /// <summary>Persists local session identity before an external open attempt.</summary>
     ValueTask CreateSessionAsync(SessionSnapshot session, CancellationToken cancellationToken);
     /// <summary>Persists established native identity without replacing the local session.</summary>
-    ValueTask CommitSessionBindingAsync(Guid sessionId, ProviderBinding binding, CancellationToken cancellationToken);
+    ValueTask<SessionSnapshot> CommitSessionBindingAsync(Guid sessionId, ProviderBinding binding, CancellationToken cancellationToken);
     /// <summary>Blocks further execution after an uncertain native open without deleting local identity.</summary>
     ValueTask MarkSessionBlockedAsync(Guid sessionId, SessionBlockReason reason, CancellationToken cancellationToken);
     /// <summary>Commits input, sequence and queue capacity atomically.</summary>

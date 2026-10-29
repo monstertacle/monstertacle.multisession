@@ -15,6 +15,12 @@ public sealed record SessionSnapshot(
 {
     /// <summary>Gets the original UTC creation time used for stable session ordering.</summary>
     public DateTimeOffset CreatedUtc { get; init; }
+    /// <summary>Gets the immutable host settings revision captured when this session was created.</summary>
+    public string SettingsRevision { get; init; } = string.Empty;
+    /// <summary>Gets the UTC timestamp of the last committed local session mutation.</summary>
+    public DateTimeOffset UpdatedUtc { get; init; }
+    /// <summary>Gets the actual UTC closure time, absent while opening, open or closing.</summary>
+    public DateTimeOffset? ClosedUtc { get; init; }
     /// <summary>Gets the monotonically advancing confirmed binding revision, initially zero.</summary>
     public long BindingRevision { get; init; }
     /// <summary>Gets the local lifecycle, separate from execution evidence and block reason.</summary>

@@ -33,7 +33,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask CommitSessionBindingAsync(Guid sessionId, ProviderBinding binding, CancellationToken cancellationToken)
+    public ValueTask<SessionSnapshot> CommitSessionBindingAsync(Guid sessionId, ProviderBinding binding, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         CommittingBinding?.Invoke();
@@ -45,9 +45,10 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
                 Binding = binding,
                 Lifecycle = SessionLifecycle.Open,
                 BindingRevision = session.Binding is null ? 0 : checked(session.BindingRevision + 1),
+                UpdatedUtc = Clock.GetUtcNow().ToUniversalTime(),
             };
+            return ValueTask.FromResult(State.Sessions[sessionId]);
         }
-        return ValueTask.CompletedTask;
     }
 
     public ValueTask MarkSessionBlockedAsync(Guid sessionId, SessionBlockReason reason, CancellationToken cancellationToken)
@@ -56,7 +57,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
         BlockingSession?.Invoke();
         lock (State.Gate)
         {
-            SessionSnapshot session = State.Sessions[sessionId] with { BlockReason = reason };
+            SessionSnapshot session = State.Sessions[sessionId] with { BlockReason = reason, UpdatedUtc = Clock.GetUtcNow().ToUniversalTime() };
             State.Sessions[sessionId] = session;
             if (reason == SessionBlockReason.RecoveryRequired && session.Lifecycle == SessionLifecycle.Opening)
             {
@@ -155,7 +156,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
         cancellationToken.ThrowIfCancellationRequested();
         lock (State.Gate)
         {
-            RecoveryState.Resolve(decision, confirmedBinding, State.Sessions, State.Requests, State.Reservations);
+            RecoveryState.Resolve(decision, confirmedBinding, State.Sessions, State.Requests, State.Reservations, Clock.GetUtcNow().ToUniversalTime());
         }
         return ValueTask.CompletedTask;
     }

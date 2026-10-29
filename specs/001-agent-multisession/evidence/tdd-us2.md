@@ -440,3 +440,33 @@ vorher der Guard fehlschlug; ausschließlich continuation-quality-final.log bele
 T117 lokal abgeschlossen; echte atomare SQLite-Persistenz folgt T060/T065, Close/Reopen
 T037/T043/T079. Keine Gesamt-US2-/Freigabeabnahme. Voriger Stand6344816 auf Windows/Ubuntu
 CI erfolgreich: quality40848238534,Guard40848238603.
+
+## T031/T037-Teilschnitt: Settingsrevision und Sitzungszeiten
+
+Voranalyse: architecture/2026-10-29-session-metadata.md. Sechs Fälle in
+UnitTests.SessionLifecycleTests zunächst fachlich rot: verworfene Settingsrevision,
+fehlendes UpdatedUtc bei Eröffnung/Blockierung/Abschluss/Unknown/Bootstrap/Recovery.
+Nach minimalem Green 253 Unitfälle bestanden. CommitSessionBindingAsync liefert jetzt
+den atomar gespeicherten Snapshot; Create gibt denselben zurück. Einfrieren/Created
+bleibt erhalten, ClosedUtc wird nur bei tatsächlichem Closed gesetzt.
+Befehle über run-capped: dotnet test tests/Monstertacle.Multisession.UnitTests -c Release
+--no-restore --filter FullyQualifiedName~SessionLifecycleTests (Red), danach ganze Suite.
+Manifeste unmittelbar vor den Tests, Zeiten aus LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| session-metadata-red | 2026-10-29T10:04:33.5997425Z | d55450f5eff75635ad35f18cf4ad14695f49b71657fb63fb095bda58b7fa4286 |
+| session-metadata-green | 2026-10-29T10:04:52.9689665Z | 94fe7c3b6e8a46c154affe1c4f8b095a117b7ed1a41fad7aca142faf41a77f43 |
+
+Vor Refactoring 253 Unit/195 Contract grün. Guard meldete Resolve-Komplexität28;
+Lifecycleentscheidung für tatsächliches Closed in private Funktion extrahiert und
+für Lifecycle/ClosedUtc gemeinsam verwendet, CAS unverändert. Anschließend volle
+Qualität Exit0: artifacts/quality/linux/24bc31f547ca4cb9aea57604291dd201,
+Sourcehash88370df338ddd976f3d7e44636cddb9942e60fc50188757b938ff4668eba1f17.
+TRX gezählt450 bestanden:253 Unit/195 Contract/je1 Integration/Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit grün.
+1174/1229 Produktzeilen=95,5248 Prozent. Full-Guard196 Dateien/198 Typen,0 Befunde/
+Parsefehler/Skips. Kein Scope-/Schwellenwechsel. Erste Qualitätskette endete am roten
+Guard; nur session-metadata-quality-final.log belegt den vollständigen finalen Lauf.
+T031/T037 bleiben für Close ohne offene Arbeit und weitere Lebenszyklusregeln offen.
+SQLstempel sind Bestandteil T056/T060/T065; keine bereits existierende SQLpersistenz behauptet.

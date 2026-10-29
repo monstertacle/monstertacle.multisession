@@ -28,7 +28,13 @@ public sealed class SessionCatalog : ISessions
         ValidateExecution(profile.ExecutionKind, registration.Provider.Capabilities, context);
         Guid sessionId = Guid.NewGuid();
         ProviderSessionContext providerContext = new(sessionId, profile.ModelId, profile.ExecutionKind, context, profile.Settings.Values);
-        SessionSnapshot session = new(sessionId, registration.ProviderId, profile.AgentProfileId, providerContext, null) { CreatedUtc = _clock.GetUtcNow() };
+        DateTimeOffset createdUtc = _clock.GetUtcNow().ToUniversalTime();
+        SessionSnapshot session = new(sessionId, registration.ProviderId, profile.AgentProfileId, providerContext, null)
+        {
+            CreatedUtc = createdUtc,
+            UpdatedUtc = createdUtc,
+            SettingsRevision = profile.Settings.Revision,
+        };
         await _store.CreateSessionAsync(session, cancellationToken);
         ProviderBinding binding;
         try
@@ -48,13 +54,12 @@ public sealed class SessionCatalog : ISessions
 
         try
         {
-            await _store.CommitSessionBindingAsync(sessionId, binding, cancellationToken);
+            return await _store.CommitSessionBindingAsync(sessionId, binding, cancellationToken);
         }
         catch (Exception)
         {
             throw await BlockUncertainOpeningAsync(sessionId, ErrorCode.StorageUnavailable);
         }
-        return session with { Binding = binding, Lifecycle = SessionLifecycle.Open };
     }
     /// <inheritdoc />
     public ValueTask<SessionSnapshot?> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken)

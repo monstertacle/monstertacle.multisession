@@ -58,7 +58,11 @@ internal abstract class ControlledCompletionStore : ControlledQueryStore
                 Result = reply,
             };
             DispatchState.RecordCompletion(snapshot, reply);
-            State.Sessions[reservation.SessionId] = updated with { BlockReason = SessionBindingPolicy.AfterCompletion(updated.BlockReason, reply) };
+            State.Sessions[reservation.SessionId] = updated with
+            {
+                BlockReason = SessionBindingPolicy.AfterCompletion(updated.BlockReason, reply),
+                UpdatedUtc = State.Clock.GetUtcNow().ToUniversalTime(),
+            };
             State.Reservations.Remove(dispatchId);
         }
         DispatchState.Completed?.Invoke();

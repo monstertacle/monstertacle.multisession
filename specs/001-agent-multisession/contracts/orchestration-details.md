@@ -193,3 +193,11 @@ läuft weiterhin über den separaten Unsicherheitscommit und bleibt reserviert. 
 nimmt mit bekanntem Fortsetzungsblocker keine weiteren Requests an; bereits Queued bleiben
 für explizite Close-/Stop-/Klärung sichtbar. Kein neuer nativer Bezug und keine automatische
 Wiederholung. Produktive Transaktionen müssen dieselbe atomare Grenze erfüllen.
+
+### Autoritativer Snapshot bei bestätigter Eröffnung
+
+CommitSessionBindingAsync liefert den in derselben Transaktion bestätigten
+SessionSnapshot. CreateSessionAsync gibt diesen zurück. SettingsRevision und CreatedUtc
+bleiben unverändert; UpdatedUtc bezeichnet die letzte gespeicherte Sessionmutation.
+ClosedUtc ist vor tatsächlichem Closed null, auch bei Closing mit ungeklärter Arbeit.
+Die chronologischen lokalen UTC-Zeitpunkte ersetzen keine monotonen Ausführungsfristen.

@@ -14,7 +14,7 @@ internal static class ControlledStoreBootstrap
         }
         foreach (SessionSnapshot session in state.Sessions.Values.Where(item => item.Lifecycle == SessionLifecycle.Opening).ToArray())
         {
-            state.Sessions[session.SessionId] = session with { BlockReason = SessionBlockReason.RecoveryRequired };
+            state.Sessions[session.SessionId] = session with { BlockReason = SessionBlockReason.RecoveryRequired, UpdatedUtc = state.Clock.GetUtcNow().ToUniversalTime() };
             RecoveryTarget target = new(RecoveryTargetKind.SessionOpening, session.SessionId);
             if (state.Recovery.Read(target)?.Status != RecoveryCaseStatus.Open)
             {

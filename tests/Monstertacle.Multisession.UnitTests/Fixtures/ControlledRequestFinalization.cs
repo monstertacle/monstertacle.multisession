@@ -14,7 +14,11 @@ internal static class ControlledRequestFinalization
             Result = new(RequestState.Interrupted, ExecutionCertainty.Unknown, string.Empty, false, null,
                 failure with { Certainty = ExecutionCertainty.Unknown }),
         };
-        state.Sessions[reservation.SessionId] = state.Sessions[reservation.SessionId] with { BlockReason = SessionBlockReason.RecoveryRequired };
+        state.Sessions[reservation.SessionId] = state.Sessions[reservation.SessionId] with
+        {
+            BlockReason = SessionBlockReason.RecoveryRequired,
+            UpdatedUtc = state.Clock.GetUtcNow().ToUniversalTime(),
+        };
         ProviderBinding? knownBinding = state.Sessions[reservation.SessionId].Binding;
         if (knownBinding is { SessionReference: null } && state.Dispatch.SessionReference(reservation.DispatchId) is { } observed)
         {

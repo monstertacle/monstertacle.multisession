@@ -28,7 +28,7 @@ internal sealed class ControlledRecoveryState
 
     public void Resolve(RecoveryDecision decision, ProviderBinding? confirmedBinding,
         Dictionary<Guid, SessionSnapshot> sessions, Dictionary<Guid, RequestSnapshot> requests,
-        Dictionary<Guid, ExecutionReservation> reservations)
+        Dictionary<Guid, ExecutionReservation> reservations, DateTimeOffset now)
     {
         if (!_cases.TryGetValue(decision.Target, out RecoveryCaseSnapshot? item)) { throw Failure(ErrorCode.NotFound); }
         if (_decisions.Contains(decision.DecisionId) || decision.ExpectedRevision != item.Revision || item.Status != RecoveryCaseStatus.Open)
@@ -43,7 +43,7 @@ internal sealed class ControlledRecoveryState
         RecoveryCaseSnapshot updated = item with { Revision = checked(item.Revision + 1) };
         if (decision.Kind == RecoveryDecisionKind.CloseSession)
         {
-            sessions[item.SessionId] = session with { Lifecycle = SessionLifecycle.Closing };
+            sessions[item.SessionId] = session with { Lifecycle = SessionLifecycle.Closing, UpdatedUtc = now };
         }
         else if (decision.Kind == RecoveryDecisionKind.ConfirmEnded)
         {
@@ -64,18 +64,24 @@ internal sealed class ControlledRecoveryState
             updated = updated with { Status = RecoveryCaseStatus.Resolved, Certainty = ExecutionCertainty.ConfirmedEnded, BlockReason = SessionBlockReason.None };
             bool otherOpen = _cases.Values.Any(other => other.Target != item.Target && other.SessionId == item.SessionId && other.Status == RecoveryCaseStatus.Open);
             bool remaining = requests.Values.Any(request => request.SessionId == item.SessionId && request.State is RequestState.Queued or RequestState.Running);
+            SessionLifecycle lifecycle = AfterResolution(session.Lifecycle, otherOpen, remaining);
             sessions[item.SessionId] = session with
             {
-                Lifecycle = session.Lifecycle == SessionLifecycle.Closing ? (otherOpen || remaining ? SessionLifecycle.Closing : SessionLifecycle.Closed) : SessionLifecycle.Open,
+                Lifecycle = lifecycle,
                 BlockReason = otherOpen ? SessionBlockReason.RecoveryRequired : SessionBlockReason.None,
                 Binding = confirmedBinding ?? session.Binding,
                 BindingRevision = confirmedBinding is null ? session.BindingRevision : checked(session.BindingRevision + 1),
+                UpdatedUtc = now,
+                ClosedUtc = lifecycle == SessionLifecycle.Closed ? now : null,
             };
         }
         else { throw Failure(ErrorCode.InvalidInput); }
         _cases[item.Target] = updated;
         _decisions.Add(decision.DecisionId);
     }
+
+    private static SessionLifecycle AfterResolution(SessionLifecycle current, bool otherOpen, bool remaining)
+        => current == SessionLifecycle.Closing ? (otherOpen || remaining ? SessionLifecycle.Closing : SessionLifecycle.Closed) : SessionLifecycle.Open;
 
     private static bool Compatible(ProviderBinding? original, ProviderBinding? reopened)
         => original?.SessionReference is not null && reopened is not null

@@ -368,3 +368,13 @@ Ackreferenzen abgeglichen, historische Heads nicht überschrieben. T119 nach nat
 Qualität40907585230 und Guard40907585258 zu9189574 ausdrücklich abgeschlossen.
 Case-/Decisiongraph bleibt nächster T065-Schritt; Startup-Cancellation für lange
 Konsistenzscans im bestehenden T076-Fristaudit mitprüfen, keine Vollabnahme behaupten.
+
+Case-/Decisiongraph T065 nach38+12echten Redfällen integriert,169/169Storage-/Recovery-
+regressionen grün. Volltor linux/d1ac19e0851c4b0395ee3901985452e5 konsistent erfolgreich,
+Codemetr358Dateien/368Typen ohne Befunde. Ursprüngliche Request-/Dispatch-/nativeAck-
+zuordnung, Status-/Gewissheit, UTC und letzte revisionsgebundene Bestätigung geprüft,
+legitime historische Köpfe/Unknownhistory/mehrfacheCloseentscheidungen erhalten.
+Kein Provider-I/O/Replay während Prüfungen, DBhash bei Ablehnung gleich. Native Qualität
+40910032459 und Guard40910032634 zu c3acedd ebenfalls beidseitig grün. T065 bleibt bis
+vollständigem Abgleich offen; als nächstes Startup-Cancellation der Transaktion/Scans
+im vorhandenen T076-Fristaudit, keine präemptive Kill-/Submillisekundenzusage.

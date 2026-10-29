@@ -45,6 +45,8 @@ internal static class RecoveryTransactions
         SubmissionStoreConsistency.Assert(connection, transaction);
         ResultStoreConsistency.Assert(connection, transaction);
         DispatchStoreConsistency.Assert(connection, transaction);
+        CaseStoreConsistency.Assert(connection, transaction);
+        DecisionStoreConsistency.Assert(connection, transaction);
         using SqliteCommand missing = SqliteStatements.Create(connection, transaction,
             """
             SELECT count(*) FROM Requests r WHERE r.State=$running AND NOT EXISTS

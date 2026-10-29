@@ -753,3 +753,23 @@ Sessionidentität/acknowledgedRefs konsistent, UTC/StartedUtc/ReservedUtc und Re
 passen. Archivprüfung erteilt keinerlei Sendrecht; aktiver öffentliche Read bleibt
 Running/neu reserviert. Keine neue Herstellerwahl/IDs/Replay. DBhash nach Ablehnung gleich.
 Recoverycase-/Decisiongraph bleibt konkret nächster T065-Schritt.
+
+## T065 Recoverycase-/Decisiongraph
+
+Architektur/Quellen vor Code: architecture/2026-10-29-case-storage-consistency.md.
+case-consistency-red38/38 und decision-consistency-red12/12 tatsächlich rot: beide Targets
+wurden mit fremden Links/nativeEvidence/Status/Zeiten, fehlenden Cases/Blocks und unechten/
+fehlenden Entscheidungen beim Start akzeptiert. Nach Case-/Decisionprüfung
+case-decision-consistency-green167/167Storagefälle grün. Zwei weitere unmittelbar grüne
+Regressionen halten mehrfache Closeentscheidungen plus Bestätigung mit rückläufigen
+kanonischen UTC-Messdaten sowie historischen Openingkopf nach späterem Turn zulässig.
+
+Cases sind zu Request-/Dispatch-/Ack-/Ownerdaten gebunden, Unknown braucht offenen Case
+und unreleased Slot. Resolved bestätigt aktuelle Gewissheit, ohne Historienerfolg zu erfinden.
+Openingcase hat keine DummyIDs und darf historische Continuation behalten. DecisionIDs/
+Target/Revisionsbereich/Kind/Erklärung/EvidenceRef/UTC geprüft, je Target letzte passende
+ConfirmEnded-Bestätigung für Resolvedstatus. Streaminggruppen statt alle Decisions zu laden,
+keine zeitliche Wallclocksortierung als Kausalbeweis. SQLrelationen vermeiden wiederholte
+ungeindexierte Vollscans. DBhash nach Ablehnung gleich, kein neues Provider-I/O oder Replay.
+Startupcancel bei langen Scans bleibt im Fristaudit T076 zu prüfen; vollständiger T065-
+Abgleich/Closingwriterreview und native Besitzabnahme bleiben eigenständig offen.

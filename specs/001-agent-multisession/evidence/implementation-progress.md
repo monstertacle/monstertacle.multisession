@@ -553,3 +553,11 @@ Produkt-/Vorlagencode unverändert gegenüber dem grünen Paket-Volltor; neue
 CI-Ausführung bleibt abzuwarten. Frühere intermittierende Windows-Routingfehler
 bleiben T094/T099 zugeordnet; Recovery-CLI selbst bestand im fehlgeschlagenen
 Lauf 40941309691, dessen einziger gemeldeter Fehler die Routing-Bereinigung war.
+
+2026-10-29T19:51:26Z: Routing-Prozessbudget und begrenztes Windows-Cleanup
+nach echten CI-Fehlern angepasst; fachliche Cancel-/Stopfristen unverändert.
+Volltor linux/3bd1f0ac2e084647871aeb2725373e0b: 990 Tests, 97.5677 %,
+Sourcehash 5d8d26931b35277fc40dc4ae1d700cb3b6da75a7e0a901380c8181b7e3a40b4b.
+Full-Codemetr misst nun auch die archivierte materialisierte Consumerdatei:
+424 Dateien/442 Typen, keine Verstöße/Parsefehler/übersprungenen Dateien.
+Native erneute Bestätigung und Erklärung der Intermittenz bleiben T094/T099 offen.

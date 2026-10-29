@@ -39,6 +39,7 @@ internal static class WaveProbeFlow
                 }
             }
         }
+        catch (SessionOperationException failure) { throw new ValidationProbeException("WaveAdmission_" + failure.Failure.Code); }
         finally { barrier.Release.TrySetResult(); }
         foreach (AcceptedProbeRequest item in accepted)
         {

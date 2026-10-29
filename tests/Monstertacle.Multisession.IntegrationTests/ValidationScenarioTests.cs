@@ -77,7 +77,7 @@ public sealed class ValidationScenarioTests
         {
             start.ArgumentList.Add(argument);
         }
-        ProbeProcessResult result = await ProbeProcess.RunAsync(start, scenario == "recovery" ? TimeSpan.FromMinutes(5) : null);
+        ProbeProcessResult result = await ProbeProcess.RunAsync(start, scenario is "recovery" or "routing" ? TimeSpan.FromMinutes(5) : null);
         Assert.True(result.ExitCode == 0, $"Scenario exited {result.ExitCode}: {result.Output}");
         using JsonDocument report = JsonDocument.Parse(result.Output);
         Assert.Equal("PASS", report.RootElement.GetProperty("Status").GetString());

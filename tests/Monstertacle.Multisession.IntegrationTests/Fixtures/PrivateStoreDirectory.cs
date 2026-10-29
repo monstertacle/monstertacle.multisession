@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using Monstertacle.Multisession.Contracts;
@@ -61,10 +62,18 @@ internal sealed class PrivateStoreDirectory : IStateDirectoryLease
     }
 
     public void Release() => _released = true;
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         _released = true;
-        Directory.Delete(StateDirectory, true);
-        return ValueTask.CompletedTask;
+        long began = Stopwatch.GetTimestamp();
+        while (true)
+        {
+            try { Directory.Delete(StateDirectory, true); return; }
+            catch (IOException failure) when (OperatingSystem.IsWindows() && (failure.HResult & ushort.MaxValue) is 32 or 33
+                && Stopwatch.GetElapsedTime(began) < TimeSpan.FromSeconds(30))
+            {
+                await Task.Delay(20);
+            }
+        }
     }
 }

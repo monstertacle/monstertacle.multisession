@@ -134,3 +134,35 @@ SourceHash 27954b0154dbafc5909da5f4a9e13fe529ca5742070c52729ea582e94f268059.
 Verstöße/Parsefehler/Skips. Vollbefehl unverändert run-capped.sh, Format/Guard/Invoke-Quality;
 Logs artifacts/tdd/uncertain-outcome-{red,green,quality}.log. Offene 2-s-Ausführungs-/
 native Cancel-/Stop-/Close-Abnahme verbleibt ausdrücklich bei T071/T077/T078/T079/T082.
+
+## T071/T077/T082: aktiven dauerhaften Intent beobachten
+
+Architektur vor Erweiterung architecture/2026-10-29-running-cancel.md, Ausgang da4f78a.
+running-cancel-red: beide offenen kooperativen/unkooperativen Sends ignorierten gespeicherten
+Intent und erreichten die 2-s-Testgrenze; Cancel zwischen Reservation/Snapshot blieb Running
+statt sicherem NotStarted. Drei fachliche Redfälle. running-cancel-sql-red: echter Runtime-
+SQLitefall blieb trotz bestätigtem Cancel-Intent über fünf Sekunden Running, Beobachtung
+brach an der endlichen Testfrist ab. Kein Infrastrukturfehler als Red ausgegeben.
+
+Green: lokaler begrenzter Monitor liest dauerhaften Intent, bricht Adaptertoken ab und
+sichert vorhandenen Unknown-Pfad. Intent vor tatsächlichem Send wird NotStarted abgeschlossen.
+16 relevante Unitfälle und ein echter Runtime-SQLfall zunächst grün. Vollregression fand
+zwei bestehende Callback-Lifetime-Fälle rot: Monitorcleanup brach den Ausführungstoken nach
+bekanntem Ende mit ab, daher OCE statt ObjectDisposed. Voller Fehlbeleg verbleibt als TRX in
+artifacts/quality/linux/f1f8d8789177436a84fe18dcf79fc96b. Korrektur: eigener Monitorstop-Token,
+getrennt vom Ausführungstoken; geschlossene Callbackgrenze unverändert. Neun gezielte
+Callback-/Cancelregressionen danach grün. Eine fehlerhafte zusätzliche Messausgabe war ein
+Format-/Syntaxfehler, kein fachliches Red; vor vollständiger Wiederholung korrigiert.
+
+Vollständig grün artifacts/quality/linux/83891ed17c334cf0a3327b9770fd72c8,
+SourceHash 9c3f02a7d3ddff896b730a773565ff224019f2409e279b902eb9094535f179f5.
+605 Tests (274 Unit,195 Contract,135 Integration,1 Plattform), null Fehler/Skips;
+2064/2136 Produktzeilen = 96,6292 %. Codemetr 277 Dateien/283 Typen, null
+Verstöße/Parsefehler/Skips. Monotone echte Cancel-bis-dauerhaftes-Ende-Messung aus dem
+Integration-TRX: 119,639 ms bei offenem unkooperativem Send, verfügbarem Store. Zustand
+Cancelled/Unknown, keine künstliche Freigabe, nach Wiederöffnung gleiches Result und genau
+ein Historieneintrag. Befehl unverändert run-capped.sh mit Format/Guard/Invoke-Quality;
+running-cancel-quality.log enthält zusätzlich den vorgeschalteten gezielten Neun-Testlauf,
+der nicht erneut zur vollständigen Testzahl gezählt wird. Native Endbestätigung ist der
+nächste begrenzte T071/T077-Schnitt; Stop/Close verbleiben T072/T078/T079. Keine vollständige
+SC-004- oder Storyabnahme behauptet.

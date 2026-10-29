@@ -168,3 +168,14 @@ und ConfirmEnded erhalten historischen Ausgang und Historie. 601 Tests grün,
 96,7221 % Gesamtabdeckung; Codemetr 274 Dateien/280 Typen sauber. tdd-us3.md,
 Qualitätslauf 8e1963773f544d67b45f944cbf5f3e9c. Laufender Cancel/Endbestätigung
 und vollständiger Lifecycle bleiben in den bestehenden Folgeaufgaben offen.
+
+### 2026-10-29T12:47:32Z: Laufender Cancel wird dauerhaft sichtbar
+
+Öffentlicher gespeicherter Intent erreicht den Adaptertoken. Unbestätigtes Ende bleibt
+Cancelled/Unknown reserviert; Cancel vor Snapshot verhindert Send und endet NotStarted.
+Drei Unit- und ein echter Runtime-SQLfall zuerst fachlich rot, dann grün. Callback-Lifetime-
+Regression im Volltest durch getrennten Monitorstop behoben. 605 Tests vollständig grün,
+96,6292 % Gesamtdeckung, Codemetr 277 Dateien/283 Typen sauber. Qualitätslauf
+83891ed17c334cf0a3327b9770fd72c8; monotone SQLruntime-Messung 119,639 ms. Nächster
+konkreter Auftrag T071/T077: native Endbestätigung, keine Freigabe für bloße Bestätigung
+des Abbruchwunschs. tdd-us3.md enthält die tatsächlichen Red-/Green-/Fehlbelege.

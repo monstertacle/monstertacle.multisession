@@ -9,7 +9,7 @@ namespace Monstertacle.Multisession.PlatformTests;
 /// <summary>Native Windows ACLs and lifetime ownership, never a cooperative lease double.</summary>
 public sealed class WindowsOwnershipTests : IDisposable
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "windows-ownership-" + Guid.NewGuid().ToString("N"));
+    private readonly string _root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "dev", ".agenttemp", "windows-ownership-" + Guid.NewGuid().ToString("N"));
     /// <summary>Creates an isolated parent.</summary>
     public WindowsOwnershipTests() => Directory.CreateDirectory(_root);
     /// <summary>Removes only test-owned files.</summary>

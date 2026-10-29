@@ -43,3 +43,13 @@ Testprojekt verwenden undganzeKlassen ohnePräprozessor kapseln; Codemetr misstw
 alleeigenenDateien auchaußerhalbderaktivenTFM. BestehendeLinuxbesitztests entsprechend
 mechanischumstellen, nach26/26grünemAusgang. KeineCodemetr-/Coverage-Scopeausnahme,
 keinneuerSkip; Windows-/Linuxpaketzuordnung imTFM bleibtunverändert.
+
+Implementierungswahl im gleichen Pfadvertrag: ACL-Lesen über vorhandeneBCL-
+FileSystemAclExtensions/GetAccessControl statt eigenemGetFileSecurityW-PInvoke.
+Diese pfadbasiertenBCLzugriffe erfolgen ebenfalls ausschließlichnach vollständigem
+Handlepinning; keine eigeneInteropdeklarationmitmehrals7Parametern. PrivateSDs werden
+alsgeschützterOwner-SID-only Descriptor beiCreateDirectory/CreateFile übergeben.
+Directory-DACL benötigtContainer/Objectinheritance fürprivateSQLitejournals; vorhandene
+File-DACL darfdieseprivateSID-Regel erben, ohne fremdeACE. KeinnachträglichesACLrepair.
+WindowsTFM-Build bereitsgrün, nativeGreen erstnachCI. Linux-Wrongplatformprobe im
+getrennten temporärenProjectReferencekonsumenten ist Regression, keinNuGet-/SC-011-Beleg.

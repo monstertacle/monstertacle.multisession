@@ -69,3 +69,23 @@ grün, Codemetr382Dateien/393TypenohneBefunde. Volltor/nativeNachprüfungfolgen.
 DieserSchnittverfolgtöffentlicheCreateSession-Provideroperationen. RecoveryInspect/Resolve,
 Close-/Startfristen undweitereRaces bleibenimvorhandenenT076/T079/T083-Audit ausdrücklich
 offen; dasOperationsregister ist ihrWiederverwendungspunkt, keineGesamtabnahme.
+
+WindowsRed tatsächlich nativzu127df3a inQualität40921348366: drei ausgeführte
+WindowsOwnershipTests fehlgeschlagen, Infrastrukturfallbestanden,0Skips. Zwei erwartete
+funktionierendeLeasen werfenUnsupportedPlatform; breiteACL erwartetStorageUnavailable,
+tatsächlichUnsupportedPlatform. Original-TRX unter
+/home/user1/dev/.agenttemp/multisession-ci-40921348366/windows/ undLog
+artifacts/tdd/windows-ownership-native-red.log. ErstnachdiesemNachweis Greenimplementierung.
+
+WindowsGreenkandidat nachnativem3/3Red implementiert. LokalerWindows-TFM-Build ohne
+Warnungen/Fehler; Linux-Wrongplatformkonsument bestätigtUnsupportedPlatform, keinNo-op.
+PrivateSecurity verwendetvorhandeneBCLACLzugriffe nachHandlepinning undatomareSecurity-
+Attributes beiErzeugung. FileCreateNew ersetztkeineBestandsdateien; ShareNone-Lockbleibt
+bisDisposeoffen, Elternhandles verhindernPfadtausch. NeueTestablage ausdrücklichunter
+UserProfile/dev/.agenttemp stattpotenziellgekürztemTEMP-Pfad.
+
+LokalesVolltor linux/64ff350be59d4f12a4beccf2e9e5426b, Sourcehash
+baec2245c1db6d5a9faed7c07fbc1d1cd290d11a89dd58445a95e9673ac01bdb,
+940/940Tests,2840/2916Zeilen=97.3937%. Codemetr387Dateien/398TypenohneBefunde/
+Parsefehler/Skips. DasmisstWindowsklassenstatisch undtestetCommon+Linuxnativ;
+Windows-Verhaltensgreen istnoch zuprüfen, keinT087/T091-Abschluss.

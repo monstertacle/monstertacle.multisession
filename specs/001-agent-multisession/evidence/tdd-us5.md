@@ -795,3 +795,12 @@ Native Folgeprüfung zu9f48f546c84ba186592bd06c2ab637745015244a: Qualität409180
 aufubuntu-24.04 undwindows-latest erfolgreich; Guard40918070182 ebenfallsgrün.
 T067 damit abgeschlossen. Das bestätigt die expliziten TimeZoneInfo-/Kulturwerte;
 keine Umstellung der globalen Hosttimezone behauptet.
+
+## T064 Abnahmeabgleich
+
+Aktueller Regel-/Transaktions-/Testabgleich in recovery.md: explizite Auswahl, nurClosed
+mitClosedUtc, keineQueued/Running/ungeklärteReservation/offenenCases, atomarerGraphdelete,
+Fehlerrollback/CallerCancel und Erhalt fremderSessiondaten nachReopen. Retentionstandf838da6
+warbereitsnativbeidseitiggrün(40887145758/40887146227); dieselbenRegeln undTests auchim
+aktuellenVolltor ae3b46d115ea4d2199372bb286d4fef9 grün. T064 abgeschlossen. T054/T065-
+Gesamtaudit undT068/T069 bleiben eigenständigoffen, keinephysischeErasurezusage.

@@ -10,6 +10,9 @@ internal static class Program
         {
             CrashProtocol.WorkerArgument => await CrashWorker.RunAsync(args),
             DiskFullProtocol.WorkerArgument => await DiskFullWorker.RunAsync(args),
+#if !WINDOWS
+            OwnershipProtocol.WorkerArgument => await LinuxOwnershipWorker.RunAsync(args),
+#endif
             _ => 0,
         };
     }

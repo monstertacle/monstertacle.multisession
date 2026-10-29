@@ -1,13 +1,10 @@
 using System.Text.Json;
-using Microsoft.Data.Sqlite;
 
 namespace Monstertacle.Multisession.ValidationHost;
 
 // Creates an actual uncommitted SQLite journal only inside an explicitly marked test directory.
 internal static class CrashWorker
 {
-    private const int _spillBytes = 1024 * 1024;
-
     internal static async Task<int> RunAsync(string[] args)
     {
         if (args.Length != 4 || !CrashProtocol.IsKnown(args[3]) || !Path.IsPathFullyQualified(args[1])
@@ -20,23 +17,7 @@ internal static class CrashWorker
         try
         {
             if (args[3] != CrashProtocol.JournalPoint) { return await CrashRecoveryWorker.RunAsync(args[1], args[3]); }
-            using SqliteConnection connection = new(new SqliteConnectionStringBuilder
-            {
-                DataSource = path,
-                Mode = SqliteOpenMode.ReadWrite,
-                Pooling = false,
-                DefaultTimeout = 1,
-            }.ToString());
-            connection.Open();
-            using SqliteCommand settings = connection.CreateCommand();
-            settings.CommandText = "PRAGMA journal_mode=DELETE; PRAGMA synchronous=EXTRA; PRAGMA cache_size=1; PRAGMA cache_spill=ON;";
-            settings.ExecuteNonQuery();
-            using SqliteTransaction transaction = connection.BeginTransaction();
-            using SqliteCommand command = connection.CreateCommand();
-            command.Transaction = transaction;
-            command.CommandText = "CREATE TABLE UncommittedProbe (Value BLOB); INSERT INTO UncommittedProbe VALUES (zeroblob($bytes));";
-            command.Parameters.AddWithValue("$bytes", _spillBytes);
-            command.ExecuteNonQuery();
+            using CrashJournal journal = CrashJournal.Begin(path);
             await Console.Out.WriteLineAsync(JsonSerializer.Serialize(new CrashSignal(CrashProtocol.JournalBarrier, Environment.ProcessId, DateTimeOffset.UtcNow)));
             await Console.Out.FlushAsync();
             await Task.Delay(Timeout.InfiniteTimeSpan);

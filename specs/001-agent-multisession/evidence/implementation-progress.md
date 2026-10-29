@@ -402,3 +402,12 @@ Regressionengrün. GemeinsamesVolltor linux/6b0105a766e14ce2b7dca0b491734444 erf
 Sourcehasha2bdf00708ec3515dc2de1e9a64ebd7bef7ad4294a753623663de6931974af21,
 2804/2880Zeilen=97.3611%, Codemetr371Dateien/381Typen ohneBefunde. Folgeschritt
 T088/T093 Zweitprozess-/Kill-/SQLitezusammenspiel; WindowsT091 weiterhinoffen.
+
+LinuxT088/T093 Prozess-/Journalvertikale nach2fachlichenRedproben undweiteremfehlendem-
+JournalRed grün.26/26Plattformtests,937/937gesamt,97.3611%Produktabdeckung.
+Volltor linux/ae3b46d115ea4d2199372bb286d4fef9, Sourcehash
+6fcd0afddbc352935e248c7e6497f392cb50d74c8237ce2f9aed0911451cb269;
+Codemetr376Dateien/387Typen ohneBefunde. Voriger075d4e2 nativbeidseitiggrün:
+40919459445/40919459473. README-Nachweistabelle aktualisiert, recovery.md mit aktueller
+Abnahmematrix ergänzt; T064 nach Regel-/SQL-/Testabgleichabgeschlossen. OffeneUS5-
+Gesamtaudits undnativeWindows-/Zielsystempflichten weiter aktiv, keine Gesamtfreigabe.

@@ -4,6 +4,8 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../Monstertacle.Multisession.IntegrationTests/Fixtures/ValidationHostBuild.cs" Link="Fixtures/ValidationHostBuild.cs" />
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/OwnershipProtocol.cs" Link="Fixtures/OwnershipProtocol.cs" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
   </ItemGroup>

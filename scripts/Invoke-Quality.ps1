@@ -15,11 +15,11 @@ function Invoke-Dotnet([string[]]$Arguments) {
 
 function Get-SourceHash {
     $files = @(Get-Item -Force global.json, Directory.Build.props, Directory.Packages.props, .editorconfig,
-        Monstertacle.Multisession.slnx, codemetr.json, .config/dotnet-tools.json)
-    $files += @(Get-ChildItem src, tests, examples, scripts, .github/workflows -Recurse -File |
+        Monstertacle.Multisession.slnx, codemetr.json, .config/dotnet-tools.json, README.md)
+    $files += @(Get-ChildItem src, tests, examples, scripts, eng, .github/workflows -Recurse -File |
         Where-Object {
             ($_.FullName -notmatch '[\\/](bin|obj|TestResults)[\\/]') -and
-                ($_.Extension -in '.cs', '.csproj', '.props', '.runsettings', '.json', '.ps1', '.yml', '.sql')
+                ($_.Extension -in '.cs', '.csproj', '.props', '.runsettings', '.json', '.ps1', '.yml', '.sql', '.txt')
         })
     $manifest = ($files | Sort-Object FullName | ForEach-Object {
         "$([IO.Path]::GetRelativePath($root, $_.FullName).Replace('\', '/')) $((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())"
@@ -43,6 +43,8 @@ try {
     Invoke-Dotnet @('format', 'Monstertacle.Multisession.slnx', '--verify-no-changes', '--no-restore')
     & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-Coverage.Tests.ps1
     if ($LASTEXITCODE -ne 0) { throw 'Coverage gate behavior tests failed.' }
+    & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-SourceHash.Tests.ps1
+    if ($LASTEXITCODE -ne 0) { throw 'Source hash behavior tests failed.' }
 
     # A new directory per invocation prevents old reports from contributing to this run.
     foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests')) {

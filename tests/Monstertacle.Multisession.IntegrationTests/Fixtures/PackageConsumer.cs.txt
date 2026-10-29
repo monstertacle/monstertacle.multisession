@@ -1,0 +1,141 @@
+using System.Collections.Concurrent;
+using System.Globalization;
+using System.Text.Json;
+using Monstertacle.Multisession;
+using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Storage.Sqlite;
+
+namespace PackageConsumer;
+
+internal static class Program
+{
+    private static async Task<int> Main(string[] args)
+    {
+        try
+        {
+            await RunAsync(args[0]);
+            Console.WriteLine(JsonSerializer.Serialize(new { Status = "PASS", Sessions = 2, Requests = 5, ReopenedRequests = 5 }));
+            return 0;
+        }
+        catch (Exception failure)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(new { Status = "FAIL", Category = failure is SessionOperationException known ? known.Failure.Code.ToString() : failure.GetType().Name }));
+            return 2;
+        }
+    }
+    private static async Task RunAsync(string directory)
+    {
+        Guid scope = Guid.NewGuid();
+        await using NativeLease lease = NativeLease.CreateNew(directory);
+        RuntimeOptions options = new() { StateDirectory = directory, Retention = new(true, null), MaxConcurrentRequests = 2 };
+        OwnProvider provider = new();
+        await using ISessionStore store = await SqliteStoreFactory.CreateNewAsync(lease, scope, options, CancellationToken.None);
+        await using SessionRuntime runtime = new(store, lease, [new("own", "package-consumer", 1, provider)],
+            [new("own", "own", "opaque-model", ExecutionKind.ModelResponse, new("fixed", new Dictionary<string, string>()))]);
+        await runtime.StartAsync(options, CancellationToken.None);
+        SessionSnapshot a = await runtime.Sessions.CreateSessionAsync("own", new(null, null), CancellationToken.None);
+        SessionSnapshot b = await runtime.Sessions.CreateSessionAsync("own", new(null, null), CancellationToken.None);
+        RequestReceipt firstA = await SubmitAsync(runtime, a.SessionId, "first-a");
+        RequestReceipt firstB = await SubmitAsync(runtime, b.SessionId, "first-b");
+        try { await provider.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); }
+        finally { provider.Release.TrySetResult(); }
+        await RequireOutputAsync(runtime, firstA, "first-a");
+        await RequireOutputAsync(runtime, firstB, "first-b");
+        RequestReceipt followA = await SubmitAsync(runtime, a.SessionId, "follow-a");
+        RequestReceipt followB = await SubmitAsync(runtime, b.SessionId, "follow-b");
+        await RequireOutputAsync(runtime, followA, "follow-a");
+        await RequireOutputAsync(runtime, followB, "follow-b");
+        RequestReceipt delayed = await SubmitAsync(runtime, a.SessionId, "hold");
+        await provider.Held.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        await runtime.Requests.CancelRequestAsync(delayed.RequestId, CancellationToken.None);
+        RequestSnapshot cancelled = await EndAsync(runtime, delayed.RequestId);
+        Require(cancelled.State == RequestState.Cancelled && cancelled.Certainty == ExecutionCertainty.ConfirmedEnded);
+        Page<HistoryEntry> history = await runtime.Sessions.ReadHistoryAsync(b.SessionId, 10, null, CancellationToken.None);
+        Require(history.Items.Select(item => item.RequestId).SequenceEqual(new[] { firstB.RequestId, followB.RequestId }));
+        Require(provider.Calls == 5);
+        await runtime.StopAsync(TimeSpan.FromSeconds(10), CancellationToken.None);
+        Require(runtime.Completion.IsCompletedSuccessfully && !lease.IsHeld);
+        await using NativeLease reopened = NativeLease.OpenExisting(directory);
+        await using ISessionStore recovered = await SqliteStoreFactory.OpenExistingAsync(reopened, scope, options, CancellationToken.None);
+        await recovered.StartAsync(reopened, CancellationToken.None);
+        foreach (Guid id in new[] { firstA.RequestId, firstB.RequestId, followA.RequestId, followB.RequestId, delayed.RequestId })
+        {
+            RequestSnapshot? request = await recovered.GetRequestAsync(id, CancellationToken.None);
+            Require(request?.State is RequestState.Succeeded or RequestState.Cancelled && request.Certainty == ExecutionCertainty.ConfirmedEnded);
+        }
+        Require((await recovered.GetRuntimeStatisticsAsync(CancellationToken.None)).OccupiedReservations == 0);
+    }
+    private static ValueTask<RequestReceipt> SubmitAsync(SessionRuntime runtime, Guid session, string input)
+        => runtime.Requests.SubmitAsync(new(session, input, TimeSpan.FromSeconds(30), null, false), CancellationToken.None);
+    private static async Task RequireOutputAsync(SessionRuntime runtime, RequestReceipt receipt, string input)
+    {
+        RequestSnapshot result = await EndAsync(runtime, receipt.RequestId);
+        Require(result.State == RequestState.Succeeded && result.Result?.Output == "own:" + input);
+    }
+    private static async Task<RequestSnapshot> EndAsync(SessionRuntime runtime, Guid id)
+    {
+        using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(30));
+        while (true)
+        {
+            RequestSnapshot request = await runtime.Requests.GetRequestAsync(id, deadline.Token) ?? throw new InvalidOperationException("Missing request.");
+            if (request.State is not (RequestState.Queued or RequestState.Running)) { return request; }
+            await Task.Delay(10, deadline.Token);
+        }
+    }
+    private static void Require(bool condition)
+    {
+        if (!condition) { throw new InvalidOperationException("Public consumer contract did not pass."); }
+    }
+}
+
+internal sealed class OwnProvider : ISessionProvider
+{
+    private readonly ConcurrentDictionary<Guid, int> _heads = new();
+    private int _firsts;
+    private int _calls;
+    internal int Calls => Volatile.Read(ref _calls);
+    internal TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal TaskCompletionSource Held { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public ProviderCapabilities Capabilities { get; } = new(true, false, false, false, false);
+    public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        if (!_heads.TryAdd(context.SessionId, 0)) { throw new InvalidOperationException("Duplicate session."); }
+        return ValueTask.FromResult(new ProviderBinding("package-consumer", 1, "own/" + context.SessionId.ToString("N"), "0"));
+    }
+    public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(binding);
+    }
+    public async ValueTask<ProviderReply> SendAsync(ProviderCall call, ProviderBinding binding, Func<ProviderObservation, CancellationToken, ValueTask> observe, CancellationToken token)
+    {
+        Interlocked.Increment(ref _calls);
+        int head = _heads[call.Session.SessionId];
+        if (binding.SessionReference != "own/" + call.Session.SessionId.ToString("N") || binding.ContinuationState != head.ToString(CultureInfo.InvariantCulture))
+        {
+            throw new InvalidOperationException("Changed native identity or head.");
+        }
+        await observe(new(ProviderObservationKind.OperationAccepted, "own-operation/" + call.DispatchId.ToString("N")), token);
+        if (head == 0)
+        {
+            if (Interlocked.Increment(ref _firsts) == 2) { Entered.TrySetResult(); }
+            await Release.Task.WaitAsync(token);
+        }
+        if (call.Input == "hold")
+        {
+            Held.TrySetResult();
+            try { await Task.Delay(Timeout.InfiniteTimeSpan, token); }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                return new(RequestState.Cancelled, ExecutionCertainty.ConfirmedEnded, "", false, binding, new(ErrorCode.Cancelled, ExecutionCertainty.ConfirmedEnded));
+            }
+        }
+        _heads[call.Session.SessionId] = checked(head + 1);
+        return new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, "own:" + call.Input, true,
+            binding with { ContinuationState = (head + 1).ToString(CultureInfo.InvariantCulture) }, null);
+    }
+    public ValueTask<ProviderReply> InspectAsync(ProviderSessionContext context, string operationId, CancellationToken token) => throw new NotSupportedException();
+    public ValueTask<ProviderReply> CancelAsync(ProviderSessionContext context, string operationId, CancellationToken token) => throw new NotSupportedException();
+}

@@ -536,3 +536,12 @@ Sourcehash 3a9fd0d19eae5743832fac534a4b198e038a22831a65ca6105a9e75748b92ad9.
 Codemetr 423 Dateien/440 Typen ohne Befund. Tatsächlicher Stundenlauf mit
 gefrorener Binärkopie begonnen, Ergebnis ausstehend und kein finaler Releasebeleg.
 Paketierung/Frischkonsum und restliche Aufgaben werden parallel dazu fortgesetzt.
+
+2026-10-29T19:45:52Z: T095/T096 lokal erfüllt: sechs Pakete 0.1.0 mit geprüften
+Metadaten/Inhalt; echter frischer NuGet-Konsument mit eigenem Adapter und fünf
+Requests einschließlich Cancel/Stop/Wiederöffnung grün. Digests und Grenzen in
+packages.md, package-consumer.md und package-consumer-manifest.json. Volltor
+linux/15b459ed027a487a84e16788972d8675: 990 Tests, 97.5677 %, Sourcehash
+ee3b9c21381727066e30f34af464fe99c424bf5fa9b904ec73f45d34845c6396.
+Hashumfang um tatsächliche Paketinputs erweitert, zuerst rot abgesichert.
+Windows-Paketlauf, Produktlizenz und finale identische Nachweise bleiben offen.

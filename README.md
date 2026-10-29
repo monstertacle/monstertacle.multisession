@@ -1,8 +1,30 @@
 # Monstertacle.Multisession
 
 Providerneutrale C#/.NET-Bibliotheken zur Verwaltung paralleler Agent-Sitzungen.
-**In Entwicklung, nicht produktionsreif.** SQLite-Persistenz, vollständiger Lebenszyklus,
-native Plattformimplementierungen und Herstelleradapter sind noch nicht vollständig umgesetzt.
+**In Entwicklung, keine Produktfreigabe.** SQLite-Persistenz, native Windows-/Linux-Leases,
+OpenAI-/Gemini-Adapter sowie Cancel, Stop und Recovery sind implementiert.
+Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
+der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
+
+## Lokale Pakete 0.1.0
+
+Sechs Bibliotheken werden lokal gepackt: `Common`, `Storage.Sqlite`, `Linux`,
+`Windows`, `Providers.OpenAI` und `Providers.Gemini`, jeweils mit dem Präfix
+`Monstertacle.Multisession.`. Testprojekte und ValidationHost sind keine Pakete.
+Es erfolgt keine Veröffentlichung. Die Produktlizenz ist vor einer Veröffentlichung
+gesondert festzulegen; hier wird keine Nutzungsfreigabe erfunden.
+
+```powershell
+dotnet build Monstertacle.Multisession.slnx -c Release --no-restore
+dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.1.0
+pwsh -NoProfile -File eng/Test-PackageLayout.ps1
+```
+
+Eine Anwendung referenziert `Common`, `Storage.Sqlite` und genau ihr natives
+Plattformpaket. Unter Windows ist `net10.0-windows`, unter Linux `net10.0` zu
+verwenden. Herstelleradapter sind optional; eigene Adapter implementieren
+`ISessionProvider` ausschließlich über die öffentlichen Verträge.
+Die Bibliothek wird im Prozess eingebettet und benötigt keinen zusätzlichen Dienst.
 
 ## Entwicklungsumgebung und Prüfungen
 
@@ -40,9 +62,10 @@ Nachweise und verbleibende Abnahmegrenzen stehen in
 [tdd-us3.md](specs/001-agent-multisession/evidence/tdd-us3.md) und
 [tdd-us5.md](specs/001-agent-multisession/evidence/tdd-us5.md).
 Bootstrap-Optionsabgleich und ausdrückliche lokale Retention/Löschung sind ebenfalls umgesetzt;
-ihre vollständigen Abnahmegrenzen bleiben in den Tasks sichtbar. Als Nächstes folgen die
-verbleibenden Speicherfehlerproben, Diagnostik sowie native Plattform- und Konsumabnahmen. Der kontrollierte Store bleibt eine
-Testprojektion. Keine Produktfreigabe.
+ihre vollständigen Abnahmegrenzen bleiben in den Tasks sichtbar. Speicherfehlerproben,
+Diagnostik und native Prozessprüfungen sind vorhanden; Paketkonsum und finale
+Abnahmen stehen im Arbeitsnachweis. Der kontrollierte Store bleibt eine Testprojektion.
+Keine Produktfreigabe.
 
 1. Eigenen Arbeitsbranch aus dem aktuellen Remote-Stand erstellen; keine parallelen
    Änderungen mehrerer Agenten im selben Arbeitsbaum.

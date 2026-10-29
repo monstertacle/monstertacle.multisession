@@ -53,7 +53,5 @@ public sealed record RuntimeOptions
     }
 
     private bool HasExplicitRetention()
-        => Retention is { RetainUntilExplicitDeletion: true, Duration: null }
-            || (Retention is { RetainUntilExplicitDeletion: false, Duration: { } duration }
-                && duration > TimeSpan.Zero && duration < TimeSpan.MaxValue);
+        => Retention?.IsValid == true;
 }

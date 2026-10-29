@@ -40,4 +40,17 @@ internal sealed class ControlledDispatchState
             snapshot.Sequence, snapshot.Submission.Input, reply)
         { HistoryOrdinal = ordinal, HistoryId = Guid.NewGuid() });
     }
+
+    public void DeleteSession(Guid sessionId)
+    {
+        Guid[] dispatches = Snapshots.Where(item => item.Value.Session.SessionId == sessionId).Select(item => item.Key).ToArray();
+        foreach (Guid dispatch in dispatches)
+        {
+            _cancellationRequests.Remove(Snapshots[dispatch].Reservation.RequestId);
+            Snapshots.Remove(dispatch);
+        }
+        _observations.RemoveAll(item => dispatches.Contains(item.DispatchId));
+        _history.RemoveAll(item => item.SessionId == sessionId);
+        _historyOrdinals.Remove(sessionId);
+    }
 }

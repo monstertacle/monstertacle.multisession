@@ -244,3 +244,21 @@ seine Runtime dieselbe Konfiguration. Options werden nicht im Schema ersetzt ode
 überschrieben. Ein direkter Storeconsumer verwendet bereits seine ausdrücklich validierte
 Factorykonfiguration. Scheitert die Runtime vor erfolgreicher Storevorbereitung, verbleiben
 Store und Lease im Eigentum des Hosts. Zweitbesitz bleibt StoreAlreadyOwned.
+
+## 7. Ausdrückliche lokale Löschung und Retention
+
+ISessionRetentionStore.DeleteClosedSessionAsync prüft und löscht den lokalen Teilgraph
+atomar. SessionCatalog.DeleteSessionAsync delegiert über den begrenzten SessionDeletion-
+Kern; keine Provideroperation ist daran beteiligt. Closed und ClosedUtc reichen allein
+nicht: dieselbe aktuelle Prüfung für aktive/ungewisse Anfragen, Reservierungen und offene
+Fälle wird in der Löschtransaktion erneut ausgeführt. Ineligible SessionBlocked, fehlende
+Session NotFound, keine teilweise bestätigte Löschung nach Speicherfehler.
+
+RetainUntilExplicitDeletion erlaubt den ausdrücklichen Delete ohne Zeitfrist. Bei Duration
+ist die volle Frist ab ClosedUtc inklusive abzuwarten; währenddessen bleiben Inhalte
+abfragbar. Es gibt keinen automatischen Löschlauf beim Start, Stop oder Fristablauf. Der
+Host löst Delete aus. Factory- und Runtimepolicy sind gemäß Abschnitt6 identisch; ein
+explizites Reopen darf eine neue gültige Hostkonfiguration wählen. Löschung entfernt auch
+lokale Resultate, Historie, freigegebene Reservierungen sowie aufgelöste Fälle/Entscheidungen
+nur dieser Sitzung. Andere Sessions und Storemetadaten bleiben erhalten. Keine Zusage
+physischer SQLite-Seitensäuberung, externer Herstellerlöschung oder Backupentfernung.

@@ -7,6 +7,7 @@ internal sealed class ControlledStoreState
 {
     public bool Started { get; set; }
     public bool Accepting { get; set; } = true;
+    public RuntimeOptions? RuntimeOptions { get; set; }
     public Guid StoreId { get; } = Guid.NewGuid();
     public object Gate { get; } = new();
     public Dictionary<Guid, SessionSnapshot> Sessions { get; } = [];

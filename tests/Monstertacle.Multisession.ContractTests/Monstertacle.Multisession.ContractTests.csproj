@@ -13,6 +13,7 @@
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledStoreBootstrap.cs" Link="Fixtures/ControlledStoreBootstrap.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledRequestCancellation.cs" Link="Fixtures/ControlledRequestCancellation.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledSessionClosure.cs" Link="Fixtures/ControlledSessionClosure.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledSessionDeletion.cs" Link="Fixtures/ControlledSessionDeletion.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledRequestFinalization.cs" Link="Fixtures/ControlledRequestFinalization.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledStoreState.cs" Link="Fixtures/ControlledStoreState.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/ControlledPageProjection.cs" Link="Fixtures/ControlledPageProjection.cs" />

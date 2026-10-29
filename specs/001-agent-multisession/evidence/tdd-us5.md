@@ -573,3 +573,48 @@ Der vorherige Close-/Stop-Sammelcommit9e4dfa0 ist inzwischen auf Windows/Ubuntu 
 quality40882554552 und codemetr-guard40882554553. Damit ist der reale Windowsbefund von
 42fc164 am korrigierten Kopf nachgeprüft, keine Wiederholung des alten roten Laufs als
 neuer Codebeleg ausgegeben. Gesamte Produkt-/Zielhost-/Livefreigabe bleibt offen.
+
+## T054/T064: ausdrückliche lokale Retention und Löschung
+
+Architektur vor Code architecture/2026-10-29-local-retention.md, Ausgang6b0ed03.
+retention-final-red: 3/5 Unitfälle fachlich rot an der ausführbaren reinen Signatur
+(zulässiger expliziter Modus und inklusive Fristgrenze), zwei ablehnende Fälle schon grün.
+8/8 echte SQLfälle fachlich rot am Delete-Stub. Vorheriger erster Durchlauf hatte eine
+unbenutzte using-Direktive im neuen SQLtest; dessen Analyzerfehler ist kein Rednachweis.
+
+Green: SessionRetentionPolicy/SessionDeletion und schmale ISessionRetentionStore-Facette.
+Nur Closed mit ClosedUtc, ohne aktuelle aktive/ungewisse Arbeit und mit erfüllter expliziter
+Regel. Frist wird einschließlich exaktem Tick und verschiedenen UTCoffset-Schreibweisen
+geprüft; Subtraktion vermeidet Overflow langer zulässiger Fristen. Keine automatische
+Löschung, auch nicht beim Reopen einer bereits abgelaufenen Sitzung. Erst ausdrücklicher
+Aufruf. Gemeinsame Regelgültigkeit aus Contracts.RetentionPolicy.IsValid statt doppelter
+Optionsvalidierung; 53 Optionsfälle vor reinem Refactoring grün, danach58 Options-/Retention-
+Unitfälle grün. Erstes komplettes Formatgate fand einen privaten Testfeldnamen ohne Präfix;
+mechanisch korrigiert, keine fachliche Fehlfarbe behauptet.
+
+SQLite prüft Eligibility und löscht Decisions/Cases/History/Results/Reservations/Requests/
+Session in FKkonformer Reihenfolge innerhalb einer Transaktion. Test löscht eine geschlossene
+Session mit aufgelöster Unknown-Historie und Entscheidung; eine unabhängige Session mit
+vollständigem eigenem Graphen und eigener Entscheidung bleibt in allen sechs Tabellen
+vorhanden und öffentlich lesbar. Originale IDs nach Reopen erhalten, gelöschte IDs null/
+NotFound. Ein echter Fehler nach ausgeführten Kindlöschungen rollt alle Zeilen zurück.
+Caller-Cancel vor Write ohne Änderung, junge7-Tage-Regel blockiert, abgelaufene kurze Regel
+und expliziter Modus erlauben. Sogar manipuliertes Closed mit Running/Unknown hält Daten/
+Reservation. Keine Provider-/Backup-/physische Erasurebehauptung. Zusätzlicher sofort grüner
+Vertragsfall prüft generische Runtime-Close/Deletefacetten mit ausdrücklich gesetzter
+Hostpolicy; kein weiterer Redzyklus. Kontrollierte Projektion einschließlich Scope für
+Entscheidungs-/Dispatchhistorie angepasst, kein Teststub verbleibt.
+
+Vollständig lokal grün artifacts/quality/linux/a5b4381b7f10494b8b60896e1840bca4,
+SourceHash983387180a750b9087fc3f4c821eff4ed78ae7c13927da909a44ed8414e5f369.
+662 Tests (288 Unit,203 Contract,170 Integration,1 Plattform), null Fehler/Skips;
+2271/2343 Produktzeilen=96,9270 %. Codemetr302 Dateien/308 Typen, null Verstöße/
+Parsefehler/Skips. Logs artifacts/tdd/retention-{final-red,green,quality}.log und
+retention-options-pre-refactor.log; Fullbefehl run-capped.sh plus Format/Guard/Invoke-Quality.
+NativeCI des neuen Stands noch erforderlich; T054 verbleiben echte Read-only-/Disk-full-
+Proben und T065/T068/T069 die vollständige Speicherauditmatrix. T064 bis zugehöriger Abnahme
+weiter offen. Löschläufe ausschließlich in selbst erzeugten privaten Testfixtures.
+
+T118 jetzt abgeschlossen: derselbe Optionscommit6b0ed039d56763159ab3815a654c3f6a5573ffda
+ist nativ Windows/Ubuntu grün (quality40883956319, Guard40883956192). Damit ist die konkrete
+Optionsabhängigkeit vor Retentionabnahme erledigt; tasks.md entsprechend markiert.

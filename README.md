@@ -39,8 +39,9 @@ Crash-Recovery sowie Cancel, Stop und Close sind inzwischen mit echten lokalen S
 Nachweise und verbleibende Abnahmegrenzen stehen in
 [tdd-us3.md](specs/001-agent-multisession/evidence/tdd-us3.md) und
 [tdd-us5.md](specs/001-agent-multisession/evidence/tdd-us5.md).
-Als Nächstes folgen der verbindliche Bootstrap-Optionsabgleich, lokale Retention/Löschung,
-Diagnostik sowie native Plattform- und Konsumabnahmen. Der kontrollierte Store bleibt eine
+Bootstrap-Optionsabgleich und ausdrückliche lokale Retention/Löschung sind ebenfalls umgesetzt;
+ihre vollständigen Abnahmegrenzen bleiben in den Tasks sichtbar. Als Nächstes folgen die
+verbleibenden Speicherfehlerproben, Diagnostik sowie native Plattform- und Konsumabnahmen. Der kontrollierte Store bleibt eine
 Testprojektion. Keine Produktfreigabe.
 
 1. Eigenen Arbeitsbranch aus dem aktuellen Remote-Stand erstellen; keine parallelen

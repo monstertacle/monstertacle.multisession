@@ -3,7 +3,7 @@ using Monstertacle.Multisession.Queries;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
-internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, IAsyncDisposable
+internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, ISessionRetentionStore, IAsyncDisposable
 {
     private bool _ownsState;
     private bool _disposed;
@@ -17,6 +17,11 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
         if (ValidatingOptions is not null) { await ValidatingOptions(options, cancellationToken); }
         cancellationToken.ThrowIfCancellationRequested();
         if (options.Validate() is { } failure) { throw new SessionOperationException(failure); }
+        lock (State.Gate)
+        {
+            if (State.Started) { throw new SessionOperationException(new(ErrorCode.StoreAlreadyOwned)); }
+            State.RuntimeOptions = options;
+        }
     }
 
     ValueTask IStoreBootstrap.StartAsync(IStateDirectoryLease lease, CancellationToken cancellationToken)
@@ -70,6 +75,13 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (State.Gate) { return ValueTask.FromResult(ControlledSessionClosure.Refresh(State, sessionId)); }
+    }
+
+    ValueTask ISessionRetentionStore.DeleteClosedSessionAsync(Guid sessionId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate) { ControlledSessionDeletion.Apply(State, sessionId); }
+        return ValueTask.CompletedTask;
     }
 
     async ValueTask IAsyncDisposable.DisposeAsync()

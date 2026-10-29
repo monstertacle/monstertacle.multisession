@@ -75,7 +75,7 @@ public sealed class SessionCatalog : ISessions
         => new SessionClosure(_store, _clock).CloseAsync(sessionId, cancellationToken);
     /// <inheritdoc />
     public ValueTask DeleteSessionAsync(Guid sessionId, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionDeletion(_store, _clock).DeleteAsync(sessionId, cancellationToken);
 
     private async ValueTask<SessionOperationException> BlockUncertainOpeningAsync(Guid sessionId, ErrorCode code)
     {

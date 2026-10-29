@@ -3,7 +3,7 @@ using Monstertacle.Multisession.Contracts;
 namespace Monstertacle.Multisession.Storage.Sqlite;
 
 // Serial read delegation; dispatch/history/recovery ports remain separate behavioral cycles.
-internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, IAsyncDisposable
+internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, ISessionRetentionStore, IAsyncDisposable
 {
     protected SqliteStoreState State { get; } = state;
 
@@ -40,6 +40,9 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
         => new(State.Queue.ExecuteAsync(connection => SessionCloseTransactions.Begin(connection, State, sessionId, cancellationToken), cancellationToken));
     ValueTask<SessionSnapshot> ISessionClosureStore.RefreshSessionCloseAsync(Guid sessionId, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => SessionCloseTransactions.Refresh(connection, State, sessionId, cancellationToken), cancellationToken));
+
+    ValueTask ISessionRetentionStore.DeleteClosedSessionAsync(Guid sessionId, CancellationToken cancellationToken)
+        => State.Queue.WriteAsync(connection => RetentionTransactions.Delete(connection, State, sessionId, cancellationToken), cancellationToken);
 
     public ValueTask DisposeAsync() => State.Queue.DisposeAsync();
 }

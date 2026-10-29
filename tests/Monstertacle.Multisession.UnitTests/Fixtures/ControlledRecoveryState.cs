@@ -7,7 +7,7 @@ namespace Monstertacle.Multisession.UnitTests.Fixtures;
 internal sealed class ControlledRecoveryState
 {
     private readonly Dictionary<RecoveryTarget, RecoveryCaseSnapshot> _cases = [];
-    private readonly HashSet<Guid> _decisions = [];
+    private readonly Dictionary<Guid, RecoveryTarget> _decisions = [];
 
     public RecoveryCaseSnapshot? Read(RecoveryTarget target) => _cases.GetValueOrDefault(target);
     public IReadOnlyList<RecoveryCaseSnapshot> OpenCases => _cases.Values.Where(item => item.Status == RecoveryCaseStatus.Open)
@@ -32,7 +32,7 @@ internal sealed class ControlledRecoveryState
         Dictionary<Guid, ExecutionReservation> reservations, DateTimeOffset now)
     {
         if (!_cases.TryGetValue(decision.Target, out RecoveryCaseSnapshot? item)) { throw Failure(ErrorCode.NotFound); }
-        if (_decisions.Contains(decision.DecisionId) || decision.ExpectedRevision != item.Revision || item.Status != RecoveryCaseStatus.Open)
+        if (_decisions.ContainsKey(decision.DecisionId) || decision.ExpectedRevision != item.Revision || item.Status != RecoveryCaseStatus.Open)
         {
             throw Failure(ErrorCode.RevisionConflict);
         }
@@ -79,7 +79,14 @@ internal sealed class ControlledRecoveryState
         }
         else { throw Failure(ErrorCode.InvalidInput); }
         _cases[item.Target] = updated;
-        _decisions.Add(decision.DecisionId);
+        _decisions.Add(decision.DecisionId, item.Target);
+    }
+
+    public void DeleteSession(Guid sessionId)
+    {
+        HashSet<RecoveryTarget> targets = _cases.Values.Where(item => item.SessionId == sessionId).Select(item => item.Target).ToHashSet();
+        foreach (Guid id in _decisions.Where(item => targets.Contains(item.Value)).Select(item => item.Key).ToArray()) { _decisions.Remove(id); }
+        foreach (RecoveryTarget target in targets) { _cases.Remove(target); }
     }
 
     private static bool Compatible(ProviderBinding? original, ProviderBinding? reopened)

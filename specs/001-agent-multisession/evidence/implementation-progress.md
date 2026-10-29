@@ -233,3 +233,15 @@ bleiben erlaubt. 648 Tests lokal vollständig grün,96,8385 % Gesamtdeckung; Cod
 Dateien/300 Typen sauber. Lauf fd5ba5660eef44b09dd2251bcbb3e9d7, tdd-us5.md. T118 bis
 nativeCI offen, danach T054/T064 lokale Retention/Löschung. Close-/Stop-Sammelcommit
 9e4dfa0 ist inzwischen Windows/Ubuntu-CI-grün (quality40882554552, Guard40882554553).
+
+### 2026-10-29T13:56:43Z: Explizite lokale Retention/Löschung implementiert
+
+T054/T064: nur eligible Closed-Sitzungen, volle konfigurierte Frist ab ClosedUtc oder
+ausdrücklicher RetainUntilExplicitDeletion-Modus. Kein automatischer Löschlauf. Prüfung
+aktiver/ungewisser Arbeit und Löschung des ganzen lokalen Graphen atomar, unabhängige Daten
+unverändert. Drei Unit- und acht SQLfälle zuerst fachlich rot, dann Green; Rollback nach
+Teildelete, Reopen, falscher Closed-Marker und exakte Zeitgrenzen abgedeckt. 662 Tests lokal
+grün,96,9270 % Abdeckung, Codemetr302 Dateien/308 Typen sauber. Lauf
+a5b4381b7f10494b8b60896e1840bca4, tdd-us5.md. Neue nativeCI sowie restliche T054-
+Speicherfehlerproben vor vollständiger Taskabnahme. Ausschließlich eigene Testdaten gelöscht.
+T118 ist mit nativen CIbelegen des identischen Kopfes6b0ed03 abgeschlossen und markiert.

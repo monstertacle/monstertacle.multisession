@@ -12,6 +12,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
     private RuntimeComponents? _components;
     private Task[] _workers = [];
     private Task _completion = Task.CompletedTask;
+    private readonly RuntimeShutdown _shutdown = new(host.Store);
     private CancellationTokenSource? _stop;
     private SemaphoreSlim? _signal;
     private volatile RuntimeState _state;
@@ -105,23 +106,47 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
     internal async ValueTask StopAsync(TimeSpan timeout, CancellationToken cancellationToken)
     {
         if (!ExecutionDeadline.IsValid(timeout)) { throw Error(ErrorCode.InvalidInput); }
+        using CancellationTokenSource deadline = new(timeout, host.Clock);
+        using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
         lock (_gate)
         {
-            if (_state is RuntimeState.Stopped or RuntimeState.Disposed) { return; }
+            if (_state == RuntimeState.Disposed) { return; }
+            if (_state == RuntimeState.Stopped) { ThrowStopFailure(); return; }
             if (_state is RuntimeState.Created or RuntimeState.Starting) { throw Error(ErrorCode.InvalidConfiguration); }
             _state = RuntimeState.Stopping;
         }
-        using CancellationTokenSource deadline = new(timeout, host.Clock);
-        using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
+        try { await _shutdown.EnterAsync(linked.Token); }
+        catch (Exception) { throw Error(ErrorCode.StorageUnavailable); }
+        try
+        {
+            if (_state is RuntimeState.Stopped or RuntimeState.Disposed) { ThrowStopFailure(); return; }
+            await CompleteStopAsync(linked.Token);
+        }
+        finally { _shutdown.Release(); }
+    }
+
+    private async Task CompleteStopAsync(CancellationToken token)
+    {
         SessionOperationException? failure = null;
         try
         {
-            await host.Store.StopAcceptanceAsync(linked.Token).AsTask().WaitAsync(linked.Token);
-            _stop!.Cancel();
-            await _completion.WaitAsync(linked.Token);
+            await host.Store.StopAcceptanceAsync(token).AsTask().WaitAsync(token);
+            StopWorkers();
+            await _shutdown.CancelQueuedAsync(token);
         }
         catch (Exception) { failure = Error(ErrorCode.StorageUnavailable); }
-        if (_completion.IsCompleted) { await CleanupAsync(); }
+        try
+        {
+            StopWorkers();
+            await _completion.WaitAsync(token);
+        }
+        catch (Exception) { failure = Error(ErrorCode.StorageUnavailable); }
+        if (_completion.IsCompleted)
+        {
+            try { await CleanupAsync().WaitAsync(token); }
+            catch (Exception) { failure = Error(ErrorCode.StorageUnavailable); }
+        }
+        _shutdown.Failure = failure?.Failure;
         if (failure is not null) { throw failure; }
     }
 
@@ -131,6 +156,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         if (_state == RuntimeState.Created || _components is null)
         {
             _state = RuntimeState.Disposed;
+            _shutdown.Dispose();
             return; // Dependencies remain host-owned until store preparation succeeds.
         }
         if (_state is not (RuntimeState.Stopped or RuntimeState.Disposed))
@@ -138,9 +164,23 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             await StopAsync(Components.Options.ShutdownTimeout, CancellationToken.None);
         }
         _state = RuntimeState.Disposed;
+        _shutdown.Dispose();
     }
 
-    private async ValueTask CleanupAsync()
+    private void StopWorkers()
+    {
+        lock (_gate)
+        {
+            if (_state is not (RuntimeState.Stopped or RuntimeState.Disposed)) { _stop?.Cancel(); }
+        }
+    }
+
+    private Task CleanupAsync()
+    {
+        lock (_gate) { return _shutdown.Cleanup ??= CleanupCoreAsync(); }
+    }
+
+    private async Task CleanupCoreAsync()
     {
         await host.Store.DisposeAsync();
         await host.Lease.DisposeAsync();
@@ -154,4 +194,9 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
 
     private static SessionOperationException Error(ErrorCode code)
         => new(new PublicError(code, code == ErrorCode.StorageUnavailable ? ExecutionCertainty.Unknown : ExecutionCertainty.NotStarted));
+
+    private void ThrowStopFailure()
+    {
+        if (_shutdown.Failure is { } failure) { throw new SessionOperationException(failure); }
+    }
 }

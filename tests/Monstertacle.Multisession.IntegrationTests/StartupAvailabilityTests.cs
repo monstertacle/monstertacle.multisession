@@ -32,17 +32,25 @@ public sealed class StartupAvailabilityTests
         Assert.Equal(RequestState.Queued, (await host.Runtime.Requests.GetRequestAsync(blocked.RequestId, CancellationToken.None))?.State);
     }
 
-    /// <summary>Restoring the same adapter configuration resumes the preserved queued identity without recreating a native session.</summary>
-    [Fact]
-    public async Task RepairsOnlyItsOwnConfigurationBlockAfterRegistrationReturns()
+    /// <summary>Restoring configuration resumes preserved queued input, while controlled-stop cancellations require a new explicit request.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RepairsOnlyItsOwnConfigurationBlockAfterRegistrationReturns(bool controlledStop)
     {
         await using AdmissionStoreFixture seed = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await seed.CreateSessionAsync();
         RequestReceipt accepted = await seed.Store.CommitAcceptanceAsync(new(Guid.NewGuid(), new(session.SessionId, "preserved", TimeSpan.FromSeconds(10), null, false)), 100, CancellationToken.None);
-        await seed.Store.DisposeAsync();
-        await using (SqliteRuntimeFixture missing = await SqliteRuntimeFixture.OpenAsync(seed.Directory, []))
+        if (controlledStop)
         {
+            await seed.Store.DisposeAsync();
+            await using SqliteRuntimeFixture missing = await SqliteRuntimeFixture.OpenAsync(seed.Directory, []);
             Assert.True((await missing.Runtime.Sessions.GetSessionAsync(session.SessionId, CancellationToken.None))?.ConfigurationUnavailable);
+        }
+        else
+        {
+            await seed.Store.CommitConfigurationAvailabilityAsync(session.SessionId, false, CancellationToken.None);
+            await seed.Store.DisposeAsync();
         }
         AdmissionProvider provider = new()
         {
@@ -50,6 +58,11 @@ public sealed class StartupAvailabilityTests
             Sending = (call, binding, observe, token) => ValueTask.FromResult(new ProviderReply(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, "continued", true, binding, null)),
         };
         await using SqliteRuntimeFixture restored = await SqliteRuntimeFixture.OpenAsync(seed.Directory, [new("connection-I", "fixture-adapter", 7, provider)]);
+        if (controlledStop)
+        {
+            Assert.Equal(RequestState.Cancelled, (await restored.Runtime.Requests.GetRequestAsync(accepted.RequestId, CancellationToken.None))?.State);
+            accepted = await restored.Runtime.Requests.SubmitAsync(new(session.SessionId, "explicit new input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        }
         Assert.Equal(RequestState.Succeeded, (await restored.CompletedAsync(accepted.RequestId)).State);
         SessionSnapshot saved = (await restored.Runtime.Sessions.GetSessionAsync(session.SessionId, CancellationToken.None))!;
         Assert.False(saved.ConfigurationUnavailable);

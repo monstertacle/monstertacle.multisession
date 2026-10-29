@@ -9,6 +9,7 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
     private bool _ownsState;
     private bool _disposed;
     protected abstract ControlledStoreState State { get; }
+    public Func<ValueTask>? Disposing { get; init; }
 
     ValueTask IStoreBootstrap.StartAsync(IStateDirectoryLease lease, CancellationToken cancellationToken)
     {
@@ -52,14 +53,14 @@ internal abstract class ControlledQueryStore : ISessionQueryStore, IStoreBootstr
     }
 
 
-    ValueTask IAsyncDisposable.DisposeAsync()
+    async ValueTask IAsyncDisposable.DisposeAsync()
     {
+        if (Disposing is not null) { await Disposing(); }
         lock (State.Gate)
         {
             if (_ownsState) { State.Started = false; State.Accepting = false; _ownsState = false; }
             _disposed = true;
         }
-        return ValueTask.CompletedTask;
     }
 
     async ValueTask<ReservedDispatch?> ISessionQueryStore.GetReservedDispatchAsync(Guid dispatchId, CancellationToken cancellationToken)

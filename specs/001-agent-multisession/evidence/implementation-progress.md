@@ -191,3 +191,15 @@ SQLruntime: bestätigter Cancel 108,499 ms und Freigabe; unbestätigt 1103,991 m
 Unknown-Slot erhalten, jeweils ursprüngliches Result nach Neustart. Nächster konkreter
 Auftrag T072/T078/T079: Stop finalisiert verbleibende Queued und Session-Close bleibt
 bei Unknown Closing; keine vollständige Produkt-/Storyabnahme behauptet.
+
+### 2026-10-29T13:08:18Z: Kontrollierter Stop finalisiert Queued
+
+T072/T078/T082: alle wartenden Anfragen über begrenzte Seiten dauerhaft Cancelled/
+NotStarted, aktive Sends bestätigt beendet oder Unknown reserviert. Stopannahme sofort
+gesperrt; begrenzter geteilter Cleanup und serialisierte Stopaufrufe. Schreibfehler und
+wiederholter fehlerhafter Stop bleiben sichtbar, Lease erst nach Storeabschluss frei.
+Fünf echte Redfälle inklusive Wiederholungsfehler, Green und korrigierte alte Dispose-/
+Crash-Annahme in tdd-us3.md. 626 Tests vollständig grün, 96,6905 % Gesamtdeckung,
+Codemetr 283 Dateien/289 Typen sauber; Qualitätslauf 3a17979ae310492b86e671119298bc1a.
+Stopmessungen 535,000 ms für102 Queued, 33,066 ms bestätigter und1004,673 ms unbestätigter
+aktiver Send. Anschließend T079 Session-Close, dann Lifecycle-/TDD-Abgleich vor Taskabschluss.

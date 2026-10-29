@@ -208,3 +208,47 @@ Vollständige T070/T071/T077-Abnahme braucht weiterhin Matrixaudit; T072/T078/T0
 implementieren Stop/Close, T085 dokumentiert vollständige SC-004-Messung. Keine vorzeitige
 Storyfreigabe. Vorheriger Commit 0f605eb Windows/Ubuntu-CI grün: quality 40876309454,
 codemetr-guard 40876309584.
+
+## T072/T078/T082: kontrollierter Stop mit dauerhaftem Queueabschluss
+
+Architektur vor Code architecture/2026-10-29-controlled-stop.md, Ausgang 7dd8bec.
+controlled-stop-red: 2/2 fachlich rot (102 wartende Einträge blieben Queued, realer
+Finalisierungsschreibfehler wurde ohne Fehlerantwort übergangen). stop-cleanup-red:
+2/2 fachlich rot (Cleanup ignorierte 200-ms-Frist bis zur 2-s-Testgrenze, parallele Stops
+riefen Storecleanup zweimal auf). Minimales Green danach 8 Ownership/Startup/Cleanup-
+Verträge und 2 echte SQLfälle. Weitere tatsächliche Redregression repeated-failed-stop-red:
+ein wiederholter Stop nach fehlgeschlagenem dauerhaften Abschluss behauptete Erfolg.
+
+RuntimeShutdown nutzt vorhandene begrenzte Session-/Requestseiten und atomaren Cancel;
+keine neue SQLfachregel/Storefacette. Stop sperrt vor erstem Await die Runtimeannahme,
+stoppt die Storeannahme und aktive Worker, finalisiert Queued unabhängig von ihren
+Konfigurations-/Recoveryblockierungen. Gemeinsame Stop-Serialisierung und Cleanupaufgabe,
+eigenes Callerbudget auch beim Warten/Cleanup. Fehler wird auch nach Ressourcenschluss
+gespeichert wiedergegeben. Lease erst nach Storeabschluss frei, keine implizite Löschung.
+Dispose nach bereits geschlossenem fehlerhaftem Stop bleibt Ressourcenoperation.
+
+Vollregression 3da07397cf89458ca2afbbc172b19dcf: ein Availabilitytest benutzte Runtime-Dispose
+als Queued-erhaltenden Crash, wodurch die jetzt korrekt abgebrochene Anfrage fälschlich
+Succeeded werden sollte. An den Vertragsquellen geprüft und in zwei Anforderungen aufgeteilt:
+Storegrenze ohne Runtime-Stop erhält Queued und dessen ID; kontrollierter Stop erhält Cancelled
+und setzt ausschließlich eine neue explizite Folgeanfrage ab. Keine Änderung der Startupregel
+und keine native Neueröffnung. Echte Prozesskill-Matrix weiter unverändert grün.
+Zwei sofort grüne neue Stopregressionen mit offenem Send/queued Followern ergänzen bereits
+zuvor rote Cancelpfade; sie sind keine zusätzlichen Redzyklen.
+
+Vollständig grün artifacts/quality/linux/3a17979ae310492b86e671119298bc1a,
+SourceHash be0a2622e88367de3f33724f86e5532c5c796f932e81a51ee13a5d2dd6525aee.
+626 Tests (283 Unit,201 Contract,141 Integration,1 Plattform), null Fehler/Skips;
+2162/2236 Produktzeilen = 96,6905 %. Codemetr 283 Dateien/289 Typen sauber.
+Monotone echte Stopmessungen im Integration-TRX: 102 Queued über zwei Requestseiten und
+zwei Sessions 535,000 ms; offener Send mit bestätigtem Ende 33,066 ms; unbestätigt
+1004,673 ms. Jeweils unter Default10s, ursprüngliche IDs und Resultate nach Reopen erhalten;
+Unknown behält genau seinen Slot, Follower sind NotStarted und wurden nie gesendet.
+Kontrollierter Cleanup über 200-ms-Callerbudget meldet StorageUnavailable, Lease bleibt
+bis tatsächlichem Storeabschluss gehalten. Befehle run-capped.sh plus Format/Guard/
+Invoke-Quality, artifacts/tdd/controlled-stop-{red,final-green,quality}.log und
+stop-cleanup-red.log. Qualitätslog enthält zusätzlich gezielten 9-Testvorlauf, der nicht
+zur vollständigen Testzahl addiert wird. Vorheriger 7dd8bec Windows/Ubuntu-CI grün:
+quality 40877481208, codemetr-guard 40877480850.
+T072/T078 bleiben bis abschließendem Lifecycleaudit und Close-Abnahme T079 offen;
+T085/T104 behalten vollständige finale SC-/Plattformfreigabe, keine Produktfreigabe.

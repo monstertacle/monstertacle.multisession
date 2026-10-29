@@ -1,5 +1,5 @@
 {
-  "SourceHash": "95780bfa75c745cd0adb804e0a1ac3dfcea6474169900c8ab402990248e40f5b",
-  "RequestedUtc": "2026-10-29T22:01:21.8305600+00:00",
-  "Purpose": "Native one-hour validation after canonical model and recovery isolation checks"
+  "SourceHash": "2c5fd5ef4be61fd1e03f4284729ee195838a2da5e2f7d96b90dec7adbb13ae5c",
+  "RequestedUtc": "2026-10-29T22:35:04.6683292+00:00",
+  "Purpose": "Native hour with canonical package hash validation in the quality candidate"
 }

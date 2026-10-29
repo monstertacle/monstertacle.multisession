@@ -294,3 +294,13 @@ innerhalb unveränderter40. Native Windowslauf40899122477 blieb rot:128MiB-Forma
 und zusätzliche Admission-/Stopfristfehler bei parallelen Integrationsfällen. Dieser
 Lauf ist keine native Abnahme. Windows-Testressourcen/Volumeformat konkret weiter
 untersuchen; Produktfristen und Speichergarantien werden dafür nicht aufgeweicht.
+
+Native Volume-Fixture exklusiv zu sonstigen xUnit-Tests gruppiert, damit globale
+Format-/Flushressourcen nicht mit Admission-/Stopfristproben konkurrieren. Native CI
+führt bei Windows-Torfehler danach eine begrenzte eigene64/128/256/512MiB-VHDformatdiagnose
+mit Prozessfristen und15sAbständen aus; nur frische Images, kein Befüllen, kein existierendes
+Volume. Berichte sind Diagnose, kein grünes Ersatzgate. PowerShellsyntax lokal geparst,
+Windowsausführung hier ausdrücklich NOT RUN. Architektur enthält echte vorherige
+Hostfehler und Quellenhashes. CA1711-Klassenbenennung im ersten lokalen Build korrigiert;
+dieser Compilefehler ist kein fachlicher Red. T054/T065/T071/T078/T104 behalten die
+konkreten nativen Format-/Deadlinebefunde im laufenden Gesamtauftrag.

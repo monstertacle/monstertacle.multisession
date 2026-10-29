@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>A real small full filesystem cannot confirm admission, erase a prior result or send new work.</summary>
+[Collection("Exclusive storage volume")]
 public sealed class DiskFullStorageTests(ITestOutputHelper output)
 {
     /// <summary>The child proves actual OS no-space pressure, then checks the public runtime and restored durable contents.</summary>

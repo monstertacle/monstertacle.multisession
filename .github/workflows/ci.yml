@@ -28,6 +28,10 @@ jobs:
       - name: Locked restore, build, format, tests, audit and 87 percent coverage
         shell: pwsh
         run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}'
+      - name: Diagnose bounded private VHD formatting after native failure
+        if: failure() && runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/Measure-WindowsVolumeFormatting.ps1
       - uses: actions/upload-artifact@v4
         if: always()
         with:

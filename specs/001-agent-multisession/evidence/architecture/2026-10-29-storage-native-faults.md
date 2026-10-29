@@ -97,3 +97,25 @@ Nächste isolierte Sondierung128MiB innerhalb bestehender harter128MiBGrenze; di
 filesystems vor Format liefert auf dem echten Host die Formatmöglichkeiten. Kein Fallenlassen
 von NTFS-ACL, kein Skip und kein Weiten des Füllerlimits. Wenn weiterhin Fehler, Diagnose
 am Host fortsetzen; dieser Zustand ist keine native Abnahme.
+
+## Echte Hostdiagnose statt weiterer Größenhypothesen
+
+Ausgang1366585, letzter nativer Lauf40899122477 zu903338d:128MiB scheitert ebenfalls
+mit parameterincorrect, obwohl filesystems NTFS mit512/1024/2048/4096/... als unterstützt
+meldet. Außerdem zusätzliche5sAdmission-/Stopfehler anderer parallel laufender SQLitefälle.
+Keine sichere Ursache bewiesen. Der Volumeformat-/Disk-full-Test beansprucht globale
+Windows-Diskmanagement- und physische Flushressourcen; xUnitcollection mit explizitem
+DisableParallelization verhindert gleichzeitige andere Tests, ändert keine Produktfrist.
+
+Für nächsten Windowsfehler führt CI nach dem beendeten Tor eine diagnostische eigene
+64/128/256/512MiB-VHDformatmatrix aus: nur frisch erzeugte eindeutige Images, kein Befüllen,
+niemals selectdisk/Format existierender Volumes; feste Prozessfristen,15sDiskpartabstände,
+Cleanup fokussiert ausschließlich eigenes zuvor nachweislich fehlendes Image. Private
+Sonden unter dev/.agenttemp, nur JSON/Textberichte nach artifacts. Jeder Formatfehler ist
+als Fehler/Exitcode im Bericht sichtbar, kein Ersetzen des roten Qualitätslaufs durch eine
+Diagnose. Kein globaler Sysctl-/ACL-/Quotaeingriff, kein Aufweichen des128MiB-Füllerlimits.
+Zunächst hier nur Syntax-/Linuxregression, tatsächliche Matrix ausschließlich nativ.
+Quellen vor Änderung gemessen2026-10-29T15:19:18Z: ci.yml
+4fb4450715c8f19dd83336573b06489c3f30a5cbe9c76f47255da035ac6ea036,
+DiskFullStorageTests6dc440cfef4bb20cd7f725f63da3c46e5483286cca118c59702c6914b75e8a1c,
+DiskFullWindowsVolumea963d7f2de2bc7a2da67725daae3382bdb9940c56568e2b3d34df50975299a2d.

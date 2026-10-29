@@ -57,3 +57,24 @@ Reopen-/Lazy-/Readretry-/Redirect-/Recoverytests müssen bestehen; nur tatsächl
 benötigte Modellmetadatenantworten an expliziten synthetischen HTTPfixtures ergänzen,
 keine Assertions entfernen. Privater Livezugang wird zu keiner Zeit aufgerufen.
 Full-Codemetr/87-%-Gesamtgate, native CI und Pakete für neuen Stand neu prüfen.
+
+## Kanonische Gemini-Modellressource: Nachzug vor Korrektur
+
+Gemessen 2026-10-29T21:53:57Z, Standd2a0c2f. GeminiSessionProvider SHA256
+0fa5900746de4851c83a76385f077c2da99e88888ce7da376f3b708e76620f19,
+GeminiProtocol42f8cf33a831e03e63d33ea71596d662aab4ea3548e47b85be187cfc7b5b2509.
+Die [stabile v1-Referenz](https://ai.google.dev/api/interactions-api-v1) nennt ModelOption
+auch als models/<id>; die bereits geprüfte Model-GET-Route erwartet models/<id> als
+Ressource. Unser neuer gemeinsamer Reader stellt models/ vor eine escaped opaque
+Kennung. Für bereits kanonisches Gemini models/<id> entsteht deshalb models/models%2F<id>.
+OpenAI-opaque Deploymentkennungen dürfen dagegen nicht umgeschrieben werden.
+
+Bestehender NativeModelAccess bleibt Transport-/Validierungsautorität. Nur der
+Gemini-Protokollrand entfernt ein bereits vorhandenes models/-Ressourcenpräfix für
+diesen Metadatenaufruf, nie für Context.ModelId/Generation/Binding. Bare Aliasse bleiben
+gleich. Leere oder dot-Segmente nach dem Präfix müssen vor HTTP abgewiesen werden.
+Zwei positive Auswahlvarianten plus drei unzulässige kanonische Ressourcen zuerst
+gegen den aktuellen Reader ausführen: mindestens Präfixverdopplung und falsche
+Kategorie/HTTPaufruf müssen tatsächlich rot sein. Danach kleinste Adapterabbildung,
+alle native/Transport-/Startupregressionen, Fullguard/Gesamttor und neuer identischer
+Stundenkandidat. Keine Änderung der Persistenz oder Öffnungs-/Lazyverträge.

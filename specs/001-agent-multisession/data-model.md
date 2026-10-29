@@ -270,3 +270,14 @@ Backups oder physische SQLite-Seiten. Sichere Datenträgerlöschung ist keine Zu
 - Konfigurierbare endliche Queue-, Anfrage-, Ausgabe- und Zeitlimits.
 - Keine eingebauten Tools, Promptverdichtung, Transcript-Replay oder Featureverhandlung.
 - Öffentliche Fehler enthalten keine Tokens, Prompts oder rohe Hersteller-HTTP-Bodies.
+
+## Implementierte additive Verfügbarkeitsmetadaten
+
+`SessionSnapshot.ConfigurationUnavailable` kennzeichnet eine vor Workerfreigabe erneut
+prüfbare Verfügbarkeitssperre. Nullable `AvailabilityError` enthält ausschließlich eine
+bereinigte ErrorCode-Kategorie dieser Prüfung, keine Texte oder Credentials. Beides
+liegt im vorhandenen Sitzungs-JSON; keine zusätzliche SQLspalte/Schemamigration.
+Fehlendes Feld aus früherem Snapshot wird als null gelesen. Undefinierte Kategorien
+oder eine Ursache ohne Herkunftsflag werden vor Recoverymutation abgewiesen. Positives
+Revalidieren löscht ausschließlich eigenen Block/Ursache; bestehende Recovery-/andere
+native Restriktionen und die ursprünglichen IDs/ModelId/Settings/Bindingrevision bleiben.

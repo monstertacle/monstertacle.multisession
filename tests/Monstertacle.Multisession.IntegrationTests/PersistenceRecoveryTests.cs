@@ -8,6 +8,7 @@ using Xunit;
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>Runs ten actual forced child terminations with the exact SC-009 persisted state.</summary>
+[Collection("Exclusive storage volume")]
 public sealed class PersistenceRecoveryTests
 {
     /// <summary>Every confirmed original identity survives; queued A continues FIFO and uncertain B is never sent again.</summary>

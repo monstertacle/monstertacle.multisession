@@ -678,3 +678,13 @@ Sourcehash f1c4a1f380581bd32fa8ccbc5c5f990d43f0cab9720a82e719ce462e57a16e54,
 Fullguard439Dateien/457Typen ohne Befund. Vier kontrollierte Deadline-/Caller-Cancel-
 regressionen ebenfalls bestanden. Native CI/Stunden-/Paketnachweise für diesen neuen
 Stand erforderlich; keine Livefreigabe daraus. Nachweisaudit läuft weiter.
+
+2026-10-29T21:59:43Z: Nach4 echten Rotfällen kanonisches Gemini models/-Präfix
+für Metadaten korrekt abgebildet; ursprüngliche ModelId bleibt unverändert. Windows-
+SC009-Testwächterfehler anschließend mit unveränderten Fristen in vorhandener exklusiver
+Probencollection isoliert und letzte Zustandsdiagnose ergänzt. Volltor
+linux/2ffa6348a39647bda7047e699f77377e:1036Tests,97.5796 %,
+Sourcehash95780bfa75c745cd0adb804e0a1ac3dfcea6474169900c8ab402990248e40f5b,
+Fullguard440Dateien/458Typen ohne Befund. Verträge/Quickstart/Embedding/Betrieb an echte
+API-/Verfügbarkeitssemantik angepasst; Livehost bleibt ausdrücklich NOT RUN und keine
+vollständige Liveimplementierung. Neuer identischer nativer Kandidat folgt nach Push.

@@ -7,6 +7,7 @@ using Xunit;
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>Checks the existing preflight against real spilled SQLite pages and a killed process.</summary>
+[Collection("Exclusive storage volume")]
 public sealed class CrashJournalTests
 {
     private static readonly byte[] _hotJournalMagic = [0xD9, 0xD5, 0x05, 0xF9, 0x20, 0xA1, 0x63, 0xD7];

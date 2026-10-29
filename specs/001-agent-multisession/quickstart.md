@@ -2,17 +2,17 @@
 
 **Datum**: 2026-10-27 | **Basis**: [plan.md](plan.md)
 
-Diese Anleitung beschreibt die nach Implementierung auszuführenden Nachweise.
-Die hier benannten Solution-, Projekt- und Hostdateien sind geplant und existieren
-noch nicht. Die Befehle wurden in der Planungsphase NICHT ausgeführt; derzeit führen
-sie noch nicht zu einer lauffähigen Anwendung. Kein Beispiel ist ein behauptetes Testergebnis.
-Gegen Constitution v1.7.0 und FR-027 zu prüfen, einschließlich tatsächlichem Agent-/Zielhostvertrag (R-13): Die folgenden vollständigen
-Abnahmebefehle ersetzen nicht den vorherigen Test-first-Ablauf je Verhaltensänderung.
+Implementierungsabgleich: 2026-10-29T21:57:58Z. Solution, Projekte, native Leasen,
+ValidationHost und Paketkonsumskript sind implementiert. Lokale sowie native Windows-
+Server-/Ubuntu-Ergebnisse stehen unter evidence; ein Befehl allein ist kein Prüfnachweis.
+Windows 11, reale Providerkonten und unabhängige Integratorabnahme bleiben offen.
+Constitution v2.0.0 und FR-027 gelten einschließlich tatsächlichem Agent-/Zielhostvertrag:
+Die folgenden Abnahmebefehle ersetzen den vorherigen Test-first-Ablauf nicht.
 
 ## 1. Voraussetzungen
 
 - Exaktes .NET SDK 10.0.403; C# 14; Entwicklung auf einem in plan.md genannten Zielsystem.
-- Implementierte Solution gemäß geplantem Aufbau und eingecheckte Paket-Lockfiles.
+- Eingecheckte Solution und unveränderte Paket-Lockfiles.
 - Privates lokales Testverzeichnis unter eigener Identität; keine produktiven Stores.
 - Keine Providerzugänge für Unit-, Vertrags-, FIFO-, Crash- und Plattformtests nötig.
 - Für Live-Proben: ausdrücklich freigegebene Testkonten beider Hersteller, passendes
@@ -20,10 +20,10 @@ Abnahmebefehle ersetzen nicht den vorherigen Test-first-Ablauf je Verhaltensänd
 - Q-01: CLI 0.1.0, Standardgrenzwerte ohne Debt-Baseline und Guard-Skill sind genehmigt
   und eingerichtet; siehe `evidence/codemetr-approval.md`. Produktprüfung bleibt offen.
 
-Alle folgenden Pfade sind relativ zum Repositoryroot. Der spätere ValidationHost
+Alle folgenden Pfade sind relativ zum Repositoryroot. Der ValidationHost
 akzeptiert absolute `--state-root`-Pfade, verwendet je Lauf eine neue Unterablage und
 löscht keine fremden/produktiven Verzeichnisse. `--scenario` und die unten genannten
-Szenarionamen sind sein geplanter Abnahmevertrag, kein zusätzliches CLI-Produkt.
+Szenarionamen sind sein implementierter Abnahmevertrag. Die Bibliotheken werden im Hostprozess eingebettet.
 
 ## 2. Restore, Build und statische Prüfungen — Q-02
 
@@ -41,7 +41,7 @@ Erwartet: SDK 10.0.403, erfolgreiches Restore/Build, keine neuen Compiler-/Analy
 Warnungen und keine unerledigten Freigabebefunde. Audit-Ausgabe inhaltlich bewerten;
 ein Prozess-Exitcode allein bedeutet nicht automatisch keine Sicherheitsbefunde.
 
-Die spätere CI führt Restore, Build, Format/Analyzer und Tests unter Windows und Linux
+Die konfigurierte CI führt Restore, Build, Format/Analyzer und Tests unter Windows und Linux
 aus und wiederholt NuGet-Vulnerability-Prüfung mindestens wöchentlich sowie vor Freigabe.
 Paket- und native SQLite-Version, Laufzeit, Plattform und Quellstand im Nachweis festhalten.
 
@@ -98,7 +98,7 @@ Die Einheiten TDD-01–TDD-07 stehen im Plan. Für jeden kleinen Verhaltensschri
 1. Test und minimale verhaltenslose Signaturen so vorbereiten, dass der Test kompiliert
    und entdeckt wird. Nur Testinfrastruktur herstellen, nicht schon Produktivverhalten.
 2. Den gezielten Test ausführen und den fachlich erwarteten Fehler tatsächlich beobachten.
-   Beispiel für die erste geplante Testgruppe, nachdem das Testprojekt vorhanden ist:
+   Beispiel für die vorhandene Routing-Testgruppe:
 
    ```text
    dotnet test tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj -c Release --no-restore --filter FullyQualifiedName~SessionRoutingTests
@@ -122,7 +122,7 @@ vorbereitet werden; das zu prüfende Produktivverhalten entsteht erst nach fachl
 Fehlerkorrekturen starten mit einem fehlschlagenden Regressionstest. Reine Refactorings
 starten dagegen mit bereits grüner relevanter Suite und benötigen kein erfundenes Red.
 
-Die spätere CI muss die reproduzierbare Green-/Regressionsprüfung ausführen; zusätzlich
+Die konfigurierte CI führt die reproduzierbare Green-/Regressionsprüfung aus; zusätzlich
 wird die dokumentierte Red–Green-Reihenfolge im Review geprüft. Live-Proben, Paket-Smoke,
 Last-/Dauerläufe und vollständige Zielsystemabnahme bleiben weitere Freigabenachweise.
 
@@ -197,7 +197,7 @@ produktive Anmeldungen nebenbei einrichten. Details des Bibliotheksaufrufs stehe
 | soak | Eine monotone Stunde ab Start, mindestens 60 angenommene Anfragen je Zielsystem; alle unter ursprünglicher Kennung mit Endzustand beziehungsweise gesichertem Zustand/Reservierung nachweisbar | SC-007 |
 | limits | Anforderungen an leere Eingaben sowie exakt zulässige und um ein UTF-8-Byte zu große Ein-/Ausgaben; keine gekürzte Erfolgsantwort und keine Änderung bestehender Historie | FR-021, FR-025 |
 
-Jeder Szenarioname ist als `--scenario` nach demselben Befehlsmuster wie oben vorgesehen.
+Jeder Szenarioname wird als `--scenario` nach demselben Befehlsmuster wie oben erkannt.
 Soak- und Crash-Proben laufen ausdrücklich separat, nicht als zufällige Langläufer im Unit-Test.
 Der Host liefert strukturierte Pass/Fail/NotRun-Zusammenfassung und Exitcode 0 nur bei
 bestandener gewählter Probe. Maschinenlesbarer Nachweis enthält keine Inhalte/Secrets.
@@ -208,9 +208,10 @@ nach externer Annahme vor Operations-ID-Sicherung, vor/nach Ergebniscommit.
 Zusätzlich Speicherausfall, Read-only, voller Datenträger, beschädigtes/unbekanntes Schema
 und fehlender erwarteter Store prüfen. Keine Probe darf einen leeren Ersatzstore erzeugen.
 Die ergänzenden Vertragsfälle sind in [orchestration-details.md](contracts/orchestration-details.md)
-festgelegt und in T112–T115 eingeplant: eingefrorene Dispatchnutzlast, ungewisse Eröffnung
+festgelegt und durch T112–T115 implementiert: eingefrorene Dispatchnutzlast, ungewisse Eröffnung
 ohne Request, öffentlich lesbare Recoveryrevision, CAS-Konflikt, Annahme-Unknown mit
-Kandidatenkennung und bereichsgebundene Cursor. Sie sind noch keine ausgeführten Proben.
+Kandidatenkennung und bereichsgebundene Cursor. Ihre ausgeführten Red-/Green- und
+SQLiteproben sind in den storybezogenen TDD-Berichten dokumentiert.
 Die erste Lieferung führt keine Formatmigration aus: Ein abweichendes Schema/Binding
 muss vor Änderungen abgewiesen werden. Ein eigener Migrations-/Rollbacktestplan ist
 erst mit einer ausdrücklich geplanten späteren Formatänderung erforderlich; er wird
@@ -228,8 +229,10 @@ Hostkonfiguration enthält Endpunkte, native Vertragsversion, Modell und Credent
 Geheimnisse kommen aus einer vom Betreiber vorbereiteten sicheren Quelle, nicht aus
 Kommandozeilenargumenten oder versionierten Dateien. Keine Keys in diesen Guide eintragen.
 
-Nach expliziter Kosten-/Speicherfreigabe `--scenario live-openai` und `--scenario live-gemini`
-mit demselben Hostmuster ausführen. Voraussetzungen und Native-Operationen stehen im
+Nach expliziter Kosten-/Speicherfreigabe wird T105s konkrete Liveausführung für
+`live-openai` und `live-gemini` eingerichtet und mit demselben Hostmuster ausgeführt.
+Der aktuelle Host meldet dafür bis dahin ausdrücklich NOT RUN.
+Voraussetzungen und Native-Operationen stehen im
 [Providervertrag](contracts/provider-contract.md).
 
 Je Hersteller und Zielsystem:
@@ -253,7 +256,7 @@ Konfigurierte Retention/Storage-Bedingungen beider Hersteller explizit dokumenti
 dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.1.0
 ```
 
-Der spätere Package-Smoke-Test erzeugt eine frische konsumierende Beispielanwendung
+`pwsh -NoProfile -File eng/PackageSmoke.ps1` erzeugt eine frische konsumierende Beispielanwendung
 außerhalb des Produktquellbaums, restauriert ausschließlich die erzeugten Bibliothekspakete
 und deren freigegebene NuGet-Abhängigkeiten und führt erste Nachricht/Folgeanfrage aus.
 Keine Source-/ProjectReference auf fremde Repositories; keine bereits vorhandene Installation
@@ -284,3 +287,20 @@ Nicht ausgeführte Fälle bleiben sichtbar. Metriken, erfolgreiche Builds oder D
 allein ersetzen keine Verhaltens-, Crash-, Paket- oder Herstellerabnahme.
 Q-06 verlangt zusätzlich den tatsächlich beobachteten Red-Grund vor Green je neuer
 Verhaltensänderung. Im aktuellen Planungsstand sind sämtliche Red-/Green-Nachweise NOT RUN.
+
+## Aktueller Nachweisumfang
+
+Die 14 endlichen nicht-live Szenarien werden lokal und in nativer CI auch aus einer
+framework-dependent Publishkopie außerhalb des Quellbaums ausgeführt. `soak` führt
+zusätzlich eine tatsächliche monotone Stunde mit 60 originalen Receipts, je einem in
+jedem Minutenfenster, anschließendem nativen Reopen und separatem Rohbelegprüfer aus.
+Source-/Assemblyhash und ursprüngliche IDs gehören zum Nachweis; UTC-Buckets ersetzen
+keine monotone Messung. Neue Produkt-/Test-/Buildinputs benötigen einen neuen identischen
+Kandidaten. Einzelne ältere Checkpoints werden dadurch nicht zur finalen Freigabe.
+
+`live-openai` und `live-gemini` sind derzeit ausdrücklich blockierende NOT-RUN-Berichte
+mit Exit3/LiveApprovalRequired; der aktuelle Host führt auch bei vorhandenen Credential-
+Umgebungsvariablen keine Liveanfragen aus. Der konkrete Konten-/Retention-/Kostenauftrag
+und ausführbare Liveabnahme folgen erst T105 nach ausdrücklicher Freigabe. Diese Namen
+werden nicht als bereits bestandene oder vollständige Liveimplementierung ausgegeben.
+Windows11 und unabhängiger Integrator sind zusätzliche externe Abnahmen.

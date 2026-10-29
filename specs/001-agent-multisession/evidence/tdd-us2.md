@@ -533,3 +533,16 @@ Fullguard439Dateien/457Typen ohne Verstöße/Parsefehler/übersprungene Dateien.
 Native Bestätigung folgt. Positiver Metadatenread belegt Zugang und Modellressource
 zu diesem Zeitpunkt, keine Garantie künftiger Quote, Generierung oder aller Features.
 T105 bleibt separate reale Testkontenabnahme; keinerlei Liveaufruf ausgeführt.
+
+## T121: kanonisches Gemini models/-Präfix
+
+Vorabnachzug im bestehenden Modellarchitekturbeleg. Stable-v1-ModelOption darf bereits
+models/<id> tragen; bisheriger Reader verdoppelte dieses Präfix im Metadatenpfad.
+`gemini-model-resource-red.log`:4fachlichrot/1bereitsgrün. Erwarteter kanonischer GETpfad
+weicht ab; drei ungültige ResourceIDs liefern ProviderUnavailable nach HTTP statt
+InvalidConfiguration ohne HTTP. Red-HEAD/Diff/Untracked-Tar/SHA vor Green archiviert.
+Kleinste Abbildung ausschließlich im Gemini-Protokollrand, Context.ModelId unverändert;
+OpenAI-opaque Kennungen bleiben unberührt. Alle5 danach grün im vollständigen Tor
+linux/56ce642855304e719ece9ab00f9994f9:1036Tests,2943/3016Zeilen=97.5796 %,
+Sourcehash d7da869e31f4764ad958dfe63e1911618f0f66976be7ae0aa23f0e90449c66af.
+Spätere reine Testisolation benötigt ihren eigenen konsistenten Gesamtquellhash.

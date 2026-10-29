@@ -131,7 +131,9 @@ absichtlich markierten Crash-/Diskfull-Testworkern bearbeiten.
 Optionale hosteigene `SessionDiagnostics` verwenden Logger, ActivitySource und
 BCL-Meter `Monstertacle.Multisession`. Aktuell werden bestätigte Annahme und
 Abschluss mit IDs, Zustand, Gewissheit, Dauer und Fehlerkategorie gemeldet.
-Vollständige Start-/Stop-/Sitzungsübergangsereignisse sind noch T074/T081 zugeordnet.
+Der Ereignisumfang umfasst bestätigte Annahmen und beobachtete Dispatchabschlüsse.
+Der Ergebniszähler beschreibt diese Beobachtungen; die gespeicherte Historie bleibt
+die Quelle für sämtliche lokalen Ergebnisse einschließlich direkt abgebrochener Queueeinträge.
 Gauge-Snapshots zeigen Queue, belegte und ungewisse Reservierungen; Unknown ist
 eine Teilmenge der belegten Slots. Beobachter führen keine Datenbank-I/O aus.
 Bei nicht verfügbarer Statistik wird deren Gültigkeit zurückgezogen, nicht Null
@@ -144,3 +146,29 @@ werden isoliert und über FailureCount sichtbar; sie ändern keine Geschäftsres
 
 Aktuelle Belege und ausdrücklich offene Grenzen stehen unter
 [implementation-progress](../specs/001-agent-multisession/evidence/implementation-progress.md).
+
+## Verfügbarkeit beim Wiederanlauf
+
+Nach dem Storebootstrap prüft die Runtime erhaltene Open-Sitzungen vor dem Workerstart.
+Registrierung, Vertrag, Bindingversion und deklarierte Fähigkeiten müssen weiter passen.
+Ein Adapter mit `ISessionAvailabilityProvider` prüft zusätzlich den eingefrorenen
+Modellzugang lesend; beide nativen HTTPadapter verwenden dafür den Model-Metadata-GET
+mit frisch aufgelöstem Credential. Danach prüft `ReopenAsync` denselben gespeicherten
+nativen Bezug. Die Gesamtprüfung ist durch `RuntimeOptions.RequestTimeout` begrenzt;
+Caller-Cancel bricht den Start ab. Der HTTPadapter besitzt zusätzlich eigene endliche
+Header-/Readfristen. Es gibt keinen Generierungsauftrag zur Verfügbarkeitsprüfung.
+
+Eine Ablehnung blockiert ausschließlich diese Sitzung als `ProviderUnavailable`.
+`SessionSnapshot.AvailabilityError` nennt die bereinigte Ursache, beispielsweise
+`AuthenticationFailed`, `InvalidConfiguration`, `ProviderSessionExpired` oder `TimedOut`.
+Bereits angenommene Anfragen behalten ihre Kennungen und bleiben Queued; es gibt weder
+Ersatzmodell noch erneutes Open. Nach korrigiertem Zugang kann ein neuer Hoststart
+seine eigene Verfügbarkeitssperre nach positiver Prüfung aufheben. Bei regulärem Stop
+werden Queueeinträge weiterhin abgebrochen; eine alte gestoppte Anfrage wird nicht
+wiederbelebt. Fremde native Fortsetzungsblockaden sowie RecoveryRequired/StorageFailure
+werden durch diese Verfügbarkeitsprüfung nicht freigegeben.
+
+Metadaten können Herstelleraliase beschreiben; die Bibliothek speichert daraus keine
+neue Modellauswahl. Ein erfolgreicher Read ist ein Zugangs-/Existenzbeleg zu diesem
+Zeitpunkt, keine Zusage künftiger Quote oder Generierung. Der direkte Lazy-Reopen von
+Gemini bleibt ohne HTTP; die zusätzliche Verfügbarkeitsfacette ist ausdrücklich getrennt.

@@ -834,3 +834,16 @@ unbekannte Enumwerte oder Ursache ohne Herkunftsflag dagegen vor Mutation abgewi
 Aktueller grüner Gesamtstand d101f7c1127c0145e353b8c3eae5c70cabbfcfb0ba3c576c322297b07ee8bc2d,
 1006 Tests und 97.5109 %. Die vollständige konkrete Modellverfügbarkeit ist weiterhin
 T121 zugeordnet; kein Hersteller-GET als universelle Modellverfügbarkeitsprüfung behauptet.
+
+## Native SC-009-Probenisolation
+
+Windowsjob123752184166 (40960641218) scheiterte in Iteration1 am unveränderten5s-
+Testwächter,404Integrationfälle bestanden. Letzter Zustand war in der damaligen Ausgabe
+nicht erkennbar; keine ungemessene Modell-/SQL-/Schedulerursache behauptet. Vorabanalyse
+architecture/2026-10-29-recovery-probe-isolation.md. Die vorhandene exklusive native
+Storagecollection enthält nun auch SC009-, CrashBoundary- und Hotjournaltests. Sämtliche
+fachlichen Fristen und Assertions bleiben unverändert. Fixturetimeout zeigt künftig
+nur letzte Zustand-/Gewissheits-/Fehlerkategorie und Worker-Taskstatus, keine Inhalte.
+Gesamtes Linux-Tor2ffa6348a39647bda7047e699f77377e besteht danach mit1036Tests,
+97.5796 %, Sourcehash95780bfa75c745cd0adb804e0a1ac3dfcea6474169900c8ab402990248e40f5b.
+Fullguard440Dateien/458Typen ohne Befund. Native Neubestätigung bleibt T055/T099.

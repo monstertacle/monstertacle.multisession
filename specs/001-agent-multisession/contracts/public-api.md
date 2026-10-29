@@ -2,16 +2,17 @@
 
 **Datum**: 2026-10-27 | **Basis**: [spec.md](../spec.md), [data-model.md](../data-model.md)
 
-Dies ist ein Entwurfsvertrag für C#-Bibliotheken, keine erzeugte Implementierung.
+Dies ist der Bibliotheksvertrag mit Implementierungsabgleich vom 2026-10-29T21:57:58Z.
 Er definiert keine HTTP-Routen, Dienstinstallation oder Benutzeroberfläche.
-Geplante Namespace-Wurzel: `Monstertacle.Multisession`.
+Namespace-Wurzel: `Monstertacle.Multisession`.
 
 Erneut gegen Constitution v2.0.0 geprüft; Konkretisierung des bestehenden Umfangs.
 Für seine Verhaltenszusagen sind zuerst ausführbare fehlschlagende Vertrags-/Konsumtests
 zu schreiben (insbesondere TDD-01/TDD-04/TDD-07), bevor das jeweilige Verhalten entsteht.
 Die verbindlichen Dispatch-/Recovery-/Annahme-/Pagingdetails stehen in
 [orchestration-details.md](orchestration-details.md). T112–T115 setzen die dort ausdrücklich
-benannten Unterschiede zu den derzeitigen C#-Signaturen erst nach passendem Red um.
+benannten Unterschiede nach passendem Red um; diese vier Vertragsschnitte sind
+inzwischen implementiert und in den storybezogenen TDD-Nachweisen belegt.
 
 SharpClaw ist als langfristiger In-Process-Konsument vorgesehen. Es nutzt dieselben
 öffentlichen Verträge wie andere Hosts, ohne Sonderzugriffe auf interne Klassen.
@@ -279,3 +280,29 @@ Providerpräfix noch UUID-Format darf für externe Kennungen zentral vorausgeset
 Die Integration mit dem Zielhost erfordert passende Vertragsfälle mit beobachteter
 nativer ID, bestätigtem terminalem Ende, Workspace und Cancellation. Ein Modell-REST-
 Fixture allein erfüllt diesen Nachweis nicht. Bestehende Sitzungen werden nicht migriert.
+
+## Implementierungsabgleich: Wiederaufnahme und Availability
+
+Der aktuelle öffentliche Aufruf für die Erzeugung lautet
+`CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)`;
+`SessionExecutionContext` trägt optionalen WorkspaceDirectory und WorkspaceKey. Die
+Tabellen oben sind semantische Kurzformen. Vor Workerstart werden gespeicherte Open-
+Sitzungen lokal und über ihren gleichen nativen Reopenbezug geprüft. Die optionale
+Facette `ISessionAvailabilityProvider.ValidateAvailabilityAsync(ProviderSessionContext,
+CancellationToken)` ermöglicht eine ausdrücklich lesende Modell-/Credentialprüfung;
+beide nativen Adapter implementieren sie, die generische Runtime kennt keine Herstellernamen.
+
+SessionSnapshot ergänzt `ConfigurationUnavailable` als Herkunft einer erneut prüfbaren
+Verfügbarkeitssperre und nullable `AvailabilityError` als bereinigte ErrorCode-Kategorie.
+Erfolgreiche erneute Prüfung entfernt ausschließlich eigene Sperren/Ursache; andere
+native Restriktionen und Recoveryvorrang bleiben. Kein gebundenes Modell, native ID,
+Settings oder Bindingrevision werden aus Metadaten ersetzt. Queued bleibt bei Start-
+ablehnung unverändert. Die Prüfung verwendet die Runtimeausführungsfrist; ein verfügbarer
+anderer Provider kann nach Vorbereitung weiterhin arbeiten. Details und Grenzen in
+`docs/operations.md`, konkrete Red-/Greennachweise in `evidence/tdd-us2.md`.
+
+Der bestehende Availability-Storewrite erhält als optionalen letzten Parameter eine
+ErrorCode-Kategorie; alte Aufrufe bleiben quellkompatibel. Aktuelle Snapshots persistieren
+das Feld im vorhandenen JSON. Ältere Snapshots ohne Property bleiben lesbar; ältere
+Binärstände können unbekannte neue Felder sicher ablehnen. Daraus folgt keine Zusage
+rückwärtskompatibler Vorabformatmigration oder einer neuen Schemaversion.

@@ -19,11 +19,19 @@ internal sealed class SqliteRuntimeFixture(SessionRuntime runtime) : IAsyncDispo
     internal async Task<RequestSnapshot> CompletedAsync(Guid requestId)
     {
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(5));
-        while (true)
+        RequestSnapshot? latest = null;
+        try
         {
-            RequestSnapshot snapshot = (await Runtime.Requests.GetRequestAsync(requestId, deadline.Token))!;
-            if (snapshot.State is not (RequestState.Queued or RequestState.Running)) { return snapshot; }
-            await Task.Delay(TimeSpan.FromMilliseconds(10), deadline.Token);
+            while (true)
+            {
+                latest = (await Runtime.Requests.GetRequestAsync(requestId, deadline.Token))!;
+                if (latest.State is not (RequestState.Queued or RequestState.Running)) { return latest; }
+                await Task.Delay(TimeSpan.FromMilliseconds(10), deadline.Token);
+            }
+        }
+        catch (OperationCanceledException) when (deadline.IsCancellationRequested)
+        {
+            throw new TimeoutException($"Fixture request {requestId:D}: state={latest?.State}, certainty={latest?.Certainty}, error={latest?.Result?.Error?.Code}, workers={Runtime.Completion.Status}.");
         }
     }
     public ValueTask DisposeAsync() => Runtime.DisposeAsync();

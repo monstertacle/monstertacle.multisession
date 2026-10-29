@@ -1,8 +1,9 @@
 # Orchestrierungsverträge v1 — verbindlicher Zielentwurf
 
-Stand 2026-10-28. Konkretisiert FR-005/FR-007/FR-018–FR-021 und die Analysebefunde.
-**Noch nicht vollständig in C# umgesetzt.** T112–T115 sichern die folgenden Änderungen
-vor ihrer jeweiligen Implementierung durch fachliche Red-Fälle ab. Der Paketstand bleibt
+Ursprungsentwurf 2026-10-28; Implementierungsabgleich 2026-10-29T21:57:58Z.
+Konkretisiert FR-005/FR-007/FR-018–FR-021. T112–T115 sind nach den dokumentierten
+fachlichen Red-Fällen implementiert: ReservedDispatch mit SQL-Fence, Recoveryziele/CAS,
+Annahmegewissheit und alle vier begrenzten SQL-Keysetlisten. Der Paketstand bleibt
 vor Veröffentlichung; dies ist keine ausgeführte Migration oder neue Produktfreigabe.
 
 ## 1. Reservierter Dispatch-Snapshot (U1)
@@ -289,3 +290,20 @@ Gewissheit des Reply und keine providerseitig gelieferten lokalen IDs/Annahmesta
 Typisierte Providerexceptions erhalten eine erlaubte Kategorie, bleiben ohne gesonderten
 Endbeleg Unknown. Tatsächlich lokal erkannte Observation-/Speicherfehler behalten ihre
 lokale Kategorie; sie sind keine unbestätigte Behauptung des Adapters.
+
+## 9. Aktueller Umsetzungsschnitt und verbleibende Freigaben
+
+Alle Verträge dieses Dokuments besitzen Common-/SQLiteumsetzung und automatische
+Vertrags-/Persistenzregression. Separate Endpunkt-/Konten-/Zielsystemabnahmen werden
+nicht aus diesen Tests abgeleitet. Nach T118 wird Factory-/Runtimekonfiguration vor
+Recovery gleich geprüft. Native Bindings und optionale Modell-/Credentialverfügbarkeit
+werden vor Workerfreigabe kontrolliert; eigene konfigurationsbedingte Sperren tragen
+eine nullable bereinigte AvailabilityError, ohne Recovery-/Nativefremdsperren zu lösen.
+Workerabbruch wartet auf asynchrone Cancellationcallbacks vor Ressourcenfreigabe, hält
+aber die callergebundene Stopfrist ein. Linux disponiert explizit seine flock-Sperre.
+
+Noch offene Gesamtgates sind insbesondere T034s eindeutige native Gemini-Kontextfehler-
+zuordnung, die fehlenden Plattform-/Stunden-/Live-/Integratornachweise und der historische
+TDD-Audit. Aufgabenstatus und konkrete Folgezuordnung stehen in tasks.md sowie den
+Abnahmematrizen unter evidence. Keine Schema-/Bindingmigration, NuGetveröffentlichung,
+Hostport/Dienstinstallation oder SharpClaw-Bestandsumstellung gehört zur Umsetzung.

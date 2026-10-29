@@ -239,3 +239,20 @@ completed-Head auch bei lokaler OutputLimitExceeded nutzbar; allein ein lokaler 
 rechtfertigt keinen Rückfall auf einen veralteten Kopf. Der erste sicher fehlgeschlagene
 Interaktionsaufruf ohne completed-Head kann seinen bekannten Root bewahren, aber keine
 neue Wurzel oder weitere Annahme stillschweigend erlauben.
+
+## Optionale lesende Zugangsprüfung vor Wiederaufnahme
+
+`ISessionAvailabilityProvider.ValidateAvailabilityAsync` ist eine zusätzliche generische
+Facette; sie ändert keinen bestehenden Reopen-/Lazyvertrag. Native Adapter lesen den
+gewählten Modell-Metadateneintrag über ihren bereits konfigurierten Endpoint und aktuellen
+Hostcredentialresolver. Grundlage sind [OpenAI Model retrieve](https://developers.openai.com/api/reference/resources/models/methods/retrieve)
+und der stabile GET `v1/models/{modelsId}` in [Geminis offizieller v1-Discovery](https://generativelanguage.googleapis.com/$discovery/rest?version=v1).
+Es wird kein Prompt gesendet und kein vollständiger Katalog aufgebaut. Eine fehlende
+Modellressource ist ProviderUnavailable; Auth bleibt AuthenticationFailed, statt als
+abgelaufene native Sitzungsidentität zu erscheinen. ModelId und Binding bleiben gefroren.
+
+Dritte Adapter können diese Facette ausdrücklich implementieren oder dieselbe eigene
+Zugangsprüfung bereits in Reopen erfüllen. Der Kern leitet Fähigkeiten aus dem Vertrag
+ab, nicht aus Hersteller-/Modellnamen. RecoveryRequired und andere native Sperren werden
+nicht durch einen erfolgreichen Metadatenread aufgehoben. Aliasmetadata belegen keine
+Modellsubstitution durch die Bibliothek. Die reale Konten-/Backendabnahme bleibt T105.

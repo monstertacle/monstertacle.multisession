@@ -8,6 +8,8 @@ internal static class GeminiProtocol
     internal const string AdapterId = "gemini-interactions";
     internal const int BindingVersion = 1;
     private const string _modelPrefix = "models/";
+    internal static string ModelResourceId(string modelId)
+        => modelId.StartsWith(_modelPrefix, StringComparison.Ordinal) ? modelId[_modelPrefix.Length..] : modelId;
     internal static bool IsAvailableModel(JsonElement metadata)
         => metadata.ValueKind == JsonValueKind.Object
             && metadata.TryGetProperty("name", out JsonElement name) && name.ValueKind == JsonValueKind.String

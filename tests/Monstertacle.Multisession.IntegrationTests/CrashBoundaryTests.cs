@@ -8,6 +8,7 @@ using Xunit;
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>Exercises real kill boundaries without inserting hooks into product transaction code.</summary>
+[Collection("Exclusive storage volume")]
 public sealed class CrashBoundaryTests
 {
     /// <summary>Only durably queued, never-started input may be sent after a forced termination.</summary>

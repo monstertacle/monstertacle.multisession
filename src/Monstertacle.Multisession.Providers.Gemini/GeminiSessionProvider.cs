@@ -29,7 +29,7 @@ public sealed class GeminiSessionProvider : ISessionProvider, IExecutionRecovery
     public ValueTask ValidateAvailabilityAsync(ProviderSessionContext context, CancellationToken cancellationToken)
     {
         GeminiBindingPolicy.Context(context);
-        return NativeModelAccess.CheckAsync(_transport, context.ModelId, GeminiProtocol.IsAvailableModel, _clock, cancellationToken);
+        return NativeModelAccess.CheckAsync(_transport, GeminiProtocol.ModelResourceId(context.ModelId), GeminiProtocol.IsAvailableModel, _clock, cancellationToken);
     }
     /// <inheritdoc />
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)

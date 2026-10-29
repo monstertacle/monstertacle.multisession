@@ -169,3 +169,12 @@ ohne ausdrückliche Freigabe NOT RUN. Die komplette Szenariomatrix steht im
 Eine endgültige Freigabe braucht denselben Source-/Paketstand auf allen
 Zielsystemen, Live-Freigaben und einen unabhängigen Integratorlauf. Vorhandene
 lokale/NuGet-Proben behaupten weder diese Abnahme noch einen SharpClaw-Umbau.
+
+Bei `OpenExistingAsync` prüft `StartAsync` erhaltene Open-Sitzungen vor Freigabe der
+Worker. Die nativen Adapter lesen den ausgewählten Modell-Metadateneintrag mit aktuellem
+Credential und prüfen anschließend denselben nativen Sitzungsbezug. Betroffene Queue-
+einträge bleiben bei Ablehnung erhalten; `SessionSnapshot.AvailabilityError` erklärt die
+bereinigte Ursache. Eigene Verfügbarkeitssperren sind nach korrigiertem Zugang und
+positiver erneuter Prüfung reparierbar; Recovery-/andere Nativeblockaden bleiben bestehen.
+Die optionale `ISessionAvailabilityProvider`-Facette erlaubt hosteigenen Adaptern dieselbe
+lesende Prüfung. Der direkte Gemini-Lazy-Reopen erzeugt weiterhin keine HTTPoperation.

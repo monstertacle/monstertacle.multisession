@@ -661,3 +661,12 @@ AvailabilityError und Korruptionsabwehr. Gesamtgate linux/f68ffaaaf7814c7bbff55b
 1006 Tests, 97.5109 %, Sourcehash d101f7c1127c0145e353b8c3eae5c70cabbfcfb0ba3c576c322297b07ee8bc2d;
 Fullguard431Dateien/449Typen ohne Befund. T121 konkretisiert verbleibenden Modellprüfungs-
 und Nativeabnahmeumfang. Native CI nach Push, keine Liveaufrufe oder finale Freigabe.
+
+2026-10-29T21:41:31Z: Linux-Fremdeigentümer/Hardlink tatsächlich regressionsgeprüft.
+Ein im Gesamtgate beobachtetes Reacquisitionproblem anschließend deterministisch per dup
+zuerst rot reproduziert; explizites LOCK_UN vor Close behebt die Lebenszeitlücke.
+Volltor linux/7c418d4439924149b0f5e1b0a1e5c107: 1010Tests, 97.5143 %,
+Fullguard434Dateien/452Typen ohne Befund. T122 hält den nativen Folgeabgleich fest.
+Der vorausgehende Native-Startupstand1b2aba6 besteht inzwischen beide echten CI-Jobs
+40958643550 und Guard40958643532. Nächster T121-Schnitt prüft ausgewählten Modellzugang
+über eine ausdrücklich lesende Providerfacette; Lazy-Reopen bleibt unverändert.

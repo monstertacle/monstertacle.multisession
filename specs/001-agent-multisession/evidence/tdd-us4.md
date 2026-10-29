@@ -279,3 +279,29 @@ Sourcehash 3a9fd0d19eae5743832fac534a4b198e038a22831a65ca6105a9e75748b92ad9,
 Binärkopie dieses Zwischenstands läuft separat eine monotone Stunde;
 Pfad unter artifacts/tdd/soak-candidate-path.txt. Ergebnis noch nicht vorhanden.
 Dieser Zwischenstand ist kein finaler identischer Source-/Paketnachweis.
+
+## T088/T092/T122: tatsächliche Fremdeigentümer, Hardlink und explizites Unlock
+
+Vorabanalysen: architecture/2026-10-29-linux-owner-hardlink-probes.md und
+architecture/2026-10-29-linux-explicit-unlock.md. Drei zusätzliche native Regressionen
+prüfen abweichende UID an eigenem Verzeichnis/File (kontrolliert per sudo chown, im
+finally zurückgesetzt) und einen eigenen Hardlink; alle drei zunächst unmittelbar grün.
+Keine Produktänderung oder neuer Red für diese bereits vorhandenen Ablehnungsregeln.
+
+Das erste Volltor74226641a1394e5f8b4d7bff0fe7610f scheiterte aber einmal an direkter
+Wiederübernahme nach Dispose mit StoreAlreadyOwned. Genaue fork-Terminierung dieses
+Laufs nicht behauptet. Danach deterministisch reproduziert: LinuxOwnershipReleaseTests
+hält ein libc-dup der tatsächlichen eigenen Ownership-File-Description, disponiert die
+Lease und erhält beim Wiedererwerb mit altem Code StoreAlreadyOwned. Echte fachliche
+Redausgabe linux-unlock-red.log; HEAD/Diff/Untracked-Tar vor Green archiviert.
+
+Jetzt LOCK_UN vor Close, beide Handles auch bei Fehler geschlossen, altes Dispose
+idempotent. Derselbe Test prüft sofortige erfolgreiche Nachfolgelease und deren weiterhin
+exklusiven Besitz nach zweitem alten Dispose. Kein PID-/Dateilöschen, Sleep oder Retry.
+LibraryImport im Test ist ein eigenes natives Messinstrument; UnsafeBlocks nur dafür im
+Platformtestprojekt explizit. Alle 31 Linuxplattformfälle sowie das vollständige Tor
+linux/7c418d4439924149b0f5e1b0a1e5c107 bestehen: 1010 Tests, 2903/2977Zeilen=97.5143 %.
+Fullguard 434Dateien/452Typen, keine Verstöße/Parsefehler/übersprungenen Dateien.
+Native CI folgt; Windows-11-/Netzwerkfilesystem-Abnahme bleibt unbehauptet.
+Gemessener Sourcehash dieses vollständigen grünen Stands:
+`a55d178360a2c11c9a5427a693cffb7d1d130c64928d7eb1187318e11b62d1e0`.

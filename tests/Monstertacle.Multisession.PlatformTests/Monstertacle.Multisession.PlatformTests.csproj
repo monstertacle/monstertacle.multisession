@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../Monstertacle.Multisession.IntegrationTests/Fixtures/ValidationHostBuild.cs" Link="Fixtures/ValidationHostBuild.cs" />
@@ -10,7 +11,7 @@
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
-    <Compile Remove="LinuxOwnershipTests.cs;LinuxOwnershipRejectionTests.cs" />
+    <Compile Remove="LinuxOwnershipTests.cs;LinuxOwnershipRejectionTests.cs;LinuxOwnershipReleaseTests.cs" />
     <Using Include="Monstertacle.Multisession.Windows.WindowsStateDirectoryLease" Alias="NativeLease" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Windows/Monstertacle.Multisession.Windows.csproj" />
   </ItemGroup>

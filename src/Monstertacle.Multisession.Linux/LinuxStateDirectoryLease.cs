@@ -54,8 +54,8 @@ public sealed class LinuxStateDirectoryLease : IStateDirectoryLease
     {
         lock (_gate)
         {
-            _ownership.Dispose();
-            _directory.Dispose();
+            try { LinuxOwnershipLock.Release(_ownership); }
+            finally { _directory.Dispose(); }
         }
         return ValueTask.CompletedTask;
     }

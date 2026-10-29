@@ -94,4 +94,54 @@ public sealed class LinuxOwnershipRejectionTests : IDisposable
         Assert.False(File.Exists(Path.Combine(lease.StateDirectory, "data")));
         Assert.True(lease.IsHeld);
     }
+
+    /// <summary>Foreign private objects are refused without repairing their owner or contents.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RejectsForeignOwner(bool directory)
+    {
+        string owner = await LinuxOwnershipProbe.RunAsync("id", "-u");
+        if (!uint.TryParse(owner, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out _))
+        { throw new InvalidOperationException("The native fixture requires a numeric owner identity."); }
+        string foreign = owner == "65534" ? "65533" : "65534";
+        string state = Path.Combine(_root, "state");
+        await using LinuxStateDirectoryLease lease = LinuxStateDirectoryLease.CreateNew(state);
+        string path = directory ? state : Path.Combine(state, "data");
+        if (!directory) { await lease.PrepareFileAsync("data", StateFileMode.CreateNew, CancellationToken.None); await File.WriteAllTextAsync(path, "unchanged"); }
+        try
+        {
+            await LinuxOwnershipProbe.RunAsync("sudo", "-n", "chown", "--no-dereference", foreign, path);
+            if (directory)
+            {
+                await Assert.ThrowsAsync<SessionOperationException>(async () =>
+                {
+                    await using LinuxStateDirectoryLease refused = LinuxStateDirectoryLease.OpenExisting(path);
+                });
+                Assert.False(lease.IsHeld);
+            }
+            else
+            {
+                await Assert.ThrowsAsync<SessionOperationException>(() => lease.PrepareFileAsync("data", StateFileMode.OpenExisting, CancellationToken.None).AsTask());
+            }
+        }
+        finally { await LinuxOwnershipProbe.RunAsync("sudo", "-n", "chown", "--no-dereference", owner, path); }
+        Assert.True(lease.IsHeld);
+        Assert.Equal(directory ? (UnixFileMode)448 : (UnixFileMode)384, File.GetUnixFileMode(path));
+        if (!directory) { Assert.Equal("unchanged", await File.ReadAllTextAsync(path)); }
+    }
+
+    /// <summary>A private hardlink is still an alias and cannot become a state file.</summary>
+    [Fact]
+    public async Task RejectsHardlinkWithoutChangingTarget()
+    {
+        await using LinuxStateDirectoryLease lease = LinuxStateDirectoryLease.CreateNew(Path.Combine(_root, "state"));
+        string target = Path.Combine(_root, "target");
+        await File.WriteAllTextAsync(target, "unchanged");
+        File.SetUnixFileMode(target, (UnixFileMode)384);
+        await LinuxOwnershipProbe.RunAsync("ln", "--", target, Path.Combine(lease.StateDirectory, "link"));
+        await Assert.ThrowsAsync<SessionOperationException>(() => lease.PrepareFileAsync("link", StateFileMode.OpenExisting, CancellationToken.None).AsTask());
+        Assert.Equal("unchanged", await File.ReadAllTextAsync(target));
+        Assert.True(lease.IsHeld);
+    }
 }

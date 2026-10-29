@@ -1,5 +1,36 @@
 # Native Plattformnachweise
 
+## Aktueller Nachweis nach ABIrefactoring
+
+Abgleich2026-10-29T23:00:40Z: Kandidat7489450/Source dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b.
+Quality40968636580:Ubuntu24.04.5LTS und WindowsServer2025 erfolgreich,
+je14 framework-dependent publizierte Szenarien außerhalb des Quellbaums,
+Runtime10.0.14/native SQLite3.53.3. Genaue Rohdaten/Hashes build-native.json;
+Windows meldet OSDescription MicrosoftWindows10.0.26100, Runnerimage laut
+Workflow WindowsServer2025, daraus wird kein Windows11-Host abgeleitet.
+31Linux-/37Windowsplattformfälle, einschließlich fremder UID, Hardlinks,
+echtem Zweitprozess, Kill/Recovery/Journal und dup-/idempotentem Dispose.
+
+Zusätzliche echte native Bindalias-/ramfsprobe auf Debian13 mit genau dem finalen
+kanonischen Linux-NuGet: [linux-mount-final.json](linux-mount-final.json).
+Frischer leerer Cache, dann Locked Restore, Build0Warnungen/0Fehler;
+worker als UID1000 im privaten Mountnamespace. Bindalias bleibt exklusiv und
+nach Dispose wieder erwerbbar, doppelte alte Freigabe erhält neuen Besitzer;
+unbekanntes korrekt privates ramfs wird vor Lock/Mutation abgewiesen.
+Netzwerk-FS-Magics NFS/CIFS/SMB2/9p/Ceph gegen aktuelle Header und tatsächlich
+verwendete geschlossene Allowlist geprüft. Kein echter NFS-/SMBserver behauptet.
+Diese konkrete Negativmatrix ersetzt die frühere pauschale offene Linux-Mountfrage;
+keine Zusage, unbekannte Dateisysteme zu unterstützen.
+
+T088/T092 und Windowsimplementierung T091 sind damit technisch belegt.
+T087/T093/T099 bleiben wegen fehlendem Windows11 offen; T100 wegen vollständiger
+finaler Dreisystemstunde. Zusätzlich offener intermittierender Server-Recovery-
+Besitzbefund T125: review.md/remaining-acceptance.md, native Diagnose separat.
+Einzelne erfolgreiche SC009-Läufe werden nicht als dessen Ursachenklärung verkauft.
+Der folgende Teil ist historisch, einschließlich damals noch laufender Stunden.
+
+## Historische Zwischenstände
+
 Abgleich 2026-10-29T21:21:56Z. Owner: ausführende Gesamtimplementierungssitzung.
 T087/T088/T091/T092/T093/T099/T100 bleiben bis zu ihren vollständigen Kriterien offen.
 

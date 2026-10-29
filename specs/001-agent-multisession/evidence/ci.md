@@ -1,5 +1,29 @@
 # Native CI und erforderliche Checks
 
+## Aktueller geprüfter technischer Kandidat
+
+Abgleich2026-10-29T23:00:40Z: Commit7489450, Sourcehash
+`dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b`.
+[Quality40968636580](https://github.com/monstertacle/monstertacle.multisession/actions/runs/40968636580),
+[Guard40968636533](https://github.com/monstertacle/monstertacle.multisession/actions/runs/40968636533)
+und [separater Audit40969224192](https://github.com/monstertacle/monstertacle.multisession/actions/runs/40969224192)
+sind erfolgreich. Alle vier Quality-/Kanonconsumerjobs und beide Guardjobs tatsächlich
+grün. Unabhängig gelesene native TRX/Coverage/Audit-/14-Szenarioberichte:
+[build-native.json](build-native.json). Gleiche sechs Archive beim Produzenten und
+beiden echten PackageReference-Konsumenten: [canonical-package-final.json](canonical-package-final.json).
+
+Nach erfolgreichem Kanonconsumercheckpoint40966982840 wurden zusätzlich
+`canonical-consumer (ubuntu-24.04)` und `canonical-consumer (windows-latest)`
+als Required Checks eingetragen. Readback in build-native.json bestätigt nun
+sechs GitHub-Actions-Checks, strict=true/enforce_admins=true, keine Forcepushes
+oder Löschung. Vorige vier Checks bleiben erhalten. PATCH nur der
+required_status_checks-Ressource; keine andere Protection entfernt.
+Rohkopien artifacts/tdd/canonical-required-checks-{request,response}.json,
+final-required-checks-readback.json. Der folgende Bericht bleibt historischer
+Checkpoint. Aktuelle Stundenmatrix separat soak.md; keine Produktfreigabe.
+
+## Historischer Checkpoint
+
 Statusabgleich gemessen am 2026-10-29T21:21:56Z. Zwischenstand, keine finale Freigabe.
 
 Für Commit `7e336511489ecda95846c4b7ac40f3f98d672fb8` sind

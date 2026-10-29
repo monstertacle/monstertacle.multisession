@@ -1,5 +1,16 @@
 # Abhängigkeitsprüfung
 
+Aktueller Zusatzabgleich 2026-10-29T22:55:03Z: vollständiger Graph aller elf
+Projekte im lokalen Tor8530362e86bf4cfcaf1669f640cd3f24 auditiert, keine gemeldeten
+direkten/transitiven Advisories. Separater echter Workflow40969224192 erfolgreich
+am Kandidaten7489450. Die restaurierten Nuspecs von coverlet.collector10.1.0 und
+Microsoft.Extensions.TimeProvider.Testing10.7.0 nennen jeweils MIT und ihre
+offiziellen Coverlet-/dotnet/extensions-Repositories; beide sind test-only und
+PrivateAssets. Native SQLitecheckpoint3.53.3 auf Ubuntu und Server2025.
+DEP-001 bleibt eine zuständige Maintenanceentscheidung vor erster Freigabe;
+die eigene Produktlizenz ist weiterhin nicht gewählt. Folgeplan remaining-acceptance.md.
+Die folgenden ursprünglichen Prüfdaten werden als historische Belege erhalten.
+
 **Datum**: 2026-10-27. **T003**: initiale Pins und Prüfung abgeschlossen.
 **Q-02**: finale Prüfung am Produkt-Lieferstand weiterhin offen (T104).
 

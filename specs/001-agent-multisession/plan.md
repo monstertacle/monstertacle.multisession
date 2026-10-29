@@ -5,6 +5,16 @@
 
 **Input**: `specs/001-agent-multisession/spec.md`
 
+**Aktueller Ausführungsabgleich2026-10-29T23:04:34Z:** Runtime, beide nativen
+Provideradapter, SQLite/Recovery, beide Plattformleasen, Diagnostik, ValidationHost
+und Paketkonsum sind implementiert; einzelne frühere Statusabsätze darunter
+beschreiben den damaligen Planungsstand. T112–T115 sind inzwischen ausgeführt,
+keine NotImplemented-Gerüste im Produktcode. Maßgeblich für aktuelle Aufgaben
+ist tasks.md, für technische Nachweise evidence/acceptance-audit.md/build-native.json,
+für fehlende Abnahme evidence/release.md/remaining-acceptance.md. Keine Produktfreigabe:
+fehlende Win11-/Live-/Integrator-/historische Q06-Belege bleiben gesperrt;
+intermittierender Server-Recoverybesitz wird separat T125 untersucht.
+
 **Status**: Phase 0 und Phase 1 dokumentiert; inkrementelle Implementierung läuft,
 keine Produktfreigabe. Aktuelle Teilnachweise und Grenzen: tasks.md sowie
 evidence/tdd-foundation.md, tdd-us1.md, tdd-us2.md und coverage.md.

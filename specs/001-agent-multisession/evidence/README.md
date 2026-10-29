@@ -1,5 +1,30 @@
 # Nachweisschema und aktueller Status
 
+## Aktueller Abnahmeindex
+
+Abgleich2026-10-29T23:04:34Z: technischer Kandidat7489450 / Source
+`dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b`.
+Vollständige native CI auf Ubuntu/Server2025 erfolgreich,1036/1042Tests,
+97,5796/97,5325 % Produktzeilen; [build-native.json](build-native.json),
+[build-audit.md](build-audit.md), [ci.md](ci.md), [coverage.md](coverage.md).
+Gleiche sechs NuGets in beiden Konsumenten: [canonical-package-final.json](canonical-package-final.json).
+Guard440Dateien/458Typen ohne Regelverstöße, semantische Toolgrenzen ausdrücklich
+in [codemetr-results.md](codemetr-results.md), Refactoring in [refactoring.md](refactoring.md).
+Native Leases/Mounts: [platforms.md](platforms.md), [linux-mount-final.json](linux-mount-final.json).
+Tatsächliche ältere Stunden: [soak.md](soak.md)/[hour-checkpoint.json](hour-checkpoint.json);
+neue finale Stunden laufen separat, kein vorzeitiges PASS.
+
+Abnahme bleibt gesperrt: [release.md](release.md) enthält FR001–027/SC001–011/Q01–06,
+[remaining-acceptance.md](remaining-acceptance.md) konkrete offene Owner-/Folgeaufträge.
+Windows11, Livefreigabe/-konten, fremder Integrator, Gemini-Kontextklassifikation,
+historische Q06-Archivlücke und zuständige Distributionsentscheidungen fehlen.
+Intermittierender Windows-Recoverybesitz wird als T125 nativ weiter untersucht.
+Selbstprüfung [review.md](review.md), ehrlicher historischer [TDD-Audit](tdd-audit.md).
+Die folgende ältere Statustabelle ist historisch und wird nicht als aktuelles Gate
+verwendet. Chronologische Einzelakten behalten ihre damaligen Quellen/Ergebnisse.
+
+## Ursprüngliches Schema und historische Zwischenstände
+
 Jeder Nachweis nennt Datum, Task und FR-/SC-Bezug, Plattform/Runtime/Toolversion,
 Quellstand, genaue Befehle, tatsächliche Exitcodes und Ergebnisse, Messumfang,
 Artefaktpfade und offene Befunde. Geheimnisse, Prompts und rohe Providerantworten

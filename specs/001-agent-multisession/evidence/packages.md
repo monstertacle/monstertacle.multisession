@@ -1,5 +1,13 @@
 # Lokale Bibliothekspakete 0.1.0
 
+Aktueller kanonischer Stand nach ABIrefactoring: Source dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b,
+Produzent quality40968636580. Exakte sechs Dateinamen/SHA256 beim Produzenten und
+beiden nativen Konsumenten in [canonical-package-final.json](canonical-package-final.json),
+jeweils PASS. Native Library-/Hostprüfung build-native.json, keine Test-/Hostpakete,
+kein NuGet-Push. Windows konsumiert dasselbe Linuxproduzentenarchivset, statt
+zwei unabhängig gebaute unterschiedliche Archive als identisch auszugeben.
+Der folgende lokale Ursprungsbeleg bleibt für seinen damaligen Stand erhalten.
+
 Prüfstand dokumentiert am 2026-10-29T19:45:52Z. Vorabanalyse:
 [package-consumer](architecture/2026-10-29-package-consumer.md).
 `dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.1.0`

@@ -56,7 +56,7 @@ bleibt sichtbar, und der zuletzt gesicherte Zustand ist beim nächsten Start ma�
 
 | Operation | Eingabe | Ergebnis und Semantik |
 | --- | --- | --- |
-| CreateSessionAsync | AgentProfileId, optionaler deklarierter WorkspaceKey | Lokale SessionId und Snapshot; native Eröffnung soweit der Provider sie separat unterstützt |
+| CreateSessionAsync | string agentProfileId, SessionExecutionContext context, CancellationToken | Lokale SessionId und Snapshot; Context enthält nullable WorkspaceDirectory/WorkspaceKey; native Eröffnung soweit der Provider sie separat unterstützt |
 | GetSessionAsync | SessionId | Snapshot einschließlich Providerbindung, Lifecycle und BlockReason; keine Geheimnisse |
 | ListSessionsAsync | Begrenzte Seitengröße, optionaler Cursor | Nur Sitzungen dieser Instanz; stabile Sortierung nach CreatedUtc und SessionId |
 | ReadHistoryAsync | SessionId, begrenzte Seitengröße, Cursor | Lokal beobachtete Eingaben, Ergebnisse und Betriebsereignisse; kein behaupteter vollständiger nativer Chat |
@@ -79,7 +79,7 @@ Die Schließabsicht allein ist weder Beendigungsbeweis noch Freigabe des Workspa
 
 | Operation | Eingabe | Ergebnis und Semantik |
 | --- | --- | --- |
-| SubmitAsync | SessionId, neue Textnachricht, endliches Timeout, optionaler WorkspaceKey/WriteIntent | RequestReceipt mit RequestId und Sequence erst nach Commit |
+| SubmitAsync | SubmitRequest(SessionId, Input, Timeout, WorkspaceKey, WriteIntent), CancellationToken | RequestReceipt mit RequestId und Sequence erst nach Commit; WorkspaceKey ist nullable, WriteIntent ist ein expliziter bool |
 | GetRequestAsync | RequestId | Snapshot von Zustand, Ergebnis, Gewissheit und bereinigtem Fehler |
 | ListRequestsAsync | SessionId, begrenzte Seitengröße, Cursor | Auffindbarkeit auch nach verlorener Annahmebestätigung |
 | CancelRequestAsync | RequestId | Sichtbarer Abbruchwunsch; Rückgabe beweist nicht die externe Beendigung |

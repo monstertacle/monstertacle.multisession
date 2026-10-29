@@ -1,5 +1,25 @@
 # Coverage — aktueller nicht freigegebener Arbeitsstand
 
+## Aktueller nativer Kandidat
+
+Prüfstand2026-10-29T23:00:40Z: gleicher Sourcehash
+`dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b`
+auf beiden Systemen, tatsächlicher Qualityrun40968636580. Rohzusammenfassungen,
+TRX-Digests und eigenes Modul-/Projektinventar in [build-native.json](build-native.json).
+Ubuntu24.04:2943/3016 Zeilen=97,5796 %,1036Tests; WindowsServer2025:
+3004/3080=97,5325 %,1042Tests. Beide PASS bei unverändert87 %, keine Skips.
+Pro OS Common/SQLite/beide Provider plus eigene native Plattformbibliothek;
+fremde Plattform ausschließlich im anderen nativen Bericht. Shared-NativeHttp
+ist in beiden Providerassemblies tatsächlich gemessener Produktcode.
+Tests/ValidationHost nicht im Produktnenner; eigener nicht ausgeführter Produktcode
+wird nicht ausgeblendet. Acht tatsächlich erzeugte Coverletberichte je Lauf,
+keine alten Reports aus vorigen Verzeichnissen zusammengezählt. SDK10.0.403,
+Collector10.1.0, Runtime10.0.14, VSTest, tests/coverage.runsettings.
+Keine zusätzliche Exklusion oder Schwellenabsenkung. Fehlendes Windows11 bleibt
+Plattformabnahmeblocker, keine Behauptung eigener Win11-Coveragemessung.
+
+## Historische Zwischenmessungen
+
 **Datum**: 2026-10-28. **Plattform**: Windows x64. **SDK**: 10.0.403.
 Collector: coverlet.collector 10.1.0, VSTest; Einstellungen `tests/coverage.runsettings`.
 Inventar `tests/coverage-scope.json`, ausdrücklich genehmigter Grenzwert **87 %**

@@ -18,13 +18,13 @@ internal static class ProbeProcess
         Task<string> error = process.StandardError.ReadToEndAsync();
         try
         {
-            await process.WaitForExitAsync().WaitAsync(timeout ?? TimeSpan.FromSeconds(60));
+            await Monstertacle.Multisession.ValidationHost.ProcessExitWait.WaitAsync(process, timeout ?? TimeSpan.FromSeconds(60));
             return new(process.ExitCode, await output, await error);
         }
         finally
         {
             if (!process.HasExited) { process.Kill(true); }
-            await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5));
+            await Monstertacle.Multisession.ValidationHost.ProcessExitWait.WaitAsync(process, TimeSpan.FromSeconds(5));
         }
     }
 }

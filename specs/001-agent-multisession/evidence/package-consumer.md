@@ -1,5 +1,20 @@
 # Tatsächlicher Konsum lokaler NuGets
 
+Finaler technischer Kandidat7489450 mit Source dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b:
+quality40968636580 vollständig grün; [canonical-package-final.json](canonical-package-final.json)
+enthält beide vollständigen Consumerreports und verifizierten gemeinsamen
+Sechserhashsatz. Erneut zwei Sitzungen/fünf Requests/fünf Reopens je OS.
+Das schließt den technischen Paketkonsum, nicht den fremden Integrator T106.
+
+Aktueller nativer Checkpoint: quality40966982840 am Source2c5fd5. Ubuntu und Windows
+haben dasselbe kanonische Sechserartefakt konsumiert; unabhängiger Digestvergleich
+[canonical-package-checkpoint.json](canonical-package-checkpoint.json) PASS.
+Alle sechs File/SHA256 stimmen beim Produzenten und beiden Konsumenten überein,
+jeweils zwei Sitzungen/fünf Requests/fünf Reopens. Die sechs Kanonarchive stammen
+aus genau einem Linuxproduzenten, nicht aus behaupteter binärer Reproduzierbarkeit
+zweier Builds. Beide neuen Required Checks sind nach realem Green erzwungen.
+Der folgende lokale Bericht bleibt historisch; finaler Stand siehe build-audit.md.
+
 Prüfstand dokumentiert am 2026-10-29T19:45:52Z. Befehl:
 `bash /home/user1/dev/scripts/run-capped.sh -- pwsh -NoProfile -File eng/PackageSmoke.ps1`.
 Erfolgreicher frischer Workspace:

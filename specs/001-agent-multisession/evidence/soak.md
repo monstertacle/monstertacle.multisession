@@ -1,5 +1,29 @@
 # Tatsächlicher Stundenlauf und verbleibende Zielsystemabnahme
 
+## Native Stundencheckpoints mit vollständigen Receipt-Rohdaten
+
+Unabhängig geprüft 2026-10-29T22:51:14.7751785Z laut JSON-Messung: Workflow40954320848 bestand auf Ubuntu24.04
+und WindowsServer2025. [hour-checkpoint.json](hour-checkpoint.json) enthält sämtliche
+Original-IDs/monotonen Receipt-Offsets, Hostdigests, Originalzeiten und getrennt
+readonly geprüfte SQLitegraphzahlen. Linux36000001186Ticks=3600.0001186s,
+Windows36000148308Ticks=3600.0148308s; jeweils60 eindeutige Originalanfragen,
+60 unterschiedliche Minutenfenster0..59,60 nach Wiederöffnung bestätigte Erfolge,
+60 Result-/Historyzeilen und keine aktive Reservierung. Die60 freigegebenen
+Reservationshistorienzeilen bleiben korrekt erhalten; Gesamtzeilenzahl ist kein
+Maß für aktive Reservierungen.
+
+Quellstand322c7a7c ist ein Checkpoint, kein Beleg für spätere Änderungen.
+Prüfer eng/Test-SoakProof.ps1 gegen heruntergeladene unveränderte Hostassembly;
+zusätzlicher externer BCL-PowerShell-/sqlite3-readonly-Abgleich unter
+/home/user1/dev/.agenttemp/multisession-acceptance-checks.ps1. Ein erster
+Hilfsskriptversuch interpretierte mehrzeiliges JSON falsch, ein zweiter zählte
+freigegebene statt aktive Reservationszeilen. Beide korrigiert; dies sind
+Prüfgerüstfehler, keine Produkt-Redfälle oder verschwiegene verlorene Requests.
+Kein Herstellerzugang genutzt. T120 ist damit für das messbare Receiptformat
+nachgewiesen; T100 verlangt weiter die vollständige finale Dreisystemmatrix.
+
+## Älterer lokaler Prototyp
+
 Belegstand 2026-10-29T20:43:15Z. Ein eingefrorener Zwischenstand bestand den
 öffentlichen CLI-Aufruf `--scenario soak` auf dem lokalen Debian 13 x64.
 Start 2026-10-29T19:38:57.204832Z, Ende 2026-10-29T20:38:57.2071284Z;

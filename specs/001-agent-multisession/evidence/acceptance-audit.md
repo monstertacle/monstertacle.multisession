@@ -1,5 +1,23 @@
 # Einzelabgleich implementierter Aufgaben
 
+Aktueller Nachtrag2026-10-29T23:04:34Z: Source dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b,
+native Quality40968636580/Guard40968636533/Audit40969224192 erfolgreich,
+1036Linux-/1042Windowstests,97,5796/97,5325 %. build-native.json enthält Rohzuordnung.
+T088/T092 durch31Linuxfälle plus tatsächliche finale Bindalias-/ramfs-/ABIprobe
+belegt; T091 implementiert und37native Serverfälle grün, vollständiges Windows11
+bleibt T087/T093/T099. T102/T103: vollständiger Guard/benannte ABIwerte mit grüner
+Ausgangs-/Folgesuite, Berichte codemetr-results.md/refactoring.md. T107/T108 sind
+ausgeführte Audits mit ausdrücklich offenen Befunden, keine Freigabe; T109 gegen
+SessionRuntime/ISessions/IRequests/SubmitRequest/SessionExecutionContext und beide
+Providercontracts samt tatsächlicher Paketvorlage abgeglichen. T111 besitzt sechs
+wirklich erzwungene grüne native Checks. T120 ist anhand beider tatsächlichen
+Receiptstunden plus unabhängigem SQL erfüllt; finale Dreisystemmatrix bleibtT100.
+T121 hat konkrete Auth-/Expiry-/Model-/Binding-/Cause-/Reopentests und volle native
+Bestätigung; keine fremde Recoveryblockade automatisch gelöscht. T123/T125 bleiben
+als konkrete offene Folgeaufträge in remaining-acceptance.md/tasks.md erhalten.
+Kanonische Archive auf beiden OS identisch (canonical-package-final.json); T124
+wartet noch auf die laufende neue Stunde. Frühere Teilschnitttexte bleiben historisch.
+
 Gemessen 2026-10-29T22:03:25Z. Ausdrückliche Selbstprüfung der ausführenden
 Gesamtimplementierung. Kandidat:451ce8c, Sourcehash
 95780bfa75c745cd0adb804e0a1ac3dfcea6474169900c8ab402990248e40f5b.

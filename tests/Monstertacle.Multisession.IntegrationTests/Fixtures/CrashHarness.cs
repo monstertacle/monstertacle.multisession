@@ -52,7 +52,7 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
     public async Task KillAsync()
     {
         if (!process.HasExited) { process.Kill(true); }
-        await process.WaitForExitAsync().WaitAsync(_processLimit);
+        await ProcessExitWait.WaitAsync(process, _processLimit);
         await WaitForFileReleaseAsync(process.StartInfo.WorkingDirectory);
     }
 

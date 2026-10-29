@@ -1,0 +1,666 @@
+{
+  "Status": "PASS",
+  "MeasuredUtc": "2026-10-29T22:51:14.7751785+00:00",
+  "WorkflowRun": 40954320848,
+  "Scope": "Exact hour receipts and host digest; separate readonly SQLite identities, results, history and reservations. No live provider.",
+  "Platforms": [
+    {
+      "Platform": "linux",
+      "Candidate": {
+        "SourceHash": "322c7a7ca2900d834776cd2da5026900f2093a2dfbf1126b4ec7fc99270c1454",
+        "Platform": "linux",
+        "StartedUtc": "2026-10-29T22:02:43.6691511+01:00"
+      },
+      "Proof": {
+        "StartedUtc": "2026-10-29T22:05:09.431747+01:00",
+        "EndedUtc": "2026-10-29T23:05:09.4318598+01:00",
+        "ElapsedTicks": 36000001186,
+        "HostAssemblySha256": "1c6af6bb1c6fc924fd81fec47eb38597b33a1d03c11c931fa5e3115e6c2729fd",
+        "RequestIds": [
+          "9f67cb47-961a-4d50-a9d4-48d757968d92",
+          "0f95d03e-b820-4715-b540-2920f3f05c3d",
+          "323b4d7f-11d3-4495-8e54-9b6fa04c8746",
+          "374ce0d4-5770-42c6-829e-c702bc45964a",
+          "564ef935-f5af-48ec-bc99-c09d910ede52",
+          "7dba091e-a8b4-40df-8fcd-b715a2077b35",
+          "81e984e9-4a5b-4ceb-89f8-96abaf8af82c",
+          "7338cbea-6998-4297-84f4-f7ef17729221",
+          "d5f0b543-42e8-4f76-b161-6d35132892f3",
+          "40a9bacd-3c3d-4889-a00e-cd933dacb029",
+          "166502cd-dd4d-4a15-a381-4c01fdf17b90",
+          "81ec4bc5-2363-4594-b6f3-52a0a17104ef",
+          "04838253-111c-4670-94d4-efeab7d8248e",
+          "d43b010f-3a4b-4f98-8f6c-e0f9ad11d0ba",
+          "d5f86c41-d37a-4606-bdec-c882975d7725",
+          "5fdd8a4e-a64a-4a27-b1fc-28f82894098a",
+          "95626497-493f-4739-ab0f-9104962b1bac",
+          "b688ed3e-68e5-4c2c-b3e0-fb7c0a392ba7",
+          "8539a7d7-65d5-4001-b01a-d6b617d29e60",
+          "d8e5c0ef-3520-435d-8e69-05ded461bad5",
+          "1a668b1f-0045-4f15-84dc-1e2a37fa9ecb",
+          "06d7f845-d8a1-40b5-b734-ae5336441d7b",
+          "5e3ff1e3-c292-4afd-952e-1e96fd5bb480",
+          "e8375734-cb65-4ad2-af4a-ea887980dca3",
+          "90df31ec-054c-4195-ad79-b0d76a3dca32",
+          "55f99ec8-0e51-443f-824a-ba6003d90f30",
+          "701d3b6a-506c-4293-9768-bd28d9cd7bdb",
+          "80e61837-dde6-43fc-8529-fcf49111c684",
+          "202f3211-470e-41a6-9d29-a9d3fc8a9f66",
+          "3dbc4c59-f3aa-43e9-ab27-2361503449b1",
+          "693efc10-757b-477b-8d15-bc4e3f4a2183",
+          "690d04b2-d605-4dad-9a4f-74face7e88ad",
+          "f665a9f6-796a-4d70-a097-94fbec873534",
+          "b0258234-a6c0-4748-b460-dd807eeedb9f",
+          "694ffba4-f6ce-4f9a-a6b9-7cad0766b631",
+          "cea6ad4f-ebfa-46b0-8027-a1d6ab0a9a90",
+          "e35ed9ac-7411-4d57-8c7d-caf21dc7c7c5",
+          "3f511c9d-5316-46eb-af7b-d729d7a8daa1",
+          "6cf66f60-6525-47c7-825c-2e8cde1d744a",
+          "c0c187b0-f1de-484b-9b60-7d83f2f79913",
+          "bd264676-d1e4-4740-b337-9dbe502a0899",
+          "d43ab838-2564-45e2-b1c2-fa004289e6e1",
+          "7c1f2f99-759f-4cc6-ba68-7a1492f3f4ea",
+          "094300a7-4c2a-4c2f-a540-cffbd4a94d82",
+          "88d96a51-9e48-49d8-81a2-2d1167ab5b0d",
+          "962104ac-ff7a-48c6-8aee-b3d099411bc3",
+          "cf41959a-1fe1-4923-86c6-e98bd2a678fa",
+          "f1f07104-32f9-4900-af2a-5d8ff1134a00",
+          "b6ab2a82-0a9d-486a-bcc6-a380ad8344c0",
+          "35968300-9034-46ee-b958-d3b0912d1b1f",
+          "6a1b0611-c632-4ee1-b78c-9d9de06b8347",
+          "5153f20d-3dc9-4f20-8bfd-087edce4dfcd",
+          "42ff225e-b3e4-459e-b7bb-2f9455dd4a3c",
+          "ea4332ab-70dd-40f6-b007-8dbd4c63bae4",
+          "3f14b1c5-91c4-4018-973c-dccafe7c9419",
+          "6c8cbe2a-123a-458c-9352-590f89739d56",
+          "91d99b9d-85a7-442e-aa21-22e01fadeff2",
+          "e768571c-7eba-448e-9f1f-c3bd3920e65a",
+          "b03fce84-49d3-4cd4-b19a-0ff7dd9da42d",
+          "125fcd75-052d-4112-a895-27f421f8265e"
+        ],
+        "Acceptances": [
+          {
+            "RequestId": "9f67cb47-961a-4d50-a9d4-48d757968d92",
+            "ElapsedTicks": 1685030
+          },
+          {
+            "RequestId": "0f95d03e-b820-4715-b540-2920f3f05c3d",
+            "ElapsedTicks": 600030621
+          },
+          {
+            "RequestId": "323b4d7f-11d3-4495-8e54-9b6fa04c8746",
+            "ElapsedTicks": 1200021061
+          },
+          {
+            "RequestId": "374ce0d4-5770-42c6-829e-c702bc45964a",
+            "ElapsedTicks": 1800024960
+          },
+          {
+            "RequestId": "564ef935-f5af-48ec-bc99-c09d910ede52",
+            "ElapsedTicks": 2400010711
+          },
+          {
+            "RequestId": "7dba091e-a8b4-40df-8fcd-b715a2077b35",
+            "ElapsedTicks": 3000010176
+          },
+          {
+            "RequestId": "81e984e9-4a5b-4ceb-89f8-96abaf8af82c",
+            "ElapsedTicks": 3600011072
+          },
+          {
+            "RequestId": "7338cbea-6998-4297-84f4-f7ef17729221",
+            "ElapsedTicks": 4200016617
+          },
+          {
+            "RequestId": "d5f0b543-42e8-4f76-b161-6d35132892f3",
+            "ElapsedTicks": 4800022522
+          },
+          {
+            "RequestId": "40a9bacd-3c3d-4889-a00e-cd933dacb029",
+            "ElapsedTicks": 5400011695
+          },
+          {
+            "RequestId": "166502cd-dd4d-4a15-a381-4c01fdf17b90",
+            "ElapsedTicks": 6000024556
+          },
+          {
+            "RequestId": "81ec4bc5-2363-4594-b6f3-52a0a17104ef",
+            "ElapsedTicks": 6600025646
+          },
+          {
+            "RequestId": "04838253-111c-4670-94d4-efeab7d8248e",
+            "ElapsedTicks": 7200021201
+          },
+          {
+            "RequestId": "d43b010f-3a4b-4f98-8f6c-e0f9ad11d0ba",
+            "ElapsedTicks": 7800027376
+          },
+          {
+            "RequestId": "d5f86c41-d37a-4606-bdec-c882975d7725",
+            "ElapsedTicks": 8400071821
+          },
+          {
+            "RequestId": "5fdd8a4e-a64a-4a27-b1fc-28f82894098a",
+            "ElapsedTicks": 9000020082
+          },
+          {
+            "RequestId": "95626497-493f-4739-ab0f-9104962b1bac",
+            "ElapsedTicks": 9600011218
+          },
+          {
+            "RequestId": "b688ed3e-68e5-4c2c-b3e0-fb7c0a392ba7",
+            "ElapsedTicks": 10200018855
+          },
+          {
+            "RequestId": "8539a7d7-65d5-4001-b01a-d6b617d29e60",
+            "ElapsedTicks": 10800011000
+          },
+          {
+            "RequestId": "d8e5c0ef-3520-435d-8e69-05ded461bad5",
+            "ElapsedTicks": 11400018856
+          },
+          {
+            "RequestId": "1a668b1f-0045-4f15-84dc-1e2a37fa9ecb",
+            "ElapsedTicks": 12000019894
+          },
+          {
+            "RequestId": "06d7f845-d8a1-40b5-b734-ae5336441d7b",
+            "ElapsedTicks": 12600027103
+          },
+          {
+            "RequestId": "5e3ff1e3-c292-4afd-952e-1e96fd5bb480",
+            "ElapsedTicks": 13200011445
+          },
+          {
+            "RequestId": "e8375734-cb65-4ad2-af4a-ea887980dca3",
+            "ElapsedTicks": 13800006340
+          },
+          {
+            "RequestId": "90df31ec-054c-4195-ad79-b0d76a3dca32",
+            "ElapsedTicks": 14400011468
+          },
+          {
+            "RequestId": "55f99ec8-0e51-443f-824a-ba6003d90f30",
+            "ElapsedTicks": 15000024294
+          },
+          {
+            "RequestId": "701d3b6a-506c-4293-9768-bd28d9cd7bdb",
+            "ElapsedTicks": 15600028904
+          },
+          {
+            "RequestId": "80e61837-dde6-43fc-8529-fcf49111c684",
+            "ElapsedTicks": 16200018816
+          },
+          {
+            "RequestId": "202f3211-470e-41a6-9d29-a9d3fc8a9f66",
+            "ElapsedTicks": 16800011395
+          },
+          {
+            "RequestId": "3dbc4c59-f3aa-43e9-ab27-2361503449b1",
+            "ElapsedTicks": 17400024090
+          },
+          {
+            "RequestId": "693efc10-757b-477b-8d15-bc4e3f4a2183",
+            "ElapsedTicks": 18000018298
+          },
+          {
+            "RequestId": "690d04b2-d605-4dad-9a4f-74face7e88ad",
+            "ElapsedTicks": 18600013867
+          },
+          {
+            "RequestId": "f665a9f6-796a-4d70-a097-94fbec873534",
+            "ElapsedTicks": 19200035657
+          },
+          {
+            "RequestId": "b0258234-a6c0-4748-b460-dd807eeedb9f",
+            "ElapsedTicks": 19800021637
+          },
+          {
+            "RequestId": "694ffba4-f6ce-4f9a-a6b9-7cad0766b631",
+            "ElapsedTicks": 20400012487
+          },
+          {
+            "RequestId": "cea6ad4f-ebfa-46b0-8027-a1d6ab0a9a90",
+            "ElapsedTicks": 21000029695
+          },
+          {
+            "RequestId": "e35ed9ac-7411-4d57-8c7d-caf21dc7c7c5",
+            "ElapsedTicks": 21600016714
+          },
+          {
+            "RequestId": "3f511c9d-5316-46eb-af7b-d729d7a8daa1",
+            "ElapsedTicks": 22200014729
+          },
+          {
+            "RequestId": "6cf66f60-6525-47c7-825c-2e8cde1d744a",
+            "ElapsedTicks": 22800019127
+          },
+          {
+            "RequestId": "c0c187b0-f1de-484b-9b60-7d83f2f79913",
+            "ElapsedTicks": 23400006906
+          },
+          {
+            "RequestId": "bd264676-d1e4-4740-b337-9dbe502a0899",
+            "ElapsedTicks": 24000029068
+          },
+          {
+            "RequestId": "d43ab838-2564-45e2-b1c2-fa004289e6e1",
+            "ElapsedTicks": 24600020116
+          },
+          {
+            "RequestId": "7c1f2f99-759f-4cc6-ba68-7a1492f3f4ea",
+            "ElapsedTicks": 25200009983
+          },
+          {
+            "RequestId": "094300a7-4c2a-4c2f-a540-cffbd4a94d82",
+            "ElapsedTicks": 25800004847
+          },
+          {
+            "RequestId": "88d96a51-9e48-49d8-81a2-2d1167ab5b0d",
+            "ElapsedTicks": 26400022014
+          },
+          {
+            "RequestId": "962104ac-ff7a-48c6-8aee-b3d099411bc3",
+            "ElapsedTicks": 27000011718
+          },
+          {
+            "RequestId": "cf41959a-1fe1-4923-86c6-e98bd2a678fa",
+            "ElapsedTicks": 27600028738
+          },
+          {
+            "RequestId": "f1f07104-32f9-4900-af2a-5d8ff1134a00",
+            "ElapsedTicks": 28200007272
+          },
+          {
+            "RequestId": "b6ab2a82-0a9d-486a-bcc6-a380ad8344c0",
+            "ElapsedTicks": 28800020418
+          },
+          {
+            "RequestId": "35968300-9034-46ee-b958-d3b0912d1b1f",
+            "ElapsedTicks": 29400018139
+          },
+          {
+            "RequestId": "6a1b0611-c632-4ee1-b78c-9d9de06b8347",
+            "ElapsedTicks": 30000008982
+          },
+          {
+            "RequestId": "5153f20d-3dc9-4f20-8bfd-087edce4dfcd",
+            "ElapsedTicks": 30600045947
+          },
+          {
+            "RequestId": "42ff225e-b3e4-459e-b7bb-2f9455dd4a3c",
+            "ElapsedTicks": 31200021664
+          },
+          {
+            "RequestId": "ea4332ab-70dd-40f6-b007-8dbd4c63bae4",
+            "ElapsedTicks": 31800015802
+          },
+          {
+            "RequestId": "3f14b1c5-91c4-4018-973c-dccafe7c9419",
+            "ElapsedTicks": 32400036050
+          },
+          {
+            "RequestId": "6c8cbe2a-123a-458c-9352-590f89739d56",
+            "ElapsedTicks": 33000003703
+          },
+          {
+            "RequestId": "91d99b9d-85a7-442e-aa21-22e01fadeff2",
+            "ElapsedTicks": 33600019771
+          },
+          {
+            "RequestId": "e768571c-7eba-448e-9f1f-c3bd3920e65a",
+            "ElapsedTicks": 34200014471
+          },
+          {
+            "RequestId": "b03fce84-49d3-4cd4-b19a-0ff7dd9da42d",
+            "ElapsedTicks": 34800008638
+          },
+          {
+            "RequestId": "125fcd75-052d-4112-a895-27f421f8265e",
+            "ElapsedTicks": 35400004401
+          }
+        ],
+        "ReopenedRequests": 60
+      },
+      "PersistedCounts": {
+        "Sessions": 1,
+        "Results": 60,
+        "History": 60,
+        "ReservationHistory": 60,
+        "Reservations": 0
+      },
+      "EvidenceSha256": "611344173a872cea54de0d7f5184d696a86bc09e254c3b6483a51277d97e08e9",
+      "DatabaseSha256": "a9b3cdb7b0d2c5f9037036e71521a2d981ead5bc89ab9b979fd29ad4aa4cb5c0",
+      "IndependentStatus": "PASS"
+    },
+    {
+      "Platform": "windows",
+      "Candidate": {
+        "SourceHash": "322c7a7ca2900d834776cd2da5026900f2093a2dfbf1126b4ec7fc99270c1454",
+        "Platform": "windows",
+        "StartedUtc": "2026-10-29T22:03:27.206472+01:00"
+      },
+      "Proof": {
+        "StartedUtc": "2026-10-29T22:09:20.5707482+01:00",
+        "EndedUtc": "2026-10-29T23:09:20.6829325+01:00",
+        "ElapsedTicks": 36000148308,
+        "HostAssemblySha256": "c77ae2db291b26a72935b8dba0d429f6a915375ffb64f8d4f7009e409cd0a027",
+        "RequestIds": [
+          "4cfe91fc-4f72-4e6e-b558-2fac7d89d423",
+          "95a9e2c2-33e5-4c3a-9c67-d75e5742e126",
+          "d50f5b6d-8f06-4bc8-a3b7-3001dc4f94a0",
+          "b87fc970-0cc8-49cd-929b-10f880aedf90",
+          "565c846c-a3ff-4ecf-9487-905cf032f7cb",
+          "11c388ed-02ba-4852-96ff-729041fc1312",
+          "9ad4fc09-55fc-4d7d-a539-9d5f9ced050d",
+          "08e18299-fe9d-4e01-8d4f-0878ea6a08e8",
+          "64067236-fa49-4fcd-b0d2-dd19618e0000",
+          "c0aafb4f-b23e-4933-a455-b29d7fa738fc",
+          "3fb074dd-dc78-4127-9ad2-649a1c288a99",
+          "7b58e0df-ea18-41fc-bfbb-f84ff86d2ea0",
+          "f0458722-78b4-4d33-a89f-a3f472615560",
+          "8d382625-183d-42c3-97fc-b8a8b5c6af74",
+          "0addd086-4e6b-4480-934d-91922fb33a0b",
+          "11934d1a-e73a-47a7-b944-6ea3d50ce10d",
+          "178a34b2-2822-403d-81f2-1afc08795a74",
+          "b6025dbc-51b2-4056-b690-736d3a650455",
+          "d3da4278-e407-4c89-b548-e0897a68898f",
+          "3d0ab1c0-c58e-488b-acab-a787637704a1",
+          "496cc0f3-24a6-4ea6-a502-3b75528a0ae5",
+          "01d29c54-4059-412a-a791-38bdc18cb771",
+          "42b61093-abfb-459b-adea-24e2412ac1b3",
+          "ae21022b-f7d8-4ff1-9649-42e5d7db03f7",
+          "452f44e3-0c11-43f6-b6e8-f104e14123f8",
+          "049cb53a-c25a-49c5-a1ee-a92904e7ba2c",
+          "e2eac861-1cb9-41b8-91be-842420316386",
+          "570313e1-ac98-454b-b099-6fb1632343a3",
+          "c448bd70-bd71-4459-914b-5f827d0b98d3",
+          "034fe4bf-1205-4a12-a150-9b39e7afa8ba",
+          "9aab8029-b752-4b0d-9d4d-acd7f98f1a22",
+          "c159f1c4-8bda-42bf-9300-dcbf0e4d58db",
+          "9d01b641-e279-4532-a5d6-c0e0e6c4aaf5",
+          "b1982374-aee1-44b3-9e37-b8de49b61d12",
+          "7489e989-21a8-4c86-928e-a003f9533375",
+          "89caa10b-f835-49fc-8de6-50db4ae2ffb2",
+          "4b499f5e-640d-4a7f-8735-4955ee4b9c22",
+          "21e9304f-7971-4521-bdb1-6c6e06e1dc64",
+          "cd14c838-17a8-4706-839c-b0824f751ea8",
+          "3e98e36d-b5b8-48a6-82a3-e07d7324ddf0",
+          "fed2e4d8-391a-4719-8cc8-d373879a8c26",
+          "d77e3375-5f62-4f7c-ae2d-3607e3b45b21",
+          "81edf799-2e64-4f34-b70c-471baa269b1d",
+          "4e2648e3-f501-4c4f-8e2e-38e2d66ab139",
+          "81a88222-8a16-432e-a254-337ac01f06b8",
+          "e5adb1ac-c5d8-453c-b8a9-2524535dbe3b",
+          "76cad28f-12d9-40a0-ae1b-7cc2af32bd61",
+          "a5feb622-8c3d-49a6-ac93-4b05d4bfe60b",
+          "9fd48526-b311-4722-a480-fe8355e03985",
+          "6f595726-483a-4f76-991a-ab1d45b0db27",
+          "021b6bb0-3734-4194-83a4-ac908e57eb6f",
+          "e7bbb2bb-43bc-417c-9386-997399960789",
+          "08cb4fdf-7095-4846-9b03-2a1752062924",
+          "885965a7-f1df-4ba5-ba97-1c1a56e46f51",
+          "d33d8ea4-e33e-4939-a161-705e47595521",
+          "2fdbfd8b-3224-4a46-a4bf-d9521c1d364f",
+          "cd16801f-6577-470e-afe7-95a13aa6a587",
+          "08c44e25-a334-4ad4-824d-6e7b73a0f611",
+          "d613dcef-53f7-49c7-9c8c-90b76d4cbbb8",
+          "dfcb5449-cca4-4cbd-afc0-728cd8a8813e"
+        ],
+        "Acceptances": [
+          {
+            "RequestId": "4cfe91fc-4f72-4e6e-b558-2fac7d89d423",
+            "ElapsedTicks": 2961687
+          },
+          {
+            "RequestId": "95a9e2c2-33e5-4c3a-9c67-d75e5742e126",
+            "ElapsedTicks": 600434612
+          },
+          {
+            "RequestId": "d50f5b6d-8f06-4bc8-a3b7-3001dc4f94a0",
+            "ElapsedTicks": 1201331992
+          },
+          {
+            "RequestId": "b87fc970-0cc8-49cd-929b-10f880aedf90",
+            "ElapsedTicks": 1802668400
+          },
+          {
+            "RequestId": "565c846c-a3ff-4ecf-9487-905cf032f7cb",
+            "ElapsedTicks": 2400440203
+          },
+          {
+            "RequestId": "11c388ed-02ba-4852-96ff-729041fc1312",
+            "ElapsedTicks": 3000483429
+          },
+          {
+            "RequestId": "9ad4fc09-55fc-4d7d-a539-9d5f9ced050d",
+            "ElapsedTicks": 3600496877
+          },
+          {
+            "RequestId": "08e18299-fe9d-4e01-8d4f-0878ea6a08e8",
+            "ElapsedTicks": 4204322388
+          },
+          {
+            "RequestId": "64067236-fa49-4fcd-b0d2-dd19618e0000",
+            "ElapsedTicks": 4800444687
+          },
+          {
+            "RequestId": "c0aafb4f-b23e-4933-a455-b29d7fa738fc",
+            "ElapsedTicks": 5400603622
+          },
+          {
+            "RequestId": "3fb074dd-dc78-4127-9ad2-649a1c288a99",
+            "ElapsedTicks": 6000441714
+          },
+          {
+            "RequestId": "7b58e0df-ea18-41fc-bfbb-f84ff86d2ea0",
+            "ElapsedTicks": 6600415299
+          },
+          {
+            "RequestId": "f0458722-78b4-4d33-a89f-a3f472615560",
+            "ElapsedTicks": 7200449908
+          },
+          {
+            "RequestId": "8d382625-183d-42c3-97fc-b8a8b5c6af74",
+            "ElapsedTicks": 7800447965
+          },
+          {
+            "RequestId": "0addd086-4e6b-4480-934d-91922fb33a0b",
+            "ElapsedTicks": 8400385604
+          },
+          {
+            "RequestId": "11934d1a-e73a-47a7-b944-6ea3d50ce10d",
+            "ElapsedTicks": 9000412004
+          },
+          {
+            "RequestId": "178a34b2-2822-403d-81f2-1afc08795a74",
+            "ElapsedTicks": 9600571233
+          },
+          {
+            "RequestId": "b6025dbc-51b2-4056-b690-736d3a650455",
+            "ElapsedTicks": 10200417976
+          },
+          {
+            "RequestId": "d3da4278-e407-4c89-b548-e0897a68898f",
+            "ElapsedTicks": 10800428915
+          },
+          {
+            "RequestId": "3d0ab1c0-c58e-488b-acab-a787637704a1",
+            "ElapsedTicks": 11400519569
+          },
+          {
+            "RequestId": "496cc0f3-24a6-4ea6-a502-3b75528a0ae5",
+            "ElapsedTicks": 12000384155
+          },
+          {
+            "RequestId": "01d29c54-4059-412a-a791-38bdc18cb771",
+            "ElapsedTicks": 12600393689
+          },
+          {
+            "RequestId": "42b61093-abfb-459b-adea-24e2412ac1b3",
+            "ElapsedTicks": 13200422772
+          },
+          {
+            "RequestId": "ae21022b-f7d8-4ff1-9649-42e5d7db03f7",
+            "ElapsedTicks": 13800370542
+          },
+          {
+            "RequestId": "452f44e3-0c11-43f6-b6e8-f104e14123f8",
+            "ElapsedTicks": 14400637381
+          },
+          {
+            "RequestId": "049cb53a-c25a-49c5-a1ee-a92904e7ba2c",
+            "ElapsedTicks": 15000402191
+          },
+          {
+            "RequestId": "e2eac861-1cb9-41b8-91be-842420316386",
+            "ElapsedTicks": 15600417062
+          },
+          {
+            "RequestId": "570313e1-ac98-454b-b099-6fb1632343a3",
+            "ElapsedTicks": 16200425831
+          },
+          {
+            "RequestId": "c448bd70-bd71-4459-914b-5f827d0b98d3",
+            "ElapsedTicks": 16800596899
+          },
+          {
+            "RequestId": "034fe4bf-1205-4a12-a150-9b39e7afa8ba",
+            "ElapsedTicks": 17400388011
+          },
+          {
+            "RequestId": "9aab8029-b752-4b0d-9d4d-acd7f98f1a22",
+            "ElapsedTicks": 18000460785
+          },
+          {
+            "RequestId": "c159f1c4-8bda-42bf-9300-dcbf0e4d58db",
+            "ElapsedTicks": 18600439903
+          },
+          {
+            "RequestId": "9d01b641-e279-4532-a5d6-c0e0e6c4aaf5",
+            "ElapsedTicks": 19200370875
+          },
+          {
+            "RequestId": "b1982374-aee1-44b3-9e37-b8de49b61d12",
+            "ElapsedTicks": 19800386390
+          },
+          {
+            "RequestId": "7489e989-21a8-4c86-928e-a003f9533375",
+            "ElapsedTicks": 20400548273
+          },
+          {
+            "RequestId": "89caa10b-f835-49fc-8de6-50db4ae2ffb2",
+            "ElapsedTicks": 21000583121
+          },
+          {
+            "RequestId": "4b499f5e-640d-4a7f-8735-4955ee4b9c22",
+            "ElapsedTicks": 21600362604
+          },
+          {
+            "RequestId": "21e9304f-7971-4521-bdb1-6c6e06e1dc64",
+            "ElapsedTicks": 22200541798
+          },
+          {
+            "RequestId": "cd14c838-17a8-4706-839c-b0824f751ea8",
+            "ElapsedTicks": 22800380626
+          },
+          {
+            "RequestId": "3e98e36d-b5b8-48a6-82a3-e07d7324ddf0",
+            "ElapsedTicks": 23400409673
+          },
+          {
+            "RequestId": "fed2e4d8-391a-4719-8cc8-d373879a8c26",
+            "ElapsedTicks": 24000429113
+          },
+          {
+            "RequestId": "d77e3375-5f62-4f7c-ae2d-3607e3b45b21",
+            "ElapsedTicks": 24600521661
+          },
+          {
+            "RequestId": "81edf799-2e64-4f34-b70c-471baa269b1d",
+            "ElapsedTicks": 25200468069
+          },
+          {
+            "RequestId": "4e2648e3-f501-4c4f-8e2e-38e2d66ab139",
+            "ElapsedTicks": 25800438724
+          },
+          {
+            "RequestId": "81a88222-8a16-432e-a254-337ac01f06b8",
+            "ElapsedTicks": 26400433530
+          },
+          {
+            "RequestId": "e5adb1ac-c5d8-453c-b8a9-2524535dbe3b",
+            "ElapsedTicks": 27000508923
+          },
+          {
+            "RequestId": "76cad28f-12d9-40a0-ae1b-7cc2af32bd61",
+            "ElapsedTicks": 27600407903
+          },
+          {
+            "RequestId": "a5feb622-8c3d-49a6-ac93-4b05d4bfe60b",
+            "ElapsedTicks": 28200514527
+          },
+          {
+            "RequestId": "9fd48526-b311-4722-a480-fe8355e03985",
+            "ElapsedTicks": 28800573628
+          },
+          {
+            "RequestId": "6f595726-483a-4f76-991a-ab1d45b0db27",
+            "ElapsedTicks": 29400409929
+          },
+          {
+            "RequestId": "021b6bb0-3734-4194-83a4-ac908e57eb6f",
+            "ElapsedTicks": 30000467688
+          },
+          {
+            "RequestId": "e7bbb2bb-43bc-417c-9386-997399960789",
+            "ElapsedTicks": 30600416701
+          },
+          {
+            "RequestId": "08cb4fdf-7095-4846-9b03-2a1752062924",
+            "ElapsedTicks": 31200401118
+          },
+          {
+            "RequestId": "885965a7-f1df-4ba5-ba97-1c1a56e46f51",
+            "ElapsedTicks": 31800469323
+          },
+          {
+            "RequestId": "d33d8ea4-e33e-4939-a161-705e47595521",
+            "ElapsedTicks": 32400592470
+          },
+          {
+            "RequestId": "2fdbfd8b-3224-4a46-a4bf-d9521c1d364f",
+            "ElapsedTicks": 33000671214
+          },
+          {
+            "RequestId": "cd16801f-6577-470e-afe7-95a13aa6a587",
+            "ElapsedTicks": 33600561977
+          },
+          {
+            "RequestId": "08c44e25-a334-4ad4-824d-6e7b73a0f611",
+            "ElapsedTicks": 34200388720
+          },
+          {
+            "RequestId": "d613dcef-53f7-49c7-9c8c-90b76d4cbbb8",
+            "ElapsedTicks": 34800401812
+          },
+          {
+            "RequestId": "dfcb5449-cca4-4cbd-afc0-728cd8a8813e",
+            "ElapsedTicks": 35400423649
+          }
+        ],
+        "ReopenedRequests": 60
+      },
+      "PersistedCounts": {
+        "Sessions": 1,
+        "Results": 60,
+        "History": 60,
+        "ReservationHistory": 60,
+        "Reservations": 0
+      },
+      "EvidenceSha256": "2316b8f567ecc9ee5a7399e0cfea2a7cd89a4d16b70309bc7fe437ffd32f46ef",
+      "DatabaseSha256": "84af14c58cf862aea603d9a664dd199f9fb852eba0abc38f0d859fffd3825c1c",
+      "IndependentStatus": "PASS"
+    }
+  ]
+}

@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="../Monstertacle.Multisession.IntegrationTests/Fixtures/ValidationHostBuild.cs" Link="Fixtures/ValidationHostBuild.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/OwnershipProtocol.cs" Link="Fixtures/OwnershipProtocol.cs" />
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/ProcessExitWait.cs" Link="Fixtures/ProcessExitWait.cs" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
   </ItemGroup>

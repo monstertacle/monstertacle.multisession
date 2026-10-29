@@ -64,6 +64,7 @@ public sealed class OwnedStoreRecoveryTests : IDisposable
         Assert.Equal(ErrorCode.StoreAlreadyOwned,
             Assert.Throws<SessionOperationException>(() => NativeLease.OpenExisting(_path)).Failure.Code);
         await child.KillAsync();
+        Assert.True(child.KernelExitSignaled, "Killed process must signal native termination before returning to store recovery.");
         await using NativeLease reopened = NativeLease.OpenExisting(_path);
         if (unsafeJournal)
         {

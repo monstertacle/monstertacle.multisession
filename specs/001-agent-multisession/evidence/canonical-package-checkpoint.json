@@ -1,0 +1,187 @@
+{
+  "Status": "PASS",
+  "MeasuredUtc": "2026-10-29T22:51:14.9677514+00:00",
+  "WorkflowRun": 40966982840,
+  "Platforms": [
+    {
+      "Platform": "linux",
+      "VerifiedProducer": {
+        "Status": "PASS",
+        "ValidatedUtc": "2026-10-29T23:42:59.7573134+01:00",
+        "ProducerManifestSha256": "16a8f830956000d61a2aea6386881751d48e606348a190653a2b641be090fbf8",
+        "Hashes": [
+          {
+            "File": "Monstertacle.Multisession.Common.0.1.0.nupkg",
+            "Sha256": "1783ad76d995ff7044d77e0cb5c1018e29d0b0436d9ec8e6b2fcfc8d329b87e2"
+          },
+          {
+            "File": "Monstertacle.Multisession.Linux.0.1.0.nupkg",
+            "Sha256": "d629b43b25151059ec783b8749887062a5565f1fac938ea03ef657898e683fbf"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.Gemini.0.1.0.nupkg",
+            "Sha256": "3feb5b0b3b699c86cc4ab924eed6328d9a0dc90f42e2f7b5aaef0bde1d7d0f7a"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.OpenAI.0.1.0.nupkg",
+            "Sha256": "3dc50ba2cee370cae35bedc5fd90ce8570b126e18caa11b4f159e83fc7a77b8d"
+          },
+          {
+            "File": "Monstertacle.Multisession.Storage.Sqlite.0.1.0.nupkg",
+            "Sha256": "95f3695bc8c5f8e984f54df7d9688274d4f005b766571302c23a4b2629941356"
+          },
+          {
+            "File": "Monstertacle.Multisession.Windows.0.1.0.nupkg",
+            "Sha256": "8f9a15e448c93faf4d584b6bd698ba9a9a7afec3d36d94d603e4b5bb2e777e8d"
+          }
+        ]
+      },
+      "Consumer": {
+        "Status": "PASS",
+        "Platform": "Linux",
+        "CompletedUtc": "2026-10-29T23:43:17.5510606+01:00",
+        "Workspace": "/home/runner/dev/.agenttemp/multisession-package-smoke-ea91437011ea4508987249936f0c58d3",
+        "Hashes": [
+          {
+            "File": "Monstertacle.Multisession.Common.0.1.0.nupkg",
+            "Sha256": "1783ad76d995ff7044d77e0cb5c1018e29d0b0436d9ec8e6b2fcfc8d329b87e2"
+          },
+          {
+            "File": "Monstertacle.Multisession.Linux.0.1.0.nupkg",
+            "Sha256": "d629b43b25151059ec783b8749887062a5565f1fac938ea03ef657898e683fbf"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.Gemini.0.1.0.nupkg",
+            "Sha256": "3feb5b0b3b699c86cc4ab924eed6328d9a0dc90f42e2f7b5aaef0bde1d7d0f7a"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.OpenAI.0.1.0.nupkg",
+            "Sha256": "3dc50ba2cee370cae35bedc5fd90ce8570b126e18caa11b4f159e83fc7a77b8d"
+          },
+          {
+            "File": "Monstertacle.Multisession.Storage.Sqlite.0.1.0.nupkg",
+            "Sha256": "95f3695bc8c5f8e984f54df7d9688274d4f005b766571302c23a4b2629941356"
+          },
+          {
+            "File": "Monstertacle.Multisession.Windows.0.1.0.nupkg",
+            "Sha256": "8f9a15e448c93faf4d584b6bd698ba9a9a7afec3d36d94d603e4b5bb2e777e8d"
+          },
+          {
+            "File": "PackageConsumer.cs.txt",
+            "Sha256": "e17984c0c4a8c0b8f053beb3d19a9f2646b89ef5f0e69027ae2696f7a97af615"
+          },
+          {
+            "File": "Program.cs",
+            "Sha256": "e17984c0c4a8c0b8f053beb3d19a9f2646b89ef5f0e69027ae2696f7a97af615"
+          },
+          {
+            "File": "Consumer.csproj",
+            "Sha256": "89b7c7ebfd183588bfb3d3172a02190c17a65fa8cdc7132746d0582b290008d7"
+          },
+          {
+            "File": "NuGet.Config",
+            "Sha256": "ba57e93e61926605ebabb23bcf1290b71cbdc02e705ccacb969564bb3734e9a0"
+          }
+        ],
+        "Consumer": {
+          "Status": "PASS",
+          "Sessions": 2,
+          "Requests": 5,
+          "ReopenedRequests": 5
+        }
+      },
+      "ManifestSha256": "0270cfaf6864ca63042de13ac0015add82b3bfef21a6e47b9c97cc5e9d81d35b",
+      "DigestSet": "Monstertacle.Multisession.Common.0.1.0.nupkg:1783ad76d995ff7044d77e0cb5c1018e29d0b0436d9ec8e6b2fcfc8d329b87e2\nMonstertacle.Multisession.Linux.0.1.0.nupkg:d629b43b25151059ec783b8749887062a5565f1fac938ea03ef657898e683fbf\nMonstertacle.Multisession.Providers.Gemini.0.1.0.nupkg:3feb5b0b3b699c86cc4ab924eed6328d9a0dc90f42e2f7b5aaef0bde1d7d0f7a\nMonstertacle.Multisession.Providers.OpenAI.0.1.0.nupkg:3dc50ba2cee370cae35bedc5fd90ce8570b126e18caa11b4f159e83fc7a77b8d\nMonstertacle.Multisession.Storage.Sqlite.0.1.0.nupkg:95f3695bc8c5f8e984f54df7d9688274d4f005b766571302c23a4b2629941356\nMonstertacle.Multisession.Windows.0.1.0.nupkg:8f9a15e448c93faf4d584b6bd698ba9a9a7afec3d36d94d603e4b5bb2e777e8d"
+    },
+    {
+      "Platform": "windows",
+      "VerifiedProducer": {
+        "Status": "PASS",
+        "ValidatedUtc": "2026-10-29T23:43:29.3316899+01:00",
+        "ProducerManifestSha256": "16a8f830956000d61a2aea6386881751d48e606348a190653a2b641be090fbf8",
+        "Hashes": [
+          {
+            "File": "Monstertacle.Multisession.Common.0.1.0.nupkg",
+            "Sha256": "1783ad76d995ff7044d77e0cb5c1018e29d0b0436d9ec8e6b2fcfc8d329b87e2"
+          },
+          {
+            "File": "Monstertacle.Multisession.Linux.0.1.0.nupkg",
+            "Sha256": "d629b43b25151059ec783b8749887062a5565f1fac938ea03ef657898e683fbf"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.Gemini.0.1.0.nupkg",
+            "Sha256": "3feb5b0b3b699c86cc4ab924eed6328d9a0dc90f42e2f7b5aaef0bde1d7d0f7a"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.OpenAI.0.1.0.nupkg",
+            "Sha256": "3dc50ba2cee370cae35bedc5fd90ce8570b126e18caa11b4f159e83fc7a77b8d"
+          },
+          {
+            "File": "Monstertacle.Multisession.Storage.Sqlite.0.1.0.nupkg",
+            "Sha256": "95f3695bc8c5f8e984f54df7d9688274d4f005b766571302c23a4b2629941356"
+          },
+          {
+            "File": "Monstertacle.Multisession.Windows.0.1.0.nupkg",
+            "Sha256": "8f9a15e448c93faf4d584b6bd698ba9a9a7afec3d36d94d603e4b5bb2e777e8d"
+          }
+        ]
+      },
+      "Consumer": {
+        "Status": "PASS",
+        "Platform": "Windows",
+        "CompletedUtc": "2026-10-29T23:43:47.6248603+01:00",
+        "Workspace": "C:\\Users\\runneradmin\\dev\\.agenttemp\\multisession-package-smoke-6f68a86246c74901aafa10870e47da96",
+        "Hashes": [
+          {
+            "File": "Monstertacle.Multisession.Common.0.1.0.nupkg",
+            "Sha256": "1783ad76d995ff7044d77e0cb5c1018e29d0b0436d9ec8e6b2fcfc8d329b87e2"
+          },
+          {
+            "File": "Monstertacle.Multisession.Linux.0.1.0.nupkg",
+            "Sha256": "d629b43b25151059ec783b8749887062a5565f1fac938ea03ef657898e683fbf"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.Gemini.0.1.0.nupkg",
+            "Sha256": "3feb5b0b3b699c86cc4ab924eed6328d9a0dc90f42e2f7b5aaef0bde1d7d0f7a"
+          },
+          {
+            "File": "Monstertacle.Multisession.Providers.OpenAI.0.1.0.nupkg",
+            "Sha256": "3dc50ba2cee370cae35bedc5fd90ce8570b126e18caa11b4f159e83fc7a77b8d"
+          },
+          {
+            "File": "Monstertacle.Multisession.Storage.Sqlite.0.1.0.nupkg",
+            "Sha256": "95f3695bc8c5f8e984f54df7d9688274d4f005b766571302c23a4b2629941356"
+          },
+          {
+            "File": "Monstertacle.Multisession.Windows.0.1.0.nupkg",
+            "Sha256": "8f9a15e448c93faf4d584b6bd698ba9a9a7afec3d36d94d603e4b5bb2e777e8d"
+          },
+          {
+            "File": "PackageConsumer.cs.txt",
+            "Sha256": "e17984c0c4a8c0b8f053beb3d19a9f2646b89ef5f0e69027ae2696f7a97af615"
+          },
+          {
+            "File": "Program.cs",
+            "Sha256": "e17984c0c4a8c0b8f053beb3d19a9f2646b89ef5f0e69027ae2696f7a97af615"
+          },
+          {
+            "File": "Consumer.csproj",
+            "Sha256": "6d6532f3a33035c48fefb54405f141aef89f8c801c4b5e5a54471afc7003d5cd"
+          },
+          {
+            "File": "NuGet.Config",
+            "Sha256": "c3bebce06a0f4e1fd756602f95bb1e42416e2745a12b357eb5cab25e65e89f43"
+          }
+        ],
+        "Consumer": {
+          "Status": "PASS",
+          "Sessions": 2,
+          "Requests": 5,
+          "ReopenedRequests": 5
+        }
+      },
+      "ManifestSha256": "f53217e3adac9288aa559c040eef52898ef1fc91f10f67b3e7badfb71091f7fd",
+      "DigestSet": "Monstertacle.Multisession.Common.0.1.0.nupkg:1783ad76d995ff7044d77e0cb5c1018e29d0b0436d9ec8e6b2fcfc8d329b87e2\nMonstertacle.Multisession.Linux.0.1.0.nupkg:d629b43b25151059ec783b8749887062a5565f1fac938ea03ef657898e683fbf\nMonstertacle.Multisession.Providers.Gemini.0.1.0.nupkg:3feb5b0b3b699c86cc4ab924eed6328d9a0dc90f42e2f7b5aaef0bde1d7d0f7a\nMonstertacle.Multisession.Providers.OpenAI.0.1.0.nupkg:3dc50ba2cee370cae35bedc5fd90ce8570b126e18caa11b4f159e83fc7a77b8d\nMonstertacle.Multisession.Storage.Sqlite.0.1.0.nupkg:95f3695bc8c5f8e984f54df7d9688274d4f005b766571302c23a4b2629941356\nMonstertacle.Multisession.Windows.0.1.0.nupkg:8f9a15e448c93faf4d584b6bd698ba9a9a7afec3d36d94d603e4b5bb2e777e8d"
+    }
+  ]
+}

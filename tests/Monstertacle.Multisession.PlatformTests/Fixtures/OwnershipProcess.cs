@@ -9,6 +9,7 @@ internal sealed class OwnershipProcess(Process process) : IAsyncDisposable
 {
     private static readonly TimeSpan _limit = TimeSpan.FromSeconds(20);
     internal OwnershipSignal? Signal { get; private set; }
+    internal bool KernelExitSignaled => process.WaitForExit(0);
     internal static async Task<OwnershipProcess> StartAsync(string path, string token, Guid trustScope)
     {
         ProcessStartInfo start = new("dotnet")
@@ -41,7 +42,7 @@ internal sealed class OwnershipProcess(Process process) : IAsyncDisposable
     internal async Task KillAsync()
     {
         if (!process.HasExited) { process.Kill(true); }
-        await process.WaitForExitAsync().WaitAsync(_limit);
+        await ProcessExitWait.WaitAsync(process, _limit);
     }
     public async ValueTask DisposeAsync()
     {

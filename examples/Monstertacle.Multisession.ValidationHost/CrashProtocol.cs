@@ -14,6 +14,16 @@ internal static class CrashProtocol
     internal const string AdapterId = "crash-contract";
     internal const int AdapterVersion = 1;
     internal const string RunningInput = "running-b";
+    internal const string BeforeAcceptance = "before-acceptance";
+    internal const string AfterAcceptance = "after-acceptance";
+    internal const string BeforeWake = "after-acceptance-before-wake";
+    internal const string AfterReservation = "after-reservation-before-send";
+    internal const string BeforeOperationId = "after-external-before-id";
+    internal const string BeforeCompletion = "before-completion-commit";
+    internal const string AfterCompletion = "after-completion-commit";
+
+    internal static bool IsKnown(string point) => point is JournalPoint or RecoveryPoint or BeforeAcceptance or AfterAcceptance
+        or BeforeWake or AfterReservation or BeforeOperationId or BeforeCompletion or AfterCompletion;
 }
 
 internal sealed record CrashSignal(string Barrier, int ProcessId, DateTimeOffset Utc)

@@ -501,3 +501,41 @@ T055/T066 bleiben für gesamte Punkt-/Plattformabnahme offen; SC-009 lokal zusä
 beobachtet. Nächster konkreter Auftrag T048/T050/T051 feine Commit-/Übergabebarrieren,
 Owner ausführende Sitzung. be8cf38 auf Windows/Ubuntu-CI grün:
 quality40871066600,Guard40871066576. Keine Live-/Rechte-/Releasefreigabe.
+
+## Sieben zusätzliche echte Übergabe-/Commitbarrieren
+
+Voranalyse als Erweiterung architecture/2026-10-29-sc009-process.md, Ausgang9fdbda7.
+Bestehendes Childsetup wiederverwendet, ausschließlich bekannte markierte Punktnamen:
+before-acceptance, after-acceptance, after-acceptance-before-wake,
+after-reservation-before-send, after-external-before-id, before-completion-commit,
+after-completion-commit. Eigene kontrollierte Backendantwort, keine Live-API oder
+Produkthooks. Parent killt real und prüft öffentliche Wiederaufnahme anhand Kandidaten-ID.
+
+Vor erstem APIaccept existiert kein Kandidatenrow. Nach dauerhafter Annahme ohne
+Wecksignal bleibt Queued auffindbar und wird nach Start genau einmal gesendet. Nach
+Reservation/unklarer Übergabe bzw. empfangener synthetischer Reply vor lokalem Commit
+bleibt Interrupted/Unknown samt Slot, null erneute Sends. Nach Ergebniscommit bleibt
+Erfolg/Output erhalten, keine Wiederholung. Vor-API-Barriere ist ausdrücklich kein Beleg
+für partiell geschriebene SQLseiten; echtes Hotjournal und reale Teilwrite-/Commitfehler
+wurden getrennt in früheren Abschnitten geprüft. Keine weitergehende Atomicitätsbehauptung.
+
+Alle sieben neuen Fälle wurden sofort grün. Zusammen mit zehn SC009- und zwei Journal-
+fällen: ursprünglicher separater TRX total19,passed19,failed0,notExecuted0 gezählt.
+Zusätzliche Prozessregression bereits testgetrieben implementierter Produktverträge,
+kein künstliches Red. Befehl run-capped/frische MSBuildprozesse: dotnet test IntegrationTests
+-c Release --no-restore --filter CrashBoundaryTests|PersistenceRecoveryTests|CrashJournalTests
+--logger trx --results-directory artifacts/tdd/crash-boundaries.
+Vor Test erzeugtes Manifest LastWriteTimeUtc2026-10-29T12:21:15.7421952Z,
+SHA2562842902ce336826efc4b8b1a5b43816f89a8381bb108069989da66da07011799.
+
+Gesamte Qualität Exit0: artifacts/quality/linux/f46c2f64efce4c9cac7a292f68972108,
+Sourcehashe891465393f62d38a32490fc60f6bbd20a00157ca3a5cbd05baaf401808c2825.
+TRX gezählt577 bestanden:261 Unit/195 Contract/120 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit sauber.
+1977/2045 Produktzeilen=96,6748 Prozent. Full-Guard263 Dateien/269 Typen,
+0 Befunde/Parsefehler/Skips, keine Pin-/Scope-/Grenzwertänderung.
+T048-Infrastruktur jetzt vorbereitet und ausgeführt. T050/T051/T055/T066-Gesamtabnahme
+bleibt mit T054-Retention/Datenträgerfällen, späterem Lifecycle und nativer Plattformmatrix
+abzugleichen. Nächster konkreter AuftragT070/T075 Requestzustandsmatrix als Grundlage für
+Cancel/Stop/Close und Retention; Owner ausführende Gesamtimplementierungssitzung.
+9fdbda7 auf Windows/Ubuntu erfolgreich: quality40872437853,Guard40872437848.

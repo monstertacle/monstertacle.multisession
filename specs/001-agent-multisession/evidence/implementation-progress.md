@@ -128,3 +128,9 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   Zusätzliche sofort grüne Prozessregression, kein künstliches Red. Gesamt570 Tests/
   96,6748 Prozent, Guard262 Dateien/268 Typen sauber. Feine Crashpunkte T048/T050/T051
   und echte Zielsystem-/Rechteabnahme bleiben offen. be8cf38 Windows/Ubuntu-CI grün.
+- Sieben zusätzliche echte Übergabe-/Commit-Killpunkte lokal grün, gemeinsamer separater
+  TRX19/19 einschließlich SC009/Journal. Keine Produktänderung oder künstliches Red,
+  Grenzen vor-API gegenüber mitten-in-SQL ausdrücklich dokumentiert. Gesamt577 Tests/
+  96,6748 Prozent, Guard263 Dateien/269 Typen sauber. T048 vorbereitet/ausgeführt,
+  nächster Auftrag T070/T075 Zustandsmatrix, danach Cancel/Stop/Close/Retention.
+  SC009-Stand9fdbda7 CI auf Windows/Ubuntu grün; übrige Abnahme bleibt offen.

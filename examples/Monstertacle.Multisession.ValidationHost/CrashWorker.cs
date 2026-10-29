@@ -10,7 +10,7 @@ internal static class CrashWorker
 
     internal static async Task<int> RunAsync(string[] args)
     {
-        if (args.Length != 4 || args[3] is not (CrashProtocol.JournalPoint or CrashProtocol.RecoveryPoint) || !Path.IsPathFullyQualified(args[1])
+        if (args.Length != 4 || !CrashProtocol.IsKnown(args[3]) || !Path.IsPathFullyQualified(args[1])
             || !Path.GetFileName(args[1]).StartsWith("multisession-", StringComparison.Ordinal)
             || !Guid.TryParseExact(args[2], "N", out _)) { return 2; }
         string marker = Path.Combine(args[1], CrashProtocol.MarkerFileName);
@@ -19,7 +19,7 @@ internal static class CrashWorker
         string path = Path.Combine(args[1], "multisession.db");
         try
         {
-            if (args[3] == CrashProtocol.RecoveryPoint) { return await CrashRecoveryWorker.RunAsync(args[1]); }
+            if (args[3] != CrashProtocol.JournalPoint) { return await CrashRecoveryWorker.RunAsync(args[1], args[3]); }
             using SqliteConnection connection = new(new SqliteConnectionStringBuilder
             {
                 DataSource = path,

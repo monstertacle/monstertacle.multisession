@@ -6,6 +6,7 @@ namespace Monstertacle.Multisession.ValidationHost;
 internal sealed class CrashSessionProvider : ISessionProvider
 {
     internal TaskCompletionSource Running { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal bool HoldBeforeObservation { get; init; }
     public ProviderCapabilities Capabilities { get; } = new(true, true, false, false, true);
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
         => ValueTask.FromResult(new ProviderBinding(CrashProtocol.AdapterId, CrashProtocol.AdapterVersion, "native-" + context.SessionId.ToString("N"), "initial"));
@@ -14,7 +15,7 @@ internal sealed class CrashSessionProvider : ISessionProvider
     {
         if (request.Input == CrashProtocol.RunningInput)
         {
-            await observe(new(ProviderObservationKind.OperationAccepted, "operation-" + request.RequestId.ToString("N")), cancellationToken);
+            if (!HoldBeforeObservation) { await observe(new(ProviderObservationKind.OperationAccepted, "operation-" + request.RequestId.ToString("N")), cancellationToken); }
             Running.TrySetResult();
             await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
         }

@@ -57,8 +57,8 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             await new RecoveryCoordinator(host.Store, host.Providers).PrepareAsync(cancellationToken);
             RequestAdmission admission = new(host.Store, options, host.Clock);
             RecoveryService recovery = new(host.Store, host.Providers, options);
-            _components = new(new RuntimeSessions(this, catalog), new RuntimeRequests(this, admission),
-                new RuntimeRecovery(this, recovery), new(host.Store, host.Providers, options, host.Clock), options);
+            _components = new(new RuntimeSessions(this, catalog), new RuntimeRequests(this, admission, host.Diagnostics),
+                new RuntimeRecovery(this, recovery), new(host.Store, host.Providers, options, host.Clock, host.Diagnostics), options);
             lock (_gate)
             {
                 _stop = new();

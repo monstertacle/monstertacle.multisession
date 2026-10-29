@@ -117,3 +117,10 @@ Running als Interrupted/Unknown; offene Fälle sind paginiert lesbar. Vor Worker
 lokale Provider-/Binding-/Ausführungsunterstützung geprüft. Wieder vorhandene Registrierung
 löst nur eigene Konfigurationssperren. Öffentliche Prozess-Kill-Gesamtabnahme und weitere
 Lebenszyklus-/Plattformaufgaben bleiben offen; keine Produktfreigabe.
+
+Optionale Diagnosen werden über ein hosteigenes `SessionDiagnostics` an `SessionRuntime`
+übergeben und nach Runtimeende entsorgt. Bestätigte Annahmen und gespeicherte Abschlüsse
+liefern strukturierte ILogger-Ereignisse und Activities mit lokalen Kennungen, Zustand,
+Gewissheit, Dauer und öffentlicher Fehlerkategorie. Eingaben, Ausgaben, Bindungen und
+Workspaceinhalte werden nicht gemeldet. Logger-/Listenerexceptions sind isoliert;
+`FailureCount` zählt sie. Metriken und die vollständige Diagnoseabnahme sind noch offen.

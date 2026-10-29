@@ -11,7 +11,7 @@ namespace Monstertacle.Multisession.IntegrationTests.Fixtures;
 internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncDisposable
 {
     private const string _probeLetters = "ZYXWVUTSRQP";
-    private readonly string _image = Path.Combine(root, "disk-full.vhdx");
+    private readonly string _image = Path.Combine(root, "disk-full.vhd");
     private readonly string _label = "ms" + nonce[..8];
     private bool _mayOwnImage;
     internal string StateDirectory { get; private set; } = string.Empty;
@@ -23,7 +23,7 @@ internal sealed class DiskFullWindowsVolume(string root, string nonce) : IAsyncD
         string[] used = Environment.GetLogicalDrives();
         char letter = _probeLetters.First(candidate => !used.Contains(candidate + @":\", StringComparer.OrdinalIgnoreCase));
         string drive = letter + @":\";
-        string script = $"create vdisk file=\"{_image}\" maximum=64 type=expandable\nattach vdisk\ncreate partition primary\nformat fs=ntfs unit=4096 quick label={_label}\nassign letter={letter}\nexit\n";
+        string script = $"create vdisk file=\"{_image}\" maximum=64 type=expandable\nattach vdisk\ncreate partition primary\nformat fs=ntfs quick label={_label}\nassign letter={letter}\nexit\n";
         ProbeProcessResult created = await DiskpartAsync("create-volume.txt", script);
         if (created.ExitCode != 0) { throw new InvalidOperationException($"Private VHD preparation failed: {created.Output} {created.Error}"); }
         DriveInfo info = new(drive);

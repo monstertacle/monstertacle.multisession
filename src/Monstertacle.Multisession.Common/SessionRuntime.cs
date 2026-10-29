@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Diagnostics;
 using Monstertacle.Multisession.Sessions;
 
 namespace Monstertacle.Multisession;
@@ -10,14 +11,14 @@ public sealed class SessionRuntime : IAsyncDisposable
 
     /// <summary>Freezes host configuration. Store/lease lifetime transfers only after successful preparation.</summary>
     public SessionRuntime(ISessionStore store, IStateDirectoryLease lease, IReadOnlyList<ProviderRegistration> providers,
-        IReadOnlyList<AgentProfile> profiles, TimeProvider? clock = null)
+        IReadOnlyList<AgentProfile> profiles, TimeProvider? clock = null, SessionDiagnostics? diagnostics = null)
     {
         ArgumentNullException.ThrowIfNull(store);
         ArgumentNullException.ThrowIfNull(lease);
         ArgumentNullException.ThrowIfNull(providers);
         ArgumentNullException.ThrowIfNull(profiles);
         ProviderCatalog configuration = new(providers, profiles);
-        _lifecycle = new(new(store, lease, configuration.Providers, configuration.Profiles, clock ?? TimeProvider.System));
+        _lifecycle = new(new(store, lease, configuration.Providers, configuration.Profiles, clock ?? TimeProvider.System, diagnostics));
     }
     /// <summary>Gets session operations once the runtime has started.</summary>
     public ISessions Sessions => _lifecycle.Components.Sessions;

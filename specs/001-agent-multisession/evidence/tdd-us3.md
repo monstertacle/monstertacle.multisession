@@ -309,3 +309,29 @@ lokal korrigiert, native Nachprüfung gehört weiterhin T078/T082/T104. Bei Rete
 Schritten und überprüfbarer Abnahme in tasks.md: Factory-/Runtimeoptions dürfen vor T064
 nicht unabhängig wirksam sein. T076 behält den vollständigen Frist-/Dispatchaudit;
 T070–T085 bleiben bis Story-/TDD-/Diagnostikabnahme offen. Kein Produktabschluss behauptet.
+
+## T074/T081 erster Diagnoseschnitt
+
+Architektur vor Code: architecture/2026-10-29-diagnostics.md mit aktuellen Quellenhashes.
+artifacts/tdd/diagnostics-red.log zeigt tatsächlich ausführbare3/3Fehler gegen No-op:
+fehlende strukturierte Ereignisse, fehlende Activity, fehlende Loggerfehlerzählung.
+Vorherige Compile-/Analyzerfehler waren kein Red. Nach Positivlistenimplementierung3/3grün.
+Separater diagnostics-hooks-red.log zeigt2/2 echte Runtimefehler wegen fehlender Hooks;
+nach Hookimplementierung5/5grün (diagnostics-hooks-green.log). Fünf weitere unmittelbar
+grüne Regressionen prüfen Listenerausfall, ungültige Enumwerte/disposed Source und drei
+Storebestätigungsgrenzen; kein nachträglich erfundener Red. diagnostics-regression.log10/10.
+
+Runtimeannahme meldet erst nach Receipt, Dispatcher erst nach bestätigt abgeschlossenem
+CommitCompletion oder MarkUncertain. Verlorene Bestätigung produziert keinen geratenen
+Ergebnislog. Monotone Stopwatchdauer ab Annahmebeginn beziehungsweise neuer Reservierung.
+Keine Providerantwort-/Prompt-/Workspace-/Bindingdaten, keine Exceptionobjekte an ILogger.
+Explizit hosteigenes optionales SessionDiagnostics; Host entsorgt nach Runtimeende.
+Listener- und Loggerausfälle getrennt abgefangen und gezählt. Gleichzeitige Tests filtern
+Activitysampling nach eigener Instanz, um fremde Runtimeprüfungen nicht zu beeinflussen.
+Codemetr forderte Zerlegung der Diagnose-Testklasse wegen Kopplung: Datenschutztests,
+Runtime-/Storegrenzentests und Loggerfixture getrennt, Grenzwert unverändert.
+
+BCL-Metriken, Queue-/Reservierungsprojektion und weitere Lifecycleübergänge fehlen noch;
+T074/T081 bleiben ausdrücklich offen. Volltor a9fcc13f43c84e61b7e3388fd5883066 hatte
+alle Tests grün, verwarf seinen Gesamtnachweis aber korrekt wegen zwischenzeitlicher
+Quelländerung. Es ist kein finaler grüner Qualitätslauf; unveränderten Stand erneut prüfen.

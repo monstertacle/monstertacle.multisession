@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Diagnostics;
 using Monstertacle.Multisession.Scheduling;
 
 namespace Monstertacle.Multisession.Requests;
@@ -12,9 +13,11 @@ public sealed class RequestDispatcher
     private readonly FrozenDictionary<string, ProviderRegistration> _providers;
     private readonly int _maxOutputBytes;
     private readonly TimeProvider _clock;
+    private readonly SessionDiagnostics? _diagnostics;
 
     /// <summary>Freezes host registrations and validates the runtime options without starting execution.</summary>
-    public RequestDispatcher(ISessionStore store, IReadOnlyList<ProviderRegistration> providers, RuntimeOptions options, TimeProvider? clock = null)
+    public RequestDispatcher(ISessionStore store, IReadOnlyList<ProviderRegistration> providers, RuntimeOptions options, TimeProvider? clock = null,
+        SessionDiagnostics? diagnostics = null)
     {
         ArgumentNullException.ThrowIfNull(providers);
         _scheduler = new RequestScheduler(store, options);
@@ -22,6 +25,7 @@ public sealed class RequestDispatcher
         _providers = providers.ToFrozenDictionary(item => item.ProviderId, StringComparer.Ordinal);
         _maxOutputBytes = options.MaxOutputBytes;
         _clock = clock ?? TimeProvider.System;
+        _diagnostics = diagnostics;
     }
 
     /// <summary>Processes one new reservation. False means no eligible dispatch; true confirms a persisted local result, including a confirmed failure.</summary>
@@ -45,6 +49,7 @@ public sealed class RequestDispatcher
             return false;
         }
 
+        DispatchDiagnostics trace = new(_diagnostics, reservation);
         ReservedDispatch? dispatch;
         try
         {
@@ -53,14 +58,14 @@ public sealed class RequestDispatcher
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             PublicError error = new(ErrorCode.Cancelled, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);
-            await CommitAsync(reservation, new(RequestState.Cancelled, ExecutionCertainty.NotStarted, string.Empty, false, null, error));
+            await CommitAsync(reservation, new(RequestState.Cancelled, ExecutionCertainty.NotStarted, string.Empty, false, null, error), trace);
             throw new SessionOperationException(error);
         }
         catch (Exception)
         {
             throw Failure(reservation, ErrorCode.StorageUnavailable, ExecutionCertainty.Unknown);
         }
-        if (await CancelBeforeSendAsync(reservation, cancellationToken)) { return true; }
+        if (await CancelBeforeSendAsync(reservation, trace, cancellationToken)) { return true; }
         if (dispatch is null)
         {
             return false;
@@ -71,16 +76,16 @@ public sealed class RequestDispatcher
             || binding.AdapterId != registration.AdapterId || binding.FormatVersion != registration.ContractVersion)
         {
             PublicError error = new(ErrorCode.InvalidConfiguration, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);
-            await CommitAsync(reservation, new(RequestState.Failed, ExecutionCertainty.NotStarted, string.Empty, false, null, error) { ContinuationAvailable = false });
+            await CommitAsync(reservation, new(RequestState.Failed, ExecutionCertainty.NotStarted, string.Empty, false, null, error) { ContinuationAvailable = false }, trace);
             throw new SessionOperationException(error);
         }
 
-        ProviderReply reply = await SendAsync(dispatch, registration, cancellationToken);
-        await CommitAsync(reservation, reply);
+        ProviderReply reply = await SendAsync(dispatch, registration, trace, cancellationToken);
+        await CommitAsync(reservation, reply, trace);
         return true;
     }
 
-    private async ValueTask<ProviderReply> SendAsync(ReservedDispatch dispatch, ProviderRegistration registration, CancellationToken cancellationToken)
+    private async ValueTask<ProviderReply> SendAsync(ReservedDispatch dispatch, ProviderRegistration registration, DispatchDiagnostics trace, CancellationToken cancellationToken)
     {
         using CancellationTokenSource deadline = new(dispatch.Submission.Timeout, _clock);
         using CancellationTokenSource execution = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
@@ -100,12 +105,12 @@ public sealed class RequestDispatcher
         }
         catch (OperationCanceledException) when (execution.IsCancellationRequested)
         {
-            reply = await CompleteCancellationAsync(dispatch, registration, observations, sending,
+            reply = await CompleteCancellationAsync(dispatch, registration, observations, sending, trace,
                 cancellation.HasFailed ? ErrorCode.StorageUnavailable : deadline.IsCancellationRequested ? ErrorCode.TimedOut : ErrorCode.Cancelled);
         }
         catch (Exception)
         {
-            throw await PreserveAsync(reservation, observations.HasUnconfirmedObservations ? observations.FailureCode : ErrorCode.ExecutionFailed);
+            throw await PreserveAsync(reservation, observations.HasUnconfirmedObservations ? observations.FailureCode : ErrorCode.ExecutionFailed, trace);
         }
         finally
         {
@@ -116,49 +121,50 @@ public sealed class RequestDispatcher
 
         if (observations.HasUnconfirmedObservations)
         {
-            throw await PreserveAsync(reservation, observations.FailureCode);
+            throw await PreserveAsync(reservation, observations.FailureCode, trace);
         }
         reply = DispatchReplyPolicy.Normalize(reply, dispatch.Session.Binding!, observations.SessionReference, _maxOutputBytes);
         if (reply.Certainty == ExecutionCertainty.Unknown)
         {
             if (execution.IsCancellationRequested && reply.Error?.Code != ErrorCode.StorageUnavailable)
             {
-                return await CompleteCancellationAsync(dispatch, registration, observations, sending,
+                return await CompleteCancellationAsync(dispatch, registration, observations, sending, trace,
                     deadline.IsCancellationRequested ? ErrorCode.TimedOut : ErrorCode.Cancelled);
             }
-            throw await PreserveAsync(reservation, reply.Error?.Code ?? ErrorCode.Interrupted);
+            throw await PreserveAsync(reservation, reply.Error?.Code ?? ErrorCode.Interrupted, trace);
         }
         return reply;
     }
 
     private async ValueTask<ProviderReply> CompleteCancellationAsync(ReservedDispatch dispatch, ProviderRegistration registration,
-        DispatchObservationSink observations, Task<ProviderReply>? sending, ErrorCode cause)
+        DispatchObservationSink observations, Task<ProviderReply>? sending, DispatchDiagnostics trace, ErrorCode cause)
     {
         if (cause != ErrorCode.StorageUnavailable && !observations.HasUnconfirmedObservations)
         {
             ProviderReply? confirmed = await new DispatchTermination(dispatch, registration, observations, _maxOutputBytes).ConfirmAsync(sending, cause);
             if (confirmed is not null) { return confirmed; }
         }
-        throw await PreserveAsync(dispatch.Reservation, observations.HasUnconfirmedObservations ? observations.FailureCode : cause);
+        throw await PreserveAsync(dispatch.Reservation, observations.HasUnconfirmedObservations ? observations.FailureCode : cause, trace);
     }
 
-    private async ValueTask<bool> CancelBeforeSendAsync(ExecutionReservation reservation, CancellationToken cancellationToken)
+    private async ValueTask<bool> CancelBeforeSendAsync(ExecutionReservation reservation, DispatchDiagnostics trace, CancellationToken cancellationToken)
     {
         RequestSnapshot? request;
         try { request = await _store.GetRequestAsync(reservation.RequestId, cancellationToken).AsTask().WaitAsync(cancellationToken); }
         catch (Exception) { throw Failure(reservation, ErrorCode.StorageUnavailable, ExecutionCertainty.Unknown); }
         if (request is not { State: RequestState.Running, CancellationRequestedUtc: not null }) { return false; }
         PublicError error = new(ErrorCode.Cancelled, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);
-        await CommitAsync(reservation, new(RequestState.Cancelled, ExecutionCertainty.NotStarted, string.Empty, false, null, error));
+        await CommitAsync(reservation, new(RequestState.Cancelled, ExecutionCertainty.NotStarted, string.Empty, false, null, error), trace);
         return true;
     }
 
-    private async ValueTask CommitAsync(ExecutionReservation reservation, ProviderReply reply)
+    private async ValueTask CommitAsync(ExecutionReservation reservation, ProviderReply reply, DispatchDiagnostics trace)
     {
         try
         {
             // A caller token cannot erase a known final result. Stores enforce their own finite write limits.
             await _store.CommitCompletionAsync(reservation.DispatchId, reply, CancellationToken.None);
+            trace.Complete(reply);
         }
         catch (SessionOperationException failure) when (failure.Failure.Code == ErrorCode.RevisionConflict)
         {
@@ -171,12 +177,13 @@ public sealed class RequestDispatcher
         }
     }
 
-    private async ValueTask<SessionOperationException> PreserveAsync(ExecutionReservation reservation, ErrorCode code)
+    private async ValueTask<SessionOperationException> PreserveAsync(ExecutionReservation reservation, ErrorCode code, DispatchDiagnostics trace)
     {
         try
         {
             await _store.MarkUncertainAsync(reservation.DispatchId,
                 new PublicError(code, ExecutionCertainty.Unknown, reservation.SessionId, reservation.RequestId), CancellationToken.None);
+            trace.Complete(RequestFailurePolicy.Uncertain(new(code, ExecutionCertainty.Unknown)));
         }
         catch (Exception)
         {

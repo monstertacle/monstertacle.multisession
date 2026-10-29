@@ -266,3 +266,11 @@ privilegierter Mountpfad1/1grün. Volltor linux/bc0d6159bdba4a1da538b9ba03dc86e6
 664Tests,0Fehler/Skips,2271/2343=96.9270%,Codemetr ohne Befunde.
 Windows-/Ubuntu-Wiederholung bleibt bis zum neuen nativen Lauf offen; kein Produktfix,
 kein fachlicher Red aus dem Namespace-/Diskpartfehler abgeleitet.
+
+Erster Diagnoseschnitt T074/T081: bestätigte Annahme-/Abschlusslogs und Activities,
+monotone Dauer, Positivliste, isolierte Logger-/Listenerfehler. Zweistufiges fachliches
+Red3+2Fälle, dann10Diagnoseregressionen grün. Architecture/tdd-us3 enthalten genaue
+Grenzen; Metriken und volle Diagnose-/Lifecycleabnahme bleiben offen. Windowsfixtur
+nach echter Formatfehlermeldung auf64MiB-VHD/NTFSdefault angepasst, native Wiederholung
+bleibt erforderlich. Volltor linux/f695c4964904416c9da7baff259e4bc2 ist konsistent grün;
+Codemetr319Dateien/329Typen ohne Befunde. Keine Vollabnahme oder Produktfreigabe.

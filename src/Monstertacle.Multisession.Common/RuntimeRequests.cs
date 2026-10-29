@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Diagnostics;
 using Monstertacle.Multisession.Requests;
 
 namespace Monstertacle.Multisession;
 
-internal sealed class RuntimeRequests(RuntimeLifecycle lifecycle, RequestAdmission admission) : IRequests
+internal sealed class RuntimeRequests(RuntimeLifecycle lifecycle, RequestAdmission admission, SessionDiagnostics? diagnostics) : IRequests
 {
     public async ValueTask<RequestReceipt> SubmitAsync(SubmitRequest request, CancellationToken cancellationToken)
     {
@@ -11,7 +13,9 @@ internal sealed class RuntimeRequests(RuntimeLifecycle lifecycle, RequestAdmissi
         {
             throw new SessionOperationException(new PublicError(ErrorCode.SessionClosed, SessionId: request.SessionId, AdmissionStatus: AdmissionStatus.NotAccepted));
         }
+        long started = Stopwatch.GetTimestamp();
         RequestReceipt receipt = await admission.SubmitAsync(request, cancellationToken);
+        diagnostics?.RecordAccepted(request.SessionId, receipt, Stopwatch.GetElapsedTime(started));
         lifecycle.Pulse();
         return receipt;
     }

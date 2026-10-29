@@ -79,3 +79,13 @@ Diskpart-Dateien mit Out-File-Encoding-ascii schreibt. Nicht darstellbare Pfade 
 abweisen statt ersetzen. Bei Fehler begrenzte stdout/stderr der eigenen Diskpartprobe zeigen.
 MicrosoftLearn diskpart-scripts-and-examples fordert15s zwischen zwei Scriptaufrufen;
 diese Pause gilt auch vor dem eigenen Detach. Native CI erneut nötig; kein WindowsPASS lokal.
+
+Weitere native Messung2026-10-29T14:54:05Z, Lauf40895383898: Ubuntu vollständig grün.
+Windows erstellt/attached VHDX und Partition erfolgreich, formatNTFS mit erzwungenem
+4096Bytecluster meldet parameterincorrect. Konkrete Rootcause zwischen Größe/Sektor-
+und Clusterkombination hier nicht lokal messbar. Nächste begrenzte Fixturefassung nutzt
+64MiB-VHD mit512Bytesektoren und überlässt NTFS die Wahl seiner Defaultclustergröße;
+keine Kapazitätsgrenze aufweiten. Primärbeleg für VHD512/VHDX4096physicaldefaults:
+https://learn.microsoft.com/en-us/windows-server/administration/performance-tuning/role/hyper-v-server/storage-io-performance .
+Format-Defaults: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/format .
+Gleiche native Testabnahme bleibt zwingend; Formatversagen bleibt Fehler.

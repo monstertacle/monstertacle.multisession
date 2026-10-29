@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.Sessions;
@@ -8,8 +7,7 @@ public sealed class SessionCatalog : ISessions
 {
     private readonly ISessionStore _store;
     private readonly TimeProvider _clock;
-    private readonly FrozenDictionary<string, ProviderRegistration> _registrations;
-    private readonly FrozenDictionary<string, AgentProfile> _profiles;
+    private readonly ProviderCatalog _configuration;
 
     /// <summary>Composes session catalog dependencies without selecting a vendor by name.</summary>
     public SessionCatalog(ISessionStore store, IReadOnlyList<ProviderRegistration> registrations, IReadOnlyList<AgentProfile> profiles, TimeProvider? clock = null)
@@ -19,22 +17,14 @@ public sealed class SessionCatalog : ISessions
         ArgumentNullException.ThrowIfNull(profiles);
         _store = store;
         _clock = clock ?? TimeProvider.System;
-        _registrations = registrations.ToFrozenDictionary(item => item.ProviderId, StringComparer.Ordinal);
-        _profiles = profiles.ToFrozenDictionary(item => item.AgentProfileId, StringComparer.Ordinal);
+        _configuration = new(registrations, profiles);
     }
 
     /// <inheritdoc />
     public async ValueTask<SessionSnapshot> CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
     {
-        if (!_profiles.TryGetValue(agentProfileId, out AgentProfile? profile))
-        {
-            throw new SessionOperationException(new PublicError(ErrorCode.NotFound));
-        }
-
-        if (!_registrations.TryGetValue(profile.ProviderId, out ProviderRegistration? registration))
-        {
-            throw new SessionOperationException(new PublicError(ErrorCode.InvalidConfiguration));
-        }
+        AgentProfile profile = _configuration.GetProfile(agentProfileId);
+        ProviderRegistration registration = _configuration.GetProvider(profile.ProviderId);
         ValidateExecution(profile.ExecutionKind, registration.Provider.Capabilities, context);
         Guid sessionId = Guid.NewGuid();
         ProviderSessionContext providerContext = new(sessionId, profile.ModelId, profile.ExecutionKind, context, profile.Settings.Values);

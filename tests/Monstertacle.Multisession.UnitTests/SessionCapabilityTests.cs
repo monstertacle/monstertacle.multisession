@@ -24,12 +24,13 @@ public sealed class SessionCapabilityTests
         InMemorySessionStore store = new();
         ProviderRegistration[] registrations = [new("connection", "controlled", 1, provider)];
         AgentProfile[] profiles = [new("profile", "connection", "opaque", requested, new("revision", new Dictionary<string, string>()))];
-        SessionCatalog catalog = new(store, registrations, profiles);
+        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(async () =>
+        {
+            SessionCatalog catalog = new(store, registrations, profiles);
+            await catalog.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+        });
 
-        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(null, null), CancellationToken.None).AsTask());
-
-        Assert.Equal(ErrorCode.UnsupportedProviderAction, failure.Failure.Code);
+        Assert.Equal(Enum.IsDefined(requested) ? ErrorCode.UnsupportedProviderAction : ErrorCode.InvalidConfiguration, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.NotStarted, failure.Failure.Certainty);
         Assert.Equal(0, opens);
     }
@@ -71,10 +72,11 @@ public sealed class SessionCapabilityTests
         ControlledProvider provider = new() { Opening = _ => opens++ };
         ProviderRegistration[] registrations = [new("connection", "controlled", 1, provider)];
         AgentProfile[] profiles = [new("profile", configuredConnection, "opaque", ExecutionKind.AgentTask, new("revision", new Dictionary<string, string>()))];
-        SessionCatalog catalog = new(new InMemorySessionStore(), registrations, profiles);
-
-        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync(requestedProfile, new(null, null), CancellationToken.None).AsTask());
+        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(async () =>
+        {
+            SessionCatalog catalog = new(new InMemorySessionStore(), registrations, profiles);
+            await catalog.CreateSessionAsync(requestedProfile, new(null, null), CancellationToken.None);
+        });
 
         Assert.Equal(expected, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.NotStarted, failure.Failure.Certainty);

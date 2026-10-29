@@ -49,3 +49,8 @@ Offene externe Gates erst nach konkreter vorbereiteter Abnahme auflösen, währe
 Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abgeschlossen.
 
 - T026/T027 lokal abgeschlossen: 279 Tests, 95,4674 % Produktcoverage; Runtimekomposition, öffentliche Parallelvertikale, konservativer kontrollierter Storestart. Vollständiger Stop/Cancel bleibt offen. Nächste Arbeit T030/T036. Nachweis tdd-us1.md.
+- Generischer T030/T036-Schnitt umgesetzt: validierter, unveränderlicher ProviderCatalog,
+  15 neue Konfigurationsfälle; gesamte lokale Qualität 294 Tests/95,4795 Prozent sauber.
+  HTTP-Konfiguration/Credentials bleiben beim folgenden Adapterzyklus, daher Tasks offen.
+- Windows-CI fand ein Rennen ausschließlich in der Paralleltestbarriere; mit 4d5158e
+  korrigiert, 52 Contractfälle/Full-Guard grün, neue CI folgt. Siehe tdd-us1.md.

@@ -112,3 +112,42 @@ Zyklen geschlossen. Historyerwartung bewusst auf neuen Vertrag aktualisiert und 
 36 Contractfälle grün. Produktive Keyset-SQL/Retention bleiben T063/T064 (Owner US5,
 native persistierte Listen-/Löschabnahme); Runtimekomposition T026 (Owner laufende
 Gesamtimplementierung, öffentliche Konsumtests). Kein offener lokaler T115-Abnahmeblocker.
+
+## T030/T036: generische Konfiguration, erster Schnitt
+
+Updated: 2026-10-29T07:47:13Z
+Basis 99b1ffd; Vorabanalyse architecture/2026-10-29-provider-configuration.md.
+`dotnet test tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj -c Release --no-restore --filter FullyQualifiedName~ProviderConfigurationTests`
+über run-capped: 14 fachliche Fehler/1 vorhandene Positivregression, danach 15/15 grün.
+Red: fehlende typisierte Ablehnung leerer IDs/Adapter/Version/Referenz/Profilwerte sowie
+Originalwert durch spätere Hostmutation ersetzt. Duplicate-ArgumentException ist ein
+beobachteter falscher öffentlicher Fehlertyp, kein Compiler-/Infrastrukturfehler.
+Manifest SHA256 Red `47352b3e26a04034af4675e0639c26ff2b9741754907ff0d92db7231d174b9e3`,
+Green `438f76d241f9117049ee5a63427c79740908b552221c674d5a71eff4bbc48805`.
+
+ProviderCatalog validiert Registrierungen/Profile vor Native-I/O, friert Nestedsettings
+ordinal ein und bietet readonly Konfigurationslisten. SessionCatalog und Runtime nutzen
+nun dieselbe Validierung, keine zwei unterschiedlichen Snapshotregeln. Opaque Modelle
+bleiben unverändert; zwei Profile/ein Modell und case-sensitive Kennungen sind grün.
+Keine HTTP-Eigenschaft ist für nicht-HTTP-Adapter vorgeschrieben.
+
+Erste Gesamtsuite fand zwei absichtlich früher greifende Validierungen in alten Tests:
+fehlende Providerreferenz und undefinierter ExecutionKind scheitern jetzt schon im
+Konstruktor. Die alten Capabilitytests prüfen weiterhin null Opens und typed NotStarted;
+sie umfassen jetzt Konstruktion plus Create in ihrer Fehlerassertion. Undefinierte Enum
+ist InvalidConfiguration, bekannter aber nicht unterstützter Kind bleibt
+UnsupportedProviderAction. Neue T030-Fälle fordern ausdrücklich den früheren Zeitpunkt.
+
+Vollständige lokale Qualität Exit 0, artifacts/quality/linux/14f1e69e460b409b83e9067101dfb6de/:
+Sourcehash `270ea9b394acda09d8d011da5b1f936cab902ead933a49cd577d6df2a077140f`.
+294 Tests maschinell aus vier TRX, 240 Unit/52 Contract/je 1 Infrastrukturfall, 0 Fehler.
+697/730 Produktzeilen = 95,4795 Prozent; Locked-Restore, Build/Format/Analyzer/Audit,
+13 Coveragegatefälle bestanden. Full-Guard 131 Dateien/133 Typen, 0 Verstöße/Parsefehler/
+Skips, Exit 0. Pins und Scope unverändert. Anschließende reine Runtime-Testbarrierekorrektur
+an 4d5158e hat 52/52 Contractfälle und Full-Guard erneut bestanden; keine Produktänderung.
+
+T030/T036 bleiben insgesamt offen: native HTTPS-/Loopback-/CredentialReference-Prüfung
+und frische Credentialauflösung benötigen T032–T040-Fixtures, Owner dieselbe ausführende
+Gesamtimplementierungssitzung. Nächste Schritte: OpenAI-Fixture für Open/Reopen und Send,
+dann sichere Transportgrenzen/Credentials/Fehler und Gemini; Abnahme gemäß vorhandenen
+T030–T040. SettingsRevision im Sitzungssnapshot bleibt T031/T037. Kein Live-/Freigabenachweis.

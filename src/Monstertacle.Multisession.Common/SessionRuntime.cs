@@ -1,5 +1,5 @@
-using System.Collections.Frozen;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Sessions;
 
 namespace Monstertacle.Multisession;
 
@@ -16,11 +16,8 @@ public sealed class SessionRuntime : IAsyncDisposable
         ArgumentNullException.ThrowIfNull(lease);
         ArgumentNullException.ThrowIfNull(providers);
         ArgumentNullException.ThrowIfNull(profiles);
-        AgentProfile[] frozenProfiles = profiles.Select(profile => profile with
-        {
-            Settings = profile.Settings with { Values = profile.Settings.Values.ToFrozenDictionary(StringComparer.Ordinal) },
-        }).ToArray();
-        _lifecycle = new(new(store, lease, providers.ToArray(), frozenProfiles, clock ?? TimeProvider.System));
+        ProviderCatalog configuration = new(providers, profiles);
+        _lifecycle = new(new(store, lease, configuration.Providers, configuration.Profiles, clock ?? TimeProvider.System));
     }
     /// <summary>Gets session operations once the runtime has started.</summary>
     public ISessions Sessions => _lifecycle.Components.Sessions;

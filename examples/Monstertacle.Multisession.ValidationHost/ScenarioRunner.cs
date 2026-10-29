@@ -24,6 +24,7 @@ internal static class ScenarioRunner
             ["extensions"] = ExtensionsProbeFlow.ExecuteAsync,
             ["native-context"] = NativeContextProbeFlow.ExecuteAsync,
             ["recovery"] = RecoveryProbeFlow.ExecuteAsync,
+            ["soak"] = SoakProbeFlow.ExecuteAsync,
         }.ToFrozenDictionary(StringComparer.Ordinal);
 
     internal static async Task<int> RunAsync(string[] args)

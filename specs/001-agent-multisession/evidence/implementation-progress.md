@@ -529,3 +529,10 @@ lokal bestanden. Volltor linux/1b2430c415354159902ae2539975deb2: 986 Tests,
 Sourcehash fc8b42f48b39cf924da02ef69f3ec9b1976090c49dd2fc7fa8c2181dfd510033,
 97.5677 %, Codemetr 420 Dateien/436 Typen ohne Befund. Soak-Zeitplan und
 Paketkonsum folgen; T094 und finale Plattform-/Live-Abnahmen bleiben offen.
+
+2026-10-29T19:38:37Z: Soak-Zeitplan nach vier echten Rotfällen grün;
+990 Tests im Volltor linux/e4a5aeec3f8f4aab83e26b33a9a7de53, 97.5677 %,
+Sourcehash 3a9fd0d19eae5743832fac534a4b198e038a22831a65ca6105a9e75748b92ad9.
+Codemetr 423 Dateien/440 Typen ohne Befund. Tatsächlicher Stundenlauf mit
+gefrorener Binärkopie begonnen, Ergebnis ausstehend und kein finaler Releasebeleg.
+Paketierung/Frischkonsum und restliche Aufgaben werden parallel dazu fortgesetzt.

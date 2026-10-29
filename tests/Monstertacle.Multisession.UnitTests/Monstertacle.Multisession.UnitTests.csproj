@@ -3,6 +3,8 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/SoakSchedule.cs" Link="Fixtures/SoakSchedule.cs" />
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs" Link="Fixtures/ValidationProbeException.cs" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
   </ItemGroup>
 </Project>

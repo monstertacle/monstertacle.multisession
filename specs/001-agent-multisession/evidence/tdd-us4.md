@@ -264,3 +264,18 @@ Volltor linux/1b2430c415354159902ae2539975deb2: 986 Tests, 97.5677 %,
 Sourcehash fc8b42f48b39cf924da02ef69f3ec9b1976090c49dd2fc7fa8c2181dfd510033.
 Codemetr 420 Dateien/436 Typen ohne Verstöße. Native Windows-Prüfung für diese
 neue CLI bleibt ausstehend; keine vollständige Zielsystemabnahme behauptet.
+
+## T094/T100: Soak-Zeitplan und tatsächlicher Lauf
+
+2026-10-29T19:38:37Z: Vier kontrollierte Zeitplantests waren fachlich rot,
+danach grün. Compiler-/Analyzerfehler der ersten Signaturfassung zählen nicht
+als Red. Der geprüfte Red-Stand wurde vor Green unter soak-schedule-red-*
+archiviert. Die tatsächliche fehlende CLI-Ausführung war NOT RUN; ihr Green
+bleibt bis zum echten Stundenende offen. Zeitplantests ersetzen SC-007 nicht.
+
+Volltor linux/e4a5aeec3f8f4aab83e26b33a9a7de53: 990 Tests grün,
+Sourcehash 3a9fd0d19eae5743832fac534a4b198e038a22831a65ca6105a9e75748b92ad9,
+97.5677 %, Codemetr 423 Dateien/440 Typen ohne Verstöße. Eine eingefrorene
+Binärkopie dieses Zwischenstands läuft separat eine monotone Stunde;
+Pfad unter artifacts/tdd/soak-candidate-path.txt. Ergebnis noch nicht vorhanden.
+Dieser Zwischenstand ist kein finaler identischer Source-/Paketnachweis.

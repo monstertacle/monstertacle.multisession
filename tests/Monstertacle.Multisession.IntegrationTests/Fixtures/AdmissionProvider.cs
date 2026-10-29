@@ -6,7 +6,7 @@ internal sealed class AdmissionProvider : ISessionProvider
 {
     public Action<ProviderSessionContext>? Opening { get; set; }
     public Func<ProviderCall, ProviderBinding, Func<ProviderObservation, CancellationToken, ValueTask>, CancellationToken, ValueTask<ProviderReply>>? Sending { get; set; }
-    public ProviderCapabilities Capabilities { get; } = new(true, true, false, false, false);
+    public ProviderCapabilities Capabilities { get; init; } = new(true, true, false, false, false);
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
     {
         Opening?.Invoke(context);

@@ -11,6 +11,8 @@ internal sealed class SqliteSessionStore(SqliteStoreState state) : SqliteQuerySt
         => new(State.Queue.ExecuteAsync(connection => SessionTransactions.Bind(connection, State, sessionId, binding, cancellationToken), cancellationToken));
     public ValueTask MarkSessionBlockedAsync(Guid sessionId, SessionBlockReason reason, CancellationToken cancellationToken)
         => State.Queue.WriteAsync(connection => OpeningRecoveryTransactions.Block(connection, State, sessionId, reason, cancellationToken), cancellationToken);
+    public ValueTask CommitConfigurationAvailabilityAsync(Guid sessionId, bool available, CancellationToken cancellationToken)
+        => State.Queue.WriteAsync(connection => SessionTransactions.Availability(connection, State, sessionId, available, cancellationToken), cancellationToken);
     public ValueTask<RequestReceipt> CommitAcceptanceAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken)
         => AcceptanceTransactions.CommitAsync(State, acceptance, maxQueuedRequests, cancellationToken);
     public ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken)

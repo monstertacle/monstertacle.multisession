@@ -417,3 +417,48 @@ Nächster Auftrag: öffentliche Runtime mit echtem SQL und Verfügbarkeitsprüfu
 anschließend fachliche Crashbarrieren/zehn SC-009-Läufe. Owner ausführende Sitzung.
 6072d52 CI Windows/Ubuntu erfolgreich: quality40866982538,Guard40866982692; damit ist der
 Windows-Sharingnachzug aus dem vorherigen Abschnitt nativ bestätigt.
+
+## T061: lokale Availability vor öffentlichem Runtimeversand
+
+Voranalyse architecture/2026-10-29-startup-availability.md. Acht SessionAvailabilityTests
+fachlich rot, vier öffentliche StartupAvailabilityTests an echtem SQL ebenfalls fachlich
+rot: fehlende Konfiguration wurde erst nach Reservation erkannt, statt ursprüngliche
+Queued zu bewahren. Danach261 Unit/103 Integrationfälle grün.
+
+RecoveryCoordinator läuft nach durable Bootstrap/validierter Hostkonfiguration und vor
+Workers. Ordinale Registrierung, Adapter/Format und explizite Executionkind-/Workspace-
+fähigkeit prüfen; keine Herstellerweiche, Modellallowlist, native Credentials-/Modelcalls
+oder Änderung gefrorener Settings/Bindungen. SessionSnapshot.ConfigurationUnavailable
+unterscheidet eigene Konfigurationssperre von nativer Fortsetzungsrestriktion. Die zehnte
+gezielte Storewriteoperation verwendet gemeinsame SessionAvailabilityPolicy und echte
+Transaktion; Wiederkehr löst nur eigene Sperre, Recoverypflicht hat Vorrang. Bestehende
+Positionals/DDL unverändert. Read-onlyMetadata und Backendkonfiguration bleiben getrennt.
+
+Missingreg, falsche Formatversion und fehlende lokale Ausführungsfähigkeit blockieren vor
+Attempt; andere Session arbeitet weiter. Nach Registrierung derselbe persistierte Kandidat
+mit derselben nativen Session ohne erneutes Open fortgesetzt. Testleasewrapper lässt
+persistente Daten beim RuntimeStop stehen, äußerer Fixtureowner räumt privat ab; kein
+nativer Lifetime-Lockbeweis. Erst beim Backend erkennbare Auth-/Modellzugriffsprobleme
+bleiben konkrete AufgabenT034/T080, kein vollständiger vorgelagerter Featurekatalog gefordert.
+
+Befehle run-capped dotnet test UnitTests -c Release --no-restore --filter
+FullyQualifiedName~SessionAvailabilityTests und IntegrationTests mit
+FullyQualifiedName~StartupAvailabilityTests, danach komplette Suiten/Qualität.
+Manifeste vor Tests, UTC aus LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| startup-availability-red | 2026-10-29T12:03:22.2311632Z | c0916bb2620861f6563acb2f519374676e35c718dbb1d467cc2a2b6f839cb1dc |
+| startup-runtime-red | 2026-10-29T12:04:27.6712616Z | de4f26393d5f125b49e2dd8148abf36b31ed4d205af99b08e1df00c078aac15e |
+| startup-availability-green | 2026-10-29T12:05:53.2766235Z | 4d7dcf8c336bb5f3df0d6258ee39d2eb220a6f8c5cdf81b8499c944794312a04 |
+
+Gesamte Qualität Exit0: artifacts/quality/linux/aeb7fec6ea904f73b6db6dff8bcc31c7,
+Sourcehasha35a36c04aaaf0780d60bf208a88d0012d645a1bec4595f63f8e293d348526f2.
+TRX gezählt560 bestanden:261 Unit/195 Contract/103 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1977/2045 Produktzeilen=96,6748 Prozent. Full-Guard258 Dateien/263 Typen,
+0 Verstöße/Parsefehler/Skips, keine Pin-/Scope-/Grenzwertänderung.
+T061 lokal umgesetzt. T066 bleibt für komplette echte Prozessmatrix offen; nächster
+konkreter AuftragT048/T055/T066 fachliche Crashbarrieren und zehn echte SC-009-Läufe,
+Owner ausführende Sitzung. Recovery1bf65f1 auf Windows/Ubuntu erfolgreich:
+quality40869457535,Guard40869457549. Keine native Rechte-/Live-/Produktfreigabe.

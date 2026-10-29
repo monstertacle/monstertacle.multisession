@@ -107,6 +107,7 @@ History, Bindungsfortschritt und Freigabe. Session-/Request-/Historyseiten sind 
 
 Die SQL-Recoveryprojektion hält ungewisse Reservierungen, eröffnet persistente Fälle
 und unterstützt revisionsgesicherte explizite Entscheidungen. Bootstrap behandelt alte
-Running als Interrupted/Unknown; offene Fälle sind paginiert lesbar. Generische
-Providerverfügbarkeit, öffentliche Runtime-/Prozess-Kill-Gesamtabnahme und die weiteren
+Running als Interrupted/Unknown; offene Fälle sind paginiert lesbar. Vor Workerstart wird
+lokale Provider-/Binding-/Ausführungsunterstützung geprüft. Wieder vorhandene Registrierung
+löst nur eigene Konfigurationssperren. Öffentliche Prozess-Kill-Gesamtabnahme und weitere
 Lebenszyklus-/Plattformaufgaben bleiben offen; keine Produktfreigabe.

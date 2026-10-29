@@ -27,4 +27,6 @@ public sealed record SessionSnapshot(
     public SessionLifecycle Lifecycle { get; init; } = SessionLifecycle.Opening;
     /// <summary>Gets the explicit reason for refusing further execution.</summary>
     public SessionBlockReason BlockReason { get; init; }
+    /// <summary>Gets whether this block was caused by missing local adapter configuration rather than native continuation evidence.</summary>
+    public bool ConfigurationUnavailable { get; init; }
 }

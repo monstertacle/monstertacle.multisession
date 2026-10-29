@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Sessions;
 
 namespace Monstertacle.Multisession.Storage.Sqlite;
 
@@ -56,4 +57,13 @@ internal static class SessionTransactions
             ("$snapshot", StoreSerialization.Write(session)), ("$id", session.SessionId.ToString("D")));
         command.ExecuteNonQuery();
     }
+
+    internal static void Availability(SqliteConnection connection, SqliteStoreState state, Guid sessionId, bool available, CancellationToken token)
+        => SqliteTransactions.Run(connection, transaction =>
+        {
+            SessionSnapshot session = QueryTransactions.Session(connection, sessionId, transaction) ?? throw new SessionOperationException(new(ErrorCode.NotFound));
+            SessionSnapshot updated = SessionAvailabilityPolicy.ForConfiguration(session, available);
+            if (updated != session) { Update(connection, transaction, updated with { UpdatedUtc = state.Clock.GetUtcNow() }); }
+            return true;
+        }, token);
 }

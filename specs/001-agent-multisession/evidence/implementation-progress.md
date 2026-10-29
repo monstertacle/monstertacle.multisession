@@ -118,3 +118,8 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   548 Tests/96,6051 Prozent, Guard252 Dateien/257 Typen sauber. Native Registrykoordination
   T061, öffentliche Runtime-/echte fachliche Killabnahme T055/T066 bleiben offen.
   Dispatch6072d52 CI auf Windows/Ubuntu erfolgreich, Windows-Sharingnachzug bestätigt.
+- T061 lokal umgesetzt: Availability vor Workers, persistenter Sperrgrund für lokale
+  Konfiguration, nur eigene Sperre bei Wiederkehr lösen; öffentliche Runtime mit SQL
+  setzt ursprünglichen Kandidaten fort. 560 Tests/96,6748 Prozent, Guard258 Dateien/
+  263 Typen sauber. Recovery1bf65f1 CI auf Windows/Ubuntu grün. Nächster Auftrag echte
+  fachliche Crashbarrieren und zehn SC-009-Läufe T048/T055/T066; native Authfehler T080.

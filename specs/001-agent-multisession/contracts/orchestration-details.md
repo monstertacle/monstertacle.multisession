@@ -201,3 +201,13 @@ SessionSnapshot. CreateSessionAsync gibt diesen zurück. SettingsRevision und Cr
 bleiben unverändert; UpdatedUtc bezeichnet die letzte gespeicherte Sessionmutation.
 ClosedUtc ist vor tatsächlichem Closed null, auch bei Closing mit ungeklärter Arbeit.
 Die chronologischen lokalen UTC-Zeitpunkte ersetzen keine monotonen Ausführungsfristen.
+
+### Lokale Konfigurationssperre vor Workerstart
+
+CommitConfigurationAvailabilityAsync wendet ausschließlich eine lokale Availability-
+entscheidung atomar an. SessionSnapshot.ConfigurationUnavailable markiert deren Herkunft.
+Wieder gültige Konfiguration darf nur eine so markierte ProviderUnavailable-Sperre lösen;
+RecoveryRequired und nicht markierte native Fortsetzungsrestriktionen bleiben bestehen.
+Registry-/Binding-/Executionkind-/Workspaceprüfung erfolgt nach Bootstrap vor Workers.
+Opaque Modell-/Settingsdaten bleiben unverändert; native Auth-/Modellverfügbarkeit wird
+nicht durch einen erfundenen lokalen Featurekatalog vorgetäuscht.

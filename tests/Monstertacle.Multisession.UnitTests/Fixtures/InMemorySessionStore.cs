@@ -1,5 +1,6 @@
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.Scheduling;
+using Monstertacle.Multisession.Sessions;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
@@ -63,6 +64,17 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
             {
                 RecoveryState.Open(session, null, Clock.GetUtcNow(), null);
             }
+        }
+        return ValueTask.CompletedTask;
+    }
+    public ValueTask CommitConfigurationAvailabilityAsync(Guid sessionId, bool available, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (State.Gate)
+        {
+            SessionSnapshot original = State.Sessions[sessionId];
+            SessionSnapshot updated = SessionAvailabilityPolicy.ForConfiguration(original, available);
+            if (updated != original) { State.Sessions[sessionId] = updated with { UpdatedUtc = Clock.GetUtcNow().ToUniversalTime() }; }
         }
         return ValueTask.CompletedTask;
     }

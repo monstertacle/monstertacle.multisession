@@ -101,3 +101,50 @@ keine alte-Kopf-Verzweigung und keine neue Identität. SQLiteprojektion/CAS folg
 Regeln in T060–T062 mit Crash-/Persistenzabnahme. Diese Tasks bleiben offen; dies ist kein
 SQLite-, Live- oder Zielhostnachweis. Native Conversations-CI am d795ee3 ist Windows/Ubuntu
 grün (quality 40840206354, Guard 40840206436); T116-CI folgt nach Push.
+
+## T049/T056-Formatvertikale: expliziter SQLitebestand
+
+Voranalyse architecture/2026-10-29-sqlite-foundation.md, Source1ab4726.
+Öffentliche Factory zunächst ohne Verhalten; 26 Formatfälle fachlich rot. Nach zwei
+zusätzlichen Journal-Sidecarfällen wurden 28/28 fachliche Fehler beobachtet (keine
+Initialisierung bzw. erwartete typisierte Ablehnung, stattdessen NotImplemented).
+Der letzte Redstand enthält bereits noch nicht verdrahtete DDL/Connectionpolicy;
+kein Factory-/Persistenzverhalten war grün implementiert. Das ältere 26er-Manifest
+wurde beim erweiterten Redlauf überschrieben; es wird nicht rückwirkend rekonstruiert.
+Die hier belegte 28er-Fassung ist tatsächlich vor Factory-Green ausgeführt worden.
+Anfänglicher Analyzerfehler CA1861 ist ausdrücklich kein Redbeleg.
+
+Befehle über run-capped: dotnet test tests/Monstertacle.Multisession.IntegrationTests
+-c Release --no-restore --filter FullyQualifiedName~StoreFormatTests, vor und nach Green.
+Unmittelbar vor Tests erstellte Quellenmanifeste einschließlich .sql, UTC aus Dateizeit:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| sqlite-format-red | 2026-10-29T10:18:21.2479431Z | 98a6d5dc8f49e7ec6572d01405745e16b9daed09444010e8dc5a5eb11dc64fa2 |
+| sqlite-format-green-compiled | 2026-10-29T10:20:05.9905410Z | 26e169da042e3a863db741c05c1d91ec68317c409a968546f69a7f0af04da656 |
+
+28/28 danach grün. SchemaV1 mit acht Tabellen und aktiven Uniqueconstraints,
+Metadaten/Trustscope/Header/echter Schema-/Integritätsvergleich, keine Migration oder
+Create-if-missing. Unknown/älter/korrupt/unerwartetes Schema bleibt unverändert.
+Journalpfad wird auf privat vorbereiteter Kopie geprüft; originale DB/Sidecardatei
+bleiben bei Ablehnung bytegleich. Das ist noch kein echter Hotjournal-/Prozesskillbeleg.
+ReadWrite statt automatischem Create, Pooling=false und ausgelesene DELETE/EXTRA/
+foreign_keys/busy_timeout1000 sind Voraussetzung erfolgreicher Factoryöffnung.
+Der neue Leaseport verlangt private Dateivorbereitung. Native Rechte/Besitz bleiben
+T091/T092; das Dateifixture ist kein Ersatz für Lifetime-Lock-/Alias-/Fremdprozessbeweise.
+Factory ist zustandslos/statisch, kein unnötiges Objektregister. Domainports/Bootstrap
+bleiben ausdrücklich unimplementiert für ihre nächsten TDDzyklen T050–T066; kein
+öffentlicher Runtime-/Haltbarkeitsanspruch aus bloßem Formatstart.
+
+Vollständige Qualität Exit0: artifacts/quality/linux/06cb479103f44c7896d5151f9ba799a7,
+Sourcehash4950a2dc9be450a193cc8275ce91992e253e3ff2df7fb7340a05f70563409121.
+Der Qualitäts-Sourcehash nimmt jetzt auch eingebettete .sql-Ressourcen auf.
+TRX gezählt478 bestanden:253 Unit/195 Contract/29 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1308/1387 Produktzeilen=94,3043 Prozent. Full-Guard206 Dateien/208 Typen,
+0 Befunde/Parsefehler/Skips, keine Scope-/Grenzwertänderung. Erster Qualitätslauf
+scheiterte an privaten Konstantennamen; danach an Projektkonvention angeglichen und
+vollständig erneut geprüft. Nur sqlite-format-quality-final.log belegt finalen Pass.
+T049/T056 bleiben für vollständige Binding-/Crashabnahme offen; nächster konkreter Auftrag
+T048 echte Journalbarriere, danach T050/T054/T057/T058. Owner ausführende Sitzung.
+1ab4726 auf Windows/Ubuntu erfolgreich: quality40855398948,Guard40855398914.

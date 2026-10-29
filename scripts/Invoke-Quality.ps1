@@ -19,7 +19,7 @@ function Get-SourceHash {
     $files += @(Get-ChildItem src, tests, examples, scripts, .github/workflows -Recurse -File |
         Where-Object {
             ($_.FullName -notmatch '[\\/](bin|obj|TestResults)[\\/]') -and
-                ($_.Extension -in '.cs', '.csproj', '.props', '.runsettings', '.json', '.ps1', '.yml')
+                ($_.Extension -in '.cs', '.csproj', '.props', '.runsettings', '.json', '.ps1', '.yml', '.sql')
         })
     $manifest = ($files | Sort-Object FullName | ForEach-Object {
         "$([IO.Path]::GetRelativePath($root, $_.FullName).Replace('\', '/')) $((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())"

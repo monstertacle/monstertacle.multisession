@@ -9,6 +9,8 @@ internal sealed class TestStateDirectoryLease(string stateDirectory) : IStateDir
     public bool IsHeld => !IsDisposed;
     public bool Matches(string directory) => Path.GetFullPath(directory) == Path.GetFullPath(StateDirectory);
     public bool IsDisposed { get; private set; }
+    public ValueTask PrepareFileAsync(string fileName, StateFileMode mode, CancellationToken cancellationToken)
+        => ValueTask.FromException(new SessionOperationException(new PublicError(ErrorCode.UnsupportedPlatform)));
 
     public ValueTask DisposeAsync()
     {

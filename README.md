@@ -91,3 +91,10 @@ SharpClaw bleibt ein späterer Konsument, OpenCode **1.19.0** eine optionale Ref
 `.gitignore` basiert auf der [offiziellen GitHub-VisualStudio-Vorlage](https://github.com/github/gitignore/blob/main/VisualStudio.gitignore),
 ergänzt um lokale Agentdaten, SQLite-Zustand und die ausdrückliche Aufnahme des Coverageinventars.
 Es werden keine Zugangsdaten, nativen Sessions oder produktiven Zustandsspeicher versioniert.
+
+SQLite hat eine erste Formatvertikale mit explizitem `SqliteStoreFactory.CreateNewAsync`
+beziehungsweise `OpenExistingAsync`. Der Leaseport bereitet private Dateien vor;
+Metadaten, Trustscope, Header und tatsächliches Schema werden vor Nutzung geprüft.
+Die fachlichen SQLiteports und Bootstrap sind noch Gerüste und können noch keine
+Runtime versorgen. Annahme-/Crash-/Recovery- sowie native Besitznachweise bleiben offen;
+[Formatnachweis](specs/001-agent-multisession/evidence/tdd-us5.md).

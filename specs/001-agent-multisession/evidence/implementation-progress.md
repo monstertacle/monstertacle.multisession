@@ -88,3 +88,7 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
 - T031/T037-Metadatenteilschnitt lokal grün: eingefrorene Revision, autoritative
   UpdatedUtc-/ClosedUtc-Snapshots, sechs neue Redfälle. 450 Tests/95,5248 Prozent,
   Full-Guard196 Dateien/198 Typen sauber. Close und reale SQLpersistenz bleiben offen.
+- SQLiteformatvertikale T049/T056 lokal umgesetzt: 28 echte Dateifälle, acht Tabellen,
+  explizites Create/Open ohne Ersatz/Migration, Vorprüfung und privater Journalkopiepfad.
+  Gesamt478 Tests/94,3043 Prozent, Guard206 Dateien/208 Typen sauber. Domainports/Bootstrap
+  sind noch Gerüste; nächster Auftrag echter Journalprozess, dann Annahme/DBqueue.

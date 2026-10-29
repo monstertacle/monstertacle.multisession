@@ -6,7 +6,11 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class StoreSerialization
 {
-    private static readonly JsonSerializerOptions _options = new() { UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow };
+    private static readonly JsonSerializerOptions _options = new()
+    {
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
+        Converters = { new StoredUtcTimestampConverter() },
+    };
     internal static string Write<T>(T value) => JsonSerializer.Serialize(value, _options);
     internal static T Read<T>(string json) => JsonSerializer.Deserialize<T>(json, _options)
         ?? throw new JsonException("Stored data is unavailable.");

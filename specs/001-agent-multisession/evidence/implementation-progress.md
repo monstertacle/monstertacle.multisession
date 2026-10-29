@@ -386,3 +386,10 @@ innerhalb laufender Vorbereitung erkanntem Cancel, Datei/Lease erhalten; erneute
 mit frischem Token möglich. Native Einzelanweisungen bleiben kooperativ statt präemptiv.
 Vollständiger Deadline-/Lifecycleaudit bleibt offen; als nächstes T067 Kultur-/UTC-
 Writer-/Readerabgleich, dann T064–T069-Abnahmematrix und verbleibende US3/US4-Aufgaben.
+
+T067 UTCwriter nach6/6fachlichem Red und175/175Storage-/Kulturregressionen grün.
+Volltor linux/4e2f34b9224b401eb864f44d98fc664c erfolgreich, Sourcehash
+`aabb76602dbb61485f5c2598f0d5045258ded688fefb7d813d376bffa096ffbf`,
+2691/2764Zeilen=97.3589%. Geschriebene Zeitpunkte kanonisch UTC, Leseseite repariert
+keine alten Fremdoffsets. Kulturwechsel erhält Unicode, Metadaten, Texte und Cursor.
+Native CI des folgenden Commits bleibt gesondert zu prüfen; T067 bis dahin offen.

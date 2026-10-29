@@ -773,3 +773,20 @@ keine zeitliche Wallclocksortierung als Kausalbeweis. SQLrelationen vermeiden wi
 ungeindexierte Vollscans. DBhash nach Ablehnung gleich, kein neues Provider-I/O oder Replay.
 Startupcancel bei langen Scans bleibt im Fristaudit T076 zu prüfen; vollständiger T065-
 Abgleich/Closingwriterreview und native Besitzabnahme bleiben eigenständig offen.
+
+## T067 Kultur-/UTC-Roundtrips
+
+Architektur/Quellen/Primärdokumentation vor Code: architecture/2026-10-29-serialization-culture.md.
+serialization-culture-red.log6/6 tatsächlich rot: direkte akzeptierte Sessiondaten
+behalten in JSON lokale Offsets statt UTC, obwohl Spalten bereits UTC tragen. Winter/
+Sommer Berlin/NewYork/Istanbul unter de-DE/en-US/tr-TR jeweils explizit echte Zonendaten,
+keine globale Hostzeitzonenänderung. Neuer speicherspezifischer DateTimeOffsetconverter
+normalisiert ausschließlich neue Writes auf UTC bei gleichem Instant; Read bewahrt
+ursprünglichen Offset zur weiterhin strikten Erkennung inkonsistenter Altdateien.
+serialization-culture-green175/175Kultur-/Storage-/Recoveryfälle grün.
+
+Originale opaque Provider-/Profil-/Modell-/NativeIDs und I/İ/ı/i-Settings, vollständige
+Inputs/Outputs/History, Metadata-Store-/Trustscope-ID sowie Cursor über Kulturwechsel
+und echtes SQLite-Reopen erhalten. Datumsähnliche Settingstrings unverändert. Negativer
+NonUTC-Tamperfall bleibt rot im erwarteten Fehlerzweig, keine stille Altformatmigration.
+Native Kultur-/ICUprüfung dieses Schnitts noch erforderlich; Taskmarkierung erst danach.

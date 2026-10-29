@@ -347,3 +347,52 @@ T034/T035/T037/T040–T048 und die übrigen Stories bleiben nach ihrem Gesamtumf
 Vorheriger Sharedstand fd3e7e3 auf Windows/Ubuntu-CI grün (quality 40842526292,
 Guard 40842526304); T116 b795a6d ebenfalls grün (quality 40841624863, Guard 40841624856).
 CI am neuen nativen Stand folgt nach Push. Keine Produkt-/Livefreigabe; Gesamtauftrag läuft weiter.
+
+## T035/T041: öffentliche native und hosteigene Providerintegration
+
+Updated: 2026-10-29T09:10:22Z
+Vorabanalyse architecture/2026-10-29-public-provider-integration.md, Basis 057c33c.
+NativeContextTests zuerst fachlich rot: Succeeded erwartet, Failed beobachtet, weil ein
+passives compaction-Item als Clientaktion galt. Nach enger Parserkorrektur 1/1 grün.
+Keine neue Kontextfunktion: opaque Item wird nur toleriert, nicht interpretiert/kopiert
+oder neu angefordert. Zwei Sends enthalten weiterhin ausschließlich die neue Eingabe;
+kein context_management/tools-Feld und kein eigener Compact-/Historycall.
+
+ProviderExtensibilityTests konsumiert die öffentliche Runtime mit beiden echten nativen
+Adapterklassen unter synthetischen unabhängigen Wirezuständen plus ThirdContractProvider.
+Der dritte Adapter ist hosteigenes AgentTask-/Workspace-Protokoll mit Bindingversion7,
+ohne Endpoint oder Herstellerbedingung im Commonkern. Je drei Eingaben/Session, neun
+unverwechselbare RequestIds, FIFO/History/Inhalt/Modell/Root und neuer Head passen.
+TCS-Barrieren nach tatsächlichem Eintritt belegen drei laufende Sends gleichzeitig.
+Fünf Conversation-HTTPcalls (Open, drei Sends, ein GET), vier Interaction-HTTPcalls;
+keine zusätzlichen Kontext-/Tooloperationen, keine Recoveryfälle. Die Drittadapterfähigkeit
+war bereits im Kernel vorhanden: dieser neue Integrationsfall wurde unmittelbar grün,
+kein künstliches Red oder neue Kernelimplementierung dafür behauptet.
+
+Befehle über run-capped, ContractTests Release/no-restore:
+`--filter FullyQualifiedName~NativeContextTests`, danach
+`--filter 'FullyQualifiedName~ProviderExtensibilityTests|FullyQualifiedName~NativeContextTests'`.
+Unmittelbar vor Test erzeugte C#-/Projektmanifeste, UTC ausdrücklich LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| native-context-red | 2026-10-29T09:00:41.5221951Z | d3bd1d1f67b314edb7abcf92934c89963d92ec72d92f2c81a849f185535ae3af |
+| native-context-green | 2026-10-29T09:00:54.3549982Z | e947bffed86b5752181aec3a7ef93e50618b70eecf9d885eb5323836b21511b3 |
+| provider-integration | 2026-10-29T09:03:36.1251228Z | 3ee514feb70b17cffc0cad50d6cfb68dd99354969eba1cd09f7c3e9e23b1df8c |
+
+Vollständige lokale Qualität Exit 0:
+artifacts/quality/linux/9320d94a53a74e409334fabf9afcc32d/, Sourcehash
+`dbecff3895907b0b767bd89f1bf42fcf261f2631741005014b5679efafdaa85f`.
+427/427 .NET-Tests gezählt, 240 Unit/185 Contract/je 1 Infrastrukturfall, 0 Fehler/Skips.
+13 Coveragegatefälle, Locked-Restore/Build/Format/Analyzer/Audit grün.
+1158/1213 Produktzeilen = 95,4658 Prozent. Full-Guard Exit 0, 189 Dateien/191 Typen,
+0 Verstöße/Parsefehler/übersprungene Typen, kein Scope-/Pin-/Grenzwertwechsel.
+Gemini-Stand 057c33c auf Windows/Ubuntu-CI grün (quality 40846039421, Guard 40846039386).
+
+T035/T041 lokal umgesetzt. Providerdokumentation T046 beschreibt beide nativen Verträge,
+Opaque-Modelle, Sicherheits-/Speicher-/Kontextgrenzen und offene Herstellerabnahme.
+T044 bleibt offen für sämtliche zehn US2-Fälle einschließlich Close; dies ist dessen
+native öffentliche Teilregression, kein ersetzter Close-/Cancel-/Paket-/Integratortest.
+Bekannt unbrauchbare erste Bindung wird nativ vor Send verweigert; atomare vorgelagerte
+Sitzungssperre bleibt konkreter nächster Auftrag T043/T037 der ausführenden Sitzung.
+Echte Persistenz/Restart/Cancel/Stop/Rechte-/Liveläufe folgen ihren bestehenden Tasks.

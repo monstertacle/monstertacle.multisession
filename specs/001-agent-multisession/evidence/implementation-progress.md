@@ -75,3 +75,9 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   Native Kontextcodes/weitere Grenzfälle und Freigabeumfang bleiben ausdrücklich offen,
   konkrete Folgetasks/Owner in tdd-us2.md. Nächste Arbeit öffentliche Integration/Erweiterung
   und Kontext-/Bindingsperren, danach SQLite. Shared-/T116-CI auf Windows/Ubuntu grün.
+- T035/T041 und Providerdokumentation T046 lokal umgesetzt: öffentliche Runtime mit
+  beiden nativen Wireverträgen und drittem hosteigenen Agentadapter, je drei Eingaben,
+  drei überlappende Sends. Passives natives compaction-Item nach beobachtetem Red toleriert,
+  ohne eigene Kontextaktion. 427 Tests/95,4658 Prozent, 189 Dateien/191 Typen sauber.
+  T044 bleibt für gesamten Close-/US2-Umfang offen. Nächste konkrete Arbeit Bindungssperren.
+  Native 057c33c CI unter Windows/Ubuntu erfolgreich; Nachweis tdd-us2.md.

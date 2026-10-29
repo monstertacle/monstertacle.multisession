@@ -45,7 +45,7 @@ internal static class OpenAiResponse
         foreach (JsonElement item in response.GetProperty("output").EnumerateArray())
         {
             string? type = item.GetProperty("type").GetString();
-            if (type == "reasoning") { continue; }
+            if (type is "reasoning" or "compaction") { continue; }
             if (type != "message") { return Failure(ErrorCode.UnsupportedProviderAction, ExecutionCertainty.ConfirmedEnded); }
             foreach (JsonElement content in item.GetProperty("content").EnumerateArray())
             {

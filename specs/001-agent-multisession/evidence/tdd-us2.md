@@ -151,3 +151,93 @@ und frische Credentialauflösung benötigen T032–T040-Fixtures, Owner dieselbe
 Gesamtimplementierungssitzung. Nächste Schritte: OpenAI-Fixture für Open/Reopen und Send,
 dann sichere Transportgrenzen/Credentials/Fehler und Gemini; Abnahme gemäß vorhandenen
 T030–T040. SettingsRevision im Sitzungssnapshot bleibt T031/T037. Kein Live-/Freigabenachweis.
+
+## T032/T038: nativer Conversations-/Responses-Adapter
+
+Updated: 2026-10-29T08:07:53Z
+Vorabanalyse und inkrementelle Deep-Dives:
+architecture/2026-10-29-openai-adapter.md; Basis 0a76b51. Kein vorbestehender Adapter
+behauptet. Offizielle Dokumentation tatsächlich abgerufen, Index-/Webgrößenfehler bei
+Referenzseiten dokumentiert. Nur enges eigenes Fixtureprotokoll, keine Livezugänge.
+
+Befehlsmuster jeweils über run-capped:
+`dotnet test tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~<Testklasse>`.
+Nach Green wurde mit `FullyQualifiedName~OpenAi` die gesamte Adaptersuite wiederholt.
+
+| Zyklus/Testklasse | Beobachtetes fachliches Red | Danach grüne Adapterregression |
+| --- | --- | --- |
+| OpenAiProviderContractTests | 2 Stubs liefern keine native Conversation/kein Reopen | 2/2 |
+| OpenAiConfigurationTests + OpenAiOpeningFailureTests | 25 Fehler, 1 vorher gültiger Slash-Endpoint; ungültige Konfiguration, fehlende stabile Identität und rohe HTTP-/JSONfehler | 28/28 |
+| OpenAiSendTests | 3 fehlende Sends/awaitbare Operationsacknowledgements | 31/31 |
+| OpenAiResultTests | 11 Fehler, 1 vorher grüne inklusive UTF8grenze; Status/Context/Leertext/Action/ID/Overlimit falsch | 43/43 |
+| OpenAiTransportBoundaryTests | 4 Fehler: Header/Gesamtfrist/Callback nicht begrenzt, Rohkörperlimit ignoriert | 47/47 |
+| OpenAiObservationTests | 6 Inspect-/Cancel-Stubs liefern keine native Evidenz | 53/53 |
+| OpenAiReadRetryTests | 2 fehlende sichere GET-Retry-After-Waits, POST-Retryverbot schon grün | 56/56 |
+| OpenAiProtocolSafetyTests | 5 Fehler: HTTP400-Kontextcode, whitespace ID, widersprüchliche Conversation, direkte ungültige Calllimits | 61/61 |
+
+Der erste Send-Testversuch scheiterte an CA1861, ein Retry-Green-Versuch an CS1003;
+beides sind ausdrücklich keine fachlichen Reds. Die ausführbaren Redstände tragen
+`openai-send-red-compiled` beziehungsweise der erfolgreiche Green `openai-retry-green-compiled`.
+Erster Gesamtqualitätversuch beanstandete ausschließlich die private Konstantenbenennung;
+nach Umbenennung vollständige Qualität erneut, keine Gateänderung.
+
+Source-Manifeste unter artifacts/tdd/<Zyklus>/sources.sha256 (nicht versionierte Originale).
+Folgende Zeiten stammen ausdrücklich von LastWriteTimeUtc dieser unmittelbar vor dem
+Test erzeugten Manifestdateien; jede Redfassung liegt vor ihrer Greenfassung:
+
+| Zyklus | UTC der Manifestdatei | SHA256 des Manifests |
+| --- | --- | --- |
+| openai-open-red | 2026-10-29T07:49:26.7907321Z | 6cb88d684ab64fca71389c904ae0e93f0f564a8c1dee6890c205b268df4fea2f |
+| openai-open-green | 2026-10-29T07:49:56.6966144Z | 017b20be0b6e9e61dadab34c7081dc496757319ba862319c0c73b399818d0dd7 |
+| openai-validation-red | 2026-10-29T07:50:52.8201458Z | b25539c7c2eab183db17b8cfbdbfb47669ec87778d305eec18b49b68a84bda44 |
+| openai-validation-green | 2026-10-29T07:51:37.3309456Z | b53ae0df453bc89b1b12d536e8805af50066ac551f34e32063961099990ea45f |
+| openai-send-red-compiled | 2026-10-29T07:53:32.4301825Z | b79fd3e4ddca490fb772455ce03305b51b20f7034db9e315bf82130872d3dfa3 |
+| openai-send-green | 2026-10-29T07:54:19.5971470Z | 33d56f2b5c37c3291173b7bac220e59088f92d56a82ee3adb3ed8bc077761e3f |
+| openai-result-red | 2026-10-29T07:55:20.5009740Z | 5681e96e079e6d5358cc44cdc3beb6f0b828cebcefaa80d338e4f8ac35d1ed82 |
+| openai-result-green | 2026-10-29T07:56:17.9205813Z | 192f5914ee2adce7b63beec9f441278085e5d36ca7e30cd905126b7099d90851 |
+| openai-transport-red | 2026-10-29T07:58:16.5760337Z | 18c8eee76ad674a6394247ecf15ba414fd13776817d9db82a4f6c5ecb036694a |
+| openai-transport-green | 2026-10-29T07:59:10.1633986Z | 4229024d309e79dcef5cc15f831cde0fa69f0aaea6c49decfc53c84c7506af90 |
+| openai-observation-red | 2026-10-29T08:00:00.7145725Z | e391d5251d0211825442fcadaa497fdeb5a7f9552ce069951c73e02a28076a72 |
+| openai-observation-green | 2026-10-29T08:00:49.3696269Z | 1b9edc8b3c9ce4f30c9f9b65d24ef56cd56031a0701caf9f209f92ded942a222 |
+| openai-retry-red | 2026-10-29T08:01:57.9699331Z | 95d19749f512a0098a2e2f1ea511800b3d514cf786b41d92cc592cf93e0cbbff |
+| openai-retry-green-compiled | 2026-10-29T08:03:21.4031696Z | 454f52973078e69c497b054bf966d83fa079ef81359e64c7c806abb52c7e92b0 |
+| openai-safety-red | 2026-10-29T08:04:50.2167432Z | ec3a80345fa94e7bf12110e4b5602821ce75e899f6fcb26319e2ff9b9a6c6dde |
+| openai-safety-green | 2026-10-29T08:05:39.3678275Z | 1347c7fd26d6159fb93a42c87aaafd668f8feee1c79c06269ec0fa00a6da5366 |
+
+Zusätzliches synthetisches JSONfixture openai-v1.json, SHA256
+`e0252d214d806397ddb0e35411d9786d9feb03f41f8b36828b250aee479a4fe7`.
+Die Gesamtqualität manifestiert auch JSON- und Projekteinstellungen.
+
+### Implementierung und finale lokale Prüfung
+
+Native Sessionproviderfassade, separater Transport/Körperlimit/Read-Retry/Requestprotokoll/
+Responseinterpreter/Operation/Observationzugriff. Nur neue Eingabe, eingefrorene instructions,
+Conversation stabil, keine previous_response_id oder eigene Tools. Frische Credentials
+je HTTP-Aufruf. OperationId vor Poll/Erfolg awaitbar gesichert, Callbackfehler ist Unknown.
+Native terminale Status unterscheiden sich von lokalen Fristen, überlange Ausgabe wird
+nicht abgeschnitten. Inspect/Cancel sind read/evidence-only gegenüber lokalem Store.
+
+Kompletter Qualitätseinstieg Exit 0 auf Debian 13:
+`artifacts/quality/linux/4bc35df4ca77479bbdee9c78f5790b58/`, Sourcehash
+`2d7e5e9a55fcf67782407a71a093b0704055c2a64bf0a089c6e3a3c3cbdc605d`.
+355/355 .NET-Tests aus vier TRX maschinell gezählt: 240 Unit, 113 Contract,
+je 1 Integration-/Plattform-Infrastrukturfall; 0 Fehler/Skips. 13 Coveragegatefälle,
+Locked-Restore, Release-Build, Format/Analyzer und transitiver Audit grün.
+912/951 Produktzeilen = 95,8991 Prozent im gesamten nativen Scope. Keine Scope-/Pinänderung.
+Full-Guard Exit 0, 155 Dateien/157 Typen, 0 Verstöße/Parsefehler/übersprungene Typen.
+Originalbericht artifacts/tdd/openai-codemetr-final.json; keine Baseline/Limitlockerung.
+
+### Befunddisposition und Folgearbeit
+
+| Gegenstand | Disposition, Owner und konkrete Abnahme |
+| --- | --- |
+| Fehlender Conversations-/Responses-Adapter | T032/T038 lokal umgesetzt, 61 Adapterfälle plus vollständige Qualität oben; reale Herstellerabnahme T105 bleibt offen |
+| Endpunkte/ID-/Status-/Frist-/Output-/Callbacklücken der ersten Minimalzyklen | Jeweils obiges fachliches Red vor Green, kein unverifizierter Minimalstand als fertig veröffentlicht |
+| Zweiter nativer Vertrag | Ausführende Gesamtimplementierungssitzung, T033/T039: stabiles Gemini /v1, Lazy-ID/Chainhead, neue Nachricht/Settings, native Status-/Fehler-/Cancel-Fixtures |
+| Zusätzliche Transport-/Datenschutz-/öffentliche Integrationsabnahme | Dieselbe Sitzung, bestehende T034/T035/T040/T044/T074: echte Loopback-Redirect-/Credentialgrenze und weitere Cancel-/Body-/Failureproben, öffentliche Auswahl mit beiden Adaptern; diese ganzen Tasks bleiben offen |
+| Persistenz, vollständiger Lifecycle, native Besitz-/Konsum-/Releaseabnahme | Dieselbe Gesamtimplementierungssitzung, bestehende US5/US3/US4-/Polishtasks mit deren Red-/Crash-/Zielhost-/Freigabekriterien |
+
+Kein Live-, Zielhost-, Packaging- oder Gesamtabnahmepass. OpenAI unterstützt ModelResponse,
+keine externe AgentTask-Laufzeit. API-Betrieb braucht hostseitig freigegebenen Zugang und
+beim Livegate ausdrücklich bestätigte Kosten-/Speicher-/Testkontobedingungen.
+Die Gesamtimplementierung wird mit Gemini fortgesetzt; kein Ende nach diesem Teilschnitt.

@@ -1,7 +1,7 @@
 # Monstertacle.Multisession
 
 Providerneutrale C#/.NET-Bibliotheken zur Verwaltung paralleler Agent-Sitzungen.
-**In Entwicklung, nicht produktionsreif.** Dispatcher, SQLite-Persistenz, Recovery,
+**In Entwicklung, nicht produktionsreif.** SQLite-Persistenz, vollständiger Lebenszyklus,
 native Plattformimplementierungen und Herstelleradapter sind noch nicht vollständig umgesetzt.
 
 ## Entwicklungsumgebung und Prüfungen
@@ -31,11 +31,12 @@ Ausführliche Regeln stehen in [AGENTS.md](AGENTS.md), der
 Repository: <https://github.com/monstertacle/monstertacle.multisession>.
 **Aktiver Auftrag: alle offenen Speckit-Tasks autonom implementieren.**
 Arbeitsstand und Abhängigkeiten: [Gesamtimplementierung](specs/001-agent-multisession/evidence/implementation-progress.md).
-Zuerst T113/T115 für Recovery und Paging, dann Runtimekomposition und übrige Storys.
-T112 (ReservedDispatch) und T025 (Dispatcher) sind lokal umgesetzt; Nachweise und Grenzen stehen in
-[evidence/tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md).
-Der kontrollierte Store ist weiterhin keine SQLite-Persistenz; SessionRuntime ist noch
-nicht mit Scheduler und Dispatcher komponiert.
+T112–T115, Dispatcher und öffentliche Runtimekomposition sind umgesetzt; Nachweise und Grenzen
+stehen in [tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md) und den anderen Storynachweisen.
+Der Conversations-/Responses-Adapter ist gegen lokale HTTP-Fixtures implementiert;
+[Providervertrag und Grenzen](docs/providers.md). Als Nächstes folgen Gemini, SQLite,
+vollständiger Cancel-/Stop-/Close-Lebenszyklus sowie Plattform- und Konsumabnahmen.
+Der kontrollierte Store ist weiterhin keine SQLite-Persistenz. Keine Produktfreigabe.
 
 1. Eigenen Arbeitsbranch aus dem aktuellen Remote-Stand erstellen; keine parallelen
    Änderungen mehrerer Agenten im selben Arbeitsbaum.
@@ -60,7 +61,7 @@ Skill-Unterstützung lautet der Agentenauftrag (kein Shellbefehl):
 
 ```text
 $speckit-implement Alle offenen Tasks nach ihren Abhängigkeiten implementieren.
-T113/T115 sind Voraussetzungen für Recovery- und Pagingteile der Runtime.
+Vorhandene Runtime-, Dispatch-, Recovery- und Pagingverträge wiederverwenden.
 Vor Umsetzung aktuellen Deep-Dive dokumentieren,
 fachliches Red vor Green beobachten, Regression, native Qualitätsprüfung und vollständigen
 Codemetr-Guard ausführen. T112/T025 wiederverwenden; alle offenen Storys weiterführen.
@@ -69,7 +70,7 @@ auf einem Arbeitsbranch zur Überprüfung zurückliefern; kein Merge, Deployment
 ```
 
 Falls der Client Skills nicht automatisch erkennt, den Skill
-`.agents/skills/speckit-implement/SKILL.md` mit genau diesem begrenzten Auftrag laden.
+`.agents/skills/speckit-implement/SKILL.md` mit diesem Gesamtimplementierungsauftrag laden.
 Die projektlokalen Spec-Kit-Skripte verwenden PowerShell, auch unter Linux.
 
 ## Nachweise und Repositorygrenzen

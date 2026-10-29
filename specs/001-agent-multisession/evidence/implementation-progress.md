@@ -54,3 +54,10 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   HTTP-Konfiguration/Credentials bleiben beim folgenden Adapterzyklus, daher Tasks offen.
 - Windows-CI fand ein Rennen ausschließlich in der Paralleltestbarriere; mit 4d5158e
   korrigiert, 52 Contractfälle/Full-Guard grün, neue CI folgt. Siehe tdd-us1.md.
+- T032/T038 lokal umgesetzt: Conversations-/Responses-Adapter mit 61 deterministischen
+  HTTP-/Callback-/Frist-/ID-/Fehlerfällen; Gesamtqualität 355 Tests, 95,8991 Prozent,
+  Full-Guard 155 Dateien/157 Typen sauber. Reale Herstellerabnahme bleibt offen.
+  Providerdokumentation docs/providers.md, Nachweis tdd-us2.md.
+- Runtime-Barrierefix und generische Konfiguration auf Windows/Ubuntu-CI erfolgreich:
+  quality 40837654007 (4d5158e) und 40837735315 (0a76b51), Guards ebenfalls grün.
+  Nächste konkrete Arbeit: Gemini T033/T039, anschließend restliche US2-Abnahme und SQLite.

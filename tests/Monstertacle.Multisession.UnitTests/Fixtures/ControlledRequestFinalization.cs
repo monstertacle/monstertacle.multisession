@@ -15,6 +15,12 @@ internal static class ControlledRequestFinalization
                 failure with { Certainty = ExecutionCertainty.Unknown }),
         };
         state.Sessions[reservation.SessionId] = state.Sessions[reservation.SessionId] with { BlockReason = SessionBlockReason.RecoveryRequired };
-        state.Recovery.Open(state.Sessions[reservation.SessionId], reservation, state.Clock.GetUtcNow(), state.Dispatch.OperationReference(reservation.DispatchId));
+        ProviderBinding? knownBinding = state.Sessions[reservation.SessionId].Binding;
+        if (knownBinding is { SessionReference: null } && state.Dispatch.SessionReference(reservation.DispatchId) is { } observed)
+        {
+            knownBinding = knownBinding with { SessionReference = observed };
+        }
+        state.Recovery.Open(state.Sessions[reservation.SessionId], reservation, state.Clock.GetUtcNow(),
+            state.Dispatch.OperationReference(reservation.DispatchId), knownBinding);
     }
 }

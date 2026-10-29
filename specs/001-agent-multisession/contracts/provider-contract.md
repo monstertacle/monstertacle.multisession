@@ -206,3 +206,20 @@ abweisen; Exit 0 ohne terminalen Erfolg und Tool-Zwischenschritt nicht als Erfol
 Callbackfehler und Cancel ohne Endbeleg behalten Unknown; nicht unterstützte Fähigkeiten
 vor Übergabe ablehnen. Diese Fälle ergänzen, ersetzen aber nicht die zwei nativen
 Herstellerverträge, Persistenz-/Prozessproben oder den tatsächlichen Paketkonsum.
+
+## 9. Operationsgebundene Wiederaufnahme nach Unknown
+
+Ein Adapter, dessen ungewisse Ausführung einen nativen Fortsetzungskopf ändern kann,
+setzt `ProviderCapabilities.RequiresOperationAwareRecovery=true` und implementiert
+`IExecutionRecoveryProvider.ReopenAfterExecutionAsync`. Der Port erhält den gespeicherten
+bekannten Bindingbezug und die optionale persistierte Operationskennung. Er liest native
+Belege und liefert ausschließlich einen bestätigten kompatiblen Fortsetzungsstand.
+Er eröffnet und sendet keine Arbeit. Ein noch lesbarer alter Kopf allein genügt nicht.
+Fehlt ein für diese Prüfung nötiger Bezug, bleibt UnsupportedProviderAction/Unknown;
+fehlender Port ist kein Anlass zum Rückfall auf gewöhnliches Reopen.
+
+Bei stabilen nativen Conversation-IDs bleibt gewöhnliches Reopen zulässig. Die Auswahl
+ist capability-/interfacegebunden, ohne Herstellernamen im Kern. Bestätigtes Ende und
+Fortsetzungsstand werden erst mit der ausdrücklichen revisionierten Recoveryentscheidung
+veröffentlicht; Inspect allein ändert nichts. Die historische Anfrage wird nicht nachträglich
+Succeeded. Close/Closing erfordert keine Wiederöffnung zur Fortsetzung.

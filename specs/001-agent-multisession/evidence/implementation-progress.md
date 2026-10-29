@@ -61,3 +61,8 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
 - Runtime-Barrierefix und generische Konfiguration auf Windows/Ubuntu-CI erfolgreich:
   quality 40837654007 (4d5158e) und 40837735315 (0a76b51), Guards ebenfalls grün.
   Nächste konkrete Arbeit: Gemini T033/T039, anschließend restliche US2-Abnahme und SQLite.
+- Vor Gemini wurde die operationsgebundene Recoverylücke als T116 konkretisiert und lokal
+  geschlossen: optionaler generischer Port, bekannte erste native Identität im Case,
+  expliziter CAS statt altem-Kopf-Fallback. 362 Tests/96,0417 Prozent, Full-Guard
+  160 Dateien/162 Typen sauber. Native Gemini-/SQLitebeweise folgen ihren bestehenden Tasks.
+  Nachweis tdd-us5.md. d795ee3 CI auf Windows/Ubuntu grün.

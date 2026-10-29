@@ -27,6 +27,8 @@ internal sealed class ControlledDispatchState
     public string? OperationReference(Guid dispatchId)
         => _observations.LastOrDefault(item => item.DispatchId == dispatchId && item.Observation.Kind == ProviderObservationKind.OperationAccepted).Observation?.Reference;
 
+    public string? SessionReference(Guid dispatchId)
+        => _observations.LastOrDefault(item => item.DispatchId == dispatchId && item.Observation.Kind == ProviderObservationKind.SessionEstablished).Observation?.Reference;
     public void RecordObservation(Guid dispatchId, ProviderObservation observation)
         => _observations.Add((dispatchId, observation));
 

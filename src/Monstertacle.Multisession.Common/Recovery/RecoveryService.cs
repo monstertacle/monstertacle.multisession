@@ -73,24 +73,36 @@ public sealed class RecoveryService : IRecovery
 
     private async ValueTask<ProviderBinding> ReopenAsync(SessionSnapshot session, RecoveryCaseSnapshot item, CancellationToken cancellationToken)
     {
-        if (session.Binding?.SessionReference is null) { throw Failure(ErrorCode.UnsupportedProviderAction, item); }
+        ProviderBinding? knownBinding = item.Binding ?? session.Binding;
+        if (knownBinding?.SessionReference is null) { throw Failure(ErrorCode.UnsupportedProviderAction, item); }
         if (!_providers.TryGetValue(session.ProviderId, out ProviderRegistration? registration)
-            || registration.AdapterId != session.Binding.AdapterId || registration.ContractVersion != session.Binding.FormatVersion)
+            || registration.AdapterId != knownBinding.AdapterId || registration.ContractVersion != knownBinding.FormatVersion)
         {
             throw Failure(ErrorCode.ProviderUnavailable, item);
         }
         using CancellationTokenSource deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(_options.RequestTimeout);
+        IExecutionRecoveryProvider? operationRecovery = registration.Provider as IExecutionRecoveryProvider;
+        if (registration.Provider.Capabilities.RequiresOperationAwareRecovery && operationRecovery is null)
+        {
+            throw Failure(ErrorCode.UnsupportedProviderAction, item);
+        }
         ProviderBinding reopened;
         try
         {
-            reopened = await registration.Provider.ReopenAsync(session.Context, session.Binding, deadline.Token)
-                .AsTask().WaitAsync(deadline.Token);
+            ValueTask<ProviderBinding> operation = registration.Provider.Capabilities.RequiresOperationAwareRecovery
+                ? operationRecovery!.ReopenAfterExecutionAsync(session.Context, knownBinding, item.OperationReference, deadline.Token)
+                : registration.Provider.ReopenAsync(session.Context, knownBinding, deadline.Token);
+            reopened = await operation.AsTask().WaitAsync(deadline.Token);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+        catch (SessionOperationException failure) when (failure.Failure.Code == ErrorCode.UnsupportedProviderAction)
+        {
+            throw Failure(ErrorCode.UnsupportedProviderAction, item);
+        }
         catch (Exception) { throw Failure(ErrorCode.ProviderUnavailable, item); }
-        if (reopened.AdapterId != session.Binding.AdapterId || reopened.FormatVersion != session.Binding.FormatVersion
-            || reopened.SessionReference != session.Binding.SessionReference)
+        if (reopened.AdapterId != knownBinding.AdapterId || reopened.FormatVersion != knownBinding.FormatVersion
+            || reopened.SessionReference != knownBinding.SessionReference)
         {
             throw Failure(ErrorCode.ProviderUnavailable, item);
         }

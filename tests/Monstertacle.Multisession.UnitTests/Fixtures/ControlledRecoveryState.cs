@@ -12,7 +12,7 @@ internal sealed class ControlledRecoveryState
     public IReadOnlyList<RecoveryCaseSnapshot> OpenCases => _cases.Values.Where(item => item.Status == RecoveryCaseStatus.Open)
         .OrderBy(item => item.CreatedUtc).ThenBy(item => item.Target.Kind).ThenBy(item => item.Target.Id.ToString("D"), StringComparer.Ordinal).ToArray();
 
-    public void Open(SessionSnapshot session, ExecutionReservation? reservation, DateTimeOffset now, string? operationReference)
+    public void Open(SessionSnapshot session, ExecutionReservation? reservation, DateTimeOffset now, string? operationReference, ProviderBinding? knownBinding = null)
     {
         RecoveryTarget target = reservation is null ? new(RecoveryTargetKind.SessionOpening, session.SessionId)
             : new(RecoveryTargetKind.RequestExecution, reservation.RequestId);
@@ -21,7 +21,7 @@ internal sealed class ControlledRecoveryState
         {
             RequestId = reservation?.RequestId,
             DispatchId = reservation?.DispatchId,
-            Binding = session.Binding,
+            Binding = knownBinding ?? session.Binding,
             OperationReference = operationReference,
         };
     }
@@ -47,7 +47,7 @@ internal sealed class ControlledRecoveryState
         }
         else if (decision.Kind == RecoveryDecisionKind.ConfirmEnded)
         {
-            if (session.Lifecycle != SessionLifecycle.Closing && !Compatible(session.Binding, confirmedBinding))
+            if (session.Lifecycle != SessionLifecycle.Closing && !Compatible(item.Binding, confirmedBinding))
             {
                 throw Failure(ErrorCode.ProviderUnavailable);
             }

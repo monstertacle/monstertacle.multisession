@@ -167,3 +167,18 @@ Seiten sind eine **Livesicht**, keine Snapshottransaktion: neu eingefügte Eleme
 dem Cursor können erscheinen, davor erst bei neuem Scan. Zustände können sich zwischen
 Reads ändern; zurückgegebene DTOs selbst sind unveränderliche Snapshots. So werden weder
 Snapshotisolation noch vollständige Auffindbarkeit durch nur einen parallelen Scan behauptet.
+
+## 5. Beleggebundener Fortsetzungskopf (T116)
+
+Für `RequiresOperationAwareRecovery` verwendet RecoveryService den optionalen Port
+`IExecutionRecoveryProvider` statt des gewöhnlichen Reopen. Ein providerdefinierter neuer
+Kopf muss aus der bekannten ungewissen Operation verifiziert werden. Ohne notwendigen
+Bezug oder passenden Port bleiben Fall und Reservierung gesperrt. Die vorhandenen
+Identitäts-/Adapter-/Versions- und CAS-Regeln gelten unverändert.
+
+Ein erfolgreich bestätigtes `SessionEstablished` darf die zuvor leere SessionReference
+im RecoveryCase.Binding konkretisieren. Dies veröffentlicht weder einen neuen bestätigten
+Kopf noch das Binding im SessionSnapshot. Der Fall bewahrt die bekannte native Identität
+für explizite Klärung; der Service erhält diese bekannte Fallbindung, und der Store prüft
+sie beim gemeinsamen Entscheidungs-/Bindingcommit. Kein beobachteter Bezug wird durch
+Neueröffnen ersetzt. Produktive Persistenz dieser Projektion gehört zu T060–T062.

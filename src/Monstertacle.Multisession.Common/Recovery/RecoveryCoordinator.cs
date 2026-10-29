@@ -36,6 +36,10 @@ internal sealed class RecoveryCoordinator(ISessionStore store, IReadOnlyList<Pro
         using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(caller, deadline.Token);
         try
         {
+            if (_providers[session.ProviderId].Provider is ISessionAvailabilityProvider availability)
+            {
+                await availability.ValidateAvailabilityAsync(session.Context, linked.Token).AsTask().WaitAsync(linked.Token);
+            }
             ProviderBinding reopened = await _providers[session.ProviderId].Provider.ReopenAsync(session.Context, session.Binding!, linked.Token)
                 .AsTask().WaitAsync(linked.Token);
             return reopened == session.Binding ? null : ErrorCode.ProviderSessionExpired;

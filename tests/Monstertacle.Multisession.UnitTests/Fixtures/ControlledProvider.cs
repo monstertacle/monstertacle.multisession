@@ -2,7 +2,7 @@ using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
-internal sealed class ControlledProvider : ISessionProvider
+internal sealed class ControlledProvider : ISessionProvider, ISessionAvailabilityProvider
 {
     public TaskCompletionSource<ProviderCall> Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public TaskCompletionSource<ProviderReply> Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -13,7 +13,10 @@ internal sealed class ControlledProvider : ISessionProvider
     public Func<ProviderSessionContext, string, CancellationToken, ValueTask<ProviderReply>>? Inspecting { get; init; }
     public Func<ProviderSessionContext, ProviderBinding>? BindingForContext { get; init; }
     public Action<ProviderSessionContext>? Opening { get; init; }
+    public Func<ProviderSessionContext, CancellationToken, ValueTask>? CheckingAvailability { get; init; }
     public ProviderBinding OpeningBinding { get; init; } = new("controlled", 1, null, null);
+    public ValueTask ValidateAvailabilityAsync(ProviderSessionContext context, CancellationToken cancellationToken)
+        => CheckingAvailability?.Invoke(context, cancellationToken) ?? ValueTask.CompletedTask;
 
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
     {

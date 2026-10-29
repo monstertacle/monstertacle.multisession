@@ -670,3 +670,11 @@ Fullguard434Dateien/452Typen ohne Befund. T122 hält den nativen Folgeabgleich f
 Der vorausgehende Native-Startupstand1b2aba6 besteht inzwischen beide echten CI-Jobs
 40958643550 und Guard40958643532. Nächster T121-Schnitt prüft ausgewählten Modellzugang
 über eine ausdrücklich lesende Providerfacette; Lazy-Reopen bleibt unverändert.
+
+2026-10-29T21:46:00Z: T121-Modell-/Credentialprüfung nach17 echten roten Fällen
+über optionale generische Providerfacette implementiert, HTTP-freies Lazy-Reopen
+bewahrt. Volltor linux/b3959cf14578453e84f34a428175ecdf:1031Tests,97.5788 %,
+Sourcehash f1c4a1f380581bd32fa8ccbc5c5f990d43f0cab9720a82e719ce462e57a16e54,
+Fullguard439Dateien/457Typen ohne Befund. Vier kontrollierte Deadline-/Caller-Cancel-
+regressionen ebenfalls bestanden. Native CI/Stunden-/Paketnachweise für diesen neuen
+Stand erforderlich; keine Livefreigabe daraus. Nachweisaudit läuft weiter.

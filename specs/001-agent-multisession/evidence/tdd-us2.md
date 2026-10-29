@@ -504,3 +504,32 @@ Fullguard 431Dateien/449Typen, keine Verstöße/Parsefehler/übersprungenen Date
 Native Bestätigung folgt nach Push. T121 bleibt hinsichtlich genauer Modellprüfung
 und nativer Gesamtabnahme offen: Conversation-/Interaction-GET beweist vorhandenen
 Bezug/Zugang, keinen vollständigen Modellkatalog; Lazybinding behauptet keine HTTPprüfung.
+
+## T121: tatsächliche ausgewählte Modell-/Zugangsprüfung
+
+Vorabanalyse architecture/2026-10-29-native-model-availability.md einschließlich
+amtlicher OpenAI-Model-GET- und Gemini-v1-Discoverybelege. Basis9554d22.
+ISessionAvailabilityProvider und verhaltenslose Adaptermethoden vor Testausführung;
+`model-availability-red.log` zeigt 17 echte fachliche Fehler: keine Metadatenreads,
+keine Ablehnung von Auth/Missingmodel/kaputten Metadaten/ungültigen Kennungen und
+ignorierte generische Validierungsfacette beim Start. Redstand mit HEAD/Diff/
+Untracked-Tar/SHA vor Green unter model-availability-red-source archiviert.
+
+Minimaler gemeinsamer Reader über bisherigen HTTPtransport, Protokollvalidatoren in
+jeweiligem Adapter, polymorphe optionale Prüfung vor Reopen. Kein kompletter Katalog,
+keine Generierung oder Modellsubstitution. Aliasmetadaten ändern Context.ModelId nicht.
+Model-404 wird ProviderUnavailable, nicht SessionExpired; aktuelle Credentialauflösung
+bei jedem Read. Dot-/Leerkennung erzeugt keine HTTPanfrage. Vorhandener ausdrücklich
+HTTP-freier Gemini-Lazy-Reopen bleibt unverändert. Fremde Recovery-/Nativeblockaden
+werden weiterhin nicht automatisch aufgehoben. Weitere Adapter können den Port explizit
+implementieren oder bereits im Reopen validieren; keine Namensheuristik im Kern.
+
+Alle232 Contractfälle danach grün. Vier ergänzte Deadline-/Caller-Cancelvarianten
+waren sofort grüne Regression der implementierten Fristen, kein zusätzlicher Redbeleg.
+Volltor linux/b3959cf14578453e84f34a428175ecdf:1031 Tests
+(359Unit/236Contract/405Integration/31Linuxplattform),2942/3015Zeilen=97.5788 %.
+Sourcehash f1c4a1f380581bd32fa8ccbc5c5f990d43f0cab9720a82e719ce462e57a16e54.
+Fullguard439Dateien/457Typen ohne Verstöße/Parsefehler/übersprungene Dateien.
+Native Bestätigung folgt. Positiver Metadatenread belegt Zugang und Modellressource
+zu diesem Zeitpunkt, keine Garantie künftiger Quote, Generierung oder aller Features.
+T105 bleibt separate reale Testkontenabnahme; keinerlei Liveaufruf ausgeführt.

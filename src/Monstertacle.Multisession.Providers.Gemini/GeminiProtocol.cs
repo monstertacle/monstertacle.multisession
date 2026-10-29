@@ -7,6 +7,11 @@ internal static class GeminiProtocol
 {
     internal const string AdapterId = "gemini-interactions";
     internal const int BindingVersion = 1;
+    private const string _modelPrefix = "models/";
+    internal static bool IsAvailableModel(JsonElement metadata)
+        => metadata.ValueKind == JsonValueKind.Object
+            && metadata.TryGetProperty("name", out JsonElement name) && name.ValueKind == JsonValueKind.String
+            && name.GetString() is { } identity && identity.Length > _modelPrefix.Length && identity.StartsWith(_modelPrefix, StringComparison.Ordinal);
     internal static string Input(ProviderCall request, ProviderBinding binding)
     {
         Dictionary<string, object?> body = new()

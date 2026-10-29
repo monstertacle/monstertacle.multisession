@@ -8,6 +8,10 @@ internal static class OpenAiProtocol
 {
     internal const string AdapterId = "openai-responses";
     internal const int BindingVersion = 1;
+    internal static bool IsAvailableModel(JsonElement metadata)
+        => metadata.ValueKind == JsonValueKind.Object
+            && metadata.TryGetProperty("object", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "model"
+            && metadata.TryGetProperty("id", out JsonElement id) && id.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(id.GetString());
     internal static ProviderBinding Conversation(JsonElement document)
     {
         if (document.ValueKind != JsonValueKind.Object

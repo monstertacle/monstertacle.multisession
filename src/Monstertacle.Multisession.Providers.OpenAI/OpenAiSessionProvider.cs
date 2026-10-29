@@ -5,7 +5,7 @@ using Monstertacle.Multisession.NativeHttp;
 namespace Monstertacle.Multisession.Providers.OpenAI;
 
 /// <summary>Native Conversations/Responses adapter; no client-side agent or transcript replay.</summary>
-public sealed class OpenAiSessionProvider : ISessionProvider, IDisposable
+public sealed class OpenAiSessionProvider : ISessionProvider, ISessionAvailabilityProvider, IDisposable
 {
     private readonly NativeHttpTransport _transport;
     private readonly OpenAiOperation _operation;
@@ -22,6 +22,12 @@ public sealed class OpenAiSessionProvider : ISessionProvider, IDisposable
     }
     /// <inheritdoc />
     public ProviderCapabilities Capabilities { get; } = new(true, false, true, true, false);
+    /// <inheritdoc />
+    public ValueTask ValidateAvailabilityAsync(ProviderSessionContext context, CancellationToken cancellationToken)
+    {
+        OpenAiValidation.Context(context);
+        return NativeModelAccess.CheckAsync(_transport, context.ModelId, OpenAiProtocol.IsAvailableModel, _clock, cancellationToken);
+    }
     /// <inheritdoc />
     public async ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
     {

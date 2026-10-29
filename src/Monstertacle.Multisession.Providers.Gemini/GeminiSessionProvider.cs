@@ -5,7 +5,7 @@ using Monstertacle.Multisession.NativeHttp;
 namespace Monstertacle.Multisession.Providers.Gemini;
 
 /// <summary>Native Interactions adapter with a stable first identity and separately confirmed chain head.</summary>
-public sealed class GeminiSessionProvider : ISessionProvider, IExecutionRecoveryProvider, IDisposable
+public sealed class GeminiSessionProvider : ISessionProvider, IExecutionRecoveryProvider, ISessionAvailabilityProvider, IDisposable
 {
     private readonly NativeHttpTransport _transport;
     private readonly TimeProvider _clock;
@@ -25,6 +25,12 @@ public sealed class GeminiSessionProvider : ISessionProvider, IExecutionRecovery
     }
     /// <inheritdoc />
     public ProviderCapabilities Capabilities { get; } = new(true, false, true, true, false) { RequiresOperationAwareRecovery = true };
+    /// <inheritdoc />
+    public ValueTask ValidateAvailabilityAsync(ProviderSessionContext context, CancellationToken cancellationToken)
+    {
+        GeminiBindingPolicy.Context(context);
+        return NativeModelAccess.CheckAsync(_transport, context.ModelId, GeminiProtocol.IsAvailableModel, _clock, cancellationToken);
+    }
     /// <inheritdoc />
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
     {

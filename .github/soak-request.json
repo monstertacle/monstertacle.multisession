@@ -1,5 +1,5 @@
 {
-  "SourceHash": "2c5fd5ef4be61fd1e03f4284729ee195838a2da5e2f7d96b90dec7adbb13ae5c",
-  "RequestedUtc": "2026-10-29T22:35:04.6683292+00:00",
-  "Purpose": "Native hour with canonical package hash validation in the quality candidate"
+  "SourceHash": "dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b",
+  "RequestedUtc": "2026-10-29T22:48:18Z",
+  "Purpose": "Native hour after behavior-preserving ABI constant refactoring"
 }

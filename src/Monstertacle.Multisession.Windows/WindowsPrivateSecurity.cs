@@ -16,10 +16,12 @@ internal sealed class WindowsPrivateSecurity : IDisposable
         byte[] bytes = new byte[descriptor.BinaryLength];
         descriptor.GetBinaryForm(bytes, 0);
         const int attributesSize = 24; // SECURITY_ATTRIBUTES layout for the explicitly supported Windows x64 ABI.
+        const int descriptorOffset = 8;
+        const int inheritHandleOffset = 16;
         _memory = Marshal.AllocHGlobal(attributesSize + bytes.Length);
         Marshal.WriteInt32(_memory, attributesSize);
-        Marshal.WriteIntPtr(_memory, 8, _memory + attributesSize);
-        Marshal.WriteInt32(_memory, 16, 0);
+        Marshal.WriteIntPtr(_memory, descriptorOffset, _memory + attributesSize);
+        Marshal.WriteInt32(_memory, inheritHandleOffset, 0);
         Marshal.Copy(bytes, 0, _memory + attributesSize, bytes.Length);
     }
     internal static void Require(string path, bool directory)

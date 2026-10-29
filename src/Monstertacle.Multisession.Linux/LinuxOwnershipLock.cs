@@ -7,6 +7,9 @@ namespace Monstertacle.Multisession.Linux;
 internal static class LinuxOwnershipLock
 {
     private const int _unlock = 8;
+    private const int _exclusiveNonBlocking = 2 | 4;
+    private const int _alreadyExists = 17;
+    private const int _wouldBlock = 11;
 
     internal static void Release(LinuxFileHandle handle)
     {
@@ -26,7 +29,7 @@ internal static class LinuxOwnershipLock
             LinuxNative.FileFlags | LinuxNative.ExclusiveCreate, LinuxNative.FileMode);
         if (descriptor < 0)
         {
-            if (Marshal.GetLastPInvokeError() != 17) { throw LinuxNative.Failure(); } // EEXIST only.
+            if (Marshal.GetLastPInvokeError() != _alreadyExists) { throw LinuxNative.Failure(); }
             descriptor = LinuxNative.OpenAt(parent, LinuxNative.LockName, LinuxNative.FileFlags, 0);
         }
         if (descriptor < 0) { throw LinuxNative.Failure(); }
@@ -34,10 +37,10 @@ internal static class LinuxOwnershipLock
         try
         {
             LinuxFileIdentity.Read(handle).RequirePrivate(false);
-            if (LinuxNative.Flock(descriptor, 2 | 4) != 0) // LOCK_EX | LOCK_NB.
+            if (LinuxNative.Flock(descriptor, _exclusiveNonBlocking) != 0)
             {
                 int error = Marshal.GetLastPInvokeError();
-                throw LinuxNative.Failure(error == 11 ? ErrorCode.StoreAlreadyOwned : ErrorCode.StorageUnavailable);
+                throw LinuxNative.Failure(error == _wouldBlock ? ErrorCode.StoreAlreadyOwned : ErrorCode.StorageUnavailable);
             }
             return handle;
         }

@@ -1,0 +1,34 @@
+{
+  "Status": "PASS",
+  "ValidatedUtc": "2026-10-29T22:48:18.6457718+00:00",
+  "SourceSha256": "15fffdcc0e3f7005966c871a028472e705f419c4e2b1edf4072297f288fc788e",
+  "HeaderSha256": "e9db5b4791371c03a4f9be955417bb7814987bfae032ad86bd27003d2df8796e",
+  "NativeConstants": [
+    {
+      "Name": "NFS_SUPER_MAGIC",
+      "NativeMagic": "0x6969",
+      "Excluded": true
+    },
+    {
+      "Name": "CIFS_SUPER_MAGIC",
+      "NativeMagic": "0xFF534D42",
+      "Excluded": true
+    },
+    {
+      "Name": "SMB2_SUPER_MAGIC",
+      "NativeMagic": "0xFE534D42",
+      "Excluded": true
+    },
+    {
+      "Name": "V9FS_MAGIC",
+      "NativeMagic": "0x01021997",
+      "Excluded": true
+    },
+    {
+      "Name": "CEPH_SUPER_MAGIC",
+      "NativeMagic": "0x00c36400",
+      "Excluded": true
+    }
+  ],
+  "Method": "Closed allowlist compared with installed Linux ABI; no actual NFS/SMB/9p/Ceph server or mount claimed."
+}

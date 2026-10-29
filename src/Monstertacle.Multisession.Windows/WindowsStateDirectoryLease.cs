@@ -40,7 +40,7 @@ public sealed class WindowsStateDirectoryLease : IStateDirectoryLease
             {
                 string path = Path.Combine(StateDirectory, fileName);
                 using WindowsPrivateSecurity security = new(false);
-                using SafeFileHandle file = WindowsNative.Open(path, WindowsNative.ReadWrite, 0,
+                using SafeFileHandle file = WindowsNative.Open(path, WindowsNative.ReadWrite, WindowsNative.NoSharing,
                     mode == StateFileMode.CreateNew ? WindowsNative.CreateNew : WindowsNative.OpenExisting,
                     mode == StateFileMode.CreateNew ? security.Pointer : 0);
                 WindowsFileIdentity.RequireType(file, false);

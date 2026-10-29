@@ -6,6 +6,7 @@ namespace Monstertacle.Multisession.Linux;
 
 internal static partial class LinuxNative
 {
+    internal const int CurrentWorkingDirectory = -100;
     internal const int DirectoryFlags = 0x10000 | 0x20000 | 0x80000;
     internal const int FileFlags = 2 | 0x20000 | 0x80000 | 0x800;
     internal const int ExclusiveCreate = 0x40 | 0x80;

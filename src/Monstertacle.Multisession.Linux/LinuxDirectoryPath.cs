@@ -18,7 +18,7 @@ internal static class LinuxDirectoryPath
 
     internal static LinuxFileHandle Open(string path, bool create)
     {
-        LinuxFileHandle current = LinuxNative.Open(-100, "/", LinuxNative.DirectoryFlags);
+        LinuxFileHandle current = LinuxNative.Open(LinuxNative.CurrentWorkingDirectory, "/", LinuxNative.DirectoryFlags);
         try
         {
             string[] components = path.Split('/', StringSplitOptions.RemoveEmptyEntries);

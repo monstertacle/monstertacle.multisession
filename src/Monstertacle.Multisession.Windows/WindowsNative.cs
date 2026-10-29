@@ -10,6 +10,7 @@ internal static partial class WindowsNative
     internal const uint ReadAttributes = 0x20080; // READ_CONTROL | FILE_READ_ATTRIBUTES.
     internal const uint ReadWrite = 0xc0000000;
     internal const uint ShareReadWrite = 3; // Deliberately excludes FILE_SHARE_DELETE.
+    internal const uint NoSharing = 0;
     internal const uint OpenExisting = 3;
     internal const uint CreateNew = 1;
     internal const uint OpenFlags = 0x02000000 | 0x00200000; // BACKUP_SEMANTICS | OPEN_REPARSE_POINT.

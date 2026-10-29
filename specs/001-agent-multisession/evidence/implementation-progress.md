@@ -69,3 +69,9 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
 - Gemeinsame interne HTTPquellen aus grünem OpenAI-Stand extrahiert, ausschließlich per
   Compile-Link im Providerpaket, kein Kerntransport/neues Paket. Vollständige Qualität
   362 Tests, 96,0499 Prozent, 163 Dateien/165 Typen sauber. Nächster Schnitt Gemini-Red.
+- T030/T036 und T033/T039 lokal umgesetzt: generische plus beide native Konfigurationen,
+  Gemini-Lazy-/Root-/Head-/Recovery-/Inspect-/Cancelvertrag mit 63 Adapterfällen.
+  Gesamtqualität 425 Tests, 95,4658 Prozent, Full-Guard 181 Dateien/183 Typen sauber.
+  Native Kontextcodes/weitere Grenzfälle und Freigabeumfang bleiben ausdrücklich offen,
+  konkrete Folgetasks/Owner in tdd-us2.md. Nächste Arbeit öffentliche Integration/Erweiterung
+  und Kontext-/Bindingsperren, danach SQLite. Shared-/T116-CI auf Windows/Ubuntu grün.

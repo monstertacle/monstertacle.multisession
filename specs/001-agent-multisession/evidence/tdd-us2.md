@@ -263,3 +263,87 @@ Voller Guard Exit 0, 163 Dateien/165 Typen, 0 Verstöße/Parsefehler/übersprung
 Keine Gates/Pin-/Scopeänderung. T045 bleibt bis vollständiger US2-Regression offen.
 Gemini wird denselben internen Transport nach eigenem Red konsumieren und seine darin
 kompilierten Quellen im normalen Coverageinventar vollständig mitmessen.
+
+## T033/T039: stabile native Interaktionskette
+
+Updated: 2026-10-29T08:51:12Z
+Basis fd3e7e3, Vorabanalyse architecture/2026-10-29-gemini-adapter.md.
+Offizielle stabile /v1-Referenz tatsächlich gelesen; eigenes Fixture verwendet
+steps/model_output/content/text. Keine Übernahme des älteren v1beta-/outputs-Vertrags.
+
+Befehlsmuster jeweils über run-capped:
+`dotnet test tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~<Testklasse>`.
+Greenregression jeweils `FullyQualifiedName~Gemini`, danach gesamte Suite.
+
+| Zyklus | Beobachtetes fachliches Red | Danach grüne Gemini-Fälle |
+| --- | --- | --- |
+| GeminiProviderContractTests | 4 Lazy-/Reopen-/Head-Stubs | 4 |
+| GeminiSendTests | 4 fehlende erste/Folgesends und ID-Callbackgrenzen | 8 |
+| GeminiResultTests | 11 Fehler/1 vorhandene inklusive Positivgrenze; Status, Textlimit, Head-/Lineage- und erste Fehlausführung | 20 |
+| GeminiRecoveryTests | 12 nicht implementierte native operationsgebundene Klärungen | 32 |
+| GeminiObservationTests | 6 Inspect-/Cancel-Stubs | 38 |
+| GeminiConfigurationTests + GeminiCallValidationTests + TransportBoundary/ReadRetry | 3 Fehler für v1beta und direkte ungültige Calllimits; 22 bereits grüne Konfigurations-/Transport-/Frist-/Retryregressionen | 63 |
+
+Die letzten 22 Fälle sind ausdrücklich Regressionen, keine erfundenen neuen Reds.
+Insbesondere die isolierten Gemini-Call-/Callbackfristen wurden nach dem Send-Green
+zusätzlich geprüft; die Sendimplementierung hatte die bereits verwendete endliche
+Operationsstruktur übernommen. Dieser zeitliche Umfang wird bei T108/Q-06 mitbewertet;
+kein nachträglicher Lauf wird als früheres fachliches Red ausgegeben. Die gemeinsamen
+Header-/Body-/GET-Retryregeln hatten ihre tatsächlichen Reds vor dem Sharedrefactor.
+
+Unmittelbar vor Test erzeugte Manifeste unter artifacts/tdd/<Zyklus>/sources.sha256;
+UTC stammt ausdrücklich aus LastWriteTimeUtc dieser Dateien, nicht aus geschätzten Zeiten:
+
+| Stand | UTC der Manifestdatei | SHA256 |
+| --- | --- | --- |
+| gemini-open-red | 2026-10-29T08:31:08.7672862Z | 5bf588605a99d6ccb64f81ebeff2c6e9de1e93d42440d96c612e93acf1a8d28a |
+| gemini-open-green | 2026-10-29T08:32:18.5396508Z | 3fcdb465cd5d9f46bef3ac115e344773ba5093e1e566fba7d438779815597fde |
+| gemini-send-red | 2026-10-29T08:33:50.8214243Z | 1196a4ae167d7377c184a89ff7b78ebb6f926f7793003ce89baae193c6591532 |
+| gemini-send-green | 2026-10-29T08:34:42.2366415Z | ac1dd6f3bf6570e480bbbe028ef81eb2be44c847397359749b95d510475e3cda |
+| gemini-result-red | 2026-10-29T08:36:11.7062403Z | 3984afc212eff5be1596ef3b4181a6676b172cdf927574218c646aa0c94fb57b |
+| gemini-result-green | 2026-10-29T08:37:36.1915278Z | 2ff5929750d6becfd1a1a69824223c222491f53c7110264284620340e1e4fc8c |
+| gemini-recovery-red | 2026-10-29T08:39:12.8215759Z | f43e4d4fd5ef0041cde1796a837fc9c40523e44c229c2fdcbe8d50bbfc9bca16 |
+| gemini-recovery-green | 2026-10-29T08:40:33.9426536Z | 869defa970f9345864b456606006f22a96dd7c6cbd21b73607fada0ee8f4c938 |
+| gemini-observation-red | 2026-10-29T08:42:19.0652342Z | e464c972d17b7ced40fb9e5e0d63e82cb1ed6b0589b403b7e5f4fe1a540bbba6 |
+| gemini-observation-green | 2026-10-29T08:42:51.7992835Z | 373b9c74d42a90a51becdcbc803504d3818764e1d518bb596c8ca9a57efde2f1 |
+| gemini-validation-red | 2026-10-29T08:44:18.7927296Z | 06f3097909921383f4e9e405e6922ec5cc6d0346c064807ccedee28ec4120e35 |
+| gemini-validation-green | 2026-10-29T08:45:30.7452302Z | fbc6fb9e9f3565460ad907641fb396869210958123f09b871740ec18b6933259 |
+
+Zusätzliches eigenes gemini-v1.json-Fixture SHA256
+`99dbc9ce0ef62b658e41d72ba06f51e239afb8b4386d59dad9aade68edfacfca`.
+Gesamtqualität manifestiert JSON-/Projekteinstellungen zusätzlich zu den C#-Manifesten.
+
+### Implementierung und lokale Gesamtprüfung
+
+Eigene native Facade/Options/Bindingpolicy/Protocol/Response/Operation/Recovery/Observation,
+gemeinsamer interner HTTPtransport ohne Herstellerabhängigkeit zwischen Paketen. Root,
+letzter completed-Kopf und unbestätigte neue Operation sind getrennt. Erste ID und jede
+Operations-ID werden awaitbar bestätigt. Native Settings und Input bleiben unverändert.
+Resultgrenzen verwenden die vorhandene ProviderReplyPolicy; kein abgeschnittener Erfolg.
+Ein neuer nativer completed-Kopf bleibt auch bei lokaler Textaufnahmefehlerausgabe erhalten.
+
+Vollständige native Qualitätsprüfung lokal Exit 0:
+`artifacts/quality/linux/15dee12688c647229cddfa1b39c74b59/`, Sourcehash
+`620ed98eb01d039910bb53072c534d72fc4a73361d7fdb759d45d61df35d84d3`.
+425/425 .NET-Tests aus vier TRX gezählt, 240 Unit/183 Contract/je 1 Infrastrukturtest,
+0 Fehler/Skips. 13 Coveragegatefälle, Locked-Restore, Build, Format/Analyzer, Audit grün.
+1158/1213 Produktzeilen = 95,4658 Prozent, gemeinsame HTTPquellen in den jeweiligen
+Produktassemblies mitgemessen. Full-Guard Exit 0, 181 Dateien/183 Typen,
+0 Verstöße/Parsefehler/übersprungene Typen. Keine Pin-/Grenzwert-/Scopeänderung.
+
+T030/T036 generische plus beide native Konfigurationen lokal umgesetzt (15 generische
+Konfigurationsfälle, native HTTPS/Loopback/Credential-/Profil-/Versionsfälle und frische
+Auflösung in beiden Adaptern). T033/T039 lokale native Implementierung umgesetzt.
+T034/T035/T037/T040–T048 und die übrigen Stories bleiben nach ihrem Gesamtumfang offen.
+
+| Offener Gegenstand | Konkrete Folgearbeit / Owner und Abnahme |
+| --- | --- |
+| Öffentliche Auswahl/Erweiterung/native Kontextgrenze | Ausführende Gesamtimplementierungssitzung, T035/T041/T044: beide native Adapter plus dritten Hostadapter ohne Kernänderung öffentlich konsumieren; drei geordnete Eingaben, zwei Hersteller überlappen, keine eigene Kontextaktion/Historyänderung |
+| Native Fehler-/Transportabnahme | Dieselbe Sitzung, T034/T040/T074: reale Loopback-Redirect-/Credentialgrenze, weitere negative Bodies/Cancelbelege, keine Rohdaten in Fehlern; dokumentierten spezifischen Gemini-Kontextcode oder freigegebenen Beleg beschaffen, keine message-Heuristik |
+| Unbrauchbare erste native Bindung | Dieselbe Sitzung, T043/T037: native Sendverweigerung existiert, zusätzlich ProviderUnavailable-Sitzungssperre vor weiterer Annahme/Reservierung und passende Wiederaufnahmeprüfung zuerst rot integrieren |
+| TDD-Freigabeumfang | T108/Q-06, Owner ausführende Abschlusssitzung/Projektverantwortlicher: tatsächlich beobachtete Reds und offen dokumentierte zeitliche Grenzen prüfen; keine nachträgliche Rekonstruktion oder stille Ausnahme |
+| Persistenz/Lifecycle/Plattform/Live/Konsum | Bestehende US5/US3/US4-/Polishaufträge mit ihren expliziten Abnahmen; keine Fake-, lokale Debian- oder Fixtureprüfung ersetzt diese |
+
+Vorheriger Sharedstand fd3e7e3 auf Windows/Ubuntu-CI grün (quality 40842526292,
+Guard 40842526304); T116 b795a6d ebenfalls grün (quality 40841624863, Guard 40841624856).
+CI am neuen nativen Stand folgt nach Push. Keine Produkt-/Livefreigabe; Gesamtauftrag läuft weiter.

@@ -33,8 +33,8 @@ Repository: <https://github.com/monstertacle/monstertacle.multisession>.
 Arbeitsstand und Abhängigkeiten: [Gesamtimplementierung](specs/001-agent-multisession/evidence/implementation-progress.md).
 T112–T115, Dispatcher und öffentliche Runtimekomposition sind umgesetzt; Nachweise und Grenzen
 stehen in [tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md) und den anderen Storynachweisen.
-Der Conversations-/Responses-Adapter ist gegen lokale HTTP-Fixtures implementiert;
-[Providervertrag und Grenzen](docs/providers.md). Als Nächstes folgen Gemini, SQLite,
+Conversations/Responses und stabile Gemini-Interactions sind gegen lokale HTTP-Fixtures implementiert;
+[Providervertrag und Grenzen](docs/providers.md). Als Nächstes folgen öffentliche Adapterintegration, SQLite,
 vollständiger Cancel-/Stop-/Close-Lebenszyklus sowie Plattform- und Konsumabnahmen.
 Der kontrollierte Store ist weiterhin keine SQLite-Persistenz. Keine Produktfreigabe.
 

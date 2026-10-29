@@ -62,8 +62,37 @@ Quellen: [Conversation state](https://developers.openai.com/api/docs/guides/conv
 
 ## Gemini Interactions
 
-Die Implementierung des stabilen `/v1`-Vertrags folgt als nächster offener Arbeitsschritt.
-Das vorhandene Projektgerüst ist noch kein funktionsfähiger Gemini-Adapter. Der geplante
-native Interaktionskopf wird ausschließlich aus bestätigten Abschlüssen fortgeführt;
-keine eigene Geschichte oder Toolschleife. Aktuelle Umsetzung und Prüfnachweise stehen in
-[Gesamtimplementierung](../specs/001-agent-multisession/evidence/implementation-progress.md).
+`GeminiSessionProvider` implementiert den stabilen `/v1/interactions`-Vertrag mit
+frischem `x-goog-api-key` je HTTP-Aufruf. Open erzeugt ausschließlich eine lokale ungebundene
+Bindung. Der erste Send etabliert die erste native Interaktions-ID; diese bleibt
+`SessionReference`. Der getrennte `ContinuationState` ist ausschließlich der letzte
+bestätigte completed-Interaktionskopf. Folgesends übergeben dessen ID als
+`previous_interaction_id`, jeweils nur neue Eingabe und feste `system_instruction`.
+Unbekannte Einstellungen und ausdrücklich konfigurierte v1beta-Pfade werden abgewiesen.
+Kein eigener Tool-/Continuation-Token-/Verdichtungsablauf, keine Transcripthistorie im Request.
+Unterstützt ist ModelResponse; AgentTask benötigt einen passend registrierten externen Adapter.
+
+`GeminiOptions` konfiguriert Endpoint, CredentialReference, AllowLocalHttp und
+MaximumResponseBytes mit denselben Sicherheits-/Bodydefaults wie oben. Native Ressourcen
+werden über steps/model_output/content/text gelesen; das ist der aktuelle stabile Vertrag.
+Ein completed-Kopf bleibt auch bei lokaler OutputLimitExceeded-/Leertextfehlermeldung
+bekannt. Erste native Fehlausführung ohne completed-Kopf ist keine Erlaubnis für eine
+zweite ungebundene Wurzel: Send/Reopen verweigern diesen Zustand lokal.
+
+Nach ungewissem Send erfordert `RequiresOperationAwareRecovery` den separaten
+`IExecutionRecoveryProvider`. Dieser liest die persistierte ungewisse Operation, überprüft
+bekannte IDs und vorhandene Vorgängerevidenz und übernimmt nur einen bestätigten neuen
+Kopf. Ein alter lesbarer Kopf allein erlaubt keine Fortsetzung. Native failed/incomplete/
+cancelled können den alten Kopf erst nach zusätzlicher Prüfung wiederverwenden; offene
+oder clientabhängige Zustände halten Recovery gesperrt. Lokale Fallentscheidung/CAS bleibt
+Aufgabe des Kerns. Inspect/Cancel lösen keine lokale Reservierung und öffnen keine Sitzung.
+
+Unbekannte native HTTP400-Codes bleiben ExecutionFailed/NotStarted statt einer Heuristik
+über freie Fehlermeldungen. Die abschließende spezifische Gemini-Kontextcodeabnahme ist
+ausdrücklich noch offen (T034/T105). Deterministische Fixtures sind kein Hersteller-Livebeleg.
+Native Speicherung/Retention richten sich nach dem freigegebenen Konto; lokale Löschung
+löscht keine Interaktionen oder Backups beim Hersteller.
+Quellen: [stabile Interactions-Referenz](https://ai.google.dev/api/interactions-api-v1),
+[Interactions-Übersicht](https://ai.google.dev/gemini-api/docs/interactions-overview).
+
+Weitere Umsetzung und offene Prüfungen: [Gesamtimplementierung](../specs/001-agent-multisession/evidence/implementation-progress.md).

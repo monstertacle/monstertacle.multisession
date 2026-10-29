@@ -4,5 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
+    <Compile Include="../Shared/NativeHttp/*.cs" Link="NativeHttp/%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

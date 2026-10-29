@@ -257,3 +257,34 @@ T051/T059/T060 gespeicherter Dispatch/Abschluss und T052/T061/T062 Recovery. Own
 Gesamtimplementierungssitzung. Keine SQLite-Runtime-/Gesamt-US5-Freigabe; übrige Ports noch
 Gerüste. Frühere Crashvertikale457e901 auf Windows/Ubuntu-CI grün:
 quality40858563809,Guard40858563778.
+
+## T063-Teilschnitt: native Session-/Requestkeysets
+
+Voranalyse architecture/2026-10-29-sqlite-pages.md, Source4113798. Elf SqlitePageTests
+fachlich rot an den fehlenden nativen Listenports; anfängliches ungenutztes Using ist kein
+Red, dessen Buildlauf separat unter sqlite-pages-build. Danach11 grün: ordinaler UUIDkey
+bei gleichem CreatedUtc, Einfügung vor/nach Lastkey, Cursor nach Wiederöffnung, Request-
+Sequence und ursprüngliche Kandidaten-ID ohne verwendetes Receipt, Größen1/2/100 und
+ungültige Größen/Encoding, fremder Store/Session/Listenart, unbekannte Session ohne Rows.
+Native SQLs nutzen tupleKey, Parameter, ORDER BY und LIMIT size+1. Kein OFFSET oder
+Vollmaterialisieren des gesamten Katalogs. Gemeinsamer strenger PageCursor unverändert.
+History-/Recoveryqueries bleiben ihre noch offenen T060/T062/T063-Vertikalen.
+Befehle run-capped dotnet test IntegrationTests -c Release --no-restore --filter
+FullyQualifiedName~SqlitePageTests, anschließend gesamte Integrations-/Qualitätssuite.
+Manifeste unmittelbar vor Tests, UTC aus LastWriteTimeUtc:
+
+| Stand | UTC | SHA256 |
+| --- | --- | --- |
+| sqlite-pages-red | 2026-10-29T11:07:11.5883851Z | 559d5c4eb95a3e44d24a069761692900154c81a900d993ba80c9f0962bc74e72 |
+| sqlite-pages-green | 2026-10-29T11:08:37.1457191Z | db545ed93d4dd528f5b5a1737558447fc9473de6d356fbf70429f17c91f6da7a |
+
+Finale gesamte Qualität Exit0: artifacts/quality/linux/bc75c37842e74bb5a16d16d7be3ebcd8,
+Sourcehashc9a7ee01750e5a50980689b9e8b5706297575a6ceb660b9deee183e64e40b438.
+TRX gezählt513 bestanden:253 Unit/195 Contract/64 Integration/1 Plattform,0 Fehler/Skips.
+13 Coveragegatefälle,Locked-Restore/Build/Format/Analyzer/Audit erfolgreich.
+1553/1626 Produktzeilen=95,5105 Prozent. Full-Guard230 Dateien/234 Typen,
+0 Verstöße/Parsefehler/Skips, kein Scope-/Pin-/Grenzwertwechsel.
+T063 bleibt für vollständige Listen offen. Nächster konkreter Auftrag T051/T059/T060
+persistierter ReservedDispatch, Beobachtung und atomarer Abschluss; Owner ausführende
+Gesamtimplementierungssitzung. Annahmestand4113798 Windows/Ubuntu-CI erfolgreich:
+quality40862468558,Guard40862468395. Keine ganze SQLite-Runtime-/Recoveryfreigabe.

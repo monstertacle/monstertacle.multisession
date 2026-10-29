@@ -103,3 +103,8 @@ Implementierungsarbeit weitergeht. Die Gesamtimplementierung ist noch nicht abge
   Alte Opening/Running werden vor Recoveryumsetzung sicher abgewiesen. Restliche SQLite-
   Ports/Keysetqueries und fachliche Crashpunkte bleiben offen. Nächster Auftrag T063,
   dann Dispatch/Abschluss/Recovery. Crashstand457e901 CI auf Windows/Ubuntu grün.
+- T063-Session-/Requestkeysets lokal umgesetzt: elf echte SQLfälle, stabile Cursor nach
+  Reopen, Kandidaten ohne verwendetes Receipt auffindbar, fremde Scopes abgewiesen.
+  Gesamt513 Tests/95,5105 Prozent, Guard230 Dateien/234 Typen sauber. History/Recovery
+  folgen ihren Schreibvertikalen. Nächster Auftrag T051/T059/T060 Dispatch/Abschluss.
+  Annahmestand4113798 auf Windows/Ubuntu-CI grün.

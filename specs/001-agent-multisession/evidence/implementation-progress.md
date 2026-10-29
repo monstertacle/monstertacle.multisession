@@ -495,3 +495,13 @@ Sourcehash6c49eec07686294c53b478501da0bff1f0312b89f38e8a2b5e58abbdca46387a,
 vorweiterenRouten aufunveränderlicheCLIMethodentabelle refactoren, nichtRegelnlockern.
 NochfehlendeT094Flowsisolation/retention/extensions/native-context/recovery/soak und
 Livekonfiguration/Paket-/finalePlattform-/Lifecycleaufträgeweiteroffen.
+
+2026-10-29T19:22:22Z: T094 um Isolation, Retention und externen Adaptervertrag
+ergänzt. Drei echte CLI-Rotfälle, anschließend elf Szenariotests und alle
+983 Linux-Tests grün. Vollbericht linux/77805b160ca14e5182b38c152d700ca6,
+Sourcehash ab33a342361f50cd1a740b69b02e8d2453da3f7735e566ba12a6d4fa6c900e6c,
+97.5677 % Coverage; Codemetr 416 Dateien/432 Typen ohne Befund.
+Windows-Fehler aus 40936649050/40937967664 bleiben ausdrücklich offen unter
+T094/T099/SC-009; als Nächstes aussagekräftige Prozessdiagnosen und Eingrenzung.
+Weitere CLI-Abläufe native-context/recovery/soak sowie Paket- und Abschlussaufträge
+aus tasks.md bleiben in Arbeit. Keine Freigabe oder Live-Ausführung behauptet.

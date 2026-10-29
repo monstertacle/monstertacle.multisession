@@ -212,3 +212,24 @@ LimitsUTF8genau6Bytesinklusive/7Bytesexklusive, leerundkaputtesUTF16vorReceipt a
 2Success+1FailedOutputLimitExceededmitvollständigleererFehlerausgabe, frühereHistory
 unverändert. ÖffentlicheDBzählungenunabhängigvomReportgeprüft. KeinProduktsemantikwechsel,
 keineSchwellenlockerung; ProbeHostProfilekind gezieltAgentTaskfürWorkspace gewählt.
+
+## T094: Isolation, Retention und externer Vertrag
+
+Am 2026-10-29T19:22:22Z dokumentierter Schnitt nach Vorabanalyse
+`architecture/2026-10-29-scenario-dispatch.md`: drei fehlende CLI-Abläufe zuerst
+fachlich rot, danach elf Szenariotests grün. Die Instanzprobe verwendet zwei
+native Stores und getrennte Profile; Retention löscht nur die abgeschlossene
+Sitzung und bewahrt ungewisse Arbeit; der externe Adapter behält Format 7 und
+seinen Fortsetzungsstand. Kein Produktverhalten wurde dafür geändert.
+
+Vollprüfung `artifacts/quality/linux/77805b160ca14e5182b38c152d700ca6`:
+983 Tests grün, 2848/2919 Produktzeilen (97.5677 %), Sourcehash
+`ab33a342361f50cd1a740b69b02e8d2453da3f7735e566ba12a6d4fa6c900e6c`.
+Codemetr 0.1.0: 416 Dateien, 432 Typen, keine Verstöße, Parsefehler oder
+übersprungenen Dateien. Native CI für diesen Schnitt steht noch aus.
+
+Die Windows-Läufe 40936649050 und 40937967664 sind fehlgeschlagen:
+Routing-Probe beziehungsweise ein Crash-Worker erreichten ihre erwarteten
+Abschlüsse nicht. Linux war jeweils grün. Die Fehler sind T094/T099 und dem
+SC-009-Auftrag zugeordnet; sie werden vor Abnahme untersucht. Ein bloßes
+Wiederholen oder ein grüner früherer Quellstand ersetzt diesen Nachweis nicht.

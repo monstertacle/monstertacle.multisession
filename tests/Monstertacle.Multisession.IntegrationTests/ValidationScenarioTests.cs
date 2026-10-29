@@ -17,6 +17,8 @@ public sealed class ValidationScenarioTests
     [InlineData("capacity", 10, 5, 5, 0, 0)]
     [InlineData("workspace", 3, 3, 3, 0, 0)]
     [InlineData("limits", 1, 3, 2, 1, 0)]
+    [InlineData("isolation", 1, 1, 1, 0, 0)]
+    [InlineData("extensions", 2, 3, 3, 0, 0)]
     public async Task ExecutesSelectedWorkload(string scenario, int sessions, int requests, int succeeded, int failed, int cancelled)
     {
         await using PrivateStoreDirectory parent = new();
@@ -31,16 +33,18 @@ public sealed class ValidationScenarioTests
         Assert.Equal(0L, StoreProbe.Scalar(database, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
     }
 
-    /// <summary>Controlled stop records queued non-starts while retaining uncertain external work after late provider completion.</summary>
-    [Fact]
-    public async Task ShutdownKeepsUnknownReservationAndCancelsQueuedWork()
+    /// <summary>Shutdown and retention preserve uncertain external work and its reservation after late provider completion.</summary>
+    [Theory]
+    [InlineData("shutdown", 3, 2)]
+    [InlineData("retention", 1, 0)]
+    public async Task KeepsUnknownReservationAndCancelsOnlyNeverStartedWork(string scenario, int requests, int neverStarted)
     {
         await using PrivateStoreDirectory parent = new();
-        string database = await RunPassedAsync("shutdown", Path.Combine(parent.StateDirectory, "shutdown-runs"));
-        Assert.Equal(3L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests"));
-        Assert.Equal(3L, StoreProbe.Scalar(database, "SELECT count(*) FROM History"));
+        string database = await RunPassedAsync(scenario, Path.Combine(parent.StateDirectory, "uncertain-runs"));
+        Assert.Equal((long)requests, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests"));
+        Assert.Equal((long)requests, StoreProbe.Scalar(database, "SELECT count(*) FROM History"));
         Assert.Equal(0L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State IN (0,1,2)"));
-        Assert.Equal(2L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=4 AND Certainty=0"));
+        Assert.Equal((long)neverStarted, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE State=4 AND Certainty=0"));
         Assert.Equal(1L, StoreProbe.Scalar(database, "SELECT count(*) FROM Requests WHERE Certainty=3"));
         Assert.Equal(1L, StoreProbe.Scalar(database, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
     }

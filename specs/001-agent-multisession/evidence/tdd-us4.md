@@ -334,3 +334,33 @@ Volltor linux/31cfc003e1ea48dc9c72ee8037ada854:1036C#Tests und zusätzliche acht
 Hashprüferfälle bestanden,97.5796 %. Fullguard440Dateien/458Typen ohne Befund.
 Native neue Consumerjobs und RequiredChecks folgen erst nach tatsächlichem Green.
 Stundenbelege älterer Sourcehashes bleiben Checkpoints, kein Ersatz für neuen Lieferstand.
+
+## T125: tatsächliches Kernelende vor neuer Store-Lease
+
+Vorabanalyse architecture/2026-10-29-windows-recovery-diagnosis.md. Native Red-
+Reproduktion40970595632/Job123786071389 am Commit08e6208: bestehende Recovery-CLI
+fordert PASS, erhält iteration5 StoreAlreadyOwned/Win3232. Direkt nach bisherigem
+WaitForExitAsync meldet echtes WaitForExit(0) False. Kein Lockretry oder zusätzlicher
+Sleep in dieser Fassung. Vollständiger getesteter Gitquellstand vor Green archiviert;
+Rohreport/Phase/Archivehash windows-process-exit-red.json,
+windows-process-exit-red-phases.txt, windows-process-exit-reproduction.json.
+Originalbefund war bereits die fehlgeschlagene native Regression40966955521.
+
+Danach bestehendes Managed-Exitwarten ohne Verhaltensänderung in ProcessExitWait
+extrahiert, von nativen Kill-/Recoveryfixtures gemeinsam verwendet;31Linuxfälle grün.
+Zusätzliche Kernelassertion in beiden bisherigen Kill-/Unknownfällen wurde am
+Arbeitskopf6c03cbd gegen alte Semantik in nativer CI gestartet; ihr eigenes Ergebnis
+wird separat übernommen, nicht als bereits ausgeführtes Red erfunden. Die erste
+fachliche Redgrundlage der Korrektur ist die tatsächlich ausgeführte Recovery-CLI.
+Redkopf b1537f7dfc54686c74a3343a97c3d512807a688db669f7cdf98a71971a63a217,
+HEAD/Diff/Untracked-Tar/UTC vor Green in artifacts/tdd/process-exit-red-source.
+
+Green 2026-10-29T23:18:51Z: Windows wartet im Test-/Validierungsgerüst über Task.Run
+auf endliches BCL-WaitForExit(timeout), wirft bei nicht erreichtem Kernelende Timeout.
+Linux behält ursprüngliches Asyncwarten. Keine Produkt-/Lease-/SQL-/Recoveryregel,
+Timeoutschwelle oder Ownershipassertion gelockert. Volltor
+linux/2a38af0332e74502aabe07a0589dc62d:1036Tests,97,5796 %;
+Source203fbcf8453fe8baabdf184e0ed40265bd5fbbfb7313dd16fc8a7db9998017ed.
+Guard441Dateien/459Typen ohne Regelverstöße/Parsefehler/Skips. Das beweist lokale
+Regression, nicht Windows-Green. Native Wiederholungsdiagnose5fea615 und neue
+Gesamt-/Paket-/Stundenmatrix werden getrennt abgeschlossen. T125 noch offen.

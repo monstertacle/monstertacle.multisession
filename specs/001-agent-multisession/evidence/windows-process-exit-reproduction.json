@@ -1,0 +1,15 @@
+{
+  "MeasuredUtc": "2026-10-29T23:11:19.5224716+00:00",
+  "OriginalRun": 40966955521,
+  "ReproductionRun": 40970595632,
+  "ReproductionJob": 123786071389,
+  "ReproductionCommit": "08e6208ad73d3747654becd0653e235529b5082c",
+  "NativeReason": "StoreAlreadyOwned",
+  "Win32Error": 32,
+  "FailedRepetition": 0,
+  "FailedIteration": 5,
+  "KernelSignaledAfterManagedExit": false,
+  "SourceArchiveSha256": "3c8990ddf7afd78b2f3b65632a86a0c26df38b44cd9c6d1df431caf8fcb6f501",
+  "RawPhasesSha256": "9f0db846db8062207ce4dc2807ce04a991472e56ec6ec4a59d110dff3582b4fe",
+  "Note": "Observed native failure before correction; phase instrumentation has no added wait or ownership retries."
+}

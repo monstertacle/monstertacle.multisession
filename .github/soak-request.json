@@ -1,5 +1,5 @@
 {
-  "SourceHash": "dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b",
-  "RequestedUtc": "2026-10-29T22:48:18Z",
-  "Purpose": "Native hour after behavior-preserving ABI constant refactoring"
+  "SourceHash": "203fbcf8453fe8baabdf184e0ed40265bd5fbbfb7313dd16fc8a7db9998017ed",
+  "RequestedUtc": "2026-10-29T23:18:51Z",
+  "Purpose": "Native hour after verified process termination before store recovery"
 }

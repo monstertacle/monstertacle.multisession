@@ -63,3 +63,14 @@ eigenständiger Integritätsnachweis, wird nicht als Kernelsignal umgedeutet.
 Gesamtes Quality-/Codemetr-/native Paket-/Publishtor danach; wiederholte Diagnose
 mit gleicher neuer Wartebarriere. Neuer Sourcehash und neue reale Stunde erforderlich,
 weil ValidationHost zum Liefer-/Abnahmequellumfang gehört.
+
+Lokales Green2026-10-29T23:18:51Z: vollständiges Linux-Tor
+2a38af0332e74502aabe07a0589dc62d,1036Tests,2943/3016=97,5796 %;
+Source203fbcf8453fe8baabdf184e0ed40265bd5fbbfb7313dd16fc8a7db9998017ed.
+Codemetr441Dateien/459Typen,0Verstöße/Parsefehler/Skips. BCL-Kernelwait läuft nur
+im nicht ausgelieferten Prozessmessgerüst auf Task.Run, kein synchrones Task-Warten
+im Bibliothekspfad. Aufruferbudgets unverändert. Relevante grüne31Linuxfälle vor
+Refactorextraktion dokumentiert; vollständiger Redquellstand/diff/untrackedtar samt
+gemessener UTC vor Green unter artifacts/tdd/process-exit-red-source gesichert.
+Native Greenwiederholung läuft separat als Diagnosebranch5fea615; finale native
+Gesamt-/Paket-/Stundenprüfung wird für diesen Sourcehash neu angefordert.

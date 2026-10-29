@@ -6,5 +6,14 @@ namespace Monstertacle.Multisession.ValidationHost;
 internal static class ProcessExitWait
 {
     internal static async Task WaitAsync(Process process, TimeSpan timeout)
-        => await process.WaitForExitAsync().WaitAsync(timeout);
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            // HasExited may expose an exit code before the kernel process handle signals.
+            bool signaled = await Task.Run(() => process.WaitForExit(timeout));
+            if (!signaled) { throw new TimeoutException("Native process termination did not complete within its deadline."); }
+            return;
+        }
+        await process.WaitForExitAsync().WaitAsync(timeout);
+    }
 }

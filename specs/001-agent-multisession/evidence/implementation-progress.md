@@ -700,3 +700,24 @@ T124 ergänzt wegen gemessener Paketbyteunterschiede zwischen unabhängigen Buil
 ein Produzentenartefakt für beide Consumer, Hashprüfer nach6+1echten Rotfällen grün,
 8Verhaltensfälle im Gesamttor31cfc003e1ea48dc9c72ee8037ada854 sowie1036C#Tests grün,
 97.5796 %, Fullguard440Dateien/458Typen ohne Befund. Native Bestätigung folgt nachPush.
+
+## T125: native Prozessbeendigung vor Besitzwiederaufnahme
+
+Gemessener Abgleich2026-10-29T23:14:23Z: technischer grüner Checkpoint7489450
+bleibt in build-native-7489450.json erhalten. Arbeitskopf6c03cbd extrahiert nur
+bisheriges Exitwarten und ergänzt Kernelassertion in bestehenden Kill-/Unknown-
+Tests. Source b1537f7dfc54686c74a3343a97c3d512807a688db669f7cdf98a71971a63a217.
+Linux31Plattformfälle und kompletter nativer Linuxjob40971273866 grün,
+Guard40971273735 auf beiden OS grün; Windows-Redprüfung läuft noch, kein PASS.
+
+Native Diagnose40970595632/Job123786071389 hat den gemeldeten Modus tatsächlich
+reproduziert: nach Managed-Exitwarten Kernelhandle False, dann Reopen Win3232 /
+StoreAlreadyOwned. Rohreport/windows-process-exit-red.json, Phasenmirror
+windows-process-exit-red-phases.txt, Quelle/Hashes windows-process-exit-reproduction.json;
+kompletter echter Redquellstand08e6208 als Git-Tar vor Green archiviert.
+Analyse und offizielle .NET-/Microsoft-Belege in architecture/2026-10-29-windows-recovery-diagnosis.md.
+Die laufende zweite unfixed Diagnose wurde nach gesichertem Befund abgebrochen,
+nicht als PASS ausgegeben. Auch die überholten Stunden40966982835/40968636523 sind
+abgebrochen; neue Stunde erst nach Korrektur und neuer Sourcehashmessung.
+Stundencheckpoint40962572280 inzwischen tatsächlich auf beiden OS erfolgreich,
+weiterhin kein Ersatz für späteren Lieferstand. Kein neuer Library-/Lock-/SQLvertrag.

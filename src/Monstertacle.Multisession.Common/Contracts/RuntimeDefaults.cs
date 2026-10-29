@@ -23,6 +23,8 @@ public static class RuntimeDefaults
     public static readonly TimeSpan SchedulerPollInterval = TimeSpan.FromSeconds(1);
     /// <summary>Bounded interval for observing durable cancellation of an active dispatch.</summary>
     public static readonly TimeSpan CancellationPollInterval = TimeSpan.FromMilliseconds(100);
+    /// <summary>One shared confirmation budget after local execution cancellation, before securing an unknown result.</summary>
+    public static readonly TimeSpan CancellationConfirmationTimeout = TimeSpan.FromSeconds(1);
     /// <summary>Default database busy timeout.</summary>
     public static readonly TimeSpan DbBusyTimeout = TimeSpan.FromSeconds(1);
     /// <summary>Largest finite delay supported by the .NET timer APIs used by the runtime.</summary>

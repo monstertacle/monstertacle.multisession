@@ -179,3 +179,15 @@ Regression im Volltest durch getrennten Monitorstop behoben. 605 Tests vollstän
 83891ed17c334cf0a3327b9770fd72c8; monotone SQLruntime-Messung 119,639 ms. Nächster
 konkreter Auftrag T071/T077: native Endbestätigung, keine Freigabe für bloße Bestätigung
 des Abbruchwunschs. tdd-us3.md enthält die tatsächlichen Red-/Green-/Fehlbelege.
+
+### 2026-10-29T12:55:18Z: Native Endbestätigung für Cancel/Deadline
+
+T071/T077/T082: Kooperativer Reply oder nativer Cancel kann belegtes Ende bestätigen;
+Abbruchack/fehlende ID/fremde Bindung/ignorierter Token reichen nicht. Ein gemeinsames
+1-s-Budget, kein Replay, operationsgebundener Reopenport statt alter Chainhead. Tatsächliche
+Redzyklen und Green in tdd-us3.md. 619 Tests vollständig grün, 96,6651 % Gesamtdeckung,
+Codemetr 280 Dateien/286 Typen sauber. Qualitätslauf d60e6e62218b48b4b7f7794e218cdd3a.
+SQLruntime: bestätigter Cancel 108,499 ms und Freigabe; unbestätigt 1103,991 ms und
+Unknown-Slot erhalten, jeweils ursprüngliches Result nach Neustart. Nächster konkreter
+Auftrag T072/T078/T079: Stop finalisiert verbleibende Queued und Session-Close bleibt
+bei Unknown Closing; keine vollständige Produkt-/Storyabnahme behauptet.

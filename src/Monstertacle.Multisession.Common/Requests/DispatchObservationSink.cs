@@ -6,12 +6,14 @@ namespace Monstertacle.Multisession.Requests;
 internal sealed class DispatchObservationSink(ISessionStore store, Guid dispatchId, ProviderBinding binding, CancellationToken executionToken)
 {
     private string? _sessionReference = binding.SessionReference;
+    private string? _operationReference;
     private int _failed;
     private int _pending;
     private int _closed;
     private int _failureCode = (int)ErrorCode.StorageUnavailable;
 
     internal string? SessionReference => Volatile.Read(ref _sessionReference);
+    internal string? OperationReference => Volatile.Read(ref _operationReference);
     internal bool HasUnconfirmedObservations => Volatile.Read(ref _failed) != 0 || Volatile.Read(ref _pending) != 0;
     internal ErrorCode FailureCode => (ErrorCode)Volatile.Read(ref _failureCode);
 
@@ -26,6 +28,7 @@ internal sealed class DispatchObservationSink(ISessionStore store, Guid dispatch
             using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(executionToken, cancellationToken);
             await store.CommitObservationAsync(dispatchId, observation, linked.Token).AsTask().WaitAsync(linked.Token);
             ObjectDisposedException.ThrowIf(Volatile.Read(ref _closed) != 0, this);
+            if (observation.Kind == ProviderObservationKind.OperationAccepted) { Volatile.Write(ref _operationReference, observation.Reference); }
         }
         catch (Exception)
         {

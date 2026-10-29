@@ -166,3 +166,45 @@ running-cancel-quality.log enthält zusätzlich den vorgeschalteten gezielten Ne
 der nicht erneut zur vollständigen Testzahl gezählt wird. Native Endbestätigung ist der
 nächste begrenzte T071/T077-Schnitt; Stop/Close verbleiben T072/T078/T079. Keine vollständige
 SC-004- oder Storyabnahme behauptet.
+
+## T071/T077/T082: belegtes Ende statt bloßer Cancel-Bestätigung
+
+Architektur vor Code architecture/2026-10-29-cancel-end-evidence.md, Ausgang 0f605eb.
+native-cancel-red: 6/6 fachlich rot, explizites Ende des ursprünglichen Sends wurde
+verworfen und nativer Cancel nie aufgerufen. cancel-continuation-red nach korrigierter
+Fixturekomposition: 3/4 fachlich rot (gültige Fortsetzung nicht übernommen, geforderter
+operationsgebundener Port nie aufgerufen); fehlender Port schon sicher blockiert/grün.
+Erste unkompilierbare Fassung mit nicht verlinkten Unitfixtures ist kein Rednachweis.
+native-cancel-sql-red: 1/2 fachlich rot, natives bestätigtes Ende blieb Unknown;
+bestehender unbestätigter SQLfall weiter grün.
+
+Green: 15 relevante Unitfälle, 9 Operation-/Cancelverträge und 2 echte Runtime-SQLfälle.
+DispatchTermination beobachtet ursprünglichen Send und höchstens einen nativen Cancel
+unter einem gemeinsamen 1-s-Systemtimerbudget. Nur acknowledged Operations-ID ist Ziel;
+Abbruchack NotStarted/Unknown reicht nicht zum Freigeben ursprünglicher Arbeit. Outcome
+bleibt lokaler Cancel/Timeout. Bekannte Endbelege und geprüfte Fortsetzung committen atomar.
+Bei operationsgebundener Capability wird vorhandener Recoveryport benutzt, falls Reply
+kein Binding liefert; fehlender/fremder/fehlerhafter Port hält Unknown, kein alter Headfallback.
+Sink stellt ausschließlich erfolgreich gespeicherte Operations-ID lokal bereit. Cleanup
+ändert die bestehende geschlossene Callbackgrenze nicht. Native APIs/Geheimnisse bleiben
+in ihren Adaptern, keine I/O unter SQL-Lock, keine Sendwiederholung.
+
+Drei zusätzliche sofort grüne Regressionen prüfen unkooperativen nativen Cancel, fremdes
+Nativebinding und fehlende acknowledged ID. Sie sind keine weiteren Redzyklen. Die finalen
+9 NativeCancellationTests ergänzen den bestehenden Unitumfang. Bisherige Deadline-,
+Callback-, Operation-Recovery- und echte Crashproben vollständig regressiert.
+
+Vollständig grün artifacts/quality/linux/d60e6e62218b48b4b7f7794e218cdd3a,
+SourceHash 10f1b5b67fb53660ce22610f691625a6964b52ec534c266e7908e5d7327424c5.
+619 Tests (283 Unit,199 Contract,136 Integration,1 Plattform), null Fehler/Skips;
+2116/2189 Produktzeilen = 96,6651 %. Codemetr 280 Dateien/286 Typen sauber.
+Monotone echte SQLruntime-Messung aus Integration-TRX: 108,499 ms bei kontrolliertem
+bestätigtem Nativeende und freiem Slot, 1103,991 ms bei unkooperativem offenen Send ohne
+Endnachweis mit erhaltenem Slot. Beide nach Wiederöffnung identisch, genau ein Result/
+Historieneintrag. Keine Livehersteller-Abnahme behauptet. Befehle run-capped.sh plus
+Format/Guard/Invoke-Quality, artifacts/tdd/native-cancel-{red,green,quality}.log,
+cancel-continuation-red.log und native-cancel-sql-red.log.
+Vollständige T070/T071/T077-Abnahme braucht weiterhin Matrixaudit; T072/T078/T079
+implementieren Stop/Close, T085 dokumentiert vollständige SC-004-Messung. Keine vorzeitige
+Storyfreigabe. Vorheriger Commit 0f605eb Windows/Ubuntu-CI grün: quality 40876309454,
+codemetr-guard 40876309584.

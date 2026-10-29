@@ -9,9 +9,11 @@ namespace Monstertacle.Multisession.IntegrationTests;
 /// <summary>Checks local cancellation visibility and persistence with a real runtime/store.</summary>
 public sealed class LifecyclePersistenceTests(ITestOutputHelper output)
 {
-    /// <summary>A held uncooperative execution becomes durably Cancelled/Unknown within two seconds of intent.</summary>
-    [Fact]
-    public async Task PublishesRunningCancelWithinTwoSecondsAndRetainsReservation()
+    /// <summary>A held execution becomes durably Cancelled within two seconds, releasing only a confirmed end.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task PublishesRunningCancelWithinTwoSecondsAndRetainsReservation(bool confirmed)
     {
         await using AdmissionStoreFixture setup = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await setup.CreateSessionAsync();
@@ -21,7 +23,16 @@ public sealed class LifecyclePersistenceTests(ITestOutputHelper output)
         CancellationToken observed = default;
         AdmissionProvider provider = new()
         {
-            Sending = async (call, binding, observe, token) => { observed = token; entered.TrySetResult(); return await finish.Task; },
+            Capabilities = new(true, true, true, confirmed, false),
+            Sending = async (call, binding, observe, token) =>
+            {
+                observed = token;
+                await observe(new(ProviderObservationKind.OperationAccepted, "operation"), token);
+                entered.TrySetResult();
+                return await finish.Task;
+            },
+            Cancelling = (context, operation, token) => ValueTask.FromResult(new ProviderReply(RequestState.Cancelled,
+                ExecutionCertainty.ConfirmedEnded, string.Empty, false, null, new(ErrorCode.Cancelled))),
         };
         RequestSnapshot cancelled;
         await using (SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, [new("connection-I", "fixture-adapter", 7, provider)]))
@@ -38,9 +49,9 @@ public sealed class LifecyclePersistenceTests(ITestOutputHelper output)
                 Assert.True(elapsed < TimeSpan.FromSeconds(2));
                 Assert.True(observed.IsCancellationRequested);
                 Assert.Equal(RequestState.Cancelled, cancelled.State);
-                Assert.Equal(ExecutionCertainty.Unknown, cancelled.Certainty);
+                Assert.Equal(confirmed ? ExecutionCertainty.ConfirmedEnded : ExecutionCertainty.Unknown, cancelled.Certainty);
                 Assert.NotNull(cancelled.CancellationRequestedUtc);
-                Assert.Equal(1L, StoreProbe.Scalar(setup.Directory.DatabasePath, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
+                Assert.Equal(confirmed ? 0L : 1L, StoreProbe.Scalar(setup.Directory.DatabasePath, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
             }
             finally { finish.TrySetResult(new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, "late", true, session.Binding, null)); }
         }
@@ -48,6 +59,6 @@ public sealed class LifecyclePersistenceTests(ITestOutputHelper output)
         Assert.Equal(cancelled, await setup.Store.GetRequestAsync(cancelled.RequestId, CancellationToken.None));
         Assert.Equal(1L, StoreProbe.Scalar(setup.Directory.DatabasePath, "SELECT count(*) FROM Results"));
         Assert.Equal(1L, StoreProbe.Scalar(setup.Directory.DatabasePath, "SELECT count(*) FROM History"));
-        Assert.Equal(1L, StoreProbe.Scalar(setup.Directory.DatabasePath, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
+        Assert.Equal(confirmed ? 0L : 1L, StoreProbe.Scalar(setup.Directory.DatabasePath, "SELECT count(*) FROM Reservations WHERE ReleasedUtc IS NULL"));
     }
 }

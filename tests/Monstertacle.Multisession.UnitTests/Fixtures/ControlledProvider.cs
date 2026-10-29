@@ -9,6 +9,7 @@ internal sealed class ControlledProvider : ISessionProvider
     public ProviderCapabilities Capabilities { get; init; } = new(true, true, false, false, false);
     public Func<ProviderCall, ProviderBinding, Func<ProviderObservation, CancellationToken, ValueTask>, CancellationToken, ValueTask<ProviderReply>>? Sending { get; init; }
     public Func<ProviderSessionContext, ProviderBinding, CancellationToken, ValueTask<ProviderBinding>>? Reopening { get; init; }
+    public Func<ProviderSessionContext, string, CancellationToken, ValueTask<ProviderReply>>? Cancelling { get; init; }
     public Func<ProviderSessionContext, string, CancellationToken, ValueTask<ProviderReply>>? Inspecting { get; init; }
     public Func<ProviderSessionContext, ProviderBinding>? BindingForContext { get; init; }
     public Action<ProviderSessionContext>? Opening { get; init; }
@@ -46,7 +47,7 @@ internal sealed class ControlledProvider : ISessionProvider
         => Inspecting is null ? ValueTask.FromResult(Unsupported()) : Inspecting(context, operationId, cancellationToken);
 
     public ValueTask<ProviderReply> CancelAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)
-        => ValueTask.FromResult(Unsupported());
+        => Cancelling is null ? ValueTask.FromResult(Unsupported()) : Cancelling(context, operationId, cancellationToken);
 
     private static ProviderReply Unsupported() => new(
         RequestState.Failed,

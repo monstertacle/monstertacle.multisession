@@ -5,12 +5,12 @@ namespace Monstertacle.Multisession.ContractTests.Fixtures;
 
 internal sealed class OperationAwareProvider : ISessionProvider, IExecutionRecoveryProvider
 {
-    private readonly ControlledProvider _inner = new();
+    internal ControlledProvider Inner { get; init; } = new();
     internal int LegacyReopenCalls { get; private set; }
     internal int RecoveryCalls { get; private set; }
     internal Func<ProviderBinding, string?, CancellationToken, ValueTask<ProviderBinding>>? Recovering { get; init; }
-    public ProviderCapabilities Capabilities { get; } = new(true, true, true, false, false) { RequiresOperationAwareRecovery = true };
-    public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken) => _inner.OpenAsync(context, cancellationToken);
+    public ProviderCapabilities Capabilities => Inner.Capabilities with { SupportsInspection = true, RequiresOperationAwareRecovery = true };
+    public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken) => Inner.OpenAsync(context, cancellationToken);
     public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken)
     {
         LegacyReopenCalls++;
@@ -24,7 +24,7 @@ internal sealed class OperationAwareProvider : ISessionProvider, IExecutionRecov
         return ValueTask.FromResult(knownBinding with { ContinuationState = "verified-new-head" });
     }
     public ValueTask<ProviderReply> SendAsync(ProviderCall request, ProviderBinding binding, Func<ProviderObservation, CancellationToken, ValueTask> observe, CancellationToken cancellationToken)
-        => _inner.SendAsync(request, binding, observe, cancellationToken);
-    public ValueTask<ProviderReply> InspectAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken) => _inner.InspectAsync(context, operationId, cancellationToken);
-    public ValueTask<ProviderReply> CancelAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken) => _inner.CancelAsync(context, operationId, cancellationToken);
+        => Inner.SendAsync(request, binding, observe, cancellationToken);
+    public ValueTask<ProviderReply> InspectAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken) => Inner.InspectAsync(context, operationId, cancellationToken);
+    public ValueTask<ProviderReply> CancelAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken) => Inner.CancelAsync(context, operationId, cancellationToken);
 }

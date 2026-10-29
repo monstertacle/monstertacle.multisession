@@ -91,16 +91,17 @@ public sealed class RequestDispatcher
         DispatchCancellationWatch cancellation = new(_store, reservation.RequestId);
         using CancellationTokenSource watchStop = new();
         Task watching = cancellation.RunAsync(execution, watchStop.Token);
+        Task<ProviderReply>? sending = null;
         ProviderReply reply;
         try
         {
-            reply = await registration.Provider.SendAsync(call, dispatch.Session.Binding!, observations.RecordAsync, execution.Token)
-                .AsTask().WaitAsync(execution.Token);
+            sending = registration.Provider.SendAsync(call, dispatch.Session.Binding!, observations.RecordAsync, execution.Token).AsTask();
+            reply = await sending.WaitAsync(execution.Token);
         }
         catch (OperationCanceledException) when (execution.IsCancellationRequested)
         {
-            throw await PreserveAsync(reservation, cancellation.HasFailed ? ErrorCode.StorageUnavailable
-                : deadline.IsCancellationRequested ? ErrorCode.TimedOut : ErrorCode.Cancelled);
+            reply = await CompleteCancellationAsync(dispatch, registration, observations, sending,
+                cancellation.HasFailed ? ErrorCode.StorageUnavailable : deadline.IsCancellationRequested ? ErrorCode.TimedOut : ErrorCode.Cancelled);
         }
         catch (Exception)
         {
@@ -120,9 +121,25 @@ public sealed class RequestDispatcher
         reply = DispatchReplyPolicy.Normalize(reply, dispatch.Session.Binding!, observations.SessionReference, _maxOutputBytes);
         if (reply.Certainty == ExecutionCertainty.Unknown)
         {
+            if (execution.IsCancellationRequested && reply.Error?.Code != ErrorCode.StorageUnavailable)
+            {
+                return await CompleteCancellationAsync(dispatch, registration, observations, sending,
+                    deadline.IsCancellationRequested ? ErrorCode.TimedOut : ErrorCode.Cancelled);
+            }
             throw await PreserveAsync(reservation, reply.Error?.Code ?? ErrorCode.Interrupted);
         }
         return reply;
+    }
+
+    private async ValueTask<ProviderReply> CompleteCancellationAsync(ReservedDispatch dispatch, ProviderRegistration registration,
+        DispatchObservationSink observations, Task<ProviderReply>? sending, ErrorCode cause)
+    {
+        if (cause != ErrorCode.StorageUnavailable && !observations.HasUnconfirmedObservations)
+        {
+            ProviderReply? confirmed = await new DispatchTermination(dispatch, registration, observations, _maxOutputBytes).ConfirmAsync(sending, cause);
+            if (confirmed is not null) { return confirmed; }
+        }
+        throw await PreserveAsync(dispatch.Reservation, observations.HasUnconfirmedObservations ? observations.FailureCode : cause);
     }
 
     private async ValueTask<bool> CancelBeforeSendAsync(ExecutionReservation reservation, CancellationToken cancellationToken)

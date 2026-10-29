@@ -364,3 +364,36 @@ Source203fbcf8453fe8baabdf184e0ed40265bd5fbbfb7313dd16fc8a7db9998017ed.
 Guard441Dateien/459Typen ohne Regelverstöße/Parsefehler/Skips. Das beweist lokale
 Regression, nicht Windows-Green. Native Wiederholungsdiagnose5fea615 und neue
 Gesamt-/Paket-/Stundenmatrix werden getrennt abgeschlossen. T125 noch offen.
+
+## T125: zusätzliche native Kernelassertions tatsächlich zuerst rot
+
+Nach Eingang der vollständigen TRX aus40971273866 ist die Chronologie präzise:
+Beide neuen Assertions scheiterten um23:14:58Z am alten Quellstand6c03cbd,
+vor der um23:16:18Z archivierten Greenänderung. 35/37Plattformfälle grün,
+beide Kill-/Unknownvarianten fachlich rot wegen fehlendem Kernelsignal.
+Originalzeiten/Testkennungen/TRXhash in windows-process-exit-regression-red.json.
+Damit ist zusätzlich zur älteren CLI-Reproduktion echtes natives Assertion-Red
+vor Green belegt, kein aus späterem Empfang der Logs geschätzter Zeitpunkt.
+
+Korrigierte Diagnose40972024594/5fea615 hat beide30er-Proben bestanden:
+600nativeKills/600verifizierteReopens,1200Kernelprüfungen True,0False.
+Unabhängiger Rohdatei-/Counterabgleich windows-process-exit-green.json.
+Neue native Gesamtmatrix bleibt gesondert, weil T126 nachfolgend Testisolation ergänzt.
+
+## T126: kontrollierte echte I/O-Integrationstests
+
+Analyse vor Änderung architecture/2026-10-29-native-io-test-isolation.md,
+ursprünglicher nativer Lauf40972345390 Versuch1 mit drei Fehlern vor/gefolgt von
+Fixturecleanup, keine Timeout-/Produktänderung zur Behebung. Assemblymetadatum
+isoliert unabhängige Testkollektionen; innerhalb von Szenarien erzwungene Requests,
+Race-/Capacity-/Parallelitätsprüfungen bleiben unverändert. Konfigurationsänderung
+benötigt keine künstliche Attributspiegeltestklasse. Der native Fehlerquellstand
+7bd658d/Source203fbcf8453fe8baabdf184e0ed40265bd5fbbfb7313dd16fc8a7db9998017ed
+wurde mit Diff/Untrackedtar/UTC vor Änderung archiviert.
+
+Gesamtor Linux ed7bf2000cec4f8b844c5dc3a2d02196 grün:1036Tests,97,5796 %;
+Source d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf.
+Guard442Dateien/459Typen ohne Befund. TRX-Sweep tatsächlich405unveränderte Fälle,
+max1Testklasse/max1Fall gleichzeitig statt vorhermax4 auf dem fehlgeschlagenen
+Windowsrunner. Native Gegenprüfung/neue Stunden folgen, ältere abgebrochene
+Stunden sind kein Pass. Keine neue Produktfunktion, keine geänderte Frist.

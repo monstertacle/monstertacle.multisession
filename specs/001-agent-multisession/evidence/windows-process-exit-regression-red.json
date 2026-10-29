@@ -1,0 +1,29 @@
+{
+  "MeasuredUtc": "2026-10-29T23:20:22.0744124+00:00",
+  "WorkflowRun": 40971273866,
+  "Commit": "6c03cbd1e1a30df2cf3d11643056129536ddfede",
+  "Candidate": {
+    "SourceHash": "b1537f7dfc54686c74a3343a97c3d512807a688db669f7cdf98a71971a63a217",
+    "Platform": "windows",
+    "StartedUtc": "2026-10-29T23:11:04.8674935+00:00"
+  },
+  "Total": 37,
+  "Passed": 35,
+  "Failed": 2,
+  "Failures": [
+    {
+      "Test": "Monstertacle.Multisession.PlatformTests.OwnedStoreRecoveryTests.KillAllowsReacquisitionWithoutLosingUnknownReservation(unsafeJournal: True)",
+      "StartedUtc": "2026-10-29T23:14:57.8995133+00:00",
+      "EndedUtc": "2026-10-29T23:14:58.5576437+00:00",
+      "Message": "Killed process must signal native termination before returning to store recovery."
+    },
+    {
+      "Test": "Monstertacle.Multisession.PlatformTests.OwnedStoreRecoveryTests.KillAllowsReacquisitionWithoutLosingUnknownReservation(unsafeJournal: False)",
+      "StartedUtc": "2026-10-29T23:14:58.5634524+00:00",
+      "EndedUtc": "2026-10-29T23:14:58.9464598+00:00",
+      "Message": "Killed process must signal native termination before returning to store recovery."
+    }
+  ],
+  "TrxSha256": "9ffd75102c8367d09a5e6363216147b07cfeddebf80e8887be41658613d3da09",
+  "GreenEditArchiveUtc": "2026-10-29T23:16:18Z"
+}

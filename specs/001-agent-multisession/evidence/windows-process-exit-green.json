@@ -1,0 +1,537 @@
+{
+  "MeasuredUtc": "2026-10-29T23:27:06.0596582+00:00",
+  "WorkflowRun": 40972024594,
+  "Commit": "5fea615c74bce9b4fdc287bff83f37a31ca5e588",
+  "Status": "PASS",
+  "NativeKills": 600,
+  "VerifiedReopens": 600,
+  "KernelSignalChecks": 1200,
+  "EarlyKernelSignalChecks": 0,
+  "Method": "Same finite original timeouts, no lease acquisition retry, same recovery assertions. Kernel signal checked after each Kill and repeated disposal.",
+  "Probes": [
+    {
+      "Probe": 1,
+      "Status": "PASS",
+      "Reports": 30,
+      "NativeKills": 300,
+      "VerifiedReopens": 300,
+      "KernelSignalChecks": 600,
+      "EarlyKernelSignalChecks": 0,
+      "ExampleNativeReport": {
+        "Scenario": "recovery",
+        "Status": "PASS",
+        "Reason": "Completed",
+        "ProcessId": 5416,
+        "RunId": "130c510b-f7bb-4aec-be66-8581fd6dfc67",
+        "OperatingSystem": "Microsoft Windows 10.0.26100",
+        "RuntimeVersion": "10.0.14",
+        "SqliteVersion": "3.53.3",
+        "ExitCode": 0
+      },
+      "Files": [
+        {
+          "File": "phases-0.log",
+          "Sha256": "add01597ca33c74182ca3b524dd99ad19844c7f38d38eed10e2855a6484594b0"
+        },
+        {
+          "File": "phases-1.log",
+          "Sha256": "2c704b8f7ba052e85b7c978f849a4865bc49c89ca8b81e425357f8e873dc7e0b"
+        },
+        {
+          "File": "phases-10.log",
+          "Sha256": "ce44157e91220cfaf89d1c7db0dfc67aa9bbc7ed7854bf934b9c0b6199274aa6"
+        },
+        {
+          "File": "phases-11.log",
+          "Sha256": "5b3b4c0a1b2e59771d801dc970791d3861898a0eea9febd398ec07894f61f3ca"
+        },
+        {
+          "File": "phases-12.log",
+          "Sha256": "181014602241b9226d3ab36590098b10d536b21815cf2ad40fc57ec5db481a7d"
+        },
+        {
+          "File": "phases-13.log",
+          "Sha256": "c9301c443b1c050f4d8f7374e986d6d310c57f7fce361e14091fad5534db70c5"
+        },
+        {
+          "File": "phases-14.log",
+          "Sha256": "cb2704f1c716b35969d6fabf1d1b116b18304f1ffea63b684d4fb8f62f61f74a"
+        },
+        {
+          "File": "phases-15.log",
+          "Sha256": "812bc9c66c84afb910cd48198305dbf924d9edd988d53944834a4af9db20f675"
+        },
+        {
+          "File": "phases-16.log",
+          "Sha256": "1521bcf3add73e9d651259d1ad5e5e8588a47eca8b4b0021898cc435db840e0c"
+        },
+        {
+          "File": "phases-17.log",
+          "Sha256": "27a8f029fd718e87a2ce2befa5ba4c141284c4c94ea9a73833e8f3f0e13a3398"
+        },
+        {
+          "File": "phases-18.log",
+          "Sha256": "73c171d1743bda4540535b03c086035db41aed22ade158d212a6221f83563cf1"
+        },
+        {
+          "File": "phases-19.log",
+          "Sha256": "cc438a3beb86cd01e5155059fd76cd8d8ef7ab99ec9f1efbe4ebe45a5218598a"
+        },
+        {
+          "File": "phases-2.log",
+          "Sha256": "0753551707a370f535fd5609d8d72f3171cf3fe2bbd788089764418097778b34"
+        },
+        {
+          "File": "phases-20.log",
+          "Sha256": "be11ac377522310f496c2c0fbeed49fe5722d2d8006fae5d6eb7c37faf1254f4"
+        },
+        {
+          "File": "phases-21.log",
+          "Sha256": "c13272c118d9d1b5aafa0733994e0710696f4731ec176206af44bec7eb6a8948"
+        },
+        {
+          "File": "phases-22.log",
+          "Sha256": "dc6a94572535dee38fe8f4fb84586b40e2f8b83229c5a7535f93fe49311fc24e"
+        },
+        {
+          "File": "phases-23.log",
+          "Sha256": "08ee1890e33f15ff026d097e208c2ce201a474c65fe614eeeab5e621b09d8205"
+        },
+        {
+          "File": "phases-24.log",
+          "Sha256": "d4dd6c5ffed5fc4dd9ac0eb1793ff9139ddec8cda2d5b51fab1062325537da74"
+        },
+        {
+          "File": "phases-25.log",
+          "Sha256": "05f104ae2ec3bcdd89b061bf9841c2f74ae8876f8dd6fb10a86c88426f6aca86"
+        },
+        {
+          "File": "phases-26.log",
+          "Sha256": "51af054017d49abed48b15eb822b017ccff0928279e9a697430f63e8dd4b7f6f"
+        },
+        {
+          "File": "phases-27.log",
+          "Sha256": "3a6bcbe2e720d0c413d1e49f637f6fb139f4d9872c3a6632d455fddc50178682"
+        },
+        {
+          "File": "phases-28.log",
+          "Sha256": "731a9490350a563c0c961ec93ba24c98f6cda622a29991b26b9f21dbaf972e0c"
+        },
+        {
+          "File": "phases-29.log",
+          "Sha256": "2872943f342e1c52762fac2f9035856443087ad6822d6a1b282007e329030ac4"
+        },
+        {
+          "File": "phases-3.log",
+          "Sha256": "98f4c34d839b6928c2e1fa80d1490b1a043a9f5b518039c0cd2f01457de3db79"
+        },
+        {
+          "File": "phases-4.log",
+          "Sha256": "52c4495f478755d9042c910871ef95b136a755b9720ee8b197422d0e868deed7"
+        },
+        {
+          "File": "phases-5.log",
+          "Sha256": "b1beebe351a4c5d60ab3ad6459e5e51aeee27d07e790f4c61f20105cf6fd1cba"
+        },
+        {
+          "File": "phases-6.log",
+          "Sha256": "39e5bca841ca19f2f7ca7719911bbaad9c483003cff4a0db53e2b1b13083a7ba"
+        },
+        {
+          "File": "phases-7.log",
+          "Sha256": "8bc57ec88ed36bb6f8aac9ee2a7ecce383bce470993d1f3db3750abf26072a31"
+        },
+        {
+          "File": "phases-8.log",
+          "Sha256": "cf107552dff584569c6b0073861077eb0af4468b30ef1558575a4dcb7bf5a0b7"
+        },
+        {
+          "File": "phases-9.log",
+          "Sha256": "a147fe8b9ecc48c800205b2cb9808985c9f63755af67c460f6fa2dcb59d51cb5"
+        },
+        {
+          "File": "report-0.json",
+          "Sha256": "032eba6ae5a3809463d2e07f097692659127729fb34c8c2ffff236665df20241"
+        },
+        {
+          "File": "report-1.json",
+          "Sha256": "6bab0dfe14b7e728ed7875fb828c3abf4b3b68b0e02bcb4ad6549a55b9dc4ca9"
+        },
+        {
+          "File": "report-10.json",
+          "Sha256": "5ad746e5a66f9ff586cf9365caa73b9e947d2113cab1ad50ba334860202ed919"
+        },
+        {
+          "File": "report-11.json",
+          "Sha256": "7f7aab29221d9463f716440c2bdb37f67c52e7edbd512c99399dc9dc3fd53bc1"
+        },
+        {
+          "File": "report-12.json",
+          "Sha256": "fa4a44d6a2ec1d7476e3fbea31b51251c989f5599cc22ef669cba37854646b7e"
+        },
+        {
+          "File": "report-13.json",
+          "Sha256": "914cf6f2c7ff4981f999a5104c42702bc2dd203916f0f936cebaea134c4aca46"
+        },
+        {
+          "File": "report-14.json",
+          "Sha256": "9c9a8582729785ee9d77e29f5430f60e624e30bb61857192d4699370002dc77a"
+        },
+        {
+          "File": "report-15.json",
+          "Sha256": "4b6715eaa61efd481289fc5b1fa6d59f823ee6a997b58e3ba737ca4eceaf8750"
+        },
+        {
+          "File": "report-16.json",
+          "Sha256": "4527626680cc858f594245d01bf0e6d78e1c649c1f27e940bdb6a233fd29bf88"
+        },
+        {
+          "File": "report-17.json",
+          "Sha256": "3a60a284a39dc5aa1ea32ae2df8280d9819d9e3ded6c72f5d4a7753f368171a1"
+        },
+        {
+          "File": "report-18.json",
+          "Sha256": "9c6f3a854dcf5a28d783f5797862a19b5441188a3f17665711618a08a2676f43"
+        },
+        {
+          "File": "report-19.json",
+          "Sha256": "22938a59d9b5736e91e5a18c35a679c2e6c99cd60d50c12f3519d9d8e2a00f20"
+        },
+        {
+          "File": "report-2.json",
+          "Sha256": "e792e83b570a66fa8080f9446ceaacd76eb11fc646ece2ab5e630c3cb60d27a8"
+        },
+        {
+          "File": "report-20.json",
+          "Sha256": "df435deee3957fa30a5528016cf90be852c231344a0f7041a1cacbb131b8c73b"
+        },
+        {
+          "File": "report-21.json",
+          "Sha256": "ceb69a5767826fda29ee09d3b1df08fdbf33e4247ff35d8a88e111de8ad3572d"
+        },
+        {
+          "File": "report-22.json",
+          "Sha256": "b62eac13ea0b89a1e02e996b300b06ebd0ddb1268aa915e3e7cb0045e596abc9"
+        },
+        {
+          "File": "report-23.json",
+          "Sha256": "8e58d7699ccc65539e548666fa3b24532c24dbe696393af3a5e872a64b8af853"
+        },
+        {
+          "File": "report-24.json",
+          "Sha256": "6539c1dbbb46f7b52fa870958ab4bda59d5a27916e12fe5f7f19fd35fec2aff8"
+        },
+        {
+          "File": "report-25.json",
+          "Sha256": "baee9cc17df25711acf5d43b10ee6d2f9e400e35d5d50bc9ea30b9cb0907eeac"
+        },
+        {
+          "File": "report-26.json",
+          "Sha256": "b416af35ee32a05165119adca9a0aafb0b265f5ce0b86ecacf3d2e8ca5de7e21"
+        },
+        {
+          "File": "report-27.json",
+          "Sha256": "ecff649f5e88f20b6a04da67c29b0cdc45e83c1167c68a015260ec4ddbcd75cf"
+        },
+        {
+          "File": "report-28.json",
+          "Sha256": "89bb89e2ec3146abc1bd9f85f8914da206d9c0530e33baa5ad5627580cf18207"
+        },
+        {
+          "File": "report-29.json",
+          "Sha256": "7ff151b303ddd0b5d9ead3e1cb8832512bd1a39f2f694ff64845299ae3b77333"
+        },
+        {
+          "File": "report-3.json",
+          "Sha256": "8cb549f69dc4c09c8689909fe9b86ff39ff7834b868d7e10534b200b9bbe8a48"
+        },
+        {
+          "File": "report-4.json",
+          "Sha256": "c7f1ad31aa278672b24b588bdbae691a4c71b52fedbe883f04e38d18cbdcf153"
+        },
+        {
+          "File": "report-5.json",
+          "Sha256": "809a852cd4ebfba78eae9ceec29a8d6ca7152d1d98d950fd97f7827cf9c093fc"
+        },
+        {
+          "File": "report-6.json",
+          "Sha256": "be7d894133a2e5b9ded4b359cd0428fbc30f67280f318e48183df82c3a8c44b5"
+        },
+        {
+          "File": "report-7.json",
+          "Sha256": "4355db3f244164580f79e6d612e69e3c86c075d2cb7580fa56d71356a23decde"
+        },
+        {
+          "File": "report-8.json",
+          "Sha256": "eac00d8cca9ce7cdc5b2d58f7f0347900f42f076eabc663f00529208a0a226d8"
+        },
+        {
+          "File": "report-9.json",
+          "Sha256": "440dfc213a2dbe1477420f1bc52f19797909a4773b831aa1c57dbc7ca5766e8a"
+        }
+      ]
+    },
+    {
+      "Probe": 2,
+      "Status": "PASS",
+      "Reports": 30,
+      "NativeKills": 300,
+      "VerifiedReopens": 300,
+      "KernelSignalChecks": 600,
+      "EarlyKernelSignalChecks": 0,
+      "ExampleNativeReport": {
+        "Scenario": "recovery",
+        "Status": "PASS",
+        "Reason": "Completed",
+        "ProcessId": 5644,
+        "RunId": "1f563e8b-cbef-4758-ac20-2e5d2c11e14d",
+        "OperatingSystem": "Microsoft Windows 10.0.26100",
+        "RuntimeVersion": "10.0.14",
+        "SqliteVersion": "3.53.3",
+        "ExitCode": 0
+      },
+      "Files": [
+        {
+          "File": "phases-0.log",
+          "Sha256": "e379b3bc0ae50dfc1a019d27941b59c33770fff7408364df77962cbeac25c39c"
+        },
+        {
+          "File": "phases-1.log",
+          "Sha256": "665c409f53f6875738b50199aed85b9b6d9504d8d3c91c2493593d4e4b1a40ea"
+        },
+        {
+          "File": "phases-10.log",
+          "Sha256": "d8ee188af7f2d202a512b246782e7a2cb28fc2abc4e707c30da7909018aeb973"
+        },
+        {
+          "File": "phases-11.log",
+          "Sha256": "948e46be6c14e29566f0cf140b8f4f5214707bc932d4c3b8902a947b1c2460f2"
+        },
+        {
+          "File": "phases-12.log",
+          "Sha256": "c98c3c412976a051c3e0a5e34a8ad282c70c510dd55be7da2f64f162967195ef"
+        },
+        {
+          "File": "phases-13.log",
+          "Sha256": "6c501f4ff9e957796fca79c2908ce7d9e5f98c8eb462fa171ab31758957d77da"
+        },
+        {
+          "File": "phases-14.log",
+          "Sha256": "4ce284ac298a1e668581ea61ae52f7f1e40fc1c6bc2ea063b6ce3eb582d8c688"
+        },
+        {
+          "File": "phases-15.log",
+          "Sha256": "fbd4ae3fcdf7c81b7ab31504e4c37b58772a04efc9e3d6dc03ce6f0969b5297c"
+        },
+        {
+          "File": "phases-16.log",
+          "Sha256": "b4fb88b1b2f875c18e1e320191b38fb88eac6254940a5d247b2588c839a730c8"
+        },
+        {
+          "File": "phases-17.log",
+          "Sha256": "cb4c191f52c743b991c59d21da48aa4df7e7cb4da06cc06d6fe3c39c791c9df4"
+        },
+        {
+          "File": "phases-18.log",
+          "Sha256": "53a536c560fa1c23bc8664f0dddf2278f17243d3873c01bf020df5b87916d12e"
+        },
+        {
+          "File": "phases-19.log",
+          "Sha256": "e42f6cc148ed7fef7472a5be52aac988f8a9e161ddca6ab1742881ef315ca900"
+        },
+        {
+          "File": "phases-2.log",
+          "Sha256": "2510452b6be301816f4c990495e252bdbf98e75c00eb3513408b25a07f7879da"
+        },
+        {
+          "File": "phases-20.log",
+          "Sha256": "edc425e0f6ab81b683eec184fbd3c1450f64fc07e00908abcc0afaf4d21e4818"
+        },
+        {
+          "File": "phases-21.log",
+          "Sha256": "d049b2d9ab6d03b3d89115960004f03a307ee7f091867c91caa79f7cf3115e9b"
+        },
+        {
+          "File": "phases-22.log",
+          "Sha256": "1ba98f71f6c85dac2771c2b50bb1fda41e425d20fdb1cd3085b68768f322eab5"
+        },
+        {
+          "File": "phases-23.log",
+          "Sha256": "a110752c05d7c6c553bf508bb75cf5e3c5114b15418b7c52c7516ca226f79661"
+        },
+        {
+          "File": "phases-24.log",
+          "Sha256": "d02ff71223a63d82fecbcf02ea5711d765ea4a4983a514fd096e558b22b2a553"
+        },
+        {
+          "File": "phases-25.log",
+          "Sha256": "aaf0877ef6a83c24986df14fbc340526ad9d62d0d53db7c20975e72294fcf469"
+        },
+        {
+          "File": "phases-26.log",
+          "Sha256": "bc03203ab3b5b041abb7b8806b335fc56ee405ba38f35a55f81b57b5bd260bee"
+        },
+        {
+          "File": "phases-27.log",
+          "Sha256": "4ba2655739cb7d460977d23e141815c077f4e191f983f006c02dba8b046627d5"
+        },
+        {
+          "File": "phases-28.log",
+          "Sha256": "fea944fb85bd7cf98a72818342806f43d353b49d9c7b62382fc3cf41c2b58f9a"
+        },
+        {
+          "File": "phases-29.log",
+          "Sha256": "b9d92fc438c57cccde22f9f92e69d40e1af8cf684535c9ad74f572db3cccf88f"
+        },
+        {
+          "File": "phases-3.log",
+          "Sha256": "ab4bb3c3dae4513b553c4b35ec280e53a5abc7b88e1e450d28e7a14efe420911"
+        },
+        {
+          "File": "phases-4.log",
+          "Sha256": "052a68d6f38c1fe7beca6a90a74dc3b01f85b16759a1624a622fe4744aa986fe"
+        },
+        {
+          "File": "phases-5.log",
+          "Sha256": "d0e437ba8e0a03cb3ab985fe5db80e1de0c1ade1acf05ef441c0a715ffd73667"
+        },
+        {
+          "File": "phases-6.log",
+          "Sha256": "d0dfe2093782cad9c6faebf58c4225ab40273674167018d3524f750fa053f80f"
+        },
+        {
+          "File": "phases-7.log",
+          "Sha256": "9baa7b2311b544061aaedbd358b27d6bac3f695b7c3dcee92b8ccf08ffc0372d"
+        },
+        {
+          "File": "phases-8.log",
+          "Sha256": "e90416873479a7118c888c6cc6ae0eb9d80a4df286a1618c7ca0a2242f78a79c"
+        },
+        {
+          "File": "phases-9.log",
+          "Sha256": "8b31a2c4f907a7930ada092cf5b04d66618807fd5871512451e79a8f667d91e5"
+        },
+        {
+          "File": "report-0.json",
+          "Sha256": "d5a3f60b39d9d373a2d85850c9e19f3df5af0a53a3e4f54d00dfae2d4d846af0"
+        },
+        {
+          "File": "report-1.json",
+          "Sha256": "25b875372a1aed72acebe50a3b70bf56176cd3654f84cb899a91b49fb9ee0964"
+        },
+        {
+          "File": "report-10.json",
+          "Sha256": "38469e1b8670c8f2e4d4a28d16224637774bfe06c1ebc7d54af5c2440ca45adb"
+        },
+        {
+          "File": "report-11.json",
+          "Sha256": "0a5a38792a704c41bd062a9312b54b921f924f968725850b2a29c4b6b44cc539"
+        },
+        {
+          "File": "report-12.json",
+          "Sha256": "489c51a98b6927c5713c357712faaac484720d5f2e3a9aaa9a154c36ddca82b5"
+        },
+        {
+          "File": "report-13.json",
+          "Sha256": "2b2b2ff92b8cb61b98dcae39ad4feaa2a21a958275e03a2387123ff5eb77e703"
+        },
+        {
+          "File": "report-14.json",
+          "Sha256": "7c4fd28a48906c710247a665655f3c09af8f6e951bd1c173117f8802d9973698"
+        },
+        {
+          "File": "report-15.json",
+          "Sha256": "fcda2d89f158c61fde036585b5e53a0bae4390adebbb9f8e5c38dcffbdd47a3b"
+        },
+        {
+          "File": "report-16.json",
+          "Sha256": "4702ac79b4af873499afcd10a19090d30ad9bb806d3dcd36c79149aa5c0e58ab"
+        },
+        {
+          "File": "report-17.json",
+          "Sha256": "ac09defc18fa0312a4c88dd7df0d3af07e49e846292481c57f930cf2311b95a7"
+        },
+        {
+          "File": "report-18.json",
+          "Sha256": "b43cf262148c53e171a915451a9e0888fe015a74d392e01c2443fc39395bd938"
+        },
+        {
+          "File": "report-19.json",
+          "Sha256": "1d4a3bcee6b6e6882ad3a6e33594b90a33e4744c5818d4f78a9d7de5ef1b67d8"
+        },
+        {
+          "File": "report-2.json",
+          "Sha256": "33506b7e9601be5c233e34a1901ad93f1aa983efb6ff4a09aa4d05306ecfa5eb"
+        },
+        {
+          "File": "report-20.json",
+          "Sha256": "868c7f356e9a59b6b1f882a134e98c4c904b6ea58e51af4019ff0aec49f90180"
+        },
+        {
+          "File": "report-21.json",
+          "Sha256": "33a98d7ef9e420c4b1f10a42a93c836ad8fa59b4991f32e72e0cfe4d87cdedf4"
+        },
+        {
+          "File": "report-22.json",
+          "Sha256": "b9374ac9fbd072f4192a825aa228b217562a5d3bd8790cbd8de12c359d0639dc"
+        },
+        {
+          "File": "report-23.json",
+          "Sha256": "88bc76c5ee7b0342dfe1bc0c202d0304eb8e0cb1e1e4f2c73d462296c08c557b"
+        },
+        {
+          "File": "report-24.json",
+          "Sha256": "bafab66b7ebeba8deac6c37e5e6fa342854436d5377bb45ebc2081ea8e9d843a"
+        },
+        {
+          "File": "report-25.json",
+          "Sha256": "3b4a227d20f5dbced289830092f936ca00b4f1225a94c033479e2ee5ececdab7"
+        },
+        {
+          "File": "report-26.json",
+          "Sha256": "6e5bc4f8aea95ff79f9312a4b3fe1c4e8f6104cc8f3e7e6e0a7ea6f3eccf1a3b"
+        },
+        {
+          "File": "report-27.json",
+          "Sha256": "7a2c2414d93495e0c68032b4deeb7c3f14f2ccef4b930ef1b036505c6d16b1b8"
+        },
+        {
+          "File": "report-28.json",
+          "Sha256": "1caffaaa009802d4d294ac6cfebe4116126dbcce4a3248817c55b54285bf8233"
+        },
+        {
+          "File": "report-29.json",
+          "Sha256": "758a11e9251d2658cbcf56266d3030eb4a4b27999df176dad9d7ae2f04c84110"
+        },
+        {
+          "File": "report-3.json",
+          "Sha256": "71ac917c64a9044e609a9652008b416e78f928965b03a8e23c6376f46f39b665"
+        },
+        {
+          "File": "report-4.json",
+          "Sha256": "4fea842b0653e8d33718e800c4e30b242043763be3e6730d77233007449f4e24"
+        },
+        {
+          "File": "report-5.json",
+          "Sha256": "c5f9f879db475ec35244f7640311a2e799694f09bb09e7e1c462257d3089cfda"
+        },
+        {
+          "File": "report-6.json",
+          "Sha256": "5632de1cf325369d0ac7f0fd2f6b13fde60c41a98cefa503354b463e3f8a14e1"
+        },
+        {
+          "File": "report-7.json",
+          "Sha256": "ddf6b52d52765d21a1a3d4952e71d8bdb5f5b9e7206a5c01f7e400a833700514"
+        },
+        {
+          "File": "report-8.json",
+          "Sha256": "975d124ce27696ec381f610cf23784feaed62bcdedf027df5fb235e4b85138fd"
+        },
+        {
+          "File": "report-9.json",
+          "Sha256": "a71605c03d1b4a9e9d3d7fb5cbd25507c261fad3ad1f2adc3fd7dc715c1965bd"
+        }
+      ]
+    }
+  ]
+}

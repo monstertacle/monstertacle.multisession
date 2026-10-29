@@ -1,11 +1,11 @@
 {
   "Status": "PASS",
-  "MeasuredUtc": "2026-10-29T23:00:40.1031779+00:00",
-  "ProducerWorkflow": 40968636580,
-  "ProducerSourceHash": "dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b",
-  "PackageSha256": "fc8eea949c6526a734d81cfa0cd90ea575e7312d125b04f24890f3f431eeb061",
-  "NativeAssemblySha256": "a721e1ab4d492f04a3547d3621e84775dece2ff4f26074f0fb64d26e6e40adc2",
-  "Harness": "/home/user1/dev/.agenttemp/multisession-mount-final-20261029",
+  "MeasuredUtc": "2026-10-29T23:24:56.0188926+00:00",
+  "ProducerWorkflow": 40972345390,
+  "ProducerSourceHash": "203fbcf8453fe8baabdf184e0ed40265bd5fbbfb7313dd16fc8a7db9998017ed",
+  "PackageSha256": "76ac3ac520ef03c4bd562dc4477ef95aaca07d108348d26d4f050c76ea3531b2",
+  "NativeAssemblySha256": "d8b87cf53fcb3c6a0d2aa99fa6e0c0c8b137197252334c05146fef286a4119ff",
+  "Harness": "/home/user1/dev/.agenttemp/multisession-mount-7bd658d",
   "Inputs": [
     {
       "File": "Program.cs",
@@ -17,11 +17,11 @@
     },
     {
       "File": "NuGet.Config",
-      "Sha256": "7426bd2dede7797288b05f7f041fa83eea7062de8560e988c31b3a57b4e2c7b2"
+      "Sha256": "f36869a26403e3841527f21316b0d0a539a3243ebdb612cc1c327e737ad2ebb2"
     },
     {
       "File": "packages.lock.json",
-      "Sha256": "a48325d4bb914dfb0667a5cc198d0155bce3e131b39bf7e407dcd1dfd11b3c07"
+      "Sha256": "0ad9e2115a86fe0308065739412153aa24398399bb9a727d8cafa45861f7f7e5"
     },
     {
       "File": "run-private.sh",
@@ -33,11 +33,11 @@
     },
     {
       "File": "fresh-build.log",
-      "Sha256": "a7835fdfbf151032ed17e54175e00646c3bba7ef966f3eb4a88e0eefabe25f00"
+      "Sha256": "0f8ffb243e8e0327bd4e8b560701c2b1c47093e435127e163475aeb8978ff08b"
     },
     {
       "File": "proof.log",
-      "Sha256": "ba2f4d57497d07bae27792b21537ba695ccff7cfefbc66334b8ab271c9a27d87"
+      "Sha256": "78066299079f9c3993b2cf95c3bccbb22166c5cdeb2fa34506ef8db099f0de6d"
     }
   ],
   "NativeProof": {
@@ -47,11 +47,11 @@
     "AliasReacquired": true,
     "UnsupportedFilesystemRejected": true,
     "IdentityAndPermissionsPreserved": true,
-    "ValidatedUtc": "2026-10-29T23:58:19.7023731+01:00"
+    "ValidatedUtc": "2026-10-30T00:24:51.8051562+01:00"
   },
   "ClosedNetworkPolicy": {
     "Status": "PASS",
-    "ValidatedUtc": "2026-10-29T23:58:20.1542624+01:00",
+    "ValidatedUtc": "2026-10-30T00:24:52.2111581+01:00",
     "SourceSha256": "15fffdcc0e3f7005966c871a028472e705f419c4e2b1edf4072297f288fc788e",
     "HeaderSha256": "e9db5b4791371c03a4f9be955417bb7814987bfae032ad86bd27003d2df8796e",
     "NativeConstants": [
@@ -84,11 +84,11 @@
     "Method": "Closed allowlist compared with installed Linux ABI; no actual NFS/SMB/9p/Ceph server or mount claimed."
   },
   "Codemetr": {
-    "Skipped": 0,
     "Files": 1,
+    "Violations": 0,
     "ParseErrors": 0,
-    "Types": 1,
-    "Violations": 0
+    "Skipped": 0,
+    "Types": 1
   },
   "Method": "Real bind mount and ramfs in private mount namespace; worker runs as original nonroot user. Network magic exclusions are deterministic source/ABI evidence, not a live NFS/SMB mount."
 }

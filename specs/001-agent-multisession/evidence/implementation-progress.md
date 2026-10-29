@@ -393,3 +393,12 @@ Volltor linux/4e2f34b9224b401eb864f44d98fc664c erfolgreich, Sourcehash
 2691/2764Zeilen=97.3589%. Geschriebene Zeitpunkte kanonisch UTC, Leseseite repariert
 keine alten Fremdoffsets. Kulturwechsel erhält Unicode, Metadaten, Texte und Cursor.
 Native CI des folgenden Commits bleibt gesondert zu prüfen; T067 bis dahin offen.
+
+UTCstand9f48f54 nativ beidseitiggrün(40918070122/40918070182); T067abgeschlossen.
+LinuxbesitzT088/T092 ersterSchnitt nach6fachlichrotenTests und23grünenBesitz-/Pfadfällen
+integriert. NochkeinevollständigePlattformabnahme. ImVolltoraufgedeckterT076Stop-Race
+mitdeterministischemRed belegt undvorSendalsCancelledNotStarted korrigiert;47gezielte
+Regressionengrün. GemeinsamesVolltor linux/6b0105a766e14ce2b7dca0b491734444 erfolgreich,
+Sourcehasha2bdf00708ec3515dc2de1e9a64ebd7bef7ad4294a753623663de6931974af21,
+2804/2880Zeilen=97.3611%, Codemetr371Dateien/381Typen ohneBefunde. Folgeschritt
+T088/T093 Zweitprozess-/Kill-/SQLitezusammenspiel; WindowsT091 weiterhinoffen.

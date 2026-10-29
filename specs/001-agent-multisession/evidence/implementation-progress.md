@@ -471,3 +471,10 @@ Volltor linux/a64566446a3c419aa41adb1aec7d30b8 erfolgreich,972Tests,97.5677%,
 Sourcehashf06cf36528ac8f907a724522f5ac5855dd2fa92d9d15bc4cb777f65481c97e8c,
 Codemetr401Dateien/414TypenohneBefunde. RestlicheSzenarienbleibenehrlichNOT RUN,
 NativeWindowsjournal-/Paket-/finaleZielmatrix weiterhinaktiv. KeineVollfreigabe.
+
+WindowsOriginaljournal-Tokenownerport nachnativemRed40932597035 eng angepasst:
+DateienUseroderaktuellerBuiltinAdministrators-Tokenowner, RootUser-only, DACLweiter
+User-onlyFullControl. KeineOwner-/ACLreparatur/Hostrichtlinienänderung.
+Volltor linux/529d9f698a4048cc8996b14081e18a08 grün,972Tests,97.5677%,
+Codemetr401Dateien/414TypenohneBefunde. NativeWindowssuitefolgt; nächsterArbeitsumfang
+restlicheT094Deterministik-/Grenz-/Recovery-/Soakszenarien undPaketkonsumT095/T096.

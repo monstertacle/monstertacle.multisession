@@ -30,3 +30,14 @@ GemessenePreflightquelle2026-10-29T18:30:00Z SHA256
 c3e7f5e3a5343d1e863c808b445166d43eba0cf132d81d5ddaf5fa36a3564736.
 Linux-Rednative-journal-security-red.log: öffentlichesOriginaljournal wurdeohneAusnahme
 zurückgerollt, erwarteteStorageUnavailablefehlte;2bisherigeProzessfällegrün.
+
+Windows-Portredzu391e5e9 in40932597035 vorProduktanpassung:6/7Plattformfällegrün;
+gültigesOriginaljournalwirdinWindowsPrivateSecurity.Require mitStorageUnavailable
+abgelehnt. ÖffentlicheACL wirdbereitskorrektabgewiesen. NeueOwnerentscheidung eng:
+DateiownerUseroderaktuellertatsächlicherTokenOwner, letzterernurwennBuiltinAdministrators.
+KeinebeliebigeGruppe; AdministratorenhabenbereitsOS-PrivilegzurEigentumsübernahme
+(MicrosoftTake-ownership-Dokumentation), R-07 behauptetkeineAdmin-Sandbox.
+https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects
+Directoryowner weiterhinUser; DACLweiterexakteineUser-FullControl-ACE, keinefremdeACE,
+keineReparatur. Quellen-/RedbelegausdervorigenAnalyseweitergültig, Produktdateibisjetzt
+unverändert. DanachnativeMatrixerneutlaufenlassen, keineVollabnahmevorGreen.

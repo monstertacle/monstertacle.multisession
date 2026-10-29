@@ -166,3 +166,16 @@ ZweimaligeHostausführung: getrennteRunIDs, je2Sessions/5Requests/5History/4Succ
 PrivateProbeablagen bleibenzurInspektionerhalten; vorhandeneElternverzeichnisse nötig,
 keineunsichereCreateDirectory-Kette durchAliase. FehlendeSzenarien weiterNOT RUN,
 Live ohneFreigabe ohneState-/Provider-I/O. KeinNuGet-/Live-/vollständigesT094-Häkchen.
+
+WindowsOwner-Portzu391e5e9 in40932597035 tatsächlichrot:6/7Plattformfällegrün,
+privatesOriginaljournalnachKillvonWindowsPrivateSecurity.Require abgelehnt.
+DanachengeProduktkorrektur: DirectoryownerweiterUser; DateiownerUseroderaktueller
+Default-TokenownernurbeiBuiltinAdministrators. DACL unverändertgenaueineUserFullControl-
+ACE, keinefremdenACEs, keinebestehendenACL/Ownerrepariert. NormativeR-07-Abgrenzung,
+primäreOS-/BCLquellen undAdmin-Sandboxgrenze imArchitekturbeleg. Keine Änderungder
+RechteaufirgendeinemHost oderProzesstoken. NativeWindowsGreen diesesCodes noch nötig.
+
+LokalesVolltor linux/529d9f698a4048cc8996b14081e18a08 erfolgreich:972Tests,
+Sourcehashac8f8fcf08ca60254951e6dc79660f19a8542e627574b3c35c700453d2fa7965,
+2848/2919Zeilen=97.5677%,Codemetr401Dateien/414TypenohneBefunde. Linux misstWindowscode
+statisch, nativeVerhaltensbehauptungweiteroffen. T093/Zielsystemprüfung nichtabgehakt.

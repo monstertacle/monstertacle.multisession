@@ -27,9 +27,13 @@ internal sealed class WindowsPrivateSecurity : IDisposable
         FileSystemSecurity security = directory
             ? new DirectoryInfo(path).GetAccessControl(AccessControlSections.Owner | AccessControlSections.Access)
             : new FileInfo(path).GetAccessControl(AccessControlSections.Owner | AccessControlSections.Access);
-        SecurityIdentifier owner = CurrentUser();
+        using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+        SecurityIdentifier owner = identity.User ?? throw WindowsNative.Failure();
+        IdentityReference? actualOwner = security.GetOwner(typeof(SecurityIdentifier));
+        bool validOwner = owner.Equals(actualOwner) || (!directory && identity.Owner is { } tokenOwner
+            && tokenOwner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid) && tokenOwner.Equals(actualOwner));
         AuthorizationRuleCollection rules = security.GetAccessRules(true, true, typeof(SecurityIdentifier));
-        if (!owner.Equals(security.GetOwner(typeof(SecurityIdentifier))) || rules.Count != 1
+        if (!validOwner || rules.Count != 1
             || rules[0] is not FileSystemAccessRule rule || !owner.Equals(rule.IdentityReference)
             || rule.AccessControlType != AccessControlType.Allow || rule.FileSystemRights != FileSystemRights.FullControl
             || rule.PropagationFlags != PropagationFlags.None

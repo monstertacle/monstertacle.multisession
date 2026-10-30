@@ -1,4 +1,5 @@
 # Architecture decision after opposed reviews
+Historical decision sequence; final bounded acceptance and finding reconciliation: closeout.md.
 Owner: Alexander Bleissem
 Status: accepted for implementation, not release
 Evidence: frozen manifest e9e392b4dc94e05d16d1fdd1e52e70e8086376ffaacd9799eb4d66efc23c33fe; both original reviews and narrow delta reviews in evidence/reviews/.

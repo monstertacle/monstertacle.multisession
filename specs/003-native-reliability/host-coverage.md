@@ -1,8 +1,8 @@
 # Complete host measurement
 
 Owner: Alexander Bleissem
-Status: in_progress
-Source: c31c1c87ec61ae56bdab6a0633f707df496aa66a; native measurement receipts in evidence/native-ci.json.
+Status: done; complete native verification in closeout.md
+Initial source: c31c1c87ec61ae56bdab6a0633f707df496aa66a; earlier native measurement receipts in evidence/native-ci.json.
 
 The owner requested autonomous implementation and correction while retaining the
 87-percent gate. Root selects additional complete validation-host measurement.
@@ -85,4 +85,6 @@ zero unreported code and no unmeasured changed files. The initial/final full
 reports are archived as gzip files. Full static CLI passes 489 files/509 types;
 its existing semantic-reference limitation remains disclosed in the receipt.
 Native CI, package consumption and published scenarios remain the next acceptance
-step before marking the PR ready.
+step for that earlier local snapshot. These steps subsequently passed with the
+reviewed Wave profile at source8d25c9a067989110c00327af988fff8969c35fb601b8100d0e6f07a224f254e9;
+see evidence/wave-budget-native-pr.json and closeout.md. The PR is ready for review.

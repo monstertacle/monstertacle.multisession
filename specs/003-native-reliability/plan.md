@@ -1,7 +1,7 @@
 # Implementation Plan
 Created: 2026-10-30T06:20:36Z
 Owner: Alexander Bleissem
-Status: in_progress
+Status: done (bounded implementation and automated native acceptance; release remains feature001)
 SDK 10.0.403, C#14/.NET10; Ubuntu24.04 and native Windows CI, original Win11 release prerequisite unchanged. Six unpublished 0.2.0-alpha.1 packages; no dependency upgrades.
 
 ## Constitution check
@@ -19,3 +19,8 @@ owned investigation plan; the changed profile must pass fresh native CI.
 5. Full local/native CI, static/Cover, package consumption and repeat native scenarios; root-cause claims limited to evidence.
 ## Validation
 Relevant full suites must be green before any refactoring. Archive every pre-Green candidate. Follow any unresolved actionable finding with an owned concrete plan before closing.
+
+Closeout: closeout.md binds both native CI runs, complete coverage/consumption/
+published proofs and every finding disposition. The default-budget variability
+has an owned ready follow-up; the historic Windows cause and actual Windows11
+release acceptance are not closed by this bounded change.

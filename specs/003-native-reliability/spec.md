@@ -1,7 +1,7 @@
 # Feature Specification: Native storage reliability
 Branch: feature/native-reliability-host-contract
 Created: 2026-10-30T06:20:36Z
-Status: In progress
+Status: Done for the bounded implementation; release and latency investigation remain explicitly separate in closeout.md.
 Input: Fix the observed Windows failures with SpecKit, and extend this library against current SharpClaw.
 
 ## User Scenarios & Testing

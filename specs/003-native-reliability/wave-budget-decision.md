@@ -1,7 +1,7 @@
 # Explicit Wave validation budget
 
 Owner: Alexander Bleissem
-Status: accepted for bounded implementation; native verification pending
+Status: implemented and natively verified for the bounded profile
 Reviewed head: 98948da32fab08abd6b6e5734ee00946ec58478e
 Source hash: f4d2c1889c44f2978fff81b3cdbb8bc286c787d31b8d048042689d1aa481b490
 
@@ -54,3 +54,10 @@ passes 489 files/509 types with its existing semantic-reference limitation.
 The precise pre-Green patch is compressed under evidence/tdd/wave-budget-pre-green;
 decompress privately before verifying the original patch digest. Native evidence
 for this changed profile is still required.
+
+Completed native evidence: push41059372988 and PR41059379755 passed both native
+quality jobs and both identical-package consumer jobs, with fourteen actual
+published scenarios on each operating system. Source8d25c9a067989110c00327af988fff8969c35fb601b8100d0e6f07a224f254e9
+is recorded in evidence/wave-budget-native-{push,pr}.json. Default-budget cause
+and release limitations remain exactly as stated above; a configured success
+does not retrospectively resolve the observed default-profile failure.

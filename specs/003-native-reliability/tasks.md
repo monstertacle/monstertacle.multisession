@@ -8,12 +8,12 @@ Created: 2026-10-30T06:20:36Z
 - [x] T006 Add real safe-diagnostic/propagation/timeout regressions; archive Red.
 - [x] T007 Implement structured diagnostic normalization without changing acceptance certainty.
 - [x] T008 Test and fix validation report error preservation and sanitization.
-- [ ] T009 Run full static metrics, native quality/Cover and package consumption.
-- [ ] T010 Repeat native Windows scenarios and inspect safe diagnostics for any recurrence.
-- [ ] T011 Commit/push reviewable work, bind native CI evidence, disposition all findings.
+- [x] T009 Run full static metrics, native quality/Cover and package consumption.
+- [x] T010 Repeat native Windows scenarios and inspect safe diagnostics for any recurrence.
+- [x] T011 Commit/push reviewable work, bind native CI evidence, disposition all findings.
 - [x] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.
-- [ ] T013 Measure the complete validation host in Cover, preserve the separate native product gate, test real native scenario ownership and close measured coverage gaps; see host-coverage.md.
-- [ ] T014 Apply reviewed Wave-only admission profile after observed native default-budget timeout, preserving SDK defaults and every functional assertion; require fresh native CI.
+- [x] T013 Measure the complete validation host in Cover, preserve the separate native product gate, test real native scenario ownership and close measured coverage gaps; see host-coverage.md.
+- [x] T014 Apply reviewed Wave-only admission profile after observed native default-budget timeout, preserving SDK defaults and every functional assertion; require fresh native CI.
 
 Native run41042889858 verifies T012: 1060 Linux/1066 Windows tests passed;
 97.7735%/97.7556% product line coverage passed the unchanged native inventory.
@@ -22,6 +22,11 @@ were red solely for eight unmeasured validation-host changes. The autonomous
 correction now measures the complete host; see host-coverage.md. Local final
 source f4d2c1889c44f2978fff81b3cdbb8bc286c787d31b8d048042689d1aa481b490
 passes 1086 tests and both 87-percent gates (product 97.7735%, expanded Cover
-95.5%, zero findings). T009/T013 await the new native CI; T010 requires the
-downstream published scenarios. No historical Windows root-cause claim follows
-from passing ordinary native suites.
+95.5%, zero findings). That result was followed by the retained native timeout/
+counter-run and separately reviewed Wave profile. Final source
+8d25c9a067989110c00327af988fff8969c35fb601b8100d0e6f07a224f254e9
+passed native push41059372988 and PR41059379755, including all four quality/
+canonical-consumer jobs, fourteen published scenarios per OS and static checks.
+See closeout.md and evidence/wave-budget-native-{push,pr}.json. No historical
+Windows root-cause claim follows; follow-up-windows-admission.md remains ready
+and feature001 release requirements remain open.

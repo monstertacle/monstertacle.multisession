@@ -12,11 +12,15 @@ Created: 2026-10-30T06:20:36Z
 - [ ] T010 Repeat native Windows scenarios and inspect safe diagnostics for any recurrence.
 - [ ] T011 Commit/push reviewable work, bind native CI evidence, disposition all findings.
 - [x] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.
+- [ ] T013 Measure the complete validation host in Cover, preserve the separate native product gate, test real native scenario ownership and close measured coverage gaps; see host-coverage.md.
 
 Native run41042889858 verifies T012: 1060 Linux/1066 Windows tests passed;
 97.7735%/97.7556% product line coverage passed the unchanged native inventory.
-Static run41042889914 passed both operating systems. Both full quality jobs
-remain red solely for the eight unmeasured validation-host changes. T009 awaits
-the explicit measurement-scope decision. T010's published scenario replay is
-still downstream of that gate; ordinary native suites passed without skipped
-tests but do not close the historical intermittent Windows cause.
+Static run41042889914 passed both operating systems. Those full quality jobs
+were red solely for eight unmeasured validation-host changes. The autonomous
+correction now measures the complete host; see host-coverage.md. Local final
+source f4d2c1889c44f2978fff81b3cdbb8bc286c787d31b8d048042689d1aa481b490
+passes 1086 tests and both 87-percent gates (product 97.7735%, expanded Cover
+95.5%, zero findings). T009/T013 await the new native CI; T010 requires the
+downstream published scenarios. No historical Windows root-cause claim follows
+from passing ordinary native suites.

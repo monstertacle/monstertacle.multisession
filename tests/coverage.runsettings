@@ -5,7 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>json,cobertura</Format>
-          <Include>[Monstertacle.Multisession.Common]*,[Monstertacle.Multisession.Storage.Sqlite]*,[Monstertacle.Multisession.Windows]*,[Monstertacle.Multisession.Linux]*,[Monstertacle.Multisession.Providers.OpenAI]*,[Monstertacle.Multisession.Providers.Gemini]*</Include>
+          <Include>[Monstertacle.Multisession.Common]*,[Monstertacle.Multisession.Storage.Sqlite]*,[Monstertacle.Multisession.Windows]*,[Monstertacle.Multisession.Linux]*,[Monstertacle.Multisession.Providers.OpenAI]*,[Monstertacle.Multisession.Providers.Gemini]*,[Monstertacle.Multisession.ValidationHost]*</Include>
           <IncludeTestAssembly>false</IncludeTestAssembly>
           <SkipAutoProps>false</SkipAutoProps>
           <ExcludeAssembliesWithoutSources>None</ExcludeAssembliesWithoutSources>

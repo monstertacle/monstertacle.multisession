@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/MetricGaugeCapture.cs" Link="Fixtures/MetricGaugeCapture.cs" />
-    <ProjectReference Include="../../examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashProtocol.cs" Link="Fixtures/CrashProtocol.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/ProcessExitWait.cs" Link="Fixtures/ProcessExitWait.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/DiskFullProtocol.cs" Link="Fixtures/DiskFullProtocol.cs" />

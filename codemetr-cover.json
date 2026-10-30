@@ -3,8 +3,7 @@
     "lineCoverage": 87
   },
   "exclude": [
-    "artifacts/**",
-    "examples/**"
+    "artifacts/**"
   ],
   "unreported": "zero",
   "diff": {

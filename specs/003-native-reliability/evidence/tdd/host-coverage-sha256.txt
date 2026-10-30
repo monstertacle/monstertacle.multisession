@@ -1,0 +1,5 @@
+b09112088e1de2340b6bec0c58d4f6bb9e9c6a925b6ff936f2aaab386fd01114  artifacts/tdd/native-reliability/host-coverage-pre-green/head.txt
+59fd7c1fa76f58e6d413a18a45fdb1d2359e3e37d427b90b47e5605032f4ac38  artifacts/tdd/native-reliability/host-coverage-pre-green/tracked.patch
+5b1cad05240425c14222a72685cab337a95776b25c575b8421091e9484c1c30a  artifacts/tdd/native-reliability/host-coverage-pre-green/untracked.tar.gz
+78c707e2f43f203c61c15e7b9fffc2476fd878c791efd074b1d399f23e828500  artifacts/tdd/native-reliability/host-coverage-pre-green/utc.txt
+f7a754e624ef8f96e647beab0559aef92af37ca8acf5a6db74be9e6cca740715  artifacts/tdd/native-reliability/host-coverage-red/host-coverage-gate-red.log

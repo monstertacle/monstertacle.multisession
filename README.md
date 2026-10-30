@@ -55,9 +55,11 @@ Auf einem nativen Linuxhost `-Platform linux` verwenden. Die Prüfungen dürfen 
 durch einen bloßen TFM-Wechsel auf einem anderen Betriebssystem ersetzt werden.
 Die Qualitätsprüfung führt Codemetr Cover auf den frischen Cobertura-/TRX-Dateien aller
 vier Testsuiten aus und verlangt `complete: true`. Neben dem nativen 87-%-Gate prüft
-Cover mindestens 87 % des gesamten nativen Bibliothekscodes einschließlich ungemessener Zeilen
+Cover mindestens 87 % des gesamten nativen Bibliothekscodes und des vollständigen Prüfhosts einschließlich ungemessener Zeilen
 mit null Treffern sowie die unveränderten Standardgrenzen für Diff-Coverage und CRAP.
-Ausgenommen sind Build-Artefakte und das separate Validierungsprogramm. Der Lauf erzeugt
+Das separate Produktgate behält den vollständigen Bibliotheksumfang als eigenen Nenner;
+mitgemessene Prüfhost-Zeilen können ein unterschrittenes Produktgate nicht ausgleichen.
+Build-Artefakte und Testcode zählen nicht als eigener Anwendungscode. Der Lauf erzeugt
 `cover-native-config.json` und nimmt genau die fremde Plattform aus; sie wird zwingend
 im jeweils anderen nativen CI-Lauf geprüft. Alle gemeinsamen Bibliotheken bleiben enthalten.
 Berichte liegen unter `artifacts/quality/<plattform>/<lauf>/`.

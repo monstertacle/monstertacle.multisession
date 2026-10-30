@@ -1,5 +1,10 @@
 # Validation and remaining acceptance
 
+Historical candidate report: the measurement-scope blocker below has since been
+corrected by complete host measurement. Current verification is in
+../host-coverage.md and host-coverage-linux-final.json; earlier receipts remain
+unaltered.
+
 Owner: Alexander Bleissem
 Status: in_progress; no release acceptance
 

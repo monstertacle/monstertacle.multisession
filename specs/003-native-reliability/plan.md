@@ -1,7 +1,7 @@
 # Implementation Plan
 Created: 2026-10-30T06:20:36Z
 Owner: Alexander Bleissem
-Status: done (bounded implementation and automated native acceptance; release remains feature001)
+Status: in_progress (current-head worker coverage receipt gap; release remains feature001)
 SDK 10.0.403, C#14/.NET10; Ubuntu24.04 and native Windows CI, original Win11 release prerequisite unchanged. Six unpublished 0.2.0-alpha.1 packages; no dependency upgrades.
 
 ## Constitution check

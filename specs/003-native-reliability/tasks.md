@@ -14,6 +14,16 @@ Created: 2026-10-30T06:20:36Z
 - [x] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.
 - [x] T013 Measure the complete validation host in Cover, preserve the separate native product gate, test real native scenario ownership and close measured coverage gaps; see host-coverage.md.
 - [x] T014 Apply reviewed Wave-only admission profile after observed native default-budget timeout, preserving SDK defaults and every functional assertion; require fresh native CI.
+- [ ] T015 Close current-head Windows CRAP gaps with deterministic direct worker protocol tests in WorkerProtocolTests.cs and repeat complete native CI without gate changes.
+
+T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
+run41062007264 passed all tests but reported CrashProtocol.IsKnown and
+CrashWorker.RunAsync at zero coverage (CRAP90/210). Earlier receipts remain valid
+historical runs, not current-head acceptance. CrashHarness deliberately kills
+children, so collector flush cannot be the sole proof of finite error paths.
+Direct tests exercise the actual host protocol, malformed store diagnostics and
+native lease release; existing deliberate-crash tests remain unchanged. No
+production behavior change, threshold change or new architecture is required.
 
 Native run41042889858 verifies T012: 1060 Linux/1066 Windows tests passed;
 97.7735%/97.7556% product line coverage passed the unchanged native inventory.
@@ -30,3 +40,10 @@ canonical-consumer jobs, fourteen published scenarios per OS and static checks.
 See closeout.md and evidence/wave-budget-native-{push,pr}.json. No historical
 Windows root-cause claim follows; follow-up-windows-admission.md remains ready
 and feature001 release requirements remain open.
+
+T015 local: worker-protocol-local.json records1100 tests, product97.7735%,
+expanded Cover95.6%, no findings. Direct protocol22 cases include all nine valid
+barriers, unknown/empty rejection, cooperative/native invalid-store diagnostics,
+closed error output and native lease reacquisition. Static489files/509types passed;
+semantic reference-resolution limitations remain as previously documented. Current
+native CI acceptance is pending the new test commit.

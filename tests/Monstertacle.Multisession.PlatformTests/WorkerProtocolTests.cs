@@ -19,6 +19,70 @@ public sealed class WorkerConsoleIsolation
 [Collection(WorkerConsoleIsolation.Name)]
 public sealed class WorkerProtocolTests
 {
+    /// <summary>Only the finite crash barriers are accepted by the actual worker protocol.</summary>
+    [Theory]
+    [InlineData(CrashProtocol.JournalPoint, true)]
+    [InlineData(CrashProtocol.RecoveryPoint, true)]
+    [InlineData(CrashProtocol.BeforeAcceptance, true)]
+    [InlineData(CrashProtocol.AfterAcceptance, true)]
+    [InlineData(CrashProtocol.BeforeWake, true)]
+    [InlineData(CrashProtocol.AfterReservation, true)]
+    [InlineData(CrashProtocol.BeforeOperationId, true)]
+    [InlineData(CrashProtocol.BeforeCompletion, true)]
+    [InlineData(CrashProtocol.AfterCompletion, true)]
+    [InlineData("unknown", false)]
+    [InlineData("", false)]
+    public void ProtocolRejectsUnknownBarriers(string point, bool expected)
+        => Assert.Equal(expected, CrashProtocol.IsKnown(point));
+
+    /// <summary>Fixture failures report a closed category and finish without depending on child termination.</summary>
+    [Theory]
+    [InlineData(false, CrashProtocol.JournalPoint)]
+    [InlineData(false, CrashProtocol.RecoveryPoint)]
+    [InlineData(true, CrashProtocol.RecoveryPoint)]
+    public async Task CrashWorkerReportsInvalidStoreAndReleases(bool native, string point)
+    {
+        string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "dev", ".agenttemp",
+            "multisession-invalid-worker-" + Guid.NewGuid().ToString("N"));
+        string nonce = Guid.NewGuid().ToString("N");
+        const string privateContent = "private-invalid-store-sentinel";
+        try
+        {
+            await using (NativeLease setup = NativeLease.CreateNew(directory))
+            {
+                await setup.PrepareFileAsync(CrashProtocol.MarkerFileName, StateFileMode.CreateNew, CancellationToken.None);
+                await File.WriteAllTextAsync(Path.Combine(directory, CrashProtocol.MarkerFileName), nonce);
+                await setup.PrepareFileAsync(CrashProtocol.ScopeFileName, StateFileMode.CreateNew, CancellationToken.None);
+                await File.WriteAllTextAsync(Path.Combine(directory, CrashProtocol.ScopeFileName), Guid.NewGuid().ToString("D"));
+                if (point != CrashProtocol.JournalPoint)
+                {
+                    await setup.PrepareFileAsync("multisession.db", StateFileMode.CreateNew, CancellationToken.None);
+                    await File.WriteAllTextAsync(Path.Combine(directory, "multisession.db"), privateContent);
+                }
+            }
+            TextWriter original = Console.Out;
+            using StringWriter output = new();
+            int exit;
+            try
+            {
+                Console.SetOut(output);
+                exit = await CrashWorker.RunAsync([native ? CrashProtocol.NativeWorkerArgument : CrashProtocol.WorkerArgument,
+                    directory, nonce, point], native);
+            }
+            finally { Console.SetOut(original); }
+            Assert.Equal(2, exit);
+            using JsonDocument report = JsonDocument.Parse(output.ToString());
+            Assert.Equal("failed", report.RootElement.GetProperty("status").GetString());
+            Assert.Equal(point == CrashProtocol.JournalPoint ? "crash-fixture" : "UnsupportedStoreVersion",
+                report.RootElement.GetProperty("failureCode").GetString());
+            Assert.DoesNotContain(directory, output.ToString(), StringComparison.Ordinal);
+            Assert.DoesNotContain(privateContent, output.ToString(), StringComparison.Ordinal);
+            await using NativeLease successor = NativeLease.OpenExisting(directory);
+            Assert.True(successor.IsHeld);
+        }
+        finally { if (Directory.Exists(directory)) { Directory.Delete(directory, recursive: true); } }
+    }
+
     /// <summary>Unavailable protocol output preserves prepared durable state and never transfers the caller's lease.</summary>
     [Theory]
     [InlineData(CrashProtocol.BeforeAcceptance, 2)]

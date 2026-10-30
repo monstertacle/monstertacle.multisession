@@ -19,7 +19,7 @@ Already-cancelled work, full queue, lost lease, disposal while queued, failed co
 
 ## Requirements
 - FR-001: Keep one serial owner of each SQLite connection, independent of unrelated managed-worker availability.
-- FR-002: Preserve bounded queue, existing time limits and acceptance certainty.
+- FR-002: Preserve bounded queue, public SDK/runtime time limits and acceptance certainty. The Wave validation consumer explicitly selects a finite admission profile as documented in wave-budget-decision.md; its other deadlines and all default-budget regressions remain unchanged.
 - FR-003: Record only closed phase identifiers and numeric native error codes; never raw text or paths.
 - FR-004: Preserve optional exception-local diagnostic evidence through normalization and CQRS; leave PublicError and persisted errors unchanged.
 - FR-005: Retain original failure evidence when scenario cleanup also fails.

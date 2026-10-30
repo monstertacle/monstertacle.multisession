@@ -63,6 +63,11 @@ Build-Artefakte und Testcode zählen nicht als eigener Anwendungscode. Der Lauf 
 `cover-native-config.json` und nimmt genau die fremde Plattform aus; sie wird zwingend
 im jeweils anderen nativen CI-Lauf geprüft. Alle gemeinsamen Bibliotheken bleiben enthalten.
 Berichte liegen unter `artifacts/quality/<plattform>/<lauf>/`.
+Die drei funktionalen Wellen-Szenarien wählen ein explizites Aufnahmebudget von
+30 Sekunden. Der SDK-Standard beträgt weiterhin fünf Sekunden; die eigenen
+Deadline-Regressionen und alle weiteren Szenariofristen bleiben bestehen.
+Diese funktionale Prüflast ist kein Nachweis einer fünfsekündigen Aufnahme-SLA;
+die native Beobachtung dazu steht im [Untersuchungsplan](specs/003-native-reliability/follow-up-windows-admission.md).
 Ausführliche Regeln stehen in [AGENTS.md](AGENTS.md), der
 [Constitution](.specify/memory/constitution.md) und im
 [Quickstart](specs/001-agent-multisession/quickstart.md).

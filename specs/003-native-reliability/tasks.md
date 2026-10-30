@@ -13,6 +13,7 @@ Created: 2026-10-30T06:20:36Z
 - [ ] T011 Commit/push reviewable work, bind native CI evidence, disposition all findings.
 - [x] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.
 - [ ] T013 Measure the complete validation host in Cover, preserve the separate native product gate, test real native scenario ownership and close measured coverage gaps; see host-coverage.md.
+- [ ] T014 Apply reviewed Wave-only admission profile after observed native default-budget timeout, preserving SDK defaults and every functional assertion; require fresh native CI.
 
 Native run41042889858 verifies T012: 1060 Linux/1066 Windows tests passed;
 97.7735%/97.7556% product line coverage passed the unchanged native inventory.

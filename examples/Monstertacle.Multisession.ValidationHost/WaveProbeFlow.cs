@@ -4,6 +4,8 @@ namespace Monstertacle.Multisession.ValidationHost;
 
 internal static class WaveProbeFlow
 {
+    private static readonly TimeSpan _admissionBudget = TimeSpan.FromSeconds(30);
+
     internal static async Task ExecuteAsync(ValidationRunState state, string scenario)
     {
         ProbeTrace trace = new();
@@ -15,7 +17,8 @@ internal static class WaveProbeFlow
         }
         ProbeProvider a = new("probe-alpha", trace, SendAsync);
         ProbeProvider b = new("probe-beta", trace, SendAsync);
-        ProbeHost host = await ProbeHost.StartAsync(state, [new("alpha", "probe-alpha", 1, a), new("beta", "probe-beta", 1, b)]);
+        RuntimeOptions options = new() { StateDirectory = state.Directory, Retention = new(true, null), MaxConcurrentRequests = 2, AdmissionTimeout = _admissionBudget };
+        ProbeHost host = await ProbeHost.StartAsync(state, [new("alpha", "probe-alpha", 1, a), new("beta", "probe-beta", 1, b)], options);
         await ExecuteOwnedAsync(host, trace, barrier, scenario);
     }
 

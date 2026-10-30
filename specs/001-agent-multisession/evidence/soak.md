@@ -1,5 +1,40 @@
 # Tatsächlicher Stundenlauf und verbleibende Zielsystemabnahme
 
+## Eingefrorener Lieferstand: beide verfügbaren nativen Stunden bestanden
+
+Unabhängig geprüft 2026-10-30T00:46:42Z. Codecommit fb1a167,
+Source d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf.
+[native-hour-soak40974541000](https://github.com/monstertacle/monstertacle.multisession/actions/runs/40974541000)
+erfolgreich auf Ubuntu24.04 und WindowsServer2025; vollständiger Rohproof mit allen
+Original-IDs/Receipt-Offsets/Hostdigests und Readonly-SQLzahlen in [hour-final.json](hour-final.json).
+
+| Plattform | Monotone TimeSpan-Ticks | Sekunden | Originale / Minuten / Reopens |
+| --- | --- | --- | --- |
+| Ubuntu | 36000000886 | 3600.0000886 | 60 / 60 / 60 |
+| Windows Server | 36000067907 | 3600.0067907 | 60 / 60 / 60 |
+
+Beide Rohkandidaten haben exakt den ausgewählten Sourcehash. Die jeweilige
+Hostassembly SHA256 stimmt zusätzlich mit dem endlichen nativen 14-Szenarienlauf
+aus quality40974541005 überein: Linux
+`d1e794191ab5d4caf4fc12411a922f1adb3e3168165396ed1e6cc84e81760f43`, Windows
+`96147ac03783c554809ffa62af7e09131296f6fa1722ef97cc9fccec68021e30`.
+eng/Test-SoakProof.ps1 prüfte die tatsächlich heruntergeladenen unveränderten
+Assemblies, monotone Stunde und je ein Receipt in jedem Minutenfenster0..59.
+Zusätzlicher externer PowerShell-/sqlite3-readonly-Abgleich bestätigte je60eindeutige
+ursprüngliche IDs, alle Succeeded/ConfirmedEnded,60Results/Historyzeilen und0aktive
+Reservierungen. Die60freigegebenen historischen Reservationszeilen bleiben erhalten.
+Keine Dauer aus UTC-Buckets rekonstruiert; die Windows-UTC-Differenz ist bewusst
+kein Dauerkriterium. Es gab keinen Neustart während der Stunde; danach kontrollierter
+Stop und echte native Wiederöffnung unter denselben Originalkennungen.
+
+Die Stunde läuft gegen den nativen publizierten Projekt-Host desselben Sourcehashes.
+Der bytegenaue NuGetkonsum ist separat mit dem kanonischen Sechserartefakt aus
+quality40974541005 auf beiden Plattformen geprüft. Fehlendes Windows11 bleibt
+NOT RUN und sperrt T100/SC007/Q03 als vollständige Dreisystemabnahme. T124 kann
+für die gemeinsame Source-/Paket-/verfügbare Stundenprüfung abgeschlossen werden;
+kein Live-Provider oder kostenpflichtiger Zugriff war beteiligt. Ältere Prototypen,
+Checkpoints und abgebrochene Quellstände darunter bleiben historische Teilbelege.
+
 ## Native Stundencheckpoints mit vollständigen Receipt-Rohdaten
 
 Unabhängig geprüft 2026-10-29T22:51:14.7751785Z laut JSON-Messung: Workflow40954320848 bestand auf Ubuntu24.04

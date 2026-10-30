@@ -105,3 +105,15 @@ Q05 hat gleichen kanonischen Paketstand auf beiden OS, fremder Integrator fehlt.
 Q06 bleibt wegen ursprünglicher voller Redquellarchivlücke offen. Keine genehmigte
 Ausnahme oder Produktfreigabe. Aktueller ausgewählter Sechserarchivsatz ausschließlich
 aus quality40974541005; spätere Belegcommits wählen keine anderen Paketbytes aus.
+
+## Tatsächlicher Stundenabschluss des ausgewählten Kandidaten
+
+Unabhängiger Abschlussabgleich2026-10-30T00:46:42Z: hour-final.json bestätigt
+beide nativen Stunden40974541000 auf exakt Source d51bf9f9... und byteidentischen
+Hostassemblies zum vorherigen endlichen Szenariolauf. Je60Original-IDs,
+60monotoneReceipt-Minuten,60bestätigteErgebnisse nach Reopen,0aktiveReservationen.
+T124 abgeschlossen. Aktueller Gesamtstand116/126Aufgaben; alle zehn offenen
+Aufgaben sind konkret in remaining-acceptance.md gebunden. T100/SC007/Q03 bleiben
+wegen Windows11 weiterhin offen; vorhandene Server-/Ubuntustunden werden nicht
+als Clientnachweis ausgegeben. Q04/Q05/Q06 sowie zuständige Distributions-/
+Abschlussentscheidungen bleiben wie oben gesperrt. Keine Produktfreigabe.

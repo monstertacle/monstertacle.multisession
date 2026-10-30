@@ -740,3 +740,14 @@ GitHub, noch kein PASS. Endgültige Roh-/Hosthash-/SQLite-/Receiptprüfung folgt
 nach tatsächlichem Ende. T100 bleibt selbst dann wegen fehlendem Win11 offen.
 T124 kann nach beiden neuen tatsächlich verifizierten Stunden geschlossen werden.
 Übrige externe Abnahmen/Ownerentscheidungen bleiben in remaining-acceptance.md.
+
+## Stundenabschluss
+
+Gemessen2026-10-30T00:46:42Z: native-hour-soak40974541000 auf beiden OS erfolgreich.
+Unabhängiger Source-/Host-/Receipt-/Readonly-SQLabgleich hour-final.json PASS:
+Linux3600.0000886s, Server3600.0067907s monoton, je60Originale/Minuten/Reopens,
+keine aktive Reservation. Hostassembly identisch zur jeweiligen endlichen
+Prüfung40974541005. Der eingefrorene Code-/Source-/kanonische Paketstand bleibt
+unverändert. T124 geschlossen;116/126Tasks ausgeführt. Win11-/Live-/Integrator-/
+historische Q06-/Distributions-/Schlussreviewvoraussetzungen bleiben konkret offen.
+Quelle delivery-candidate.md / remaining-acceptance.md; keine Veröffentlichung.

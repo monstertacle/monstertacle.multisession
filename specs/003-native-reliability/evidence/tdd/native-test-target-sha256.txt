@@ -1,0 +1,5 @@
+f1650b657a3789e9cb3e5f00ff92897dd7d7b5da38eb30adf0c5d7c9965ea503  artifacts/tdd/native-reliability/native-test-target-pre-green/head.txt
+52e23a4f4e47429865aa1b04567d7f376fcdf9743cb438f88213c665429df17f  artifacts/tdd/native-reliability/native-test-target-pre-green/tracked.patch
+85cea451eec057fa7e734548ca3ba6d779ed5836a3f9de14b8394575ef0d7d8e  artifacts/tdd/native-reliability/native-test-target-pre-green/untracked.tar.gz
+0798c17040fe16de4600908c9b0f6a6e42a761a1c1c620d577a627a7c55cfbb2  artifacts/tdd/native-reliability/native-test-target-pre-green/utc.txt
+1e2f0a62ff2fec2e7dfd7bd38b0f12442cc14606d56a467144a7245fb89425c5  artifacts/tdd/native-reliability/native-test-target-red/windows-ci.log

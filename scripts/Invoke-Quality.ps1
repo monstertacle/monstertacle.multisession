@@ -54,7 +54,7 @@ try {
         $arguments = @('test', $project, '-c', 'Release', '--no-build', '--no-restore',
             '--settings', 'tests/coverage.runsettings', '--collect', 'XPlat Code Coverage',
             '--logger', 'trx', '--results-directory', (Join-Path $runDirectory $suite))
-        if ($suite -eq 'PlatformTests') {
+        if ($suite -in @('UnitTests', 'PlatformTests')) {
             $framework = if ($Platform -eq 'windows') { 'net10.0-windows' } else { 'net10.0' }
             $arguments += @('-f', $framework)
         }

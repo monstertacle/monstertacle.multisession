@@ -40,3 +40,15 @@ not provider-name dispatch. No executor interface, runner framework, reverse
 SharpClaw dependency or policy copy was added. Root checked source and tests;
 the two agent reports reviewed the frozen candidate and decision delta, not this
 final implementation. Native Windows and complete coverage acceptance remain open.
+
+Native CI implementation finding: run41041065004 completed 1066 Windows tests,
+then the unchanged inventory guard rejected Monstertacle.Multisession.Linux.
+UnitTests has an actual Host assembly reference but only net10.0, so it brings
+the Host's Linux target into Windows coverage even when its cases are platform
+neutral. The earlier PlatformTests matching-target decision is insufficient for
+the complete coverage inventory. Use the existing PlatformTests multi-target
+pattern for UnitTests too, and select the matching framework for both suites in
+Invoke-Quality. Preserve the strict native inventory, exclusions and threshold.
+Keep both target graphs in the lock file. The observed native CI failure is the
+behavioral Red; archive it before changing project/runner wiring, then rerun
+native suites and native Windows CI. No product runtime or new helper is needed.

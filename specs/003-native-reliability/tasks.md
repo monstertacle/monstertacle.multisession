@@ -11,3 +11,4 @@ Created: 2026-10-30T06:20:36Z
 - [ ] T009 Run full static metrics, native quality/Cover and package consumption.
 - [ ] T010 Repeat native Windows scenarios and inspect safe diagnostics for any recurrence.
 - [ ] T011 Commit/push reviewable work, bind native CI evidence, disposition all findings.
+- [ ] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.

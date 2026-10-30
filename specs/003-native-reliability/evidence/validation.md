@@ -52,6 +52,17 @@ diagnostics remain an explicit tool limitation. The nested-cleanup regression
 first failed with an invented extra ExecutionFailed item; after the narrow fix,
 all five actual-owner tests and the full native suites passed.
 
+After PR3 CI exposed a Linux assembly in Windows coverage, UnitTests now follows
+the existing native multi-target pattern and quality selects its matching target.
+The actual Windows Red and pre-Green state are retained under
+`tdd/native-test-target-*`. Both dependency graphs contain only their corresponding
+platform library. The post-correction Linux receipt is
+`linux-native-test-target-validation.json`, SourceHash
+`c2118349915f323fb7dd9437de26d59a5eef13ed40656f8944e4b6666040a1c5`:
+1060 tests passed, product line coverage 97.7735%, and only the same eight known
+host measurement findings block the full gate. The corrected native Windows
+run remains required; this local graph check is not its substitute.
+
 | Finding | Disposition / verification |
 | --- | --- |
 | Idle store blocked by unrelated managed worker | Corrected inside SqliteWorkQueue; isolated scheduler regression and queue lifecycle/race tests. Does not prove independence of async host continuations or store startup. |
@@ -65,10 +76,12 @@ all five actual-owner tests and the full native suites passed.
 
 ## Required next evidence
 
-T009: resolve coverage scope explicitly and use an explicit comparison base for
-the final Cover diff check. Clean CI checkouts currently have no uncommitted diff;
-their full product coverage does not prove coverage of the PR diff. A green CI
-must not erase the local unmeasured-host finding. Run locked restore/build/format, full
+T009: resolve coverage scope explicitly. The existing Cover configuration already
+uses fixed diff base `4494f9a0749c76975418682113f19f7839340f54`; the earlier concern
+that clean CI would silently check an empty diff was incorrect. PR3 Linux CI
+41041065004 reproduced all eight unmeasured-host violations after passing all
+1060 tests and the product coverage threshold. A later green must not erase this
+finding. Run locked restore/build/format, full
 static check, native suites, coverage, audit and package proof for one final
 SourceHash. T010: run native Windows CI and repeat failing scenario families;
 retain recurrence evidence and use safe stage/native codes to investigate before

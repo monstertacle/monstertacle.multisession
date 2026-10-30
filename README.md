@@ -6,7 +6,7 @@ OpenAI-/Gemini-Adapter sowie Cancel, Stop und Recovery sind implementiert.
 Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
 der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Lokale Pakete 0.1.0
+## Lokale Pakete 0.2.0-alpha.1
 
 Sechs Bibliotheken werden lokal gepackt: `Common`, `Storage.Sqlite`, `Linux`,
 `Windows`, `Providers.OpenAI` und `Providers.Gemini`, jeweils mit dem Präfix
@@ -16,7 +16,7 @@ gesondert festzulegen; hier wird keine Nutzungsfreigabe erfunden.
 
 ```powershell
 dotnet build Monstertacle.Multisession.slnx -c Release --no-restore
-dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.1.0
+dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.2.0-alpha.1
 pwsh -NoProfile -File eng/Test-PackageLayout.ps1
 ```
 

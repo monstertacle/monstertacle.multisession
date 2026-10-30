@@ -36,11 +36,11 @@ $project = @"
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Monstertacle.Multisession.$platformPackage.${platformPackage}StateDirectoryLease" Alias="NativeLease" />
-    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.1.0" />
-    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.1.0" />
-    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.1.0" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.OpenAI" Version="0.1.0" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Gemini" Version="0.1.0" />
+    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.1" />
+    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.1" />
+    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.1" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.OpenAI" Version="0.2.0-alpha.1" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Gemini" Version="0.2.0-alpha.1" />
   </ItemGroup>
 </Project>
 "@

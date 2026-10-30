@@ -2,9 +2,10 @@
 Created: 2026-10-30T01:21:40Z
 
 ## Setup
+- [x] T015 Align unpublished package versions with the required prerelease dependency and verify locked external consumption.
 - [x] T001 Inspect architecture and published dependency; record current source and decisions in analysis.md.
 - [x] T002 Write specification, plan, contracts and acceptance tasks before implementation.
-- [ ] T003 Pin SharpQrs and Cover; validate tool discovery/configuration and package source mapping.
+- [x] T003 Pin SharpQrs and Cover; validate tool discovery/configuration and package source mapping.
 
 ## US1 typed dispatch (depends on T003)
 - [x] T004 Add public request contract stubs and behavioral contract tests; observe and archive real Red.
@@ -13,8 +14,8 @@ Created: 2026-10-30T01:21:40Z
 
 ## US2 compatibility (depends on T006)
 - [x] T013 Fix observed shutdown continuation regression; drain final public dispatcher tasks and test typed/legacy recovery.
-- [ ] T007 Verify all fourteen mappings, token/error behavior, isolation, lifecycle and existing tests.
-- [ ] T008 Update package-only consumption and documentation; verify six packages and transitive dependency.
+- [x] T007 Verify all fourteen mappings, token/error behavior, isolation, lifecycle and existing tests.
+- [x] T008 Update package-only consumption and documentation; verify six packages and transitive dependency.
 
 ## US3 quality (depends on T007)
 - [x] T014 Resolve measured static metric findings through responsibility splits on a green behavioral baseline.

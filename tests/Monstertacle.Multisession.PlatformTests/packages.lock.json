@@ -143,14 +143,14 @@
       "monstertacle.multisession.linux": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.1.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
         }
       },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[0.1.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
         }
       },
       "Microsoft.Data.Sqlite": {
@@ -323,13 +323,13 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[0.1.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
         }
       },
       "monstertacle.multisession.windows": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.1.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
         }
       },
       "Microsoft.Data.Sqlite": {

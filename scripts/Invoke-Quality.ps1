@@ -82,11 +82,14 @@ try {
     $coverConfig | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $nativeConfig -Encoding utf8
     $coverArguments = @('tool', 'run', 'codemetr-csharp-cover', '--', 'check', '--format', 'json',
         '--config', $nativeConfig, '--output', (Join-Path $runDirectory 'codemetr-cover.json'))
-    $reports = @(Get-ChildItem -LiteralPath $runDirectory -Recurse -Filter 'coverage.cobertura.xml' -File)
-    $results = @(Get-ChildItem -LiteralPath $runDirectory -Recurse -Filter '*.trx' -File)
-    if ($reports.Count -ne 4 -or $results.Count -ne 4) { throw 'Expected fresh coverage and results from each of the four suites.' }
-    foreach ($report in $reports) { $coverArguments += @('--reports', $report.FullName) }
-    foreach ($result in $results) { $coverArguments += @('--test-results', $result.FullName) }
+    foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests')) {
+        $suiteDirectory = Join-Path $runDirectory $suite
+        $reports = @(Get-ChildItem -LiteralPath $suiteDirectory -Recurse -Filter 'coverage.cobertura.xml' -File |
+            Group-Object { (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash })
+        $results = @(Get-ChildItem -LiteralPath $suiteDirectory -Filter '*.trx' -File)
+        if ($reports.Count -ne 1 -or $results.Count -ne 1) { throw "Expected one distinct coverage report and one TRX for $suite." }
+        $coverArguments += @('--reports', $reports[0].Group[0].FullName, '--test-results', $results[0].FullName)
+    }
     Invoke-Dotnet $coverArguments
     $cover = Get-Content -Raw -LiteralPath (Join-Path $runDirectory 'codemetr-cover.json') | ConvertFrom-Json
     if (-not $cover.complete -or -not $cover.passed) { throw 'Codemetr Cover did not produce a complete passing gate.' }

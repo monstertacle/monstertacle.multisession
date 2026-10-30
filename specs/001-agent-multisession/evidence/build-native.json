@@ -1,18 +1,18 @@
 {
   "Status": "PASS",
-  "MeasuredUtc": "2026-10-29T22:57:19.8915539+00:00",
-  "Commit": "7489450ddcbade90bffec06a46b9a5e7a86b6ceb",
-  "SourceHash": "dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b",
-  "QualityRun": 40968636580,
-  "GuardRun": 40968636533,
-  "DependencyRun": 40969224192,
+  "MeasuredUtc": "2026-10-29T23:52:54.0798815+00:00",
+  "Commit": "fb1a16771a3ecd0e20bc6103c89c6f3ed2a65b71",
+  "SourceHash": "d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf",
+  "QualityRun": 40974541005,
+  "GuardRun": 40974541014,
+  "DependencyRun": 40975671555,
   "Platforms": [
     {
       "Platform": "linux",
       "Run": {
-        "SourceHash": "dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b",
+        "SourceHash": "d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf",
         "Platform": "linux",
-        "StartedUtc": "2026-10-29T23:48:42.7124886+01:00"
+        "StartedUtc": "2026-10-29T23:38:53.6825935+00:00"
       },
       "Coverage": {
         "Platform": "linux",
@@ -37,7 +37,7 @@
           "Passed": 359,
           "Failed": 0,
           "Executed": 359,
-          "TrxSha256": "563d3f77f7f1695ac1d56e8e2ef1424a92e4f39a23e636c1fb10b4a883938cc7"
+          "TrxSha256": "b0eb1dd96ea586c8d3cf3fb70b7c4eea4d265dbcdc84d3755e1b4d7140279d21"
         },
         {
           "Suite": "ContractTests",
@@ -45,7 +45,7 @@
           "Passed": 241,
           "Failed": 0,
           "Executed": 241,
-          "TrxSha256": "2e27c21fcc9f4dbe077b2eedd1ef76da975ac46f95b8a287b380a5edd35b1212"
+          "TrxSha256": "3fe99a2575d410ec69d1ddca24984b9f4508f450ff2222133dfba633908a8829"
         },
         {
           "Suite": "IntegrationTests",
@@ -53,7 +53,7 @@
           "Passed": 405,
           "Failed": 0,
           "Executed": 405,
-          "TrxSha256": "1172f68ebd2053f4184c37cf5a88946eec9ff7d35d9eb54f57192a7abb9481aa"
+          "TrxSha256": "1c4180d5f60a615079c41f2171c78c62779b19c17feb607eb3d9c9a58e951066"
         },
         {
           "Suite": "PlatformTests",
@@ -61,7 +61,7 @@
           "Passed": 31,
           "Failed": 0,
           "Executed": 31,
-          "TrxSha256": "74257060265505aab24fb4c46f3f633fb105616a76c1d79e69e0b9b594f3b61e"
+          "TrxSha256": "8a99682dda2dfbb3fb0d77d95f2313b5681c8cb6b6e9e7c0f5b11fad7a7a7676"
         }
       ],
       "AuditProjectCount": 11,
@@ -71,8 +71,8 @@
         {
           "Scenario": "deterministic",
           "Status": "PASS",
-          "ElapsedSeconds": 1.4285138,
-          "RunId": "d88f75e4-0e3e-4b6e-9b7d-8e9f21281817",
+          "ElapsedSeconds": 0.5778221,
+          "RunId": "f5709921-7f87-4685-a40e-35fe4e23d8bb",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -80,8 +80,8 @@
         {
           "Scenario": "routing",
           "Status": "PASS",
-          "ElapsedSeconds": 1.9135845,
-          "RunId": "3c96a9b1-77db-4f46-80f9-186a05b04325",
+          "ElapsedSeconds": 1.5044173,
+          "RunId": "e7194843-209e-4422-8ca4-2b859b0ac364",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -89,8 +89,8 @@
         {
           "Scenario": "failures",
           "Status": "PASS",
-          "ElapsedSeconds": 0.6042087,
-          "RunId": "20ed94d5-749e-43d2-b8a1-340aefbffd5d",
+          "ElapsedSeconds": 0.5344724,
+          "RunId": "ce1afb67-9759-4de8-9477-66c69720d6ec",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -98,8 +98,8 @@
         {
           "Scenario": "cancellation",
           "Status": "PASS",
-          "ElapsedSeconds": 0.6109542,
-          "RunId": "4bff59af-d291-4ce8-b254-b14e47ba8802",
+          "ElapsedSeconds": 0.5071291,
+          "RunId": "8275d559-af9c-4a6d-b99d-35119e8b5466",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -107,8 +107,8 @@
         {
           "Scenario": "shutdown",
           "Status": "PASS",
-          "ElapsedSeconds": 1.4718898,
-          "RunId": "03ee5bf7-62a0-4f72-bdc4-e553a6425d67",
+          "ElapsedSeconds": 1.4359137,
+          "RunId": "c52a29a0-e17e-4d94-b821-f996afce62b7",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -116,8 +116,8 @@
         {
           "Scenario": "capacity",
           "Status": "PASS",
-          "ElapsedSeconds": 0.3680224,
-          "RunId": "af3a093f-b257-4bba-8616-760e86b5278e",
+          "ElapsedSeconds": 0.4627388,
+          "RunId": "494f0d55-e934-46fe-8ac3-23357f47b276",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -125,8 +125,8 @@
         {
           "Scenario": "workspace",
           "Status": "PASS",
-          "ElapsedSeconds": 0.366964,
-          "RunId": "642a98e3-8aba-43ac-86cd-024c3f14bc01",
+          "ElapsedSeconds": 0.4393168,
+          "RunId": "8bf31547-a721-4233-bf2d-9a020eba97e8",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -134,8 +134,8 @@
         {
           "Scenario": "extensions",
           "Status": "PASS",
-          "ElapsedSeconds": 0.3392393,
-          "RunId": "d5a8bc13-272f-4ebf-9da7-367c823a802c",
+          "ElapsedSeconds": 0.4767822,
+          "RunId": "0bed531c-29f6-4256-8c59-b5d0caf8f3b4",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -143,8 +143,8 @@
         {
           "Scenario": "recovery",
           "Status": "PASS",
-          "ElapsedSeconds": 4.5012502,
-          "RunId": "128497e3-1a6f-4c15-8dad-e0b740c90446",
+          "ElapsedSeconds": 5.3378973,
+          "RunId": "d6712db3-26bf-48ba-9f7b-b4230ce50e9b",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -152,8 +152,8 @@
         {
           "Scenario": "native-context",
           "Status": "PASS",
-          "ElapsedSeconds": 1.3483913,
-          "RunId": "a4ddb06f-3524-452b-8627-618ddb6f6d33",
+          "ElapsedSeconds": 1.4293845,
+          "RunId": "6fbd0235-05bc-4be3-9bc3-a723dc6d8f09",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -161,8 +161,8 @@
         {
           "Scenario": "isolation",
           "Status": "PASS",
-          "ElapsedSeconds": 0.3129692,
-          "RunId": "5134d53f-7ade-4cce-9e17-3503f195b430",
+          "ElapsedSeconds": 0.3761104,
+          "RunId": "dc157d74-f9b4-46d8-9e89-b72bb0db3605",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -170,8 +170,8 @@
         {
           "Scenario": "embedded-consumer",
           "Status": "PASS",
-          "ElapsedSeconds": 0.4775758,
-          "RunId": "2e6574b3-ee6b-44c9-9fb2-9e03f7b61355",
+          "ElapsedSeconds": 0.5186115,
+          "RunId": "4814ea46-8344-4c80-b817-0539d67ce85a",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -179,8 +179,8 @@
         {
           "Scenario": "retention",
           "Status": "PASS",
-          "ElapsedSeconds": 1.5485303,
-          "RunId": "9bef9df2-6d16-4954-8bb7-a64ab05fda73",
+          "ElapsedSeconds": 1.5037528,
+          "RunId": "59be1832-70d5-4354-8346-7c2ce6a33378",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
@@ -188,15 +188,15 @@
         {
           "Scenario": "limits",
           "Status": "PASS",
-          "ElapsedSeconds": 0.4973638,
-          "RunId": "b7550847-4639-4261-bc26-65beff1f4dda",
+          "ElapsedSeconds": 0.3835705,
+          "RunId": "72a9dad0-9fcd-4617-aaee-5c7b7274c2c7",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Ubuntu 24.04.5 LTS"
         }
       ],
-      "HostAssemblySha256": "53b67cbe6473262e3767a666f04ab9d77cea3acd4837c11aaa98a71a56028465",
-      "ScenarioManifestSha256": "dc0600001d3ad2de786ee220abb59970e1622e5c5b369edb650bdda82c78f141",
+      "HostAssemblySha256": "d1e794191ab5d4caf4fc12411a922f1adb3e3168165396ed1e6cc84e81760f43",
+      "ScenarioManifestSha256": "41f42c281ecfb2d96a7c5437466cd074e210353fa7e6632c74f50f790cd341bb",
       "Consumer": {
         "Status": "PASS",
         "Sessions": 2,
@@ -207,9 +207,9 @@
     {
       "Platform": "windows",
       "Run": {
-        "SourceHash": "dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b",
+        "SourceHash": "d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf",
         "Platform": "windows",
-        "StartedUtc": "2026-10-29T23:49:22.7608222+01:00"
+        "StartedUtc": "2026-10-29T23:39:27.9955616+00:00"
       },
       "Coverage": {
         "Platform": "windows",
@@ -234,7 +234,7 @@
           "Passed": 359,
           "Failed": 0,
           "Executed": 359,
-          "TrxSha256": "86f2f39aefb7eaefaa07d0bab45279fbe62b79b77a5c5616058c206c6739c9bc"
+          "TrxSha256": "70ad9c2b00ff142f7b9e1e12cdbcde6eda447e2eba778a5e1694fdd78938de81"
         },
         {
           "Suite": "ContractTests",
@@ -242,7 +242,7 @@
           "Passed": 241,
           "Failed": 0,
           "Executed": 241,
-          "TrxSha256": "2e57630a433308443a212529b4b7c19216fc313d581e00b73eb8d54680994696"
+          "TrxSha256": "7c17bdc435dae26f8a64ead15446bd9a2e7943f141d3eed3bc449f265783b1c0"
         },
         {
           "Suite": "IntegrationTests",
@@ -250,7 +250,7 @@
           "Passed": 405,
           "Failed": 0,
           "Executed": 405,
-          "TrxSha256": "765dff68309125795cca9d8ae7a93cce4cac25d944ca45c1f2be890b100bcdc3"
+          "TrxSha256": "f08f28a3bee8bbb8ed27d6b0e0cecb4006b7124fdd060b754ff95c27412dfc29"
         },
         {
           "Suite": "PlatformTests",
@@ -258,7 +258,7 @@
           "Passed": 37,
           "Failed": 0,
           "Executed": 37,
-          "TrxSha256": "8dd5b645bb3d9ac340003177844e338fdf2b0403c2a4a51daa44d869cf22c64d"
+          "TrxSha256": "ddf10721e45b6c7aa1b50a0beca1eba31524520533e919ebe833beece1c7dc1f"
         }
       ],
       "AuditProjectCount": 11,
@@ -268,8 +268,8 @@
         {
           "Scenario": "deterministic",
           "Status": "PASS",
-          "ElapsedSeconds": 4.8773955,
-          "RunId": "642b4ff0-b8b0-41f3-bcd5-ef14857f9bfb",
+          "ElapsedSeconds": 5.346088,
+          "RunId": "d0f38ee3-9723-4feb-bdd9-26843d080d99",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -277,8 +277,8 @@
         {
           "Scenario": "routing",
           "Status": "PASS",
-          "ElapsedSeconds": 19.8951052,
-          "RunId": "d449ee72-6d11-4fd5-ada4-bd3e3505fc98",
+          "ElapsedSeconds": 37.4096446,
+          "RunId": "06527b39-f5e5-4ecf-822f-deea05958855",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -286,8 +286,8 @@
         {
           "Scenario": "failures",
           "Status": "PASS",
-          "ElapsedSeconds": 2.7799694,
-          "RunId": "b4030ce0-6d75-428c-abbf-40983e8ee04b",
+          "ElapsedSeconds": 12.6148229,
+          "RunId": "219a3904-2d7d-47e2-a8c6-351ab62cb02d",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -295,8 +295,8 @@
         {
           "Scenario": "cancellation",
           "Status": "PASS",
-          "ElapsedSeconds": 0.7786013,
-          "RunId": "2df09506-97ed-40a2-a9bb-7b53a6092b4f",
+          "ElapsedSeconds": 2.0121688,
+          "RunId": "52e81a54-0d80-4b44-80b9-5c3d90640148",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -304,8 +304,8 @@
         {
           "Scenario": "shutdown",
           "Status": "PASS",
-          "ElapsedSeconds": 1.8665432,
-          "RunId": "86e2fdab-7258-41c2-a39d-e667cf40ba22",
+          "ElapsedSeconds": 1.8471757,
+          "RunId": "4b123599-1681-4c5a-af99-ad089deccd40",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -313,8 +313,8 @@
         {
           "Scenario": "capacity",
           "Status": "PASS",
-          "ElapsedSeconds": 2.0151377,
-          "RunId": "29af9fc2-e304-43bd-81d2-c8124e00e32e",
+          "ElapsedSeconds": 3.6343368,
+          "RunId": "f3cdd3f1-5060-48f9-901f-2f0869a2bdaa",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -322,8 +322,8 @@
         {
           "Scenario": "workspace",
           "Status": "PASS",
-          "ElapsedSeconds": 1.210213,
-          "RunId": "0bbac3da-0474-4d93-a1bf-4a4eb1712ea1",
+          "ElapsedSeconds": 1.7926605,
+          "RunId": "f2153800-e4cf-4a5f-a3ef-10bb6c86055d",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -331,8 +331,8 @@
         {
           "Scenario": "extensions",
           "Status": "PASS",
-          "ElapsedSeconds": 1.1347074,
-          "RunId": "ce0107e5-b508-4c81-bac3-4207ad90b6e3",
+          "ElapsedSeconds": 1.7162143,
+          "RunId": "2b01a568-6441-4e03-ad17-ddf5802517f7",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -340,8 +340,8 @@
         {
           "Scenario": "recovery",
           "Status": "PASS",
-          "ElapsedSeconds": 14.9224009,
-          "RunId": "dc4a0da4-947b-4058-9d3c-cab6c476ca7a",
+          "ElapsedSeconds": 77.5620834,
+          "RunId": "480633fa-117f-4cb6-8e7a-25ffeba626c7",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -349,8 +349,8 @@
         {
           "Scenario": "native-context",
           "Status": "PASS",
-          "ElapsedSeconds": 2.52644,
-          "RunId": "e45f1720-4d7d-49e1-a0bb-fff771b2bcae",
+          "ElapsedSeconds": 2.4442506,
+          "RunId": "9408c0a7-78de-4704-91da-216d23e007e2",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -358,8 +358,8 @@
         {
           "Scenario": "isolation",
           "Status": "PASS",
-          "ElapsedSeconds": 1.1144622,
-          "RunId": "9ca9caa6-6a5a-436e-bb61-05b3b6f9e781",
+          "ElapsedSeconds": 1.6553272,
+          "RunId": "7b20e29d-c2b1-452c-a329-352d2cfcb10c",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -367,8 +367,8 @@
         {
           "Scenario": "embedded-consumer",
           "Status": "PASS",
-          "ElapsedSeconds": 1.687924,
-          "RunId": "0b972e28-f6d3-4adc-bf94-38f7b68fb576",
+          "ElapsedSeconds": 1.5342472,
+          "RunId": "b0490c96-b682-4545-92c2-85ce0879b51a",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -376,8 +376,8 @@
         {
           "Scenario": "retention",
           "Status": "PASS",
-          "ElapsedSeconds": 2.1689154,
-          "RunId": "56e9fa56-3be0-443e-958c-2ca17b971215",
+          "ElapsedSeconds": 2.0478225,
+          "RunId": "799afb7e-ec74-4f58-a848-a0c44ae917ed",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
@@ -385,15 +385,15 @@
         {
           "Scenario": "limits",
           "Status": "PASS",
-          "ElapsedSeconds": 1.0447228,
-          "RunId": "1662e55b-4e45-4d2a-9fa0-793171b1554d",
+          "ElapsedSeconds": 1.0075783,
+          "RunId": "226cbd44-3c72-4fd6-8e8c-5a68b19cdb94",
           "RuntimeVersion": "10.0.14",
           "SqliteVersion": "3.53.3",
           "OperatingSystem": "Microsoft Windows 10.0.26100"
         }
       ],
-      "HostAssemblySha256": "c91f5b27f899c0db7a9c742dd14c8ee5519ea0e5545d592b799ecfe6d0a48a59",
-      "ScenarioManifestSha256": "f08abbe5b0727f956f94e5aba2e79db1ccc4a53463fe7103631fdc3f68eba43a",
+      "HostAssemblySha256": "96147ac03783c554809ffa62af7e09131296f6fa1722ef97cc9fccec68021e30",
+      "ScenarioManifestSha256": "bd10674001f4b3dd724eb1d690f0d5430ac7269d799319374cdb99bbc9eaa4af",
       "Consumer": {
         "Status": "PASS",
         "Sessions": 2,

@@ -721,3 +721,22 @@ nicht als PASS ausgegeben. Auch die überholten Stunden40966982835/40968636523 s
 abgebrochen; neue Stunde erst nach Korrektur und neuer Sourcehashmessung.
 Stundencheckpoint40962572280 inzwischen tatsächlich auf beiden OS erfolgreich,
 weiterhin kein Ersatz für späteren Lieferstand. Kein neuer Library-/Lock-/SQLvertrag.
+
+## Eingefrorener technischer Stand nach nativer Gegenprüfung
+
+Messquelle build-native.json,2026-10-29T23:52:54.0798815Z. Codecommitfb1a167,
+Source d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf.
+Quality40974541005, Guard40974541014 und Audit40975671555 erfolgreich;
+zusätzlicher PRlauf40974638685/Guard40974638699 erfolgreich. Entwurfs-PR1 geöffnet,
+kein Merge. Ubuntu1036Tests/97,5796 %, Server1042Tests/97,5325 %, je14publizierte
+native Szenarien, identischer kanonischer Sechserarchivsatz auf beiden Konsumenten.
+T125/T126 nach zwei echten Kernelrotfällen und600nativenRecoveryzyklen beziehungsweise
+405unveränderten jetzt isolierten Integrationfällen auf beiden OS geschlossen.
+Aktueller Einstieg evidence/delivery-candidate.md; frühere Quellstände sind Checkpoints.
+
+Nur Belege/Planakten werden nach diesem Codefreeze aktualisiert. Reale Stunden
+40974541000 laufen noch, Ubuntu-Schrittstart23:41:17Z und Server23:45:37Z laut
+GitHub, noch kein PASS. Endgültige Roh-/Hosthash-/SQLite-/Receiptprüfung folgt
+nach tatsächlichem Ende. T100 bleibt selbst dann wegen fehlendem Win11 offen.
+T124 kann nach beiden neuen tatsächlich verifizierten Stunden geschlossen werden.
+Übrige externe Abnahmen/Ownerentscheidungen bleiben in remaining-acceptance.md.

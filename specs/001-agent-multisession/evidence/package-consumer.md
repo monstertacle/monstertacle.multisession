@@ -1,5 +1,14 @@
 # Tatsächlicher Konsum lokaler NuGets
 
+Aktueller technischer Kandidat nach T125/T126: **fb1a167 / Source d51bf9f9...**,
+native Gesamt-/Paket-/Guard-/Auditprüfungen erfolgreich. Verbindlicher aktueller
+Index mit vollständigem Sourcehash, ausgewähltem Paketartefakt, Laufnummern und
+Abnahmegrenzen: [delivery-candidate.md](delivery-candidate.md),
+[build-native.json](build-native.json), [canonical-package-final.json](canonical-package-final.json).
+Die älteren Zahlen/Quellstände in den folgenden Abschnitten bleiben historische
+Checkpoints; sie ersetzen diesen aktuellen Bericht nicht. Die reale finale Stunde
+und fehlenden externen Freigaben bleiben separat ausgewiesen.
+
 Finaler technischer Kandidat7489450 mit Source dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b:
 quality40968636580 vollständig grün; [canonical-package-final.json](canonical-package-final.json)
 enthält beide vollständigen Consumerreports und verifizierten gemeinsamen

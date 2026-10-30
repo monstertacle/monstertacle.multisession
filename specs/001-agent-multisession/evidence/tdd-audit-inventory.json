@@ -1,7 +1,7 @@
 {
-  "MeasuredUtc": "2026-10-29T22:33:54.9028544+00:00",
+  "MeasuredUtc": "2026-10-30T00:02:53.2384116+00:00",
   "Scope": "Existing local red/green logs, TRX, source manifests and red-source archives only; inventory is not a claim of complete historical source reconstruction.",
-  "Count": 468,
+  "Count": 474,
   "Files": [
     {
       "Path": "artifacts/tdd/admission-certainty-green/_big_2026-10-29_08_00_52_net10.0.trx",
@@ -1492,6 +1492,36 @@
       "Sha256": "7fd952965f106894b9494c4f87821cbbadb12288cdc77f729211a494316a782d"
     },
     {
+      "Path": "artifacts/tdd/process-exit-green-windows-failure.log",
+      "Bytes": 30060,
+      "LastWriteUtc": "2026-10-29T23:30:56.9168156Z",
+      "Sha256": "02d933530eae5a7d91915d6ec787d8049c284bee11ba0e19442ae695db5bea37"
+    },
+    {
+      "Path": "artifacts/tdd/process-exit-green-windows-job.log",
+      "Bytes": 215,
+      "LastWriteUtc": "2026-10-29T23:28:36.5320074Z",
+      "Sha256": "7d18d4dbb525636141c6c1443fd4f1d91841cdb854b399b7ca3c238c2c7df260"
+    },
+    {
+      "Path": "artifacts/tdd/process-exit-native-regression-red.log",
+      "Bytes": 29435,
+      "LastWriteUtc": "2026-10-29T23:19:59.2235510Z",
+      "Sha256": "b4d026278cb0a40505677a9e0225747ac9b225ff270923a41fc26b7a8316b531"
+    },
+    {
+      "Path": "artifacts/tdd/process-exit-red-source/head.txt",
+      "Bytes": 41,
+      "LastWriteUtc": "2026-10-29T23:16:18.5657077Z",
+      "Sha256": "9fba00d9728a7e17eba0ac6acdfc1fcaf602fcd45e949f4679a4613d54c17ecc"
+    },
+    {
+      "Path": "artifacts/tdd/process-exit-red-source/untracked.tar",
+      "Bytes": 40960,
+      "LastWriteUtc": "2026-10-29T23:16:18.5737082Z",
+      "Sha256": "701e06cbbcf0184068388667508386bc295040de7d39d8e41aa20ebcd157452d"
+    },
+    {
       "Path": "artifacts/tdd/provider-failure-green.log",
       "Bytes": 811,
       "LastWriteUtc": "2026-10-29T15:14:17.9988500Z",
@@ -2792,6 +2822,12 @@
       "Bytes": 3747,
       "LastWriteUtc": "2026-10-29T17:25:50.3787610Z",
       "Sha256": "b33156ee593a8e6afe3d590ecd3dc0354c2033e6e642443cc497ba980d33c1be"
+    },
+    {
+      "Path": "artifacts/tdd/windows-process-exit-native-red-source.sha256",
+      "Bytes": 123,
+      "LastWriteUtc": "2026-10-29T23:10:22.7993907Z",
+      "Sha256": "9b50700ad703595cab15769e3a00871b8dba42d12415a3ee6ca004e2a9217190"
     },
     {
       "Path": "artifacts/tdd/windows-process-recovery-native-first-green.log",

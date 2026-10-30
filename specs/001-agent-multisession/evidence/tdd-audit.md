@@ -33,3 +33,26 @@ Originalarchive; falls nicht wiederherstellbar, ausdrücklich zuständige Entsch
 über den begrenzten historischen Befund vor Freigabe. Keine solche Entscheidung
 liegt vor. Q-06 und T110 bleiben gesperrt; T107 als Audit ist durchgeführt.
 
+
+## Aktueller Ergänzungsabgleich
+
+Das ursprüngliche Inventar mit468Einträgen ist unverändert unter
+tdd-audit-inventory-20261029.json erhalten. Neuer eigener Inventarlauf gemessen
+2026-10-30T00:02:53.2384116Z:474tatsächlich vorhandene passende lokale TDDartefakte;
+Scope/Filter stehen ausdrücklich im JSON. Separate native TRX-/Diagnoseartefakte
+sind zusätzlich in ihren spezifischen versionierten Hashreports gebunden, nicht
+als vollständig in diesem lokalen Teilinventar enthalten behauptet.
+
+T125 hat nun ein zusätzliches vollständiges natives Red vor Green:
+windows-process-exit-regression-red.json nennt beide Testkennungen, Originalzeiten
+vor der Greenänderung, Source b1537f7d..., Gitkopf6c03cbd und den TRXdigest.
+Nachher sind600nativeKill/Reopens und1200Kernelchecks sowie die vollständigen
+nativen Gesamtprüfungen am Source d51bf9f9... grün. T126 ist eine offengelegte
+Testausführungskonfiguration, keine neue Produktfachlogik: ursprünglicher nativer
+Fehler vor Änderung gesichert; dieselben405Assertions auf beiden OS bestanden,
+TRX-Timeline bestätigt Isolation. Kein künstlicher Attributtest oder Infrastructure-
+Red als Fachbeweis. Diese Ergänzungen beheben nicht die initiale Q06-Archivlücke.
+Die zusätzliche Suche in verfügbaren lokalen Projekt-/Temporärarchiven lieferte
+keinen vollständigen ursprünglichen Sourcearchivsatz für alle ersten Iterationen.
+Nur tatsächliche Originalbelege oder eine zuständige begrenzte Entscheidung können
+T123 schließen; keine nachträgliche Rekonstruktion wird als damaliger Testlauf ausgegeben.

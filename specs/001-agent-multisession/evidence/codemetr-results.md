@@ -1,5 +1,14 @@
 # T102: vollständiger Codemetr-Nachweis
 
+Aktueller technischer Kandidat nach T125/T126: **fb1a167 / Source d51bf9f9...**,
+native Gesamt-/Paket-/Guard-/Auditprüfungen erfolgreich. Verbindlicher aktueller
+Index mit vollständigem Sourcehash, ausgewähltem Paketartefakt, Laufnummern und
+Abnahmegrenzen: [delivery-candidate.md](delivery-candidate.md),
+[build-native.json](build-native.json), [canonical-package-final.json](canonical-package-final.json).
+Die älteren Zahlen/Quellstände in den folgenden Abschnitten bleiben historische
+Checkpoints; sie ersetzen diesen aktuellen Bericht nicht. Die reale finale Stunde
+und fehlenden externen Freigaben bleiben separat ausgewiesen.
+
 Messstand 2026-10-29T22:48:18Z. Genehmigung: [codemetr-approval.md](codemetr-approval.md).
 SDK 10.0.403, lokales Werkzeug Codemetr.CSharp.Tool 0.1.0.
 Befehl vom Repositoryroot: `dotnet tool run codemetr-csharp -- check --format json`,
@@ -43,3 +52,14 @@ die5309 Tooldiagnosen sind keine5309 SDK-Buildfehler. Diese bekannte Werkzeuggre
 wird weder per Baseline noch Upgrade/Scopeverkleinerung versteckt. Der Bericht ist
 das tatsächliche genehmigte0.1.0-Guardurteil, kein weitergehender Qualitätsbeweis.
 
+
+Aktueller vollständiger Check am eingefrorenen fb1a167: 442 Dateien/459 Typen,
+0 Regelverstöße/Parsefehler/Skips auf beiden nativen CI-Systemen. Quelle/Beleg:
+delivery-candidate.md, Guard40974541014; lokaler Rohbericht
+artifacts/tdd/native-io-isolation-codemetr.json. Die bekannte interne Semantikgrenze
+beträgt hier5313 Diagnosen bei unverändertem platform-references-only-Scope;
+unmeasuredPartialDeclarations/inactiveFiles/contextFilesWithLimits weiter leer.
+Die früheren5309/5310-Werte bezeichnen frühere Quellstände, keine plötzlich
+aufgetretenen SDK-Compilerfehler. Materialisierte NuGetkonsumenten werden zusätzlich
+explizit separat gemessen (eine Datei/zwei Typen), ebenso die externe Mountsonde
+(eine Datei/ein Typ); beides ohne Regelverstöße/Parsefehler/Skips.

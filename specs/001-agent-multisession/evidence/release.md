@@ -1,5 +1,14 @@
 # T110: Freigabematrix
 
+Aktueller technischer Kandidat nach T125/T126: **fb1a167 / Source d51bf9f9...**,
+native Gesamt-/Paket-/Guard-/Auditprüfungen erfolgreich. Verbindlicher aktueller
+Index mit vollständigem Sourcehash, ausgewähltem Paketartefakt, Laufnummern und
+Abnahmegrenzen: [delivery-candidate.md](delivery-candidate.md),
+[build-native.json](build-native.json), [canonical-package-final.json](canonical-package-final.json).
+Die älteren Zahlen/Quellstände in den folgenden Abschnitten bleiben historische
+Checkpoints; sie ersetzen diesen aktuellen Bericht nicht. Die reale finale Stunde
+und fehlenden externen Freigaben bleiben separat ausgewiesen.
+
 Erstellt 2026-10-29T22:50:59Z, gemessene UTC; ausführende Sitzung als Selbstprüfer.
 **KEINE PRODUKTFREIGABE.** Bewertung durch Projektverantwortlichen/benannten Reviewer
 steht aus. T110 bleibt offen. Technischer Kandidat 7489450 / Sourcehash
@@ -82,3 +91,17 @@ intermittierenden Windows-Besitzbefund T125. Ein erfolgreicher späterer Lauf
 beseitigt nicht den fehlenden Ursachen-/Regressionsnachweis; review.md nennt
 fehlgeschlagenen und erfolgreichen Lauf mit identischem Sourcehash.
 
+
+## Aktueller Gateabgleich nach T125/T126
+
+Messquelle build-native.json, geprüft2026-10-29T23:52:54.0798815Z;
+Codecommitfb1a167 / vollständiger Sourcehash in delivery-candidate.md.
+FR-/SC-Matrixzeilen wurden gegen diesen tatsächlichen nativen Stand erneut
+abgeglichen. Q01 technisch PASS442Dateien/459Typen; Q02 technische Build-/Coverage-/
+Auditprüfungen PASS97,5796/97,5325 %, Distributionsentscheidung weiter offen.
+Q03 hat jetzt behobene T125/T126 samt nativer Gegenprüfung; fehlendes Win11 und
+vollständige Dreisystemstunde bleiben eigenständig offen. Q04 bleibt NOT RUN,
+Q05 hat gleichen kanonischen Paketstand auf beiden OS, fremder Integrator fehlt.
+Q06 bleibt wegen ursprünglicher voller Redquellarchivlücke offen. Keine genehmigte
+Ausnahme oder Produktfreigabe. Aktueller ausgewählter Sechserarchivsatz ausschließlich
+aus quality40974541005; spätere Belegcommits wählen keine anderen Paketbytes aus.

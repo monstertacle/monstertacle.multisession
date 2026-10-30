@@ -1,5 +1,14 @@
 # T108: Sicherheits- und Architekturreview
 
+Aktueller technischer Kandidat nach T125/T126: **fb1a167 / Source d51bf9f9...**,
+native Gesamt-/Paket-/Guard-/Auditprüfungen erfolgreich. Verbindlicher aktueller
+Index mit vollständigem Sourcehash, ausgewähltem Paketartefakt, Laufnummern und
+Abnahmegrenzen: [delivery-candidate.md](delivery-candidate.md),
+[build-native.json](build-native.json), [canonical-package-final.json](canonical-package-final.json).
+Die älteren Zahlen/Quellstände in den folgenden Abschnitten bleiben historische
+Checkpoints; sie ersetzen diesen aktuellen Bericht nicht. Die reale finale Stunde
+und fehlenden externen Freigaben bleiben separat ausgewiesen.
+
 Prüfung 2026-10-29T22:50:59Z durch die ausführende Gesamtimplementierungssitzung.
 **Ausdrückliche Selbstprüfung**, kein unabhängiger Reviewer behauptet.
 Quellstand 7489450 / Sourcehash
@@ -35,3 +44,18 @@ des intermittierenden Fehlers. Rohlog artifacts/tdd/windows-recovery-40966955521
 Kein Produktfix ohne Reproduktion, keine Behauptung, Probenisolation habe diesen
 späteren Befund beseitigt. T125/remaining-acceptance.md sperrt endgültige Q03-Abnahme.
 
+
+## Disposition T125/T126 am eingefrorenen Kandidaten
+
+Nach den früheren offenen Zwischenständen sind beide konkreten Befunde abgeschlossen:
+T125 mit zwei tatsächlich vor Green roten Kernelassertions, anschließend600nativen
+Kill/Reopenzyklen und1200positiven Signalprüfungen; T126 mit405unveränderten Fällen
+und gemessener Isolation auf beiden OS. Produkt-Ownershipregeln, Fristen und
+szenariointerne Parallelität blieben erhalten. Native Gesamtchecks40974541005 und
+PR-Gegenprüfung40974638685 bestanden. Ein vorheriger Fullrun203fbcf... bestand nach
+Wiederholung ebenfalls; ursprüngliche Fehler bleiben als Versuch1 mit ihren echten
+TRX-Belegen gesichert, werden nicht aus der Historie entfernt. Die Isolation wird
+als kontrollierte Testvoraussetzung und tatsächlich geprüftes Verhalten begründet,
+nicht als forensischer Beweis einer bestimmten Runner-/Hardwareursache.
+Die Kernelbarriere betrifft ausschließlich Test-/ValidationHostcode, keine ausgelieferte
+Bibliothek. Übrige externe Abnahmebefunde bleiben in remaining-acceptance.md offen.

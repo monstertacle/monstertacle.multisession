@@ -18,6 +18,14 @@ internal sealed class RuntimeOperations : IDisposable
                 linked.Token.ThrowIfCancellationRequested();
                 return await operation(linked.Token);
             });
+            return Track(task);
+        }
+    }
+
+    internal Task<T> Track<T>(Task<T> task)
+    {
+        lock (_gate)
+        {
             _pending.Add(task);
             _ = task.ContinueWith(completed =>
             {

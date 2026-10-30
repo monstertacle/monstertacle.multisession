@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Cqrs;
 using Monstertacle.Multisession.Recovery;
 using Monstertacle.Multisession.Requests;
 using Monstertacle.Multisession.Sessions;
@@ -14,8 +15,11 @@ internal static class RuntimePreparation
         await new RecoveryCoordinator(host.Store, host.Providers, options, host.Clock).PrepareAsync(token);
         RequestAdmission admission = new(host.Store, options, host.Clock);
         RecoveryService recovery = new(host.Store, host.Providers, options);
-        return new(new RuntimeSessions(lifetime, catalog), new RuntimeRequests(lifetime, admission, host.Diagnostics),
-            new RuntimeRecovery(lifetime, recovery), new(host.Store, host.Providers, options, host.Clock, host.Diagnostics), options,
+        RuntimeFacades ports = new(new RuntimeSessions(lifetime, catalog), new RuntimeRequests(lifetime, admission, host.Diagnostics),
+            new RuntimeRecovery(lifetime, recovery));
+        RuntimeDispatch dispatch = RuntimeDispatch.Create(ports, lifetime);
+        RuntimeFacades facades = new(new CqrsSessions(dispatch), new CqrsRequests(dispatch), new CqrsRecovery(dispatch));
+        return new(facades, dispatch, new(host.Store, host.Providers, options, host.Clock, host.Diagnostics), options,
             new(host.Store, host.Diagnostics));
     }
 }

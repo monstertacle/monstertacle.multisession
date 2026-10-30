@@ -31,9 +31,15 @@ beschreiben Fristen, Reservierungen, Diagnose und sichere Wiederaufnahme.
 
 ## Entwicklungsumgebung und Prüfungen
 
+CQRS ist über `Monstertacle.SharpQrs` **0.2.0-alpha.1** eingebunden.
+`SessionRuntime.Commands` und `SessionRuntime.Queries` bieten nach dem Start typisierte
+asynchrone Operationen. Die bisherigen Ports bleiben kompatibel und durchlaufen dieselben
+Dispatcher. [CQRS-Vertrag und Beispiele](docs/cqrs.md), [SpecKit-Feature](specs/002-sharpqrs-cqrs/spec.md).
+
 - .NET SDK **10.0.403** gemäß `global.json`, kein implizites Roll-forward.
 - PowerShell 7 (`pwsh`), Git und NuGet-Zugriff; kein Python.
 - Genehmigtes lokales `Codemetr.CSharp.Tool` **0.1.0**; keine Debt-Baseline.
+- Repositorylokales `Codemetr.CSharp.Cover.Tool` **0.1.1**; Konfiguration in `codemetr-cover.json`.
 - Mindestens **87 %** Zeilenabdeckung des gesamten nativen Produktumfangs je Plattform.
 
 Vom Projektroot:
@@ -47,6 +53,14 @@ dotnet tool run codemetr-csharp -- check --format json
 
 Auf einem nativen Linuxhost `-Platform linux` verwenden. Die Prüfungen dürfen nicht
 durch einen bloßen TFM-Wechsel auf einem anderen Betriebssystem ersetzt werden.
+Die Qualitätsprüfung führt Codemetr Cover auf den frischen Cobertura-/TRX-Dateien aller
+vier Testsuiten aus und verlangt `complete: true`. Neben dem nativen 87-%-Gate prüft
+Cover mindestens 87 % des gesamten nativen Bibliothekscodes einschließlich ungemessener Zeilen
+mit null Treffern sowie die unveränderten Standardgrenzen für Diff-Coverage und CRAP.
+Ausgenommen sind Build-Artefakte und das separate Validierungsprogramm. Der Lauf erzeugt
+`cover-native-config.json` und nimmt genau die fremde Plattform aus; sie wird zwingend
+im jeweils anderen nativen CI-Lauf geprüft. Alle gemeinsamen Bibliotheken bleiben enthalten.
+Berichte liegen unter `artifacts/quality/<plattform>/<lauf>/`.
 Ausführliche Regeln stehen in [AGENTS.md](AGENTS.md), der
 [Constitution](.specify/memory/constitution.md) und im
 [Quickstart](specs/001-agent-multisession/quickstart.md).

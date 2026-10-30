@@ -15,6 +15,11 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
     private volatile RuntimeState _state;
 
     internal bool IsRunning => _state == RuntimeState.Running;
+    internal Task<T> TrackDispatch<T>(Func<Task<T>> dispatch)
+    {
+        // Register the final public task before stop can take its drain snapshot.
+        lock (_gate) { return _shutdown.Operations.Track(dispatch()); }
+    }
     internal RuntimeComponents Components => _components ?? throw Error(ErrorCode.InvalidConfiguration);
     internal Task Completion => _completion;
 
@@ -85,19 +90,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
     {
         try
         {
-            while (!_stop!.IsCancellationRequested)
-            {
-                try
-                {
-                    if (await Components.Dispatcher.TryDispatchAsync(_stop.Token)) { continue; }
-                    await _signal!.WaitAsync(RuntimeDefaults.SchedulerPollInterval, _stop.Token);
-                }
-                catch (OperationCanceledException) when (_stop.IsCancellationRequested) { break; }
-                catch (SessionOperationException failure) when (failure.Failure.RequestId is not null && failure.Failure.Code != ErrorCode.StorageUnavailable)
-                {
-                    // A persisted local request failure is observable through request/recovery reads.
-                }
-            }
+            await RuntimeWorker.RunAsync(Components.Dispatcher, _signal!, _stop!.Token);
         }
         catch (Exception)
         {

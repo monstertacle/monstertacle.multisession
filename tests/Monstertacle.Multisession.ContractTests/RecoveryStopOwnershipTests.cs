@@ -1,5 +1,6 @@
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ContractTests.Fixtures;
+using Monstertacle.Multisession.Cqrs;
 using Monstertacle.Multisession.UnitTests.Fixtures;
 using Xunit;
 using static Monstertacle.Multisession.ContractTests.Fixtures.RuntimeTestComposition;
@@ -11,9 +12,11 @@ public sealed class RecoveryStopOwnershipTests
 {
     /// <summary>Neither an uncooperative inspect nor reopen can outlive local runtime cleanup.</summary>
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task StopCancelsRecoveryWithoutPublishingLateEvidence(bool resolve)
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task StopCancelsRecoveryWithoutPublishingLateEvidence(bool resolve, bool typed)
     {
         TaskCompletionSource entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         TaskCompletionSource finish = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -37,8 +40,11 @@ public sealed class RecoveryStopOwnershipTests
         await using TestStateDirectoryLease lease = new(Options().StateDirectory);
         await using SessionRuntime runtime = new(scenario.Store, lease, [new("registered-adapter", "test-adapter", 1, provider)], []);
         await runtime.StartAsync(Options(), CancellationToken.None);
-        Task operation = resolve ? runtime.Recovery.ResolveRecoveryAsync(scenario.Decision(), CancellationToken.None).AsTask()
-            : runtime.Recovery.InspectRecoveryAsync(scenario.Case.Target, CancellationToken.None).AsTask();
+        Task operation = typed
+            ? resolve ? runtime.Commands.DispatchAsync(new ResolveRecoveryCommand(scenario.Decision()))
+                : runtime.Queries.DispatchAsync(new InspectRecoveryQuery(scenario.Case.Target))
+            : resolve ? runtime.Recovery.ResolveRecoveryAsync(scenario.Decision(), CancellationToken.None).AsTask()
+                : runtime.Recovery.InspectRecoveryAsync(scenario.Case.Target, CancellationToken.None).AsTask();
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
         try
         {

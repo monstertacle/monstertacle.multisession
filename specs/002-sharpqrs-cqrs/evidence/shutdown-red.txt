@@ -1,0 +1,25 @@
+  Determining projects to restore...
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj (in 332 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj (in 332 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj (in 332 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj (in 332 ms).
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/bin/Debug/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/bin/Debug/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/bin/Debug/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.ContractTests -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/bin/Debug/net10.0/Monstertacle.Multisession.ContractTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/bin/Debug/net10.0/Monstertacle.Multisession.ContractTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.38]     Monstertacle.Multisession.ContractTests.RecoveryStopOwnershipTests.StopCancelsRecoveryWithoutPublishingLateEvidence(resolve: True, typed: True) [FAIL]
+  Failed Monstertacle.Multisession.ContractTests.RecoveryStopOwnershipTests.StopCancelsRecoveryWithoutPublishingLateEvidence(resolve: True, typed: True) [3 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at Monstertacle.Multisession.ContractTests.RecoveryStopOwnershipTests.StopCancelsRecoveryWithoutPublishingLateEvidence(Boolean resolve, Boolean typed) in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/RecoveryStopOwnershipTests.cs:line 52
+   at Monstertacle.Multisession.ContractTests.RecoveryStopOwnershipTests.StopCancelsRecoveryWithoutPublishingLateEvidence(Boolean resolve, Boolean typed) in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/RecoveryStopOwnershipTests.cs:line 63
+   at Monstertacle.Multisession.ContractTests.RecoveryStopOwnershipTests.StopCancelsRecoveryWithoutPublishingLateEvidence(Boolean resolve, Boolean typed) in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/RecoveryStopOwnershipTests.cs:line 63
+   at Monstertacle.Multisession.ContractTests.RecoveryStopOwnershipTests.StopCancelsRecoveryWithoutPublishingLateEvidence(Boolean resolve, Boolean typed) in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/RecoveryStopOwnershipTests.cs:line 63
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:     3, Skipped:     0, Total:     4, Duration: 127 ms - Monstertacle.Multisession.ContractTests.dll (net10.0)

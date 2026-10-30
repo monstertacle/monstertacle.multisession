@@ -15,7 +15,7 @@ function Invoke-Dotnet([string[]]$Arguments) {
 
 function Get-SourceHash {
     $files = @(Get-Item -Force global.json, Directory.Build.props, Directory.Packages.props, .editorconfig,
-        Monstertacle.Multisession.slnx, codemetr.json, .config/dotnet-tools.json, README.md)
+        Monstertacle.Multisession.slnx, codemetr.json, codemetr-cover.json, .config/dotnet-tools.json, README.md)
     $files += @(Get-ChildItem src, tests, examples, scripts, eng, .github/workflows -Recurse -File |
         Where-Object {
             ($_.FullName -notmatch '[\\/](bin|obj|TestResults)[\\/]') -and
@@ -73,6 +73,24 @@ try {
     $summary | Set-Content (Join-Path $runDirectory 'coverage-summary.json') -Encoding utf8
     Write-Output "Quality artifacts: $runDirectory"
     if ($coverageExitCode -ne 0) { throw 'Product coverage did not pass; release remains blocked.' }
+    Invoke-Dotnet @('tool', 'restore')
+    # Match the native product inventory; the foreign library is required in its own native CI.
+    $foreignPlatform = if ($Platform -eq 'linux') { 'Windows' } else { 'Linux' }
+    $coverConfig = Get-Content -Raw -LiteralPath codemetr-cover.json | ConvertFrom-Json -AsHashtable
+    $coverConfig.exclude += "src/Monstertacle.Multisession.$foreignPlatform/**"
+    $nativeConfig = Join-Path $runDirectory 'cover-native-config.json'
+    $coverConfig | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $nativeConfig -Encoding utf8
+    $coverArguments = @('tool', 'run', 'codemetr-csharp-cover', '--', 'check', '--format', 'json',
+        '--config', $nativeConfig, '--output', (Join-Path $runDirectory 'codemetr-cover.json'))
+    $reports = @(Get-ChildItem -LiteralPath $runDirectory -Recurse -Filter 'coverage.cobertura.xml' -File)
+    $results = @(Get-ChildItem -LiteralPath $runDirectory -Recurse -Filter '*.trx' -File)
+    if ($reports.Count -ne 4 -or $results.Count -ne 4) { throw 'Expected fresh coverage and results from each of the four suites.' }
+    foreach ($report in $reports) { $coverArguments += @('--reports', $report.FullName) }
+    foreach ($result in $results) { $coverArguments += @('--test-results', $result.FullName) }
+    Invoke-Dotnet $coverArguments
+    $cover = Get-Content -Raw -LiteralPath (Join-Path $runDirectory 'codemetr-cover.json') | ConvertFrom-Json
+    if (-not $cover.complete -or -not $cover.passed) { throw 'Codemetr Cover did not produce a complete passing gate.' }
+    if ((Get-SourceHash) -ne $sourceHash) { throw 'Sources changed during coverage validation.' }
 }
 catch {
     [Console]::Error.WriteLine($_.Exception.Message)

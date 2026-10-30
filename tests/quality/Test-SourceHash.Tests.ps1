@@ -14,12 +14,12 @@ try {
     foreach ($directory in @('.config', 'src', 'tests', 'examples', 'scripts', 'eng', '.github/workflows', 'artifacts', 'src/bin')) {
         $null = New-Item -Path (Join-Path $root $directory) -ItemType Directory -Force
     }
-    foreach ($file in @('global.json', 'Directory.Build.props', 'Directory.Packages.props', '.editorconfig', 'Monstertacle.Multisession.slnx', 'codemetr.json', '.config/dotnet-tools.json', 'README.md')) {
+    foreach ($file in @('global.json', 'Directory.Build.props', 'Directory.Packages.props', '.editorconfig', 'Monstertacle.Multisession.slnx', 'codemetr.json', 'codemetr-cover.json', '.config/dotnet-tools.json', 'README.md')) {
         Set-Content -LiteralPath (Join-Path $root $file) -Value 'fixture'
     }
     Push-Location $root
     try {
-        foreach ($file in @('README.md', 'eng/PackageSmoke.ps1', 'tests/PackageConsumer.cs.txt')) {
+        foreach ($file in @('codemetr-cover.json', 'README.md', 'eng/PackageSmoke.ps1', 'tests/PackageConsumer.cs.txt')) {
             $before = Get-SourceHash
             Set-Content -LiteralPath (Join-Path $root $file) -Value 'changed package input'
             if ((Get-SourceHash) -eq $before) { throw "Source hash omitted package input: $file" }

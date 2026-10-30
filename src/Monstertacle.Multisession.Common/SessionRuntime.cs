@@ -21,13 +21,17 @@ public sealed class SessionRuntime : IAsyncDisposable
         _lifecycle = new(new(store, lease, configuration.Providers, configuration.Profiles, clock ?? TimeProvider.System, diagnostics));
     }
     /// <summary>Gets session operations once the runtime has started.</summary>
-    public ISessions Sessions => _lifecycle.Components.Sessions;
+    public ISessions Sessions => _lifecycle.Components.Facades.Sessions;
     /// <summary>Gets request operations once the runtime has started.</summary>
-    public IRequests Requests => _lifecycle.Components.Requests;
+    public IRequests Requests => _lifecycle.Components.Facades.Requests;
     /// <summary>Gets explicit recovery operations once the runtime has started.</summary>
-    public IRecovery Recovery => _lifecycle.Components.Recovery;
+    public IRecovery Recovery => _lifecycle.Components.Facades.Recovery;
     /// <summary>Gets the observed lifetime of the bounded background workers.</summary>
     public Task Completion => _lifecycle.Completion;
+    /// <summary>Gets the typed command dispatcher after startup.</summary>
+    public Monstertacle.SharpQrs.ICommandDispatcher Commands => _lifecycle.Components.Dispatch.Commands;
+    /// <summary>Gets the typed query dispatcher after startup.</summary>
+    public Monstertacle.SharpQrs.IQueryDispatcher Queries => _lifecycle.Components.Dispatch.Queries;
     /// <summary>Starts validated ownership and bounded execution workers.</summary>
     public ValueTask StartAsync(RuntimeOptions options, CancellationToken cancellationToken) => _lifecycle.StartAsync(options, cancellationToken);
     /// <summary>Stops acceptance and preserves visible durable state.</summary>

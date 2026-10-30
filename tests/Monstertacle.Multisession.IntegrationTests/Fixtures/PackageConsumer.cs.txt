@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 using Monstertacle.Multisession;
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Cqrs;
 using Monstertacle.Multisession.Storage.Sqlite;
 
 namespace PackageConsumer;
@@ -33,7 +34,7 @@ internal static class Program
         await using SessionRuntime runtime = new(store, lease, [new("own", "package-consumer", 1, provider)],
             [new("own", "own", "opaque-model", ExecutionKind.ModelResponse, new("fixed", new Dictionary<string, string>()))]);
         await runtime.StartAsync(options, CancellationToken.None);
-        SessionSnapshot a = await runtime.Sessions.CreateSessionAsync("own", new(null, null), CancellationToken.None);
+        SessionSnapshot a = await runtime.Commands.DispatchAsync(new CreateSessionCommand("own", new(null, null)));
         SessionSnapshot b = await runtime.Sessions.CreateSessionAsync("own", new(null, null), CancellationToken.None);
         RequestReceipt firstA = await SubmitAsync(runtime, a.SessionId, "first-a");
         RequestReceipt firstB = await SubmitAsync(runtime, b.SessionId, "first-b");
@@ -66,7 +67,7 @@ internal static class Program
         Require((await recovered.GetRuntimeStatisticsAsync(CancellationToken.None)).OccupiedReservations == 0);
     }
     private static ValueTask<RequestReceipt> SubmitAsync(SessionRuntime runtime, Guid session, string input)
-        => runtime.Requests.SubmitAsync(new(session, input, TimeSpan.FromSeconds(30), null, false), CancellationToken.None);
+        => new(runtime.Commands.DispatchAsync(new SubmitRequestCommand(new(session, input, TimeSpan.FromSeconds(30), null, false))));
     private static async Task RequireOutputAsync(SessionRuntime runtime, RequestReceipt receipt, string input)
     {
         RequestSnapshot result = await EndAsync(runtime, receipt.RequestId);
@@ -77,7 +78,7 @@ internal static class Program
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(30));
         while (true)
         {
-            RequestSnapshot request = await runtime.Requests.GetRequestAsync(id, deadline.Token) ?? throw new InvalidOperationException("Missing request.");
+            RequestSnapshot request = (await runtime.Queries.DispatchAsync(new GetRequestQuery(id), deadline.Token)).Value ?? throw new InvalidOperationException("Missing request.");
             if (request.State is not (RequestState.Queued or RequestState.Running)) { return request; }
             await Task.Delay(10, deadline.Token);
         }

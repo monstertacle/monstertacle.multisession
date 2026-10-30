@@ -27,7 +27,9 @@ foreach ($name in $names) {
         $assemblies = @($zip.Entries | Where-Object FullName -Like 'lib/*/*.dll')
         if ($assemblies.Count -ne 1 -or $assemblies[0].Name -ne "$name.dll") { throw "Unexpected assembly contents: $name" }
         foreach ($dependency in $metadata.dependencies.group.dependency) {
-            if ($dependency.id -like 'Monstertacle.*') {
+            if ($dependency.id -eq 'Monstertacle.SharpQrs') {
+                if ($name -ne 'Monstertacle.Multisession.Common' -or $dependency.version -ne '0.2.0-alpha.1') { throw "Unexpected CQRS dependency: $name" }
+            } elseif ($dependency.id -like 'Monstertacle.*') {
                 if ($dependency.id -notin $names -or $dependency.version -ne '0.1.0') { throw "Unexpected own dependency: $name" }
             } elseif ($dependency.id -notmatch '^(Microsoft\.|System\.|SQLitePCLRaw\.)') { throw "Unexpected dependency: $name" }
         }

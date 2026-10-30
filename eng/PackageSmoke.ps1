@@ -51,8 +51,8 @@ $config = @"
 <configuration>
   <packageSources><clear /><add key="local" value="$escapedFeed" /><add key="nuget" value="https://api.nuget.org/v3/index.json" /></packageSources>
   <packageSourceMapping>
-    <packageSource key="local"><package pattern="Monstertacle.*" /></packageSource>
-    <packageSource key="nuget"><package pattern="Microsoft.*" /><package pattern="System.*" /><package pattern="SQLitePCLRaw.*" /></packageSource>
+    <packageSource key="local"><package pattern="Monstertacle.Multisession.*" /></packageSource>
+    <packageSource key="nuget"><package pattern="Monstertacle.SharpQrs" /><package pattern="Microsoft.*" /><package pattern="System.*" /><package pattern="SQLitePCLRaw.*" /></packageSource>
   </packageSourceMapping>
 </configuration>
 "@

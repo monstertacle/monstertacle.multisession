@@ -1,12 +1,22 @@
 # Bounded native reliability closeout
 
 Owner: Alexander Bleissem
-Status: done for this implementation; full release governed by feature001
+Status: reopened for independent published capacity investigation; worker coverage accepted separately
 Source: 8d25c9a067989110c00327af988fff8969c35fb601b8100d0e6f07a224f254e9
 Implementation head: 636a11000aee198678506f99f74edc1a71dcb082
 Measured completion timestamps: RecordedUtc in the two native receipts below.
 
 ## Acceptance evidence
+
+Subsequent head18a9f1d closes the worker collector-flush coverage gap: complete
+native PR41065265199/static41065265423 passed1100 Linux/1106 Windows tests,
+both87-percent gates, expanded Cover95.7% on both OS, both canonical consumers
+and all fourteen published scenarios per OS. The receipt is
+evidence/worker-protocol-native-pr.json. The parallel push's Windows capacity
+publication failed with generic ExecutionFailed and no detailed cause. That
+finding is retained under follow-up-capacity-probe.md; parent taskT016 remains
+open. The older bounded closeout below is historical, not a claim that the new
+capacity finding or full release is complete.
 
 Both push41059372988 and PR41059379755 completed all four quality/canonical-
 consumer jobs successfully. Static runs41059373151 and41059379746 passed both

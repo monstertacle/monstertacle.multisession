@@ -1,0 +1,1 @@
+{"Scenario":"capacity","Status":"FAIL","Reason":"ScenarioExecutionFailed","ProcessId":4116,"RunId":"995bda85-ba6c-4fcb-956e-0209ee0c2185","Failure":{"Error":{"Code":16,"Certainty":0,"SessionId":null,"RequestId":null,"AdmissionStatus":null},"Details":null},"CleanupFailures":[],"OperatingSystem":null,"RuntimeVersion":null,"SqliteVersion":null,"ExitCode":2}

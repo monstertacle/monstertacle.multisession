@@ -14,7 +14,8 @@ Created: 2026-10-30T06:20:36Z
 - [x] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.
 - [x] T013 Measure the complete validation host in Cover, preserve the separate native product gate, test real native scenario ownership and close measured coverage gaps; see host-coverage.md.
 - [x] T014 Apply reviewed Wave-only admission profile after observed native default-budget timeout, preserving SDK defaults and every functional assertion; require fresh native CI.
-- [ ] T015 Close current-head Windows CRAP gaps with deterministic direct worker protocol tests in WorkerProtocolTests.cs and repeat complete native CI without gate changes.
+- [x] T015 Close current-head Windows CRAP gaps with deterministic direct worker protocol tests in WorkerProtocolTests.cs and repeat complete native CI without gate changes.
+- [ ] T016 Investigate the independent published Windows capacity failure under follow-up-capacity-probe.md; preserve bounds and original failure, no retry-as-fix claim.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and
@@ -41,9 +42,18 @@ See closeout.md and evidence/wave-budget-native-{push,pr}.json. No historical
 Windows root-cause claim follows; follow-up-windows-admission.md remains ready
 and feature001 release requirements remain open.
 
-T015 local: worker-protocol-local.json records1100 tests, product97.7735%,
-expanded Cover95.6%, no findings. Direct protocol22 cases include all nine valid
+T015 local: worker-protocol-local.json records1100 tests, product97.8053%,
+expanded Cover95.7%, no findings. Direct protocol22 cases include all nine valid
 barriers, unknown/empty rejection, cooperative/native invalid-store diagnostics,
 closed error output and native lease reacquisition. Static489files/509types passed;
 semantic reference-resolution limitations remain as previously documented. Current
-native CI acceptance is pending the new test commit.
+native PR41065265199 and static41065265423 passed completely at head18a9f1d:
+1100 Linux/1106 Windows tests, zero skips; expanded Cover95.7% on both systems;
+both native and canonical package consumers and fourteen published scenarios
+per OS passed. See evidence/worker-protocol-native-pr.json.
+
+Parallel push41065255148 passed both native test/coverage gates but its published
+Windows capacity scenario failed with only generic ExecutionFailed16. The cause
+is unknown and is not equated with earlier admission variability. Original failure
+and a concrete owned investigation are retained in follow-up-capacity-probe.md.
+T016 remains open; no full release or stable published-capacity fix is claimed.

@@ -4,5 +4,5 @@ Exact upstream source: https://github.com/monstertacle/monstertacle.sharpqrs/tre
 Actual null results are forbidden, including nullable TResult. Use explicit lookup envelope.
 Dispatch forwards cancellation without preemptively changing handler semantics.
 Standalone registry registration is setup-only; wrap dispatch interface before public exposure.
-Cover tool discovers projects beyond tracked files; exclude only generated artifacts and examples from product measurement with explicit documented reasons; retain all product source in denominator.
+Cover tool discovers projects beyond tracked files; root configuration excludes generated artifacts and the separate validation example. Native quality derives the Constitution's scope: all shared libraries plus the native platform, with the opposite platform mandatory in its matching CI. The cross-platform exploratory report remains archived; no threshold or baseline changes.
 

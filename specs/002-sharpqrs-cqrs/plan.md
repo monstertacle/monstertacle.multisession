@@ -1,8 +1,11 @@
 # Implementation Plan
 Created: 2026-10-30T01:21:40Z
 Feature: 002-sharpqrs-cqrs
+Status: completed
+Updated: 2026-10-30T01:55:50Z
 
 .NET 10 / SDK 10.0.403; Linux Ubuntu 24.04 x64 and native Windows CI, existing Windows 11 release requirement unchanged. Existing six libraries and SQLite remain; add Monstertacle.SharpQrs 0.2.0-alpha.1 to Common, Codemetr Cover 0.1.1 as local developer tool.
+The six unpublished library packages use 0.2.0-alpha.1 as well; stable package validation rejected the prerelease dependency. This is package metadata only, not publication.
 Read analysis.md for source evidence, alternatives and risk assessment.
 
 ## Constitution check

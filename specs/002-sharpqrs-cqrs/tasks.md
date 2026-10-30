@@ -19,8 +19,8 @@ Created: 2026-10-30T01:21:40Z
 
 ## US3 quality (depends on T007)
 - [x] T014 Resolve measured static metric findings through responsibility splits on a green behavioral baseline.
-- [ ] T009 Integrate full Codemetr Cover check into native quality CI; retain 87% aggregate gate and source hashing.
-- [ ] T010 Run full static, format, locked restore, audit, native tests and coverage; inspect complete report.
-- [ ] T011 Commit and push; obtain native Linux and Windows CI results for final source.
-- [ ] T012 Record evidence, self-review and disposition of any findings; update task status honestly.
+- [x] T009 Integrate full Codemetr Cover check into native quality CI; retain 87% aggregate gate and source hashing.
+- [x] T010 Run full static, format, locked restore, audit, native tests and coverage; inspect complete report.
+- [x] T011 Commit and push; obtain native Linux and Windows CI results for final source.
+- [x] T012 Record evidence, self-review and disposition of any findings; update task status honestly.
 

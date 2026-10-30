@@ -1,7 +1,7 @@
 # Feature Specification: CQRS runtime access
 Branch: feature/sharpqrs-cqrs
 Created: 2026-10-30T01:21:40Z
-Status: Draft
+Status: Implemented
 
 ## User Scenarios & Testing
 ### US1 (P1): Dispatch typed runtime operations
@@ -25,6 +25,7 @@ Acceptance: pinned repository-local tool, trustworthy complete coverage gate wit
 - FR-006: Pin the explicitly requested SharpQrs version 0.2.0-alpha.1.
 - FR-007: Use Codemetr Cover in automated quality checks alongside the existing native whole-product coverage gate.
 - FR-008: Keep the six existing library packages, store schema and provider protocols compatible.
+- FR-009: Label the six unpublished own packages 0.2.0-alpha.1 to permit the explicitly required prerelease dependency without suppressing NuGet validation.
 
 ## Success Criteria
 All fourteen typed routes and existing contracts pass; package-only consumption works; full static metrics pass; each native CI coverage gate measures and enforces at least 87%.

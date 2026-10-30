@@ -1,0 +1,143 @@
+{
+  "Commit": "b174a48ed81480d4bff1e5788bea998ec34455df",
+  "QualityRun": "https://github.com/monstertacle/monstertacle.multisession/actions/runs/40987921024",
+  "QualityConclusion": "success",
+  "GuardRun": "https://github.com/monstertacle/monstertacle.multisession/actions/runs/40987921018",
+  "GuardConclusion": "success",
+  "Platforms": [
+    {
+      "Platform": "linux",
+      "Run": {
+        "SourceHash": "1c90c394e617eb4e9f23858735e2fb25bf8266dbb9056cd868939aa8d53c3213",
+        "Platform": "linux",
+        "StartedUtc": "2026-10-30T01:47:40.6628333+00:00"
+      },
+      "Tests": {
+        "Total": 1047,
+        "Skipped": 0,
+        "Failed": 0
+      },
+      "NativeCoverage": {
+        "Platform": "linux",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3123,
+        "CoveredLines": 3053,
+        "Percent": 97.7586,
+        "Modules": [
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Linux",
+          "Monstertacle.Multisession.Providers.Gemini",
+          "Monstertacle.Multisession.Providers.OpenAI",
+          "Monstertacle.Multisession.Storage.Sqlite"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "Cover": {
+        "tool": "codemetr-csharp-cover",
+        "version": "0.1.1",
+        "passed": true,
+        "complete": true,
+        "summary": {
+          "files": 217,
+          "types": 221,
+          "members": 448,
+          "line": 97.7,
+          "branch": 87.2,
+          "coveredLines": 2967,
+          "coverableLines": 3036,
+          "coveredBranches": 1980,
+          "branches": 2269,
+          "diffLine": 99.1,
+          "diffBranch": 100,
+          "violations": 0,
+          "new": 0,
+          "worsened": 0,
+          "baselined": 0,
+          "stale": 0,
+          "tightenable": 0,
+          "unreported": 0,
+          "excluded": 0,
+          "skipped": 47,
+          "unmapped": 0,
+          "listed": 0,
+          "omitted": 0
+        },
+        "warnings": [
+          "1 file(s) have no coverage data and count as 0% (no test project covers them); see 'unreported'."
+        ]
+      },
+      "EvidenceSha256": {
+        "NativeCoverage": "0542a77d44661c2314d4a0b1fb3ab491c9c9f65765844be143a91481bff8e86c",
+        "Cover": "9c2490f827a2e35abc3cf958c65c0c5a6d53c3ac0d27133466d3a7da2ed49f02"
+      }
+    },
+    {
+      "Platform": "windows",
+      "Run": {
+        "SourceHash": "1c90c394e617eb4e9f23858735e2fb25bf8266dbb9056cd868939aa8d53c3213",
+        "Platform": "windows",
+        "StartedUtc": "2026-10-30T01:48:19.6004588+00:00"
+      },
+      "Tests": {
+        "Total": 1053,
+        "Skipped": 0,
+        "Failed": 0
+      },
+      "NativeCoverage": {
+        "Platform": "windows",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3187,
+        "CoveredLines": 3114,
+        "Percent": 97.7094,
+        "Modules": [
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Providers.Gemini",
+          "Monstertacle.Multisession.Providers.OpenAI",
+          "Monstertacle.Multisession.Storage.Sqlite",
+          "Monstertacle.Multisession.Windows"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "Cover": {
+        "tool": "codemetr-csharp-cover",
+        "version": "0.1.1",
+        "passed": true,
+        "complete": true,
+        "summary": {
+          "files": 217,
+          "types": 221,
+          "members": 453,
+          "line": 97.6,
+          "branch": 87,
+          "coveredLines": 3028,
+          "coverableLines": 3100,
+          "coveredBranches": 2038,
+          "branches": 2341,
+          "diffLine": 99.1,
+          "diffBranch": 100,
+          "violations": 0,
+          "new": 0,
+          "worsened": 0,
+          "baselined": 0,
+          "stale": 0,
+          "tightenable": 0,
+          "unreported": 0,
+          "excluded": 0,
+          "skipped": 47,
+          "unmapped": 0,
+          "listed": 0,
+          "omitted": 0
+        },
+        "warnings": [
+          "1 file(s) have no coverage data and count as 0% (no test project covers them); see 'unreported'."
+        ]
+      },
+      "EvidenceSha256": {
+        "NativeCoverage": "e235242ce1a428b52ab40aa61b6dda5ebb59a8d9180b16e806a01bfef03944c7",
+        "Cover": "3dfa7ea1e5afc7050add7b874aebc3e3a69473933fc9fcdf8e94556603053c26"
+      }
+    }
+  ]
+}

@@ -42,7 +42,8 @@ Die bestehenden `Sessions`-, `Requests`- und `Recovery`-Ports bleiben verfügbar
 übersetzen in genau diese Nachrichten. Hinter den Handlern gelten unverändert die
 bisherigen Lifecycle-, Transaktions-, Revisions- und Reservierungsregeln.
 `InspectRecoveryQuery` liest native Evidenz ohne lokale Freigabe. Stop verfolgt auch
-den öffentlichen Dispatcher-Task bis zum Ende, bevor es Store und Lease freigibt.
+die öffentlichen Dispatcher-Tasks bereits gestarteter Lifecycle-Operationen bis zum
+Ende, bevor es Store und Lease freigibt.
 
 Registrierungen sind je Runtime vollständig vor der Veröffentlichung aufgebaut.
 Die öffentlichen Dispatcher bieten keine Registrierung an. Unbekannte Nachrichten

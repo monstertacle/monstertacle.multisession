@@ -1,4 +1,11 @@
 # Quickstart
+Resume the SpecKit context in a fresh checkout:
+```powershell
+$env:SPECIFY_FEATURE_DIRECTORY = "specs/002-sharpqrs-cqrs"
+pwsh .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
+```
+The workflow persists this selection locally in ignored `.specify/feature.json`.
+
 After normal SessionRuntime.StartAsync:
 ```csharp
 using Monstertacle.Multisession.Cqrs;

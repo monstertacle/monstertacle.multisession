@@ -21,6 +21,12 @@ preserves the changed exception contract and concrete cleanup owners.
 failures with original await-using semantics; the stub-only ownership failure
 is not a reproduction of the original implementation.
 
+The Windows CI log is also retained as `tdd/native-test-target-red/windows-ci.log.gz`.
+Git normalizes the readable `.log` copy's line endings; decompress the `.gz` into
+a private directory when verifying the original raw-log SHA from its manifest.
+The compressed archive preserves the observed bytes, including CRLF and console
+escape sequences, without changing the historical receipt.
+
 The subsequent full Linux quality run is
 `artifacts/quality/linux/8fdfc90e82e84d5abc104ca8e3043fd9`, SourceHash
 `1a4de79b343079d81837916111b0ceb9cff6d1374d41135b64976026192a5850`.
@@ -41,7 +47,7 @@ metrics do not replace actual successful builds. Both CLI versions remain pinned
 
 ## Finding disposition
 
-The final Linux candidate is recorded in `linux-validation.json`: SourceHash
+The post-cleanup Linux candidate is recorded in `linux-validation.json`: SourceHash
 `da86cc3e4a782a1f829141ea4a41620abc04e8ba04b7f9ad6cb8142a7c764d98`,
 368 Unit, 252 Contract, 408 Integration and 32 Platform tests passed (1060 total,
 no skipped tests). Restore, build and format passed with zero build warnings.
@@ -61,7 +67,13 @@ platform library. The post-correction Linux receipt is
 `c2118349915f323fb7dd9437de26d59a5eef13ed40656f8944e4b6666040a1c5`:
 1060 tests passed, product line coverage 97.7735%, and only the same eight known
 host measurement findings block the full gate. The corrected native Windows
-run remains required; this local graph check is not its substitute.
+run has now completed; `native-ci.json` binds both native results to the same
+SourceHash. Run41042889858 passed all 1060 Linux and 1066 Windows tests without
+skips. Native product line coverage is 97.7735% and 97.7556%, respectively; the
+unchanged Windows inventory no longer reports a Linux assembly. Static
+run41042889914 passed both operating systems. Both quality jobs still fail for
+the eight unmeasured host files, and downstream package/publication-scenario
+validation steps were skipped. No complete quality or release pass is claimed.
 
 | Finding | Disposition / verification |
 | --- | --- |

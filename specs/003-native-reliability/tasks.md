@@ -11,4 +11,12 @@ Created: 2026-10-30T06:20:36Z
 - [ ] T009 Run full static metrics, native quality/Cover and package consumption.
 - [ ] T010 Repeat native Windows scenarios and inspect safe diagnostics for any recurrence.
 - [ ] T011 Commit/push reviewable work, bind native CI evidence, disposition all findings.
-- [ ] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.
+- [x] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.
+
+Native run41042889858 verifies T012: 1060 Linux/1066 Windows tests passed;
+97.7735%/97.7556% product line coverage passed the unchanged native inventory.
+Static run41042889914 passed both operating systems. Both full quality jobs
+remain red solely for the eight unmeasured validation-host changes. T009 awaits
+the explicit measurement-scope decision. T010's published scenario replay is
+still downstream of that gate; ordinary native suites passed without skipped
+tests but do not close the historical intermittent Windows cause.

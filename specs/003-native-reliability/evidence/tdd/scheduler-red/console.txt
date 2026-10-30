@@ -1,0 +1,23 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/bin/Debug/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Linux/bin/Debug/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/bin/Debug/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/bin/Debug/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Storage.Sqlite/bin/Debug/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/examples/Monstertacle.Multisession.ValidationHost/bin/Debug/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.IntegrationTests -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/bin/Debug/net10.0/Monstertacle.Multisession.IntegrationTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/bin/Debug/net10.0/Monstertacle.Multisession.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.88]     Monstertacle.Multisession.IntegrationTests.StoreSchedulerTests.IdleStoreReadDoesNotDependOnAvailableManagedWorkers [FAIL]
+  Failed Monstertacle.Multisession.IntegrationTests.StoreSchedulerTests.IdleStoreReadDoesNotDependOnAvailableManagedWorkers [647 ms]
+  Error Message:
+   {"IndependentStoreRead":false}
+
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.StoreSchedulerTests.IdleStoreReadDoesNotDependOnAvailableManagedWorkers() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/StoreSchedulerTests.cs:line 20
+   at Monstertacle.Multisession.IntegrationTests.StoreSchedulerTests.IdleStoreReadDoesNotDependOnAvailableManagedWorkers() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/StoreSchedulerTests.cs:line 22
+--- End of stack trace from previous location ---
+Results File: /home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/tdd/native-reliability/scheduler-red/scheduler-red.trx
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 660 ms - Monstertacle.Multisession.IntegrationTests.dll (net10.0)

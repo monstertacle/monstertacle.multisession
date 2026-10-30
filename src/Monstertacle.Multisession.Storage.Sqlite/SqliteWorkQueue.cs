@@ -1,4 +1,4 @@
-using System.Threading.Channels;
+using System.Collections.Concurrent;
 using Microsoft.Data.Sqlite;
 using Monstertacle.Multisession.Contracts;
 
@@ -7,43 +7,42 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 // One logical worker owns every operation on the connection, including final disposal.
 internal sealed class SqliteWorkQueue : IAsyncDisposable
 {
-    private readonly Channel<ISqliteWork> _work;
+    private readonly BlockingCollection<ISqliteWork> _work;
+    private readonly object _gate = new();
     private readonly Task _worker;
     private int _closed;
 
     internal SqliteWorkQueue(SqliteConnection connection, int capacity, IStateDirectoryLease lease)
     {
-        _work = Channel.CreateBounded<ISqliteWork>(new BoundedChannelOptions(capacity)
-        {
-            SingleReader = true,
-            SingleWriter = false,
-            FullMode = BoundedChannelFullMode.Wait,
-            AllowSynchronousContinuations = false,
-        });
-        _worker = Task.Run(async () =>
+        _work = new(capacity);
+        // SQLite is synchronous; its single owner must not occupy or wait for a shared host worker.
+        _worker = Task.Factory.StartNew(() =>
         {
             try
             {
-                await foreach (ISqliteWork item in _work.Reader.ReadAllAsync())
+                foreach (ISqliteWork item in _work.GetConsumingEnumerable())
                 {
                     item.Run(connection, Volatile.Read(ref _closed) == 0 && lease.IsHeld);
                 }
             }
             finally
             {
-                Volatile.Write(ref _closed, 1);
-                _work.Writer.TryComplete();
-                while (_work.Reader.TryRead(out ISqliteWork? pending)) { pending.Run(connection, false); }
-                connection.Dispose();
+                Close();
+                while (_work.TryTake(out ISqliteWork? pending)) { pending.Run(connection, false); }
+                try { connection.Dispose(); }
+                finally { _work.Dispose(); }
             }
-        });
+        }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
     internal Task<T> ExecuteAsync<T>(Func<SqliteConnection, T> action, CancellationToken cancellationToken, bool admission = false)
     {
         SqliteWork<T> item = new(action, admission, cancellationToken);
-        if (Volatile.Read(ref _closed) != 0) { item.Reject(ErrorCode.StorageUnavailable); }
-        else if (!_work.Writer.TryWrite(item)) { item.Reject(ErrorCode.LocalCapacityExceeded); }
+        lock (_gate)
+        {
+            if (_closed != 0) { item.Reject(ErrorCode.StorageUnavailable); }
+            else if (!_work.TryAdd(item)) { item.Reject(ErrorCode.LocalCapacityExceeded); }
+        }
         return item.Completion;
     }
 
@@ -52,8 +51,17 @@ internal sealed class SqliteWorkQueue : IAsyncDisposable
 
     public ValueTask DisposeAsync()
     {
-        Interlocked.Exchange(ref _closed, 1);
-        _work.Writer.TryComplete();
+        Close();
         return new(_worker);
+    }
+
+    private void Close()
+    {
+        lock (_gate)
+        {
+            if (_closed != 0) { return; }
+            Volatile.Write(ref _closed, 1);
+            _work.CompleteAdding();
+        }
     }
 }

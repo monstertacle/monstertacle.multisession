@@ -44,7 +44,7 @@ internal sealed class SqliteWork<T> : ISqliteWork
     {
         if (Interlocked.CompareExchange(ref _state, _finished, _waiting) == _waiting)
         {
-            _completion.TrySetException(StorageFailurePolicy.Normalize(new OperationCanceledException(_token), true, _admission, _token));
+            _completion.TrySetException(StorageFailurePolicy.Normalize(new OperationCanceledException(_token), true, _admission, _token, FailureStage.StoreQueue));
         }
     }
 

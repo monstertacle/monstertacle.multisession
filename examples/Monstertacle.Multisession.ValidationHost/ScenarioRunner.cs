@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using System.Text.Json;
-using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.ValidationHost;
 
@@ -44,12 +43,23 @@ internal static class ScenarioRunner
         }
         try
         {
-            await using ValidationRunState state = await ValidationStateRoot.CreateRunAsync(options.StateRoot, CancellationToken.None);
-            await execute(state);
-            return ValidationReport.Pass(options.Scenario, state.RunId);
+            ValidationRunState state = await ValidationStateRoot.CreateRunAsync(options.StateRoot, CancellationToken.None);
+            return await ExecuteOwnedAsync(options.Scenario, state, execute);
         }
-        catch (ValidationProbeException failure) { return ValidationReport.Fail(options.Scenario, failure.Code); }
-        catch (SessionOperationException failure) { return ValidationReport.Fail(options.Scenario, failure.Failure.Code.ToString()); }
-        catch (Exception) { return ValidationReport.Fail(options.Scenario, "ScenarioExecutionFailed"); }
+        catch (Exception failure) { return ValidationReport.FromException(options.Scenario, failure); }
+    }
+
+    internal static async Task<ValidationReport> ExecuteOwnedAsync(string scenario, ValidationRunState state, Func<ValidationRunState, Task> execute)
+    {
+        ValidationReport report;
+        try
+        {
+            await execute(state);
+            report = ValidationReport.Pass(scenario, state.RunId);
+        }
+        catch (Exception failure) { report = ValidationReport.FromException(scenario, failure) with { RunId = state.RunId }; }
+        try { await state.DisposeAsync(); }
+        catch (Exception cleanup) { report = report.WithCleanup(cleanup); }
+        return report;
     }
 }

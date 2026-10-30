@@ -25,16 +25,22 @@ public static class SqliteStoreFactory
         {
             throw new SessionOperationException(new(ErrorCode.InvalidConfiguration));
         }
+        FailureStage stage = FailureStage.StorePreparation;
         try
         {
             await lease.PrepareFileAsync(SqliteConnectionPolicy.DatabaseFileName, mode, cancellationToken);
             string path = Path.Combine(lease.StateDirectory, SqliteConnectionPolicy.DatabaseFileName);
-            if (mode == StateFileMode.OpenExisting) { await SqliteStorePreflight.ValidateAsync(path, lease, trustScopeId, cancellationToken); }
+            if (mode == StateFileMode.OpenExisting)
+            {
+                stage = FailureStage.StorePreflight;
+                await SqliteStorePreflight.ValidateAsync(path, lease, trustScopeId, cancellationToken);
+            }
+            stage = FailureStage.StoreOpen;
             return await Task.Run(() => OpenValidated(path, lease, trustScopeId, options, mode, cancellationToken), cancellationToken);
         }
         catch (OperationCanceledException) { throw; }
-        catch (SessionOperationException failure) { throw new SessionOperationException(failure.Failure); }
-        catch (Exception) { throw new SessionOperationException(new(ErrorCode.StorageUnavailable)); }
+        catch (SessionOperationException failure) { throw new SessionOperationException(failure.Failure) { Details = failure.Details ?? new(stage) }; }
+        catch (Exception failure) { throw StorageFailurePolicy.Normalize(failure, true, false, cancellationToken, stage); }
     }
 
     private static SqliteSessionStore OpenValidated(string path, IStateDirectoryLease lease, Guid trustScopeId, RuntimeOptions options, StateFileMode mode, CancellationToken cancellationToken)

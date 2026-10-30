@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.Storage.Sqlite;
 
@@ -26,7 +27,8 @@ internal static class SqliteTransactions
                 try { transaction.Rollback(); noWrite = true; }
                 catch (Exception) { noWrite = false; }
             }
-            throw StorageFailurePolicy.Normalize(failure, noWrite, admission, token);
+            throw StorageFailurePolicy.Normalize(failure, noWrite, admission, token,
+                committing ? FailureStage.StoreCommit : FailureStage.StoreTransaction);
         }
         finally { transaction?.Dispose(); }
     }

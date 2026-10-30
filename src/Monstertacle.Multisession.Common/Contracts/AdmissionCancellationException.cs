@@ -8,4 +8,6 @@ public sealed class AdmissionCancellationException : OperationCanceledException
         : base(failure.Code.ToString(), null, cancellationToken) => Failure = failure;
     /// <summary>Gets local acceptance status and candidate identity, when already generated.</summary>
     public PublicError Failure { get; }
+    /// <summary>Gets optional safe operational diagnostics without changing cancellation or acceptance certainty.</summary>
+    public FailureDetails? Details { get; init; }
 }

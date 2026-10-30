@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Cqrs;
 using Monstertacle.Multisession.IntegrationTests.Fixtures;
 using Monstertacle.Multisession.Requests;
 using Xunit;
@@ -8,6 +9,24 @@ namespace Monstertacle.Multisession.IntegrationTests;
 /// <summary>Injects real native SQL failures inside our fixture, without product fault-injection hooks.</summary>
 public sealed class AcceptanceFailureTests
 {
+    /// <summary>The actual typed runtime path preserves native error evidence without a second admission or write.</summary>
+    [Fact]
+    public async Task TypedRuntimePreservesNativeFailureDetails()
+    {
+        await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
+        SessionSnapshot session = await fixture.CreateSessionAsync();
+        await fixture.Store.DisposeAsync();
+        await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(fixture.Directory,
+            [new("connection-I", "fixture-adapter", 7, fixture.Provider)]);
+        StoreProbe.Execute(fixture.Directory.DatabasePath, "CREATE TRIGGER FailTypedAdmission AFTER UPDATE OF NextSequence ON Sessions BEGIN SELECT RAISE(FAIL,'private-typed-marker'); END;");
+        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
+            host.Runtime.Commands.DispatchAsync(new SubmitRequestCommand(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false))));
+        Assert.Equal(new FailureDetails(FailureStage.StoreTransaction, 19, 1811), failure.Details);
+        Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
+        Assert.DoesNotContain("private-", failure.ToString(), StringComparison.Ordinal);
+        Assert.Equal(0L, StoreProbe.Scalar(fixture.Directory.DatabasePath, "SELECT count(*) FROM Requests"));
+    }
+
     /// <summary>A write followed by a trigger failure must roll back input and sequence together.</summary>
     [Fact]
     public async Task RollsBackPartialWritesBeforeReportingKnownNonAcceptance()
@@ -23,6 +42,7 @@ public sealed class AcceptanceFailureTests
             admission.SubmitAsync(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
+        Assert.Equal(new FailureDetails(FailureStage.StoreTransaction, 19, 1811), failure.Details);
         Assert.DoesNotContain("private-sql-marker", failure.ToString(), StringComparison.Ordinal);
         Assert.DoesNotContain("private-input-marker", failure.ToString(), StringComparison.Ordinal);
         Assert.Null(failure.InnerException);
@@ -49,6 +69,7 @@ public sealed class AcceptanceFailureTests
             admission.SubmitAsync(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
         Assert.Equal(AdmissionStatus.Unknown, failure.Failure.AdmissionStatus);
+        Assert.Equal(new FailureDetails(FailureStage.StoreCommit, 19, 787), failure.Details);
         Assert.Equal(ExecutionCertainty.Unknown, failure.Failure.Certainty);
         Assert.Equal(session.SessionId, failure.Failure.SessionId);
         Assert.NotNull(failure.Failure.RequestId);

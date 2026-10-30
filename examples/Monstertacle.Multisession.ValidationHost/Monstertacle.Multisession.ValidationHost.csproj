@@ -7,6 +7,8 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Monstertacle.Multisession.UnitTests" />
+    <InternalsVisibleTo Include="Monstertacle.Multisession.PlatformTests" />
     <Compile Include="../../tests/Monstertacle.Multisession.IntegrationTests/Fixtures/ConsumerOwnedProvider.cs" Link="Consumer/ConsumerOwnedProvider.cs" />
     <Compile Include="../../tests/Monstertacle.Multisession.IntegrationTests/Fixtures/AdmissionProvider.cs" Link="Consumer/AdmissionProvider.cs" />
     <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/ThirdContractProvider.cs" Link="Consumer/ThirdContractProvider.cs" />

@@ -146,11 +146,33 @@
           "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
         }
       },
+      "monstertacle.multisession.providers.gemini": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+        }
+      },
+      "monstertacle.multisession.providers.openai": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+        }
+      },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
           "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+        }
+      },
+      "monstertacle.multisession.validationhost": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Linux": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Providers.Gemini": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Providers.OpenAI": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.1, )"
         }
       },
       "Microsoft.Data.Sqlite": {
@@ -319,11 +341,33 @@
           "Monstertacle.SharpQrs": "[0.2.0-alpha.1, )"
         }
       },
+      "monstertacle.multisession.providers.gemini": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+        }
+      },
+      "monstertacle.multisession.providers.openai": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+        }
+      },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
           "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+        }
+      },
+      "monstertacle.multisession.validationhost": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Providers.Gemini": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Providers.OpenAI": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.1, )",
+          "Monstertacle.Multisession.Windows": "[0.2.0-alpha.1, )"
         }
       },
       "monstertacle.multisession.windows": {

@@ -1,0 +1,11 @@
+8c4d4e1d1b7faf2c73607ba6668fdf9f76da332cfeb792938e433901d875c0cf  artifacts/tdd/native-reliability/review-delta-pre-green/head.txt
+87dc2b29070fbf1a634da72c9dcb36231581ebb2f60e066c7ff4c21a1bd3f8f8  artifacts/tdd/native-reliability/review-delta-pre-green/tracked.patch
+5db075756fbf8c4e48c73802e62249d1bab6cd1fbfeb033e8168971fd85fab5a  artifacts/tdd/native-reliability/review-delta-pre-green/untracked.tar.gz
+8a308ef515b7f892334271a2fd6cf2e3f53489dc65337c2532ae57966e9071fa  artifacts/tdd/native-reliability/review-delta-pre-green/utc.txt
+4276331c1e0bbd7b2a8d437a98c0046ecbb44b6f4da06db4a5a403b6d8de2e8c  artifacts/tdd/native-reliability/review-delta-red/exception-details-red.log
+e1fc08ee3796f33d3ca157ddbc5340d28b8b4c73ce3a7976470fa177522abdf4  artifacts/tdd/native-reliability/review-delta-red/exception-details-red.trx
+f9a57a7fd9c62aff4e4ef27ad73184cdaf0f2ec67745af01f688e93809597539  artifacts/tdd/native-reliability/review-delta-red/exception-sql-red.log
+1572092013e2077e561f10dd1446aa21a2270a020760b79a7fc9ff861abc3920  artifacts/tdd/native-reliability/review-delta-red/exception-sql-red.trx
+b975b36bfaa5ce10478945d8a671235b13c42acc3d9d2b86df29f89b68c988a5  artifacts/tdd/native-reliability/review-delta-red/ownership-original-red.log
+378bce86ecfc1148f9c9b8c93e12250e84e641c6bc4499370e28e9a993e8e9cc  artifacts/tdd/native-reliability/review-delta-red/ownership-original-semantics-red.trx
+46cc970736ca163d02221636ebd7b5c231699cf5c9c72625b7a8cd7e9ae937fe  artifacts/tdd/native-reliability/review-delta-red/ownership-red.trx

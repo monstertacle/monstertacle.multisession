@@ -80,7 +80,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             _state = RuntimeState.Faulted;
             if (prepared) { await CleanupAsync(); }
             cancellationToken.ThrowIfCancellationRequested();
-            if (startupFailure is SessionOperationException known) { throw new SessionOperationException(known.Failure); }
+            if (startupFailure is SessionOperationException known) { throw new SessionOperationException(known.Failure) { Details = known.Details }; }
             throw Error(ErrorCode.InvalidConfiguration);
         }
         finally { _shutdown.Startup!.TrySetResult(); }

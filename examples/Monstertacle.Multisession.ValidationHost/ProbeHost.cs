@@ -18,8 +18,22 @@ internal sealed class ProbeHost(ISessionStore store, SessionRuntime runtime, Run
         IReadOnlyList<AgentProfile> profiles = configuredProfiles ?? providers.Select(item => new AgentProfile(item.ProviderId, item.ProviderId, "model-" + item.ProviderId,
             kind, new("frozen", new Dictionary<string, string>()))).ToArray();
         SessionRuntime runtime = new(store, state.Lease, providers, profiles);
+        return await StartPreparedAsync(store, runtime, options);
+    }
+
+    internal static async Task<ProbeHost> StartPreparedAsync(ISessionStore store, SessionRuntime runtime, RuntimeOptions options)
+    {
         try { await runtime.StartAsync(options, CancellationToken.None); return new(store, runtime, options); }
-        catch { await runtime.DisposeAsync(); await store.DisposeAsync(); throw; }
+        catch (Exception primary)
+        {
+            ValidationProbeException failure = ValidationProbeException.FromException(primary);
+            try { await runtime.DisposeAsync(); }
+            catch (Exception cleanup) { failure = failure.WithCleanup(cleanup); }
+            try { await store.DisposeAsync(); }
+            catch (Exception cleanup) { failure = failure.WithCleanup(cleanup); }
+            if (failure.CleanupFailures.Count != 0) { throw failure; }
+            throw;
+        }
     }
     internal ValueTask<SessionSnapshot> CreateAsync(string profile, string? workspace = null, string? directory = null)
         => Runtime.Sessions.CreateSessionAsync(profile, new(directory, workspace), CancellationToken.None);

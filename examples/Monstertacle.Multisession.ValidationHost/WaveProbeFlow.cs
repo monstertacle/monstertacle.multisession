@@ -15,7 +15,25 @@ internal static class WaveProbeFlow
         }
         ProbeProvider a = new("probe-alpha", trace, SendAsync);
         ProbeProvider b = new("probe-beta", trace, SendAsync);
-        await using ProbeHost host = await ProbeHost.StartAsync(state, [new("alpha", "probe-alpha", 1, a), new("beta", "probe-beta", 1, b)]);
+        ProbeHost host = await ProbeHost.StartAsync(state, [new("alpha", "probe-alpha", 1, a), new("beta", "probe-beta", 1, b)]);
+        await ExecuteOwnedAsync(host, trace, barrier, scenario);
+    }
+
+    internal static async Task ExecuteOwnedAsync(ProbeHost host, ProbeTrace trace, ProbeBarrier barrier, string scenario)
+    {
+        try { await ExecuteWorkloadAsync(host, trace, barrier, scenario); }
+        catch (Exception primary)
+        {
+            try { await host.DisposeAsync(); }
+            catch (Exception cleanup) { throw ValidationProbeException.FromException(primary).WithCleanup(cleanup); }
+            throw;
+        }
+        try { await host.DisposeAsync(); }
+        catch (Exception cleanup) { throw new ValidationProbeException("ScenarioCleanupFailed", cleanupFailures: [ValidationFailure.FromException(cleanup)]); }
+    }
+
+    private static async Task ExecuteWorkloadAsync(ProbeHost host, ProbeTrace trace, ProbeBarrier barrier, string scenario)
+    {
         List<SessionSnapshot> sessions = [];
         for (int index = 0; index < 10; index++) { sessions.Add(await host.CreateAsync(index % 2 == 0 ? "alpha" : "beta")); }
         List<AcceptedProbeRequest> accepted = [];
@@ -39,7 +57,7 @@ internal static class WaveProbeFlow
                 }
             }
         }
-        catch (SessionOperationException failure) { throw new ValidationProbeException("WaveAdmission_" + failure.Failure.Code); }
+        catch (SessionOperationException failure) { throw new ValidationProbeException("WaveAdmission_" + failure.Failure.Code, ValidationFailure.FromException(failure)); }
         finally { barrier.Release.TrySetResult(); }
         foreach (AcceptedProbeRequest item in accepted)
         {

@@ -1,0 +1,7 @@
+8c4d4e1d1b7faf2c73607ba6668fdf9f76da332cfeb792938e433901d875c0cf  artifacts/tdd/native-reliability/scheduler-pre-green/head.txt
+7c14e6ea599ceff98d4c78078a24f3911dd6a2de6412d0f5eddd75585ac16b20  artifacts/tdd/native-reliability/scheduler-pre-green/tracked.patch
+5fba3fb3b209c77a6830828b8c42f50d416f5cf11ec12456fa95a689edffbc71  artifacts/tdd/native-reliability/scheduler-pre-green/untracked.tar.gz
+b1341963567ad8e467d306e0e15df0a50315dcd41e0ce10893a3c1219f8599d1  artifacts/tdd/native-reliability/scheduler-pre-green/utc.txt
+ba2a5d621806737be69e9a35a6f4fb872e3eb3640b6a0a8059aae57c80fe0c8a  artifacts/tdd/native-reliability/scheduler-red/console.txt
+3ad0e9d39db92831996fa2733477a1f4c6645cbfc978bc5f8209ecf5540777c0  artifacts/tdd/native-reliability/scheduler-red/external-baseline.txt
+935953edc3dd9fa7cf1bb24fac8b329ac98f1031415ba17b6fe7922aa4e7d9ce  artifacts/tdd/native-reliability/scheduler-red/scheduler-red.trx

@@ -28,6 +28,7 @@ public sealed class RequestAdmission : IRequests
         Guid? candidateId = null;
         bool committing = false;
         Task<RequestReceipt>? pending = null;
+        FailureStage stage = FailureStage.AdmissionLookup;
         try
         {
             execution.Token.ThrowIfCancellationRequested();
@@ -35,6 +36,7 @@ public sealed class RequestAdmission : IRequests
             if (RequestSubmissionRules.Validate(request, session, _options) is { } failure) { throw new SessionOperationException(failure); }
             candidateId = Guid.NewGuid();
             committing = true;
+            stage = FailureStage.AdmissionCommit;
             ValueTask<RequestReceipt> operation = _store.CommitAcceptanceAsync(new(candidateId.Value, request), _options.MaxQueuedRequests, execution.Token);
             if (operation.IsCompletedSuccessfully) { return ValidateReceipt(operation.Result, candidateId.Value); }
             pending = operation.AsTask();
@@ -45,20 +47,21 @@ public sealed class RequestAdmission : IRequests
             if (pending is { IsCompletedSuccessfully: true }) { return ValidateReceipt(pending.Result, candidateId!.Value); }
             AdmissionStatus status = !committing || failure is AdmissionCancellationException { Failure.AdmissionStatus: AdmissionStatus.NotAccepted }
                 ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown;
+            FailureDetails details = (failure as AdmissionCancellationException)?.Details ?? new(stage);
             if (cancellationToken.IsCancellationRequested)
             {
-                throw new AdmissionCancellationException(Error(ErrorCode.Cancelled, request, candidateId, status), cancellationToken);
+                throw new AdmissionCancellationException(Error(ErrorCode.Cancelled, request, candidateId, status), cancellationToken) { Details = details };
             }
-            throw new SessionOperationException(Error(deadline.IsCancellationRequested ? ErrorCode.AdmissionTimedOut : ErrorCode.StorageUnavailable, request, candidateId, status));
+            throw new SessionOperationException(Error(deadline.IsCancellationRequested ? ErrorCode.AdmissionTimedOut : ErrorCode.StorageUnavailable, request, candidateId, status)) { Details = details };
         }
         catch (SessionOperationException failure)
         {
             AdmissionStatus status = !committing || failure.Failure.AdmissionStatus == AdmissionStatus.NotAccepted ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown;
-            throw new SessionOperationException(Error(failure.Failure.Code, request, candidateId, status));
+            throw new SessionOperationException(Error(failure.Failure.Code, request, candidateId, status)) { Details = failure.Details ?? new(stage) };
         }
         catch (Exception)
         {
-            throw new SessionOperationException(Error(ErrorCode.StorageUnavailable, request, candidateId, committing ? AdmissionStatus.Unknown : AdmissionStatus.NotAccepted));
+            throw new SessionOperationException(Error(ErrorCode.StorageUnavailable, request, candidateId, committing ? AdmissionStatus.Unknown : AdmissionStatus.NotAccepted)) { Details = new(stage) };
         }
     }
 

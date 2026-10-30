@@ -1,0 +1,102 @@
+{
+  "RecordedUtc": "2026-10-30T08:04:05.1801072+00:00",
+  "SharpClawCommit": "8ca48622050721686a41c06a63d2735182ff3544",
+  "SharpClawTrackedChanges": [],
+  "MultisessionBase": "e6a9c6a1c5a866c377c04c1014387efec50a39c8",
+  "MultisessionState": "Uncommitted reviewed feature003 candidate; package digests identify tested artifacts, not a release.",
+  "Platform": "Debian GNU/Linux 13 (trixie)",
+  "Architecture": "X64",
+  "Sdk": "10.0.403",
+  "ExpectedUnsafeExit": 1,
+  "Scope": "Actual SharpClaw CLI transport, controlled offline protocol, SDK NuGet consumer; Linux only, preallocated native identity.",
+  "Files": [
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-current-sharpclaw-packages/Monstertacle.Multisession.Common.0.2.0-alpha.1.nupkg",
+      "Sha256": "1c9e2a285f781d42d91a00a8ce636ca5a9c068d899ff52d4cf33e4f87596d527"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-current-sharpclaw-packages/Monstertacle.Multisession.Linux.0.2.0-alpha.1.nupkg",
+      "Sha256": "87734df38c8024333c0d62757216d6f204e6168882d5c19d71c9d46876b3dd3d"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-current-sharpclaw-packages/Monstertacle.Multisession.Providers.Gemini.0.2.0-alpha.1.nupkg",
+      "Sha256": "f1d00f3e462b94a4236d82f8182315308a2f0a36e6548e34fc16cf7653f82ef8"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-current-sharpclaw-packages/Monstertacle.Multisession.Providers.OpenAI.0.2.0-alpha.1.nupkg",
+      "Sha256": "367909f15256d8f3457b767a8ca9b09a6c50f5d54db69edc3790de7a8611a097"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-current-sharpclaw-packages/Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.1.nupkg",
+      "Sha256": "c4da8bf31298ab4a77a9c02c2b100086ead765c8dcfd38772af40c5d47a59737"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-current-sharpclaw-packages/Monstertacle.Multisession.Windows.0.2.0-alpha.1.nupkg",
+      "Sha256": "a3d07428796caaff630d2564ecd60925c827a18b1657ea98d7c50f8d7f314e1e"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/sharpclaw-consumer-bound.log",
+      "Sha256": "c0234852d4c2e1958e751b095343462bed2bc145b20779dd2672ea9cdccad924"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/sharpclaw-custody-qualified.log",
+      "Sha256": "dbd9f75b42a6dfa072a0ae461ff2bf7cb1e4b42cbec25e8c43ae3240f58077ed"
+    },
+    {
+      "File": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/sharpclaw-unsafe.log",
+      "Sha256": "339253c1488f4b408e4c1dc78a61f01ddf04994d0a4989244971bb512a5683b0"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/bin/Debug/net10.0/Probe.dll",
+      "Sha256": "9b9a47b650f6ba21941df4d8a6cec60aa5097a8e33cf7537e5a5b96da97e6488"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/bin/Debug/net10.0/SharpClaw.dll",
+      "Sha256": "2dbea63421d87c781da403be8783626bf1a0d24a611d8276ca2fd5c29778982e"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/BindingState.cs",
+      "Sha256": "3627681a918a8fcc360d6d979dbbe016ae840d1b7c0def8d1d1c18d402f60f3d"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/Consumer.cs",
+      "Sha256": "37b1475c38f46a6384e63931722b551c7663ee45da1847dbac24ee3be7842c88"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/CurrentHostProvider.cs",
+      "Sha256": "44e0ad9999a0bc0f4007e30eea13a75fb2cccadff0f4979b99b2ec59fe812736"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/FixtureProtocol.cs",
+      "Sha256": "1d79d1a33afe1ce940cd1decd5758f03edaeb96acf76bbe3d6dbaf1d7c55d9a5"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/HostWorker.cs",
+      "Sha256": "212533673d21afa8f6c8fdb260c3f040203d958976bbc705a16641cc98280b01"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/NuGet.Config",
+      "Sha256": "a3fc17a5b4b2ac423ecd3e3b188f507bdd30a2dc711a61085ef5d2de77a981c6"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/packages.lock.json",
+      "Sha256": "4ec03f38bf73eed9be37be07cf787fb5952604cacb16a5f3f8b48f4c2f5dfe51"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/Probe.csproj",
+      "Sha256": "16342195458f203031590096139dbabf32873656a7ecd74bb00394b15721e248"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/Program.cs",
+      "Sha256": "991b2dfaca07de4084435a667272ce1cf652e919b6af09830cb185914a2ca5da"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/SessionCustodyCases.cs",
+      "Sha256": "036ed92fd07b622048b0a21150dbc363b3206149f3c1ed65c023dda5ac124865"
+    },
+    {
+      "File": "/home/user1/dev/e2e-harness-bundles/multisession-current-sharpclaw/driver/WorkerResult.cs",
+      "Sha256": "7b86c49daa8752984906998d2d3d4515c27593337f722eb3d0d17c0848df3ae1"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+  Determining projects to restore...
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Linux/Monstertacle.Multisession.Linux.csproj (in 628 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj (in 628 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj (in 628 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Windows/Monstertacle.Multisession.Windows.csproj (in 628 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj (in 628 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj (in 628 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj (in 628 ms).
+  Restored /home/user1/dev/github.com/monstertacle/monstertacle.multisession/examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj (in 630 ms).
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/bin/Debug/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/bin/Debug/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/bin/Debug/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Linux/bin/Debug/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Storage.Sqlite/bin/Debug/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/examples/Monstertacle.Multisession.ValidationHost/bin/Debug/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.33]     Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce [34 ms]
+  Error Message:
+   Assert.Single() Failure: The collection contained 2 items
+Collection: [ValidationFailure { Error = PublicError { Code = ExecutionFailed, Certainty = NotStarted, SessionId = , RequestId = , AdmissionStatus =  }, Details =  }, ValidationFailure { Error = PublicError { Code = StorageUnavailable, Certainty = NotStarted, SessionId = , RequestId = , AdmissionStatus =  }, Details = FailureDetails { Stage = StoreOpen, NativeCode = 14, ExtendedNativeCode = 14, PlatformCode =  } }]
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/ScenarioOwnershipTests.cs:line 104
+--- End of stack trace from previous location ---
+Results File: /home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/tdd/native-reliability/nested-cleanup-red/nested-cleanup-red.trx
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 64 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

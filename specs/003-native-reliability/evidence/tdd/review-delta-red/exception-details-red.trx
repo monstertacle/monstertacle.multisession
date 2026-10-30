@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="2d868589-c8f9-4bd1-9019-cdfeca028091" name="@big 2026-10-30 08:16:21" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-30T08:16:21.9228592+01:00" queuing="2026-10-30T08:16:21.9228592+01:00" start="2026-10-30T08:16:21.2415793+01:00" finish="2026-10-30T08:16:21.9281622+01:00" />
+  <TestSettings name="default" id="12ab6e4f-5c38-4082-8dc9-e4678f675118">
+    <Deployment runDeploymentRoot="_big_2026-10-30_08_16_21" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="f2e8184a-0661-4934-a44e-087817a72a9e" testId="459e940c-7e99-3ff6-05c8-c65cdf5cfd92" testName="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails" computerName="big" duration="00:00:00.0041041" startTime="2026-10-30T08:16:21.8307589+01:00" endTime="2026-10-30T08:16:21.8335609+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f2e8184a-0661-4934-a44e-087817a72a9e">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ
+Expected: FailureDetails { Stage = StoreTransaction, NativeCode = 19, ExtendedNativeCode = 1811, PlatformCode =  }
+Actual:   null</Message>
+          <StackTrace>   at Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/AdmissionDiagnosticTests.cs:line 27
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="276c9c83-3d9b-40b5-9179-c330121d6cd1" testId="3c6d5ac9-86fd-7764-caf0-f40e24f217d9" testName="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.MissingOptionalDetailsRemainCompatible" computerName="big" duration="00:00:00.0267173" startTime="2026-10-30T08:16:21.8127042+01:00" endTime="2026-10-30T08:16:21.8295321+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="276c9c83-3d9b-40b5-9179-c330121d6cd1" />
+    <UnitTestResult executionId="ea82a37f-d46e-4357-bbf1-60dd42171518" testId="8632e39f-dfc9-44be-5242-bae739ee77d8" testName="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause" computerName="big" duration="00:00:00.0244512" startTime="2026-10-30T08:16:21.7587670+01:00" endTime="2026-10-30T08:16:21.7993412+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ea82a37f-d46e-4357-bbf1-60dd42171518">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ
+Expected: FailureDetails { Stage = AdmissionCommit, NativeCode = , ExtendedNativeCode = , PlatformCode =  }
+Actual:   null</Message>
+          <StackTrace>   at Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/AdmissionDiagnosticTests.cs:line 55
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause" storage="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/monstertacle.multisession.unittests/bin/debug/net10.0/monstertacle.multisession.unittests.dll" id="8632e39f-dfc9-44be-5242-bae739ee77d8">
+      <Execution id="ea82a37f-d46e-4357-bbf1-60dd42171518" />
+      <TestMethod codeBase="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests" name="IdentifiesCommitTimeoutWithoutInventingNativeCause" />
+    </UnitTest>
+    <UnitTest name="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails" storage="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/monstertacle.multisession.unittests/bin/debug/net10.0/monstertacle.multisession.unittests.dll" id="459e940c-7e99-3ff6-05c8-c65cdf5cfd92">
+      <Execution id="f2e8184a-0661-4934-a44e-087817a72a9e" />
+      <TestMethod codeBase="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests" name="PreservesStoreFailureDetails" />
+    </UnitTest>
+    <UnitTest name="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.MissingOptionalDetailsRemainCompatible" storage="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/monstertacle.multisession.unittests/bin/debug/net10.0/monstertacle.multisession.unittests.dll" id="3c6d5ac9-86fd-7764-caf0-f40e24f217d9">
+      <Execution id="276c9c83-3d9b-40b5-9179-c330121d6cd1" />
+      <TestMethod codeBase="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests" name="MissingOptionalDetailsRemainCompatible" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="459e940c-7e99-3ff6-05c8-c65cdf5cfd92" executionId="f2e8184a-0661-4934-a44e-087817a72a9e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3c6d5ac9-86fd-7764-caf0-f40e24f217d9" executionId="276c9c83-3d9b-40b5-9179-c330121d6cd1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8632e39f-dfc9-44be-5242-bae739ee77d8" executionId="ea82a37f-d46e-4357-bbf1-60dd42171518" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="3" executed="3" passed="1" failed="2" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.14)
+[xUnit.net 00:00:00.07]   Discovering: Monstertacle.Multisession.UnitTests
+[xUnit.net 00:00:00.16]   Discovered:  Monstertacle.Multisession.UnitTests
+[xUnit.net 00:00:00.19]   Starting:    Monstertacle.Multisession.UnitTests
+[xUnit.net 00:00:00.25]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.25]       Expected: FailureDetails { Stage = AdmissionCommit, NativeCode = , ExtendedNativeCode = , PlatformCode =  }
+[xUnit.net 00:00:00.25]       Actual:   null
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.26]         /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/AdmissionDiagnosticTests.cs(55,0): at Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.29]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.29]       Expected: FailureDetails { Stage = StoreTransaction, NativeCode = 19, ExtendedNativeCode = 1811, PlatformCode =  }
+[xUnit.net 00:00:00.29]       Actual:   null
+[xUnit.net 00:00:00.29]       Stack Trace:
+[xUnit.net 00:00:00.29]         /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/AdmissionDiagnosticTests.cs(27,0): at Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails()
+[xUnit.net 00:00:00.29]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.29]   Finished:    Monstertacle.Multisession.UnitTests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="big" outcome="Error" timestamp="2026-10-30T08:16:21.8020577+01:00">
+        <Text>[xUnit.net 00:00:00.25]     Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="big" outcome="Error" timestamp="2026-10-30T08:16:21.8343726+01:00">
+        <Text>[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

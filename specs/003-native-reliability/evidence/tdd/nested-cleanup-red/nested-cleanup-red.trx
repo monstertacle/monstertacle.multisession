@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="5f8c4b37-7192-493a-82a1-ab82a9831f40" name="@big 2026-10-30 11:23:35" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-30T11:23:35.2778767+01:00" queuing="2026-10-30T11:23:35.2778768+01:00" start="2026-10-30T11:23:34.4477078+01:00" finish="2026-10-30T11:23:35.2862141+01:00" />
+  <TestSettings name="default" id="7e18a2e3-b1a6-4985-8bf9-40677c52bd4d">
+    <Deployment runDeploymentRoot="_big_2026-10-30_11_23_35" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="2c41d559-5f45-4567-b54a-e249a56c3e53" testId="e4c9f779-b124-d670-90f1-8c43deb2eaf5" testName="Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce" computerName="big" duration="00:00:00.0347705" startTime="2026-10-30T11:23:35.0825143+01:00" endTime="2026-10-30T11:23:35.1467679+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2c41d559-5f45-4567-b54a-e249a56c3e53">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Single() Failure: The collection contained 2 items
+Collection: [ValidationFailure { Error = PublicError { Code = ExecutionFailed, Certainty = NotStarted, SessionId = , RequestId = , AdmissionStatus =  }, Details =  }, ValidationFailure { Error = PublicError { Code = StorageUnavailable, Certainty = NotStarted, SessionId = , RequestId = , AdmissionStatus =  }, Details = FailureDetails { Stage = StoreOpen, NativeCode = 14, ExtendedNativeCode = 14, PlatformCode =  } }]</Message>
+          <StackTrace>   at Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/ScenarioOwnershipTests.cs:line 104
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce" storage="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/monstertacle.multisession.unittests/bin/debug/net10.0/monstertacle.multisession.unittests.dll" id="e4c9f779-b124-d670-90f1-8c43deb2eaf5">
+      <Execution id="2c41d559-5f45-4567-b54a-e249a56c3e53" />
+      <TestMethod codeBase="/home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests" name="FlattensCleanupOnlyEvidenceExactlyOnce" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="e4c9f779-b124-d670-90f1-8c43deb2eaf5" executionId="2c41d559-5f45-4567-b54a-e249a56c3e53" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.14)
+[xUnit.net 00:00:00.09]   Discovering: Monstertacle.Multisession.UnitTests
+[xUnit.net 00:00:00.21]   Discovered:  Monstertacle.Multisession.UnitTests
+[xUnit.net 00:00:00.24]   Starting:    Monstertacle.Multisession.UnitTests
+[xUnit.net 00:00:00.33]       Assert.Single() Failure: The collection contained 2 items
+[xUnit.net 00:00:00.33]       Collection: [ValidationFailure { Error = PublicError { Code = ExecutionFailed, Certainty = NotStarted, SessionId = , RequestId = , AdmissionStatus =  }, Details =  }, ValidationFailure { Error = PublicError { Code = StorageUnavailable, Certainty = NotStarted, SessionId = , RequestId = , AdmissionStatus =  }, Details = FailureDetails { Stage = StoreOpen, NativeCode = 14, ExtendedNativeCode = 14, PlatformCode =  } }]
+[xUnit.net 00:00:00.33]       Stack Trace:
+[xUnit.net 00:00:00.33]         /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/ScenarioOwnershipTests.cs(104,0): at Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce()
+[xUnit.net 00:00:00.33]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.35]   Finished:    Monstertacle.Multisession.UnitTests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="big" outcome="Error" timestamp="2026-10-30T11:23:35.1536800+01:00">
+        <Text>[xUnit.net 00:00:00.33]     Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.FlattensCleanupOnlyEvidenceExactlyOnce [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

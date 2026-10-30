@@ -1,0 +1,34 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/bin/Debug/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Linux/bin/Debug/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/bin/Debug/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/bin/Debug/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Storage.Sqlite/bin/Debug/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/examples/Monstertacle.Multisession.ValidationHost/bin/Debug/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.IntegrationTests -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/bin/Debug/net10.0/Monstertacle.Multisession.IntegrationTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/bin/Debug/net10.0/Monstertacle.Multisession.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.44]     Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.RollsBackPartialWritesBeforeReportingKnownNonAcceptance [FAIL]
+[xUnit.net 00:00:00.47]     Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.ReportsUnknownCommitOutcomeWithLookupCandidate [FAIL]
+  Failed Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.RollsBackPartialWritesBeforeReportingKnownNonAcceptance [181 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: FailureDetails { Stage = StoreTransaction, NativeCode = 19, ExtendedNativeCode = 1811, PlatformCode =  }
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.RollsBackPartialWritesBeforeReportingKnownNonAcceptance() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs:line 26
+   at Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.RollsBackPartialWritesBeforeReportingKnownNonAcceptance() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs:line 31
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.ReportsUnknownCommitOutcomeWithLookupCandidate [28 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: FailureDetails { Stage = StoreCommit, NativeCode = 19, ExtendedNativeCode = 787, PlatformCode =  }
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.ReportsUnknownCommitOutcomeWithLookupCandidate() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs:line 53
+   at Monstertacle.Multisession.IntegrationTests.AcceptanceFailureTests.ReportsUnknownCommitOutcomeWithLookupCandidate() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs:line 61
+--- End of stack trace from previous location ---
+Results File: /home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/tdd/native-reliability/review-delta-red/exception-sql-red.trx
+
+Failed!  - Failed:     2, Passed:     0, Skipped:     0, Total:     2, Duration: 226 ms - Monstertacle.Multisession.IntegrationTests.dll (net10.0)

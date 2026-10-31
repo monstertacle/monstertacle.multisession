@@ -1,7 +1,7 @@
 # Feature Specification: Provider-neutral framework migration
 
 **Feature Branch**: `feature/agent-framework-migration`
-**Status**: Implemented; qualification in progress
+**Status**: Implemented and natively qualified; library scope complete
 **Input**: Use Microsoft Agent Framework in C# and migrate autonomously using SpecKit; retain provider-neutral names and contracts.
 
 ## User Scenarios & Testing

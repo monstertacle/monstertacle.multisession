@@ -1,7 +1,7 @@
 # Implementation Plan: Agent Framework migration
 
 **Branch**: `feature/agent-framework-migration`
-**Status**: in_progress: implementation complete; native/package qualification pending
+**Status**: done: library migration and native/package qualification; merge tracked by PR #4
 **Owner**: primary integration agent
 **Spec**: [spec.md](spec.md)
 
@@ -52,3 +52,10 @@ Primary integration agent owns all new gaps. Unknown-effect/custody, stale accep
 Full native Linux:402 unit,252 contract,412 integration and68 platform tests; zero skipped. Product coverage97.8364 percent; complete Codemetr Cover including ValidationHost95.8 percent with zero violations. Static guard measures540 types/520 files with zero violations/skips. Isolated package consumers restore locked dependencies and execute both original public runtime flow and two generic framework turns. An archival-only correction keeps generated consumer sources as text and isolates its metrics context; final CI must qualify that release source on both native platforms. Public package publication and live-host activation are not inferred from these library checks.
 
 The first cross-platform canonical run found the verifier's stale six-package count. This metadata defect was reproduced by the seven-package fixture and fixed without weakening identity or byte-hash checks. Native producers and isolated consumers had already passed on Linux/Windows; final-head canonical checks remain mandatory. See canonical-count-red and canonical-producer-linux evidence.
+
+
+## Qualified completion
+
+The exact source head `4be2e1acdfbb07652bc97aff23ebe503f6d50654` passed native Linux/Windows quality, both static guards and both canonical consumers in [CI run 41209979809](https://github.com/monstertacle/monstertacle.multisession/actions/runs/41209979809). All seven producer package bytes are verified before consumption. Machine-readable source hashes, native coverage and complete Cover results are in evidence/ci-qualification.json. Both contrary correction roles found no remaining implementation blocker. The coverage-diagnostic follow-up remains concrete and nonblocking. Library source and private package artifacts are complete; public publication and live-host activation remain their explicitly separate boundaries.
+
+Post-merge procedure: require all checks for the final PR head, merge through GitHub, verify each prior source head is an ancestor of origin/main, then close superseded proposals and delete only those landed branches. The closure metadata commit does not change product/build/test sources.

@@ -44,7 +44,8 @@ internal sealed class DispatchTermination(ReservedDispatch dispatch, ProviderReg
             if (reply.Certainty != ExecutionCertainty.ConfirmedEnded && !(originalSend && reply.Certainty == ExecutionCertainty.NotStarted)) { return null; }
             reply = DispatchReplyPolicy.Normalize(reply, dispatch.Session.Binding!, observations.SessionReference, maximumOutputBytes);
             if (reply.Certainty == ExecutionCertainty.Unknown) { return null; }
-            if (reply.Certainty == ExecutionCertainty.ConfirmedEnded && registration.Provider.Capabilities.RequiresOperationAwareRecovery && reply.Binding is null)
+            if (reply.Certainty == ExecutionCertainty.ConfirmedEnded && registration.Provider.Capabilities.RequiresOperationAwareRecovery
+                && reply.Binding is null && reply.ContinuationAvailable is not false)
             {
                 ProviderBinding? binding = await ReopenAsync(token);
                 if (binding is null) { return null; }

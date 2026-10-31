@@ -15,10 +15,10 @@ public sealed class FrameworkSessionProvider : ISessionProvider
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(factory);
         ArgumentException.ThrowIfNullOrWhiteSpace(options.AdapterId);
-        if (!Enum.IsDefined(options.ExecutionKind) || options.MaximumStateBytes <= 0
+        if (!Enum.IsDefined(options.ExecutionKind) || options.MaximumStateBytes <= 0 || options.MaximumObservations < 0
             || options.SessionOperationTimeout <= TimeSpan.Zero || options.SessionOperationTimeout > TimeSpan.FromMilliseconds(uint.MaxValue - 1))
         {
-            throw new ArgumentException("A valid execution kind, finite deadline and positive state limit are required.", nameof(options));
+            throw new ArgumentException("A valid execution kind, finite deadline, positive state limit and nonnegative observation bound are required.", nameof(options));
         }
         _options = options;
         _factory = factory;
@@ -55,7 +55,7 @@ public sealed class FrameworkSessionProvider : ISessionProvider
         {
             return ValueTask.FromResult(FrameworkResponsePolicy.Failure(ErrorCode.InvalidConfiguration, ExecutionCertainty.NotStarted));
         }
-        return new FrameworkExecution(_codec).SendAsync(GetAgent(request.Session), request, binding, observe, cancellationToken);
+        return new FrameworkExecution(_codec, _options).SendAsync(GetAgent(request.Session), request, binding, observe, cancellationToken);
     }
     /// <inheritdoc />
     public ValueTask<ProviderReply> InspectAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)

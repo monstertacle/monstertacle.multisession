@@ -86,9 +86,11 @@ public sealed class FrameworkFailureTests
         ProviderSessionContext context = FrameworkSessionProviderTests.Context();
         ProviderBinding binding = await provider.OpenAsync(context, default);
         ProviderReply reply = await provider.SendAsync(FrameworkSessionProviderTests.Call(context), binding, FrameworkSessionProviderTests.Observe, default);
-        Assert.Equal(RequestState.Failed, reply.Outcome);
+        Assert.Equal(RequestState.Succeeded, reply.Outcome);
         Assert.Equal(ExecutionCertainty.ConfirmedEnded, reply.Certainty);
-        Assert.Equal(binding, reply.Binding);
+        Assert.Equal("turn-1", reply.Output);
+        Assert.True(reply.OutputComplete);
+        Assert.Null(reply.Binding);
         Assert.False(reply.ContinuationAvailable);
     }
 

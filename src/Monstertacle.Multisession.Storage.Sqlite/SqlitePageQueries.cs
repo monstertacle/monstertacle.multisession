@@ -28,10 +28,11 @@ internal static class SqlitePageQueries
         CursorKey? last = PageCursor.Read(cursor, scope);
         string seek = last is null ? string.Empty : "AND (Sequence,RequestId)>($sequence,$id) ";
         using SqliteCommand command = SqliteStatements.Create(connection, null,
-            "SELECT SnapshotJson,Sequence,RequestId FROM Requests WHERE SessionId=$session " + seek + "ORDER BY Sequence,RequestId COLLATE BINARY LIMIT $limit",
+            "SELECT SnapshotJson,Sequence,RequestId,ReservedDispatchJson FROM Requests WHERE SessionId=$session " + seek + "ORDER BY Sequence,RequestId COLLATE BINARY LIMIT $limit",
             ("$session", sessionId.ToString("D")), ("$limit", size + 1), ("$sequence", last?.Ordinal), ("$id", last?.Id.ToString("D")));
         return SqlitePages.Read(command, size, scope, reader =>
-            (StoreSerialization.Read<RequestSnapshot>(reader.GetString(0)), new CursorKey(Guid.ParseExact(reader.GetString(2), "D"), reader.GetInt64(1))));
+            (QueryTransactions.WithEvidence(StoreSerialization.Read<RequestSnapshot>(reader.GetString(0)), reader.IsDBNull(3) ? null : reader.GetString(3)),
+                new CursorKey(Guid.ParseExact(reader.GetString(2), "D"), reader.GetInt64(1))));
     }
 
     internal static Page<HistoryEntry> History(SqliteConnection connection, Guid storeId, Guid sessionId, int size, string? cursor)

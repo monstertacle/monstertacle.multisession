@@ -1,4 +1,5 @@
-param([Parameter(Mandatory)][string]$Workspace, [Parameter(Mandatory)][string]$ProjectText, [Parameter(Mandatory)][string]$ConfigPath, [Parameter(Mandatory)][string]$Framework)
+param([Parameter(Mandatory)][string]$Workspace, [Parameter(Mandatory)][string]$ProjectText, [Parameter(Mandatory)][string]$ConfigPath, [Parameter(Mandatory)][string]$Framework,
+    [Parameter(Mandatory)][string]$PriorFeed, [Parameter(Mandatory)][string]$PlatformPackage)
 $ErrorActionPreference = 'Stop'
 $probe = Join-Path $Workspace 'framework-consumer'
 $null = New-Item $probe -ItemType Directory -Force
@@ -21,9 +22,14 @@ $source | & dotnet tool run codemetr-csharp -- check --files-from - --config $gu
 if ($LASTEXITCODE -ne 0) { throw "Framework consumer metrics failed: $probe" }
 $result = Get-Content (Join-Path $probe 'metrics.json') -Raw | ConvertFrom-Json
 if ($result.summary.types -ne 3 -or $result.summary.skipped -ne 0) { throw 'All three framework consumer types must be measured.' }
-& dotnet (Join-Path $probe "bin/Release/$Framework/FrameworkConsumer.dll") (Join-Path $probe 'state') *> (Join-Path $probe 'run.log')
+$trustScope = [Guid]::NewGuid().ToString("D")
+$state = Join-Path $probe "state"
+& dotnet (Join-Path $probe "bin/Release/$Framework/FrameworkConsumer.dll") $state $trustScope *> (Join-Path $probe 'run.log')
 if ($LASTEXITCODE -ne 0) { throw "Framework consumer execution failed: $probe" }
 if ((Get-Content (Join-Path $probe 'run.log') -Raw) -notmatch 'FRAMEWORK-PASS') { throw 'Missing framework qualification output.' }
+& (Join-Path $PSScriptRoot "Test-PriorReaderRefusal.ps1") -Workspace $Workspace -PriorFeed $PriorFeed -StateDirectory $state -TrustScopeId $trustScope -Framework $Framework -PlatformPackage $PlatformPackage
+Copy-Item (Join-Path $Workspace "prior-reader/prior-reader.json") (Join-Path $probe "prior-reader.json")
+Copy-Item (Join-Path $Workspace "prior-reader/run.log") (Join-Path $probe "prior-reader-run.log")
 $evidence = Join-Path $Workspace 'framework-evidence'
 $null = New-Item $evidence -ItemType Directory -Force
 Get-ChildItem $probe -File | ForEach-Object {

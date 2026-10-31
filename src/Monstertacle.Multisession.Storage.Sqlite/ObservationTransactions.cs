@@ -18,6 +18,10 @@ internal static class ObservationTransactions
                 ProviderObservationKind.OperationAccepted when reference => stored with { OperationReference = observation.Reference },
                 ProviderObservationKind.SessionEstablished when reference && (stable is null || stable == observation.Reference)
                     => stored with { SessionReference = observation.Reference },
+                ProviderObservationKind.InvocationPrepared when !stored.InvocationPrepared && observation.Reference == dispatchId.ToString("N")
+                    => stored with { InvocationPrepared = true },
+                ProviderObservationKind.NativeSessionObserved when reference && (stored.NativeSessionReference ?? observation.Reference) == observation.Reference
+                    => stored with { NativeSessionReference = observation.Reference },
                 _ => throw new SessionOperationException(new(ErrorCode.InvalidInput)),
             };
             using SqliteCommand command = SqliteStatements.Create(connection, transaction,

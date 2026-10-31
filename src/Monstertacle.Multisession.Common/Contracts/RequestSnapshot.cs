@@ -25,4 +25,6 @@ public sealed record RequestSnapshot(
     public DateTimeOffset? EndedUtc { get; init; }
     /// <summary>Gets separately recorded cancellation intent, which does not prove external end.</summary>
     public DateTimeOffset? CancellationRequestedUtc { get; init; }
+    /// <summary>Gets acknowledged dispatch observations, absent before any dispatch was reserved.</summary>
+    public ExecutionEvidence? Evidence { get; init; }
 }

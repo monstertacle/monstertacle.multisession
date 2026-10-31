@@ -1,0 +1,23 @@
+Command: dotnet test tests/Monstertacle.Multisession.IntegrationTests -c Release -f net10.0 --no-build --filter FrameworkEvidenceTests (via run-capped 4G/1G)
+Framework side implemented, Common/SQLite observation persistence and public evidence projection absent:
+  Failed Monstertacle.Multisession.IntegrationTests.FrameworkEvidenceTests.ConflictingNativeIdentityIsUncertain [257 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+Expected: "first"
+Actual:   null
+  Failed Monstertacle.Multisession.IntegrationTests.FrameworkEvidenceTests.UncertainInvocationKeepsEvidenceAfterRestart [69 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ExecutionEvidence { InvocationPrepared = True, OperationReference = , NativeSessionReference = native-u }
+Actual:   null
+  Failed Monstertacle.Multisession.IntegrationTests.FrameworkEvidenceTests.NativeEvidenceSurvivesReopenWithoutReplacingBinding [33 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Succeeded
+Actual:   Failed
+  Failed Monstertacle.Multisession.IntegrationTests.FrameworkEvidenceTests.KnownFailureKeepsPartialOutputAndReleasesCapacity [35 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Tuple (Failed, ConfirmedEnded)
+Actual:   Tuple (Failed, Unknown)
+Failed!  - Failed:     4, Passed:     0, Skipped:     0, Total:     4, Duration: 414 ms - Monstertacle.Multisession.IntegrationTests.dll (net10.0)

@@ -34,7 +34,7 @@ internal sealed class AdmissionStoreFixture(PrivateStoreDirectory directory, ISe
     }
 
     public ValueTask<SessionSnapshot> CreateSessionAsync()
-        => Catalog.CreateSessionAsync("profile-İ", new(null, "host-workspace"), CancellationToken.None);
+        => Catalog.CreateSessionAsync(Guid.NewGuid(), "profile-İ", new(null, "host-workspace"), CancellationToken.None);
 
     public async Task ReopenAsync()
     {

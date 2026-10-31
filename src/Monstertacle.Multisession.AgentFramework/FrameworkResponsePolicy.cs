@@ -17,10 +17,10 @@ internal static class FrameworkResponsePolicy
     }
 
 #pragma warning restore MEAI001
-    internal static ProviderReply Complete(AgentResponse response, ProviderBinding binding, int maximumBytes)
+    internal static ProviderReply Complete(AgentResponse response, ProviderBinding? binding, int maximumBytes)
     {
         string output = response.Messages[^1].Text;
-        ProviderReply reply = new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, output, true, binding, null) { ContinuationAvailable = true };
+        ProviderReply reply = new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, output, true, binding, null) { ContinuationAvailable = binding is not null };
         return ProviderReplyPolicy.NormalizeOutput(reply, maximumBytes);
     }
 

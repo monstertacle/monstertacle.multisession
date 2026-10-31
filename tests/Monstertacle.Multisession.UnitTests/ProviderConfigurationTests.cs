@@ -72,7 +72,7 @@ public sealed class ProviderConfigurationTests
         AgentProfile profile = Profile() with { Settings = new("revision", values) };
         SessionCatalog catalog = new(new InMemorySessionStore(), [Registration()], [profile]);
         values["instruction"] = "changed";
-        SessionSnapshot session = await catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), null), CancellationToken.None);
+        SessionSnapshot session = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), null), CancellationToken.None);
         Assert.Equal("original", session.Context.Settings["instruction"]);
     }
 
@@ -81,8 +81,8 @@ public sealed class ProviderConfigurationTests
     public async Task KeepsOrdinalIdsAndAllowsSharedModel()
     {
         SessionCatalog catalog = new(new InMemorySessionStore(), [Registration(), Registration("Provider")], [Profile(), Profile("Profile", "Provider")]);
-        SessionSnapshot first = await catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), null), CancellationToken.None);
-        SessionSnapshot second = await catalog.CreateSessionAsync("Profile", new(Path.GetTempPath(), null), CancellationToken.None);
+        SessionSnapshot first = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), null), CancellationToken.None);
+        SessionSnapshot second = await catalog.CreateSessionAsync(Guid.NewGuid(), "Profile", new(Path.GetTempPath(), null), CancellationToken.None);
         Assert.Equal("provider", first.ProviderId);
         Assert.Equal("Provider", second.ProviderId);
         Assert.Equal(first.Context.ModelId, second.Context.ModelId);

@@ -1,0 +1,52 @@
+  Determining projects to restore...
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/Monstertacle.Multisession.Linux.csproj (in 229 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/Monstertacle.Multisession.Providers.Interactions.csproj (in 229 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/Monstertacle.Multisession.Providers.Conversations.csproj (in 229 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj (in 229 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/Monstertacle.Multisession.AgentFramework.csproj (in 229 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj (in 229 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Windows/Monstertacle.Multisession.Windows.csproj (in 229 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/Monstertacle.Multisession.IntegrationTests.csproj (in 231 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj (in 16 ms).
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Providers.Conversations -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/bin/Release/net10.0/Monstertacle.Multisession.Providers.Conversations.dll
+  Monstertacle.Multisession.Providers.Interactions -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/bin/Release/net10.0/Monstertacle.Multisession.Providers.Interactions.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.IntegrationTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/bin/Release/net10.0/Monstertacle.Multisession.IntegrationTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/bin/Release/net10.0/Monstertacle.Multisession.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.44]     Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(changeFingerprint: False) [FAIL]
+[xUnit.net 00:00:00.47]     Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(changeFingerprint: True) [FAIL]
+[xUnit.net 00:00:00.50]     Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.ReopenRetainsAcceptedSubmissionFingerprint [FAIL]
+  Failed Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(changeFingerprint: False) [178 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Contracts.SessionOperationException)
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.RequestStorageConsistencyTests.AssertRejectedWithoutMutationAsync(AdmissionStoreFixture fixture) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestStorageConsistencyTests.cs:line 88
+   at Monstertacle.Multisession.IntegrationTests.RequestStorageConsistencyTests.AssertRejectedWithoutMutationAsync(AdmissionStoreFixture fixture) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestStorageConsistencyTests.cs:line 90
+   at Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(Boolean changeFingerprint) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestFingerprintPersistenceTests.cs:line 42
+   at Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(Boolean changeFingerprint) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestFingerprintPersistenceTests.cs:line 42
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(changeFingerprint: True) [29 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Contracts.SessionOperationException)
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.RequestStorageConsistencyTests.AssertRejectedWithoutMutationAsync(AdmissionStoreFixture fixture) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestStorageConsistencyTests.cs:line 88
+   at Monstertacle.Multisession.IntegrationTests.RequestStorageConsistencyTests.AssertRejectedWithoutMutationAsync(AdmissionStoreFixture fixture) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestStorageConsistencyTests.cs:line 90
+   at Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(Boolean changeFingerprint) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestFingerprintPersistenceTests.cs:line 42
+   at Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.RejectsChangedValidPayloadOrFingerprintWithoutMutation(Boolean changeFingerprint) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestFingerprintPersistenceTests.cs:line 42
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.ReopenRetainsAcceptedSubmissionFingerprint [28 ms]
+  Error Message:
+   Assert.NotEmpty() Failure: Collection was empty
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.ReopenRetainsAcceptedSubmissionFingerprint() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestFingerprintPersistenceTests.cs:line 23
+   at Monstertacle.Multisession.IntegrationTests.RequestFingerprintPersistenceTests.ReopenRetainsAcceptedSubmissionFingerprint() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/RequestFingerprintPersistenceTests.cs:line 25
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     3, Passed:     0, Skipped:     0, Total:     3, Duration: 251 ms - Monstertacle.Multisession.IntegrationTests.dll (net10.0)

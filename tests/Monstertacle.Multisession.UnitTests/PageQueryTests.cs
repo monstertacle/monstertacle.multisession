@@ -45,8 +45,8 @@ public sealed class PageQueryTests
         await store.CreateSessionAsync(first, CancellationToken.None);
         await store.CreateSessionAsync(other, CancellationToken.None);
         RequestAdmission requests = new(store, RuntimeOptionsTests.ValidOptions());
-        RequestReceipt left = await requests.SubmitAsync(new(first.SessionId, "one", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
-        RequestReceipt right = await requests.SubmitAsync(new(first.SessionId, "two", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt left = await requests.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "one", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt right = await requests.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "two", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         Page<RequestSnapshot> page = await requests.ListRequestsAsync(first.SessionId, 1, null, CancellationToken.None);
         Assert.Equal(left.RequestId, Assert.Single(page.Items).RequestId);
         Assert.NotNull(page.NextCursor);
@@ -104,7 +104,7 @@ public sealed class PageQueryTests
         ControlledProvider provider = new();
         SessionCatalog catalog = new(store, [new("connection", "controlled", 1, provider)],
             [new("profile", "connection", "model", ExecutionKind.AgentTask, new("revision", new Dictionary<string, string>()))], clock);
-        SessionSnapshot created = await catalog.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+        SessionSnapshot created = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
         Assert.Equal(clock.GetUtcNow(), created.CreatedUtc);
         Assert.Equal(created, await catalog.GetSessionAsync(created.SessionId, CancellationToken.None));
     }

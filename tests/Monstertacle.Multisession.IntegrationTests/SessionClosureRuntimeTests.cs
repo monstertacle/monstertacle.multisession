@@ -33,13 +33,13 @@ public sealed class SessionClosureRuntimeTests
                 ExecutionCertainty.ConfirmedEnded, string.Empty, false, null, new(ErrorCode.Cancelled))),
         };
         await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, [new("connection-I", "fixture-adapter", 7, provider)]);
-        RequestReceipt active = await host.Runtime.Requests.SubmitAsync(new(session.SessionId, "active", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+        RequestReceipt active = await host.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "active", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        RequestReceipt queued = await host.Runtime.Requests.SubmitAsync(new(session.SessionId, "queued", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+        RequestReceipt queued = await host.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "queued", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
         try
         {
             Task close = host.Runtime.Sessions.CloseSessionAsync(session.SessionId, CancellationToken.None).AsTask();
-            RequestReceipt other = await host.Runtime.Requests.SubmitAsync(new(independent.SessionId, "independent", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+            RequestReceipt other = await host.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(independent.SessionId, "independent", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
             Assert.Equal(RequestState.Succeeded, (await host.CompletedAsync(other.RequestId)).State);
             await close.WaitAsync(TimeSpan.FromSeconds(3));
             SessionSnapshot snapshot = (await host.Runtime.Sessions.GetSessionAsync(session.SessionId, CancellationToken.None))!;
@@ -75,7 +75,7 @@ public sealed class SessionClosureRuntimeTests
             Cancelling = async (context, operation, token) => { cancelling.TrySetResult(); return await end.Task.WaitAsync(token); },
         };
         await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, [new("connection-I", "fixture-adapter", 7, provider)]);
-        RequestReceipt receipt = await host.Runtime.Requests.SubmitAsync(new(session.SessionId, "held", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+        RequestReceipt receipt = await host.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "held", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
         using CancellationTokenSource caller = new();
         Task close = host.Runtime.Sessions.CloseSessionAsync(session.SessionId, caller.Token).AsTask();

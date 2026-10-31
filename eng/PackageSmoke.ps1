@@ -36,12 +36,12 @@ $project = @"
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Monstertacle.Multisession.$platformPackage.${platformPackage}StateDirectoryLease" Alias="NativeLease" />
-    <PackageReference Include="Monstertacle.Multisession.AgentFramework" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Conversations" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Interactions" Version="0.2.0-alpha.2" />
+    <PackageReference Include="Monstertacle.Multisession.AgentFramework" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Conversations" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Interactions" Version="0.2.0-alpha.3" />
   </ItemGroup>
 </Project>
 "@
@@ -75,7 +75,7 @@ try {
     Invoke-SmokeDotnet @((Join-Path $workspace "bin/Release/$framework/Consumer.dll"), (Join-Path $workspace 'state')) 'report.json'
     $report = Get-Content -Raw -LiteralPath (Join-Path $workspace 'report.json') | ConvertFrom-Json
     if ($report.Status -ne 'PASS' -or $report.Requests -ne 5 -or $report.ReopenedRequests -ne 5) { throw 'Incomplete public consumer proof.' }
-    & (Join-Path $PSScriptRoot Test-FrameworkConsumer.ps1) -Workspace $workspace -ProjectText $project -ConfigPath $configPath -Framework $framework
+    & (Join-Path $PSScriptRoot Test-FrameworkConsumer.ps1) -Workspace $workspace -ProjectText $project -ConfigPath $configPath -Framework $framework -PriorFeed (& (Join-Path $PSScriptRoot Build-PriorPackages.ps1) -Workspace $workspace) -PlatformPackage $platformPackage
     $hashes = @((Get-ChildItem -LiteralPath $feed -Filter '*.nupkg' -File) + (Get-Item -LiteralPath $template, $consumerSource, $projectPath, $configPath) |
         ForEach-Object { [ordered]@{ File = $_.Name; Sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() } })
     [ordered]@{ Status = 'PASS'; Platform = $platformPackage; CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O'); Workspace = $workspace; Hashes = $hashes; Consumer = $report } |

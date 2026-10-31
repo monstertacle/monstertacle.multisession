@@ -24,6 +24,6 @@ public sealed class RequestScheduler
     }
 
     /// <summary>Returns only after the store has reserved a head, or reports that none is eligible.</summary>
-    public ValueTask<ExecutionReservation?> TryReserveAsync(CancellationToken cancellationToken)
-        => _store.TryReserveHeadAsync(_maxConcurrentRequests, cancellationToken);
+    public ValueTask<ExecutionReservation?> TryReserveAsync(CancellationToken cancellationToken, Guid expectedRequestId = default)
+        => _store.TryReserveHeadAsync(_maxConcurrentRequests, cancellationToken, expectedRequestId == Guid.Empty ? null : expectedRequestId);
 }

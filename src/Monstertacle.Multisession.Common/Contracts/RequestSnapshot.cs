@@ -15,6 +15,8 @@ public sealed record RequestSnapshot(
     ExecutionCertainty Certainty,
     ProviderReply? Result)
 {
+    /// <summary>Gets the canonical immutable submission fingerprint stored at acceptance.</summary>
+    public string SubmissionFingerprint { get; init; } = string.Empty;
     /// <summary>Gets the UTC instant at which the input was durably accepted.</summary>
     public DateTimeOffset AcceptedUtc { get; init; }
     /// <summary>Gets the actual dispatch time, absent while queued.</summary>
@@ -23,4 +25,6 @@ public sealed record RequestSnapshot(
     public DateTimeOffset? EndedUtc { get; init; }
     /// <summary>Gets separately recorded cancellation intent, which does not prove external end.</summary>
     public DateTimeOffset? CancellationRequestedUtc { get; init; }
+    /// <summary>Gets acknowledged dispatch observations, absent before any dispatch was reserved.</summary>
+    public ExecutionEvidence? Evidence { get; init; }
 }

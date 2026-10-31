@@ -1,0 +1,17 @@
+{
+  "Platform": "linux",
+  "ThresholdPercent": 87.0,
+  "TotalLines": 3383,
+  "CoveredLines": 3311,
+  "Percent": 97.8717,
+  "Modules": [
+    "Monstertacle.Multisession.AgentFramework",
+    "Monstertacle.Multisession.Common",
+    "Monstertacle.Multisession.Linux",
+    "Monstertacle.Multisession.Providers.Conversations",
+    "Monstertacle.Multisession.Providers.Interactions",
+    "Monstertacle.Multisession.Storage.Sqlite"
+  ],
+  "Reports": 8,
+  "Passed": true
+}

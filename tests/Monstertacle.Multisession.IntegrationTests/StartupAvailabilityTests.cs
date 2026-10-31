@@ -17,8 +17,8 @@ public sealed class StartupAvailabilityTests
     public async Task BlocksMissingProviderBeforeDispatchAndContinuesIndependentSession()
     {
         await using AdmissionStoreFixture seed = await AdmissionStoreFixture.CreateAsync();
-        SessionSnapshot unavailable = await Catalog(seed, "missing").CreateSessionAsync("profile", new(null, null), CancellationToken.None);
-        SessionSnapshot independent = await Catalog(seed, "available").CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+        SessionSnapshot unavailable = await Catalog(seed, "missing").CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
+        SessionSnapshot independent = await Catalog(seed, "available").CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
         RequestReceipt blocked = await seed.Store.CommitAcceptanceAsync(new(Guid.NewGuid(), new(unavailable.SessionId, "blocked", TimeSpan.FromSeconds(10), null, false)), 100, CancellationToken.None);
         RequestReceipt accepted = await seed.Store.CommitAcceptanceAsync(new(Guid.NewGuid(), new(independent.SessionId, "independent", TimeSpan.FromSeconds(10), null, false)), 100, CancellationToken.None);
         await seed.Store.DisposeAsync();
@@ -61,7 +61,7 @@ public sealed class StartupAvailabilityTests
         if (controlledStop)
         {
             Assert.Equal(RequestState.Cancelled, (await restored.Runtime.Requests.GetRequestAsync(accepted.RequestId, CancellationToken.None))?.State);
-            accepted = await restored.Runtime.Requests.SubmitAsync(new(session.SessionId, "explicit new input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            accepted = await restored.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "explicit new input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         }
         Assert.Equal(RequestState.Succeeded, (await restored.CompletedAsync(accepted.RequestId)).State);
         SessionSnapshot saved = (await restored.Runtime.Sessions.GetSessionAsync(session.SessionId, CancellationToken.None))!;

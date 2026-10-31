@@ -36,7 +36,7 @@ public sealed class AcceptancePersistenceTests
         await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await fixture.CreateSessionAsync();
         const string input = "  new input\r\nα🙂 '; DROP TABLE Requests; --\n";
-        RequestReceipt receipt = await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(new(session.SessionId, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt receipt = await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(Guid.NewGuid(), new(session.SessionId, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         RequestSnapshot saved = (await fixture.Store.GetRequestAsync(receipt.RequestId, CancellationToken.None))!;
         Assert.NotEqual(Guid.Empty, receipt.RequestId);
         Assert.Equal(1, receipt.Sequence);
@@ -104,8 +104,8 @@ public sealed class AcceptancePersistenceTests
         SessionSnapshot session = await fixture.CreateSessionAsync();
         RequestAdmission admission = new(fixture.Store, fixture.Options);
         SubmitRequest submission = new(session.SessionId, " \r\n", TimeSpan.FromSeconds(10), null, false);
-        RequestReceipt first = await admission.SubmitAsync(submission, CancellationToken.None);
-        RequestReceipt second = await admission.SubmitAsync(submission, CancellationToken.None);
+        RequestReceipt first = await admission.SubmitAsync(Guid.NewGuid(), submission, CancellationToken.None);
+        RequestReceipt second = await admission.SubmitAsync(Guid.NewGuid(), submission, CancellationToken.None);
         Assert.NotEqual(first.RequestId, second.RequestId);
         Assert.Equal(first.Sequence + 1, second.Sequence);
     }

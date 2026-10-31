@@ -18,7 +18,7 @@ public sealed class Utf8PersistenceIntegrityTests
         SessionSnapshot session = await fixture.CreateSessionAsync();
         SubmitRequest request = new(session.SessionId, "SECRET-" + (char)codepoint + "-INPUT", TimeSpan.FromSeconds(5), null, false);
         SessionOperationException publicFailure = await Assert.ThrowsAsync<SessionOperationException>(() =>
-            new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(request, CancellationToken.None).AsTask());
+            new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(Guid.NewGuid(), request, CancellationToken.None).AsTask());
         SessionOperationException directFailure = await Assert.ThrowsAsync<SessionOperationException>(() =>
             fixture.Store.CommitAcceptanceAsync(new(Guid.NewGuid(), request), 100, CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.InvalidInput, publicFailure.Failure.Code);

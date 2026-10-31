@@ -49,9 +49,9 @@ public sealed class CancelContinuationTests
         RuntimeOptions options = RuntimeTestComposition.Options();
         ProviderRegistration[] registrations = [new("connection", "controlled", 1, provider)];
         SessionCatalog catalog = new(store, registrations, [new("profile", "connection", "model", ExecutionKind.ModelResponse, new("revision", new Dictionary<string, string>()))]);
-        SessionSnapshot session = await catalog.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+        SessionSnapshot session = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
         RequestAdmission requests = new(store, options);
-        RequestReceipt receipt = await requests.SubmitAsync(new(session.SessionId, "new input", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+        RequestReceipt receipt = await requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "new input", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
         Task<bool> pending = new RequestDispatcher(store, registrations, options).TryDispatchAsync(CancellationToken.None).AsTask();
         await accepted.Task.WaitAsync(TimeSpan.FromSeconds(5));
         try

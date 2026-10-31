@@ -1,0 +1,149 @@
+{
+  "status": "local Linux T005/T006 increment qualified; native Windows CI, alpha.3 clean-commit feed binding and SharpClaw consumption pending",
+  "recordedUtc": "2026-10-31T18:48:41.0740829+00:00",
+  "run": {
+    "SourceHash": "44228de414be865fa5813c0aad9fe378ac8a8caa2d5b891cfbcb88d46c4fad79",
+    "Platform": "linux",
+    "StartedUtc": "2026-10-31T19:45:47.9724449+01:00"
+  },
+  "qualityExitCode": 0,
+  "tests": {
+    "unit": 442,
+    "contract": 252,
+    "integration": 429,
+    "platform": 68,
+    "total": 1191,
+    "skipped": 0
+  },
+  "productCoverage": {
+    "Platform": "linux",
+    "ThresholdPercent": 87.0,
+    "TotalLines": 3514,
+    "CoveredLines": 3442,
+    "Percent": 97.9511,
+    "Modules": [
+      "Monstertacle.Multisession.AgentFramework",
+      "Monstertacle.Multisession.Common",
+      "Monstertacle.Multisession.Linux",
+      "Monstertacle.Multisession.Providers.Conversations",
+      "Monstertacle.Multisession.Providers.Interactions",
+      "Monstertacle.Multisession.Storage.Sqlite"
+    ],
+    "Reports": 8,
+    "Passed": true
+  },
+  "static": {
+    "files": 533,
+    "types": 553,
+    "violations": 0,
+    "new": 0,
+    "worsened": 0,
+    "baselined": 0,
+    "stale": 0,
+    "parseErrors": 0,
+    "skipped": 0
+  },
+  "coverComplete": true,
+  "coverPassed": true,
+  "packageSmoke": {
+    "status": "PASS",
+    "manifest": [
+      {
+        "File": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.3.nupkg",
+        "Sha256": "8a408939e44bda53e000bb9d56bd14cc5007d5809356582810326e31e68bffbd"
+      },
+      {
+        "File": "Monstertacle.Multisession.Common.0.2.0-alpha.3.nupkg",
+        "Sha256": "8c2c4d3caaf9263bb7758d26b4069cd3755f684e813d038125a80254630d707d"
+      },
+      {
+        "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.3.nupkg",
+        "Sha256": "1f214d4ff4821d08206b3f2abe4a934f6a2c17beb0659438fc4249b3e3608f4b"
+      },
+      {
+        "File": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.3.nupkg",
+        "Sha256": "48f542dd28ed876739882ad0e271353135ea046a58ed7bfb6405cc9de837ba88"
+      },
+      {
+        "File": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.3.nupkg",
+        "Sha256": "06e234a03cd1c378b8277d85f02a9269f09bac743024120afb5981351594f750"
+      },
+      {
+        "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.3.nupkg",
+        "Sha256": "9365eeed1f17ad2ea3d07375e872c7b9c0d34e21f8d4ca55d5f96d1083ce606d"
+      },
+      {
+        "File": "Monstertacle.Multisession.Windows.0.2.0-alpha.3.nupkg",
+        "Sha256": "e1272816f49c0b2f7821700310ed70cf026575c328faca1aa7d80b21bc3fe54a"
+      },
+      {
+        "File": "PackageConsumer.cs.txt",
+        "Sha256": "2e779414ebcb7d0fc12ee0e71e213637a5abc10b45073f11981922474618f94d"
+      },
+      {
+        "File": "Program.cs",
+        "Sha256": "2e779414ebcb7d0fc12ee0e71e213637a5abc10b45073f11981922474618f94d"
+      },
+      {
+        "File": "Consumer.csproj",
+        "Sha256": "ea99938d53471bf21977c08c9fda173e76b08515adb7a00f261e11abfd5a0a00"
+      },
+      {
+        "File": "NuGet.Config",
+        "Sha256": "8e97568e2db5b20f0db4d33bb87d2f821f935822cd69718eec35baa681adbeea"
+      }
+    ],
+    "priorReader": {
+      "Status": "PASS",
+      "PriorVersion": "0.2.0-alpha.2",
+      "StoreFilesUnchanged": [
+        "multisession.db 32148CD1E782C629F662FDA9BF62CFF560751AA5AFE7F7E4F3E269BF89B489CD"
+      ],
+      "PriorPackages": [
+        {
+          "File": "Monstertacle.Multisession.Common.0.2.0-alpha.2.nupkg",
+          "Sha256": "b1e625a594ee7c5ec892529b6ea1c186eb4b09466a223c2442c90017e3b13bc0"
+        },
+        {
+          "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.2.nupkg",
+          "Sha256": "0fcdce8110268726bd3c67d1ddbc1ee4043763d8396bafcfa77e36ffcb8c0585"
+        },
+        {
+          "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.2.nupkg",
+          "Sha256": "e600986ed5b47e7ed4377ed66f022b44bc639583024ba343cafcd2b11ad32927"
+        }
+      ]
+    },
+    "frameworkConsumer": "FRAMEWORK-PASS two confirmed turns with native evidence and one typed known failure through packaged runtime"
+  },
+  "packages": [
+    {
+      "File": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.3.nupkg",
+      "Sha256": "8a408939e44bda53e000bb9d56bd14cc5007d5809356582810326e31e68bffbd"
+    },
+    {
+      "File": "Monstertacle.Multisession.Common.0.2.0-alpha.3.nupkg",
+      "Sha256": "8c2c4d3caaf9263bb7758d26b4069cd3755f684e813d038125a80254630d707d"
+    },
+    {
+      "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.3.nupkg",
+      "Sha256": "1f214d4ff4821d08206b3f2abe4a934f6a2c17beb0659438fc4249b3e3608f4b"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.3.nupkg",
+      "Sha256": "48f542dd28ed876739882ad0e271353135ea046a58ed7bfb6405cc9de837ba88"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.3.nupkg",
+      "Sha256": "06e234a03cd1c378b8277d85f02a9269f09bac743024120afb5981351594f750"
+    },
+    {
+      "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.3.nupkg",
+      "Sha256": "9365eeed1f17ad2ea3d07375e872c7b9c0d34e21f8d4ca55d5f96d1083ce606d"
+    },
+    {
+      "File": "Monstertacle.Multisession.Windows.0.2.0-alpha.3.nupkg",
+      "Sha256": "e1272816f49c0b2f7821700310ed70cf026575c328faca1aa7d80b21bc3fe54a"
+    }
+  ]
+}

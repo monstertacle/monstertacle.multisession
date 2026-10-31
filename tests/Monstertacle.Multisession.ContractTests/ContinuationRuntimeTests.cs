@@ -24,12 +24,12 @@ public sealed class ContinuationRuntimeTests
         await runtime.StartAsync(new() { StateDirectory = Path.GetTempPath(), Retention = new(true, null), MaxConcurrentRequests = 2 }, CancellationToken.None);
         try
         {
-            SessionSnapshot first = await runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
-            SessionSnapshot independent = await runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
-            RequestReceipt a = await runtime.Requests.SubmitAsync(new(first.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            SessionSnapshot first = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
+            SessionSnapshot independent = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
+            RequestReceipt a = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
             await wire.Entered.WaitAsync(TimeSpan.FromSeconds(5));
-            RequestReceipt follower = await runtime.Requests.SubmitAsync(new(first.SessionId, "follower", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
-            RequestReceipt b = await runtime.Requests.SubmitAsync(new(independent.SessionId, "independent", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            RequestReceipt follower = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "follower", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            RequestReceipt b = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(independent.SessionId, "independent", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
             await one.Completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
             Assert.Equal(RequestState.Succeeded, (await runtime.Requests.GetRequestAsync(b.RequestId, CancellationToken.None))?.State);
             wire.Release();
@@ -42,7 +42,7 @@ public sealed class ContinuationRuntimeTests
             Assert.Empty(store.Reservations);
             Assert.Empty((await runtime.Recovery.ListRecoveryCasesAsync(100, null, CancellationToken.None)).Items);
             Assert.Equal(2, wire.Calls);
-            SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => runtime.Requests.SubmitAsync(new(first.SessionId, "new", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => runtime.Requests.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "new", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
             Assert.Equal(ErrorCode.SessionBlocked, failure.Failure.Code);
             await runtime.StopAsync(TimeSpan.FromSeconds(10), CancellationToken.None);
         }

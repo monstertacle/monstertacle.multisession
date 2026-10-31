@@ -5,9 +5,9 @@ namespace Monstertacle.Multisession;
 
 internal sealed class RuntimeSessions(RuntimeLifecycle lifecycle, SessionCatalog catalog) : ISessions
 {
-    public ValueTask<SessionSnapshot> CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
+    public ValueTask<SessionSnapshot> CreateSessionAsync(Guid sessionId, string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
     {
-        return lifecycle.RunOperation(token => catalog.CreateSessionAsync(agentProfileId, context, token), cancellationToken);
+        return lifecycle.RunOperation(token => catalog.CreateSessionAsync(sessionId, agentProfileId, context, token), cancellationToken);
     }
     public ValueTask<SessionSnapshot?> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken)
     {

@@ -25,7 +25,7 @@ public sealed class CapacityTests
 
         foreach (SessionSnapshot session in sessions.Take(2))
         {
-            await admission.SubmitAsync(new(session.SessionId, "reserved input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "reserved input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
             Assert.NotNull(await scheduler.TryReserveAsync(CancellationToken.None));
         }
 
@@ -35,7 +35,7 @@ public sealed class CapacityTests
             await start.Task;
             try
             {
-                await admission.SubmitAsync(new(session.SessionId, "queued input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+                await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "queued input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
                 return true;
             }
             catch (SessionOperationException failure) when (failure.Failure.Code == ErrorCode.QueueFull)
@@ -70,7 +70,7 @@ public sealed class CapacityTests
         {
             SessionSnapshot session = SchedulingData.Session();
             await store.CreateSessionAsync(session, CancellationToken.None);
-            await admission.SubmitAsync(new(session.SessionId, "write input", TimeSpan.FromSeconds(10), "shared", true), CancellationToken.None);
+            await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "write input", TimeSpan.FromSeconds(10), "shared", true), CancellationToken.None);
         }
 
         TaskCompletionSource start = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -100,10 +100,10 @@ public sealed class CapacityTests
         await store.CreateSessionAsync(second, CancellationToken.None);
         RuntimeOptions options = RuntimeOptionsTests.ValidOptions() with { MaxConcurrentRequests = 2 };
         RequestAdmission admission = new(store, options);
-        RequestReceipt head = await admission.SubmitAsync(new(first.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
-        RequestReceipt later = await admission.SubmitAsync(new(first.SessionId, "second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt head = await admission.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt later = await admission.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         clock.Advance(TimeSpan.FromSeconds(1));
-        RequestReceipt other = await admission.SubmitAsync(new(second.SessionId, "independent", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt other = await admission.SubmitAsync(Guid.NewGuid(), new(second.SessionId, "independent", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         RequestScheduler scheduler = new(store, options);
 
         Assert.Equal(head.RequestId, (await scheduler.TryReserveAsync(CancellationToken.None))?.RequestId);

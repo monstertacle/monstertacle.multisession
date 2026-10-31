@@ -34,7 +34,7 @@ public sealed class RequestAdmissionTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         SubmitRequest request = new(session.SessionId, "é\r\nprepared host context", TimeSpan.FromSeconds(10), null, false);
 
-        RequestReceipt? receipt = await admission.SubmitAsync(request, CancellationToken.None);
+        RequestReceipt? receipt = await admission.SubmitAsync(Guid.NewGuid(), request, CancellationToken.None);
 
         Assert.NotNull(receipt);
         Assert.NotEqual(Guid.Empty, receipt.RequestId);
@@ -60,7 +60,7 @@ public sealed class RequestAdmissionTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         SubmitRequest request = new(session.SessionId, "new input", TimeSpan.FromSeconds(10), null, false);
 
-        Task<RequestReceipt> pending = admission.SubmitAsync(request, CancellationToken.None).AsTask();
+        Task<RequestReceipt> pending = admission.SubmitAsync(Guid.NewGuid(), request, CancellationToken.None).AsTask();
         Task first = await Task.WhenAny(entered.Task, pending).WaitAsync(TimeSpan.FromSeconds(5));
 
         Assert.Same(entered.Task, first);
@@ -81,7 +81,7 @@ public sealed class RequestAdmissionTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         SubmitRequest request = new(session.SessionId, "new input", TimeSpan.FromSeconds(10), null, false);
 
-        RequestReceipt? receipt = await admission.SubmitAsync(request, cancellation.Token);
+        RequestReceipt? receipt = await admission.SubmitAsync(Guid.NewGuid(), request, cancellation.Token);
 
         Assert.NotNull(receipt);
         Assert.True(cancellation.IsCancellationRequested);
@@ -96,7 +96,7 @@ public sealed class RequestAdmissionTests
         SessionSnapshot session = await SeedSessionAsync(store);
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         RequestAdmission other = new(new InMemorySessionStore(), RuntimeOptionsTests.ValidOptions());
-        RequestReceipt receipt = await admission.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt receipt = await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
 
         RequestSnapshot? found = await admission.GetRequestAsync(receipt.RequestId, CancellationToken.None);
 
@@ -131,7 +131,7 @@ public sealed class RequestAdmissionTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions() with { MaxInputBytes = 4 });
         SubmitRequest request = new(session.SessionId, "😀", TimeSpan.FromTicks(1), "workspace", true);
 
-        RequestReceipt receipt = await admission.SubmitAsync(request, CancellationToken.None);
+        RequestReceipt receipt = await admission.SubmitAsync(Guid.NewGuid(), request, CancellationToken.None);
 
         Assert.Equal(request, store.Submissions[receipt.RequestId]);
         Assert.Equal(RequestState.Queued, (await admission.GetRequestAsync(receipt.RequestId, CancellationToken.None))?.State);
@@ -147,9 +147,9 @@ public sealed class RequestAdmissionTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         SubmitRequest original = new(first.SessionId, "same prepared input", TimeSpan.FromSeconds(10), null, false);
 
-        RequestReceipt one = await admission.SubmitAsync(original, CancellationToken.None);
-        RequestReceipt two = await admission.SubmitAsync(original, CancellationToken.None);
-        RequestReceipt other = await admission.SubmitAsync(original with { SessionId = second.SessionId }, CancellationToken.None);
+        RequestReceipt one = await admission.SubmitAsync(Guid.NewGuid(), original, CancellationToken.None);
+        RequestReceipt two = await admission.SubmitAsync(Guid.NewGuid(), original, CancellationToken.None);
+        RequestReceipt other = await admission.SubmitAsync(Guid.NewGuid(), original with { SessionId = second.SessionId }, CancellationToken.None);
 
         Assert.Equal(1, one.Sequence);
         Assert.Equal(2, two.Sequence);
@@ -168,11 +168,11 @@ public sealed class RequestAdmissionTests
         SessionSnapshot second = await SeedSessionAsync(store);
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions() with { MaxQueuedRequests = 2 });
         SubmitRequest request = new(first.SessionId, "input", TimeSpan.FromSeconds(10), null, false);
-        await admission.SubmitAsync(request, CancellationToken.None);
-        await admission.SubmitAsync(request with { SessionId = second.SessionId }, CancellationToken.None);
+        await admission.SubmitAsync(Guid.NewGuid(), request, CancellationToken.None);
+        await admission.SubmitAsync(Guid.NewGuid(), request with { SessionId = second.SessionId }, CancellationToken.None);
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => admission.SubmitAsync(request, CancellationToken.None).AsTask());
+            () => admission.SubmitAsync(Guid.NewGuid(), request, CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.QueueFull, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.NotStarted, failure.Failure.Certainty);
@@ -196,7 +196,7 @@ public sealed class RequestAdmissionTests
         SessionSnapshot session = await SeedSessionAsync(store);
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         using CancellationTokenSource cancellation = new();
-        Task<RequestReceipt> pending = admission.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), cancellation.Token).AsTask();
+        Task<RequestReceipt> pending = admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), cancellation.Token).AsTask();
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
         cancellation.Cancel();

@@ -25,7 +25,7 @@ public sealed class SessionLifecycleTests
             Opening = context => { opening = store.FindSession(context.SessionId); clock.Advance(TimeSpan.FromSeconds(2)); },
         };
         SessionCatalog catalog = Catalog(store, provider, clock);
-        SessionSnapshot created = await catalog.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+        SessionSnapshot created = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
         Assert.NotNull(opening);
         Assert.Equal("immutable-revision", opening.SettingsRevision);
         Assert.Equal("frozen", opening.Context.Settings["instruction"]);
@@ -48,7 +48,7 @@ public sealed class SessionLifecycleTests
         ControlledProvider provider = new() { Opening = _ => { clock.Advance(TimeSpan.FromSeconds(3)); throw new IOException("private"); } };
         SessionCatalog catalog = Catalog(store, provider, clock);
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
-            catalog.CreateSessionAsync("profile", new(null, null), CancellationToken.None).AsTask());
+            catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None).AsTask());
         SessionSnapshot? saved = await catalog.GetSessionAsync(failure.Failure.SessionId!.Value, CancellationToken.None);
         Assert.NotNull(saved);
         Assert.Equal("immutable-revision", saved.SettingsRevision);

@@ -16,8 +16,8 @@ internal static class ConsumerProbeFlow
         await using SessionRuntime runtime = new(store, state.Lease, [new("consumer", "consumer-owned", 1, provider)],
             [new("profile", "consumer", "opaque-consumer-model", ExecutionKind.ModelResponse, new("frozen", new Dictionary<string, string>()))]);
         await runtime.StartAsync(options, CancellationToken.None);
-        SessionSnapshot a = await runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
-        SessionSnapshot b = await runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+        SessionSnapshot a = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
+        SessionSnapshot b = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
         RequestReceipt firstA = await SubmitAsync(runtime, a.SessionId, "first-a");
         RequestReceipt firstB = await SubmitAsync(runtime, b.SessionId, "first-b");
         try
@@ -57,7 +57,7 @@ internal static class ConsumerProbeFlow
         ValidationCheck.Require((await store.GetRuntimeStatisticsAsync(CancellationToken.None)).OccupiedReservations == 0, "UnexpectedReservation");
     }
     private static ValueTask<RequestReceipt> SubmitAsync(SessionRuntime runtime, Guid session, string input)
-        => runtime.Requests.SubmitAsync(new(session, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        => runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
     private static async Task<RequestSnapshot> EndAsync(SessionRuntime runtime, Guid id)
     {
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(5));

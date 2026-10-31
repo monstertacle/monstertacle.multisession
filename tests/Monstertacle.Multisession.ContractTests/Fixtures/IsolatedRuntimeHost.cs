@@ -22,11 +22,11 @@ internal sealed class IsolatedRuntimeHost : IAsyncDisposable
                 new("revision-" + name, new Dictionary<string, string> { ["owner"] = name }))]);
     }
     internal ValueTask StartAsync() => Runtime.StartAsync(Options, CancellationToken.None);
-    internal ValueTask<SessionSnapshot> CreateSessionAsync() => Runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+    internal ValueTask<SessionSnapshot> CreateSessionAsync() => Runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
     internal async Task<RequestSnapshot> SubmitAndCompleteAsync(Guid session, string input)
     {
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(5));
-        RequestReceipt receipt = await Runtime.Requests.SubmitAsync(new(session, input, TimeSpan.FromSeconds(5), null, false), deadline.Token);
+        RequestReceipt receipt = await Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session, input, TimeSpan.FromSeconds(5), null, false), deadline.Token);
         while (true)
         {
             RequestSnapshot current = (await Runtime.Requests.GetRequestAsync(receipt.RequestId, deadline.Token))!;

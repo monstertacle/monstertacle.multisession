@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Requests;
 using Monstertacle.Multisession.Scheduling;
 using Monstertacle.Multisession.Sessions;
 
@@ -127,7 +128,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
             {
                 throw new SessionOperationException(new PublicError(ErrorCode.InvalidInput, SessionId: request.SessionId, RequestId: requestId, AdmissionStatus: AdmissionStatus.NotAccepted));
             }
-            State.Requests.Add(requestId, new RequestSnapshot(requestId, request.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null));
+            State.Requests.Add(requestId, new RequestSnapshot(requestId, request.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null) { SubmissionFingerprint = RequestSubmissionFingerprint.Compute(request) });
             State.Submissions.Add(requestId, request);
             State.AcceptedUtc.Add(requestId, Clock.GetUtcNow());
             receipt = new RequestReceipt(requestId, sequence);
@@ -136,7 +137,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
         Accepted?.Invoke(receipt);
         return receipt;
     }
-    public async ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken)
+    public async ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken, Guid? expectedRequestId = null)
     {
         if (Reserving is not null)
         {
@@ -151,7 +152,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
                     State.AcceptedUtc[request.RequestId], State.Submissions[request.RequestId].WriteIntent ? State.Submissions[request.RequestId].WorkspaceKey : null))
                 .ToArray();
             QueuedRequest? head = ReservationPolicy.SelectHead(queued, State.Reservations.Values.ToArray(), State.Sessions.Values.ToArray(), maxConcurrentRequests);
-            if (head is null)
+            if (head is null || (expectedRequestId is { } expected && head.RequestId != expected))
             {
                 return null;
             }

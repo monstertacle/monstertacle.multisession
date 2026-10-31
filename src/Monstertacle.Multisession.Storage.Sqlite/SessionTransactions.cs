@@ -12,6 +12,7 @@ internal static class SessionTransactions
         SqliteTransactions.Run(connection, transaction =>
         {
             if (session.SessionId == Guid.Empty || session.Context.SessionId != session.SessionId
+                || QueryTransactions.Session(connection, session.SessionId, transaction) is not null
                 || session.Lifecycle != SessionLifecycle.Opening || session.Binding is not null
                 || string.IsNullOrWhiteSpace(session.SettingsRevision))
             {

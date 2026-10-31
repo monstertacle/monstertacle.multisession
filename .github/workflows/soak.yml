@@ -33,6 +33,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
@@ -54,7 +56,7 @@ jobs:
           if ($actual.SourceHash -ne $expected) { throw 'Requested source differs from the validated candidate.' }
           dotnet tool restore
           if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
-          dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.2.0-alpha.2
+          dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages
           if ($LASTEXITCODE -ne 0) { throw 'Candidate package build failed.' }
           ./eng/PackageSmoke.ps1
           $null = New-Item artifacts/soak -ItemType Directory -Force

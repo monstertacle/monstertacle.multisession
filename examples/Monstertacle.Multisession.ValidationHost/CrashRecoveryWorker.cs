@@ -22,8 +22,8 @@ internal static class CrashRecoveryWorker
         CrashSessionProvider provider = new() { HoldBeforeObservation = point == CrashProtocol.BeforeOperationId };
         ProviderRegistration[] providers = [new(CrashProtocol.ProviderId, CrashProtocol.AdapterId, CrashProtocol.AdapterVersion, provider)];
         SessionCatalog catalog = new(store, providers, [new("crash-profile", CrashProtocol.ProviderId, "opaque-test-agent", ExecutionKind.AgentTask, new("frozen", new Dictionary<string, string>()))]);
-        SessionSnapshot a = await catalog.CreateSessionAsync("crash-profile", new(directory, "workspace-a"), CancellationToken.None);
-        SessionSnapshot b = await catalog.CreateSessionAsync("crash-profile", new(directory, "workspace-b"), CancellationToken.None);
+        SessionSnapshot a = await catalog.CreateSessionAsync(Guid.NewGuid(), "crash-profile", new(directory, "workspace-a"), CancellationToken.None);
+        SessionSnapshot b = await catalog.CreateSessionAsync(Guid.NewGuid(), "crash-profile", new(directory, "workspace-b"), CancellationToken.None);
         RequestAdmission admission = new(store, options);
         RequestDispatcher dispatcher = new(store, providers, options);
         RequestReceipt completedA = await SubmitAsync(admission, a, "completed-a");
@@ -60,7 +60,7 @@ internal static class CrashRecoveryWorker
     }
 
     private static ValueTask<RequestReceipt> SubmitAsync(RequestAdmission admission, SessionSnapshot session, string input)
-        => admission.SubmitAsync(new(session.SessionId, input, TimeSpan.FromMinutes(10), session.Context.ExecutionContext.WorkspaceKey, true), CancellationToken.None);
+        => admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, input, TimeSpan.FromMinutes(10), session.Context.ExecutionContext.WorkspaceKey, true), CancellationToken.None);
 
     private static async Task<int> HoldAsync(CrashStateManifest manifest)
     {

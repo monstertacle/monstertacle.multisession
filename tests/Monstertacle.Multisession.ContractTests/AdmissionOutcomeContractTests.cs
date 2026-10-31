@@ -22,13 +22,13 @@ public sealed class AdmissionOutcomeContractTests
     {
         InMemorySessionStore store = new();
         var (admission, request) = await CreateAsync(store);
-        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => admission.SubmitAsync(request with { Input = string.Empty }, CancellationToken.None).AsTask());
+        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => admission.SubmitAsync(Guid.NewGuid(), request with { Input = string.Empty }, CancellationToken.None).AsTask());
         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
         Assert.Equal(ExecutionCertainty.NotStarted, failure.Failure.Certainty);
         Assert.Empty(store.Submissions);
     }
 
-    /// <summary>Pre-cancel has no candidate or started commit, and retains the caller's token.</summary>
+    /// <summary>Pre-cancel retains the caller identity and token without starting a commit.</summary>
     [Fact]
     public async Task PreCancelledCallerIsNotAccepted()
     {
@@ -36,9 +36,10 @@ public sealed class AdmissionOutcomeContractTests
         var (admission, request) = await CreateAsync(store);
         using CancellationTokenSource caller = new();
         caller.Cancel();
-        AdmissionCancellationException failure = await Assert.ThrowsAsync<AdmissionCancellationException>(() => admission.SubmitAsync(request, caller.Token).AsTask());
+        Guid requestId = Guid.NewGuid();
+        AdmissionCancellationException failure = await Assert.ThrowsAsync<AdmissionCancellationException>(() => admission.SubmitAsync(requestId, request, caller.Token).AsTask());
         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
-        Assert.Null(failure.Failure.RequestId);
+        Assert.Equal(requestId, failure.Failure.RequestId);
         Assert.Equal(caller.Token, failure.CancellationToken);
         Assert.Empty(store.Submissions);
     }
@@ -60,7 +61,7 @@ public sealed class AdmissionOutcomeContractTests
             },
         };
         var (admission, request) = await CreateAsync(store);
-        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => admission.SubmitAsync(request, CancellationToken.None).AsTask());
+        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => admission.SubmitAsync(Guid.NewGuid(), request, CancellationToken.None).AsTask());
         Assert.NotNull(candidate);
         Assert.NotEqual(Guid.Empty, candidate.RequestId);
         Assert.Equal(candidate.RequestId, failure.Failure.RequestId);
@@ -82,7 +83,7 @@ public sealed class AdmissionOutcomeContractTests
             Accepted = receipt => caller.Cancel(),
         };
         var (admission, request) = await CreateAsync(store);
-        RequestReceipt receipt = await admission.SubmitAsync(request, caller.Token);
+        RequestReceipt receipt = await admission.SubmitAsync(Guid.NewGuid(), request, caller.Token);
         Assert.NotNull(candidate);
         Assert.NotEqual(Guid.Empty, candidate.RequestId);
         Assert.Equal(candidate.RequestId, receipt.RequestId);
@@ -116,7 +117,7 @@ public sealed class AdmissionOutcomeContractTests
             Accepted = receipt => committed.TrySetResult(),
         };
         var (admission, request) = await CreateAsync(store, clock);
-        Task<RequestReceipt> pending = admission.SubmitAsync(request, caller.Token).AsTask();
+        Task<RequestReceipt> pending = admission.SubmitAsync(Guid.NewGuid(), request, caller.Token).AsTask();
         Assert.Same(entered.Task, await Task.WhenAny(entered.Task, pending).WaitAsync(TimeSpan.FromSeconds(5)));
         try
         {

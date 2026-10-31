@@ -6,13 +6,13 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class SqliteSchema
 {
-    internal const int Version = 1;
+    internal const int Version = 2;
     internal const int ApplicationId = 0x4D535331; // MSS1, distinct from SQLite's generic file signature.
     private const int _migrationVersion = 0;
     private const int _bindingEncodingVersion = 1;
-    private const string _resourceName = "Monstertacle.Multisession.SchemaV1.sql";
+    private const string _resourceName = "Monstertacle.Multisession.SchemaV2.sql";
 
-    internal static void Initialize(SqliteConnection connection, Guid trustScopeId, DateTimeOffset createdUtc)
+    internal static void Initialize(SqliteConnection connection, Guid trustScopeId, DateTimeOffset createdUtc, RuntimeDispatchMode dispatchMode)
     {
         using SqliteTransaction transaction = connection.BeginTransaction();
         CreateTables(connection, transaction);
@@ -21,9 +21,10 @@ internal static class SqliteSchema
         command.CommandText = $"""
             PRAGMA application_id={ApplicationId};
             PRAGMA user_version={Version};
-            INSERT INTO Metadata (Singleton,SchemaVersion,MigrationVersion,BindingEncodingVersion,StoreId,InstanceTrustScopeId,CreatedUtc)
-            VALUES (1,$schema,$migration,$binding,$store,$scope,$created);
+            INSERT INTO Metadata (Singleton,SchemaVersion,MigrationVersion,BindingEncodingVersion,StoreId,InstanceTrustScopeId,CreatedUtc,DispatchMode)
+            VALUES (1,$schema,$migration,$binding,$store,$scope,$created,$mode);
             """;
+        command.Parameters.AddWithValue("$mode", (int)dispatchMode);
         command.Parameters.AddWithValue("$schema", Version);
         command.Parameters.AddWithValue("$migration", _migrationVersion);
         command.Parameters.AddWithValue("$binding", _bindingEncodingVersion);
@@ -34,20 +35,20 @@ internal static class SqliteSchema
         transaction.Commit();
     }
 
-    internal static void Validate(SqliteConnection connection, Guid trustScopeId)
+    internal static void Validate(SqliteConnection connection, Guid trustScopeId, RuntimeDispatchMode dispatchMode)
     {
         using SqliteConnection expected = SqliteConnectionPolicy.Open(":memory:", SqliteOpenMode.Memory);
         CreateTables(expected, null);
         if (!ReadSchema(connection).SequenceEqual(ReadSchema(expected))) { throw Unsupported(); }
         using SqliteCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT SchemaVersion,MigrationVersion,BindingEncodingVersion,StoreId,InstanceTrustScopeId,CreatedUtc FROM Metadata WHERE Singleton=1";
+        command.CommandText = "SELECT SchemaVersion,MigrationVersion,BindingEncodingVersion,StoreId,InstanceTrustScopeId,CreatedUtc,DispatchMode FROM Metadata WHERE Singleton=1";
         using SqliteDataReader reader = command.ExecuteReader();
         if (!reader.Read() || reader.GetInt32(0) != Version || reader.GetInt32(1) != _migrationVersion
             || reader.GetInt32(2) != _bindingEncodingVersion
             || !Guid.TryParseExact(reader.GetString(3), "D", out Guid storeId) || storeId == Guid.Empty
             || !Guid.TryParseExact(reader.GetString(4), "D", out Guid storedScope) || storedScope != trustScopeId
             || !DateTimeOffset.TryParseExact(reader.GetString(5), "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset created)
-            || created.Offset != TimeSpan.Zero || reader.Read())
+            || created.Offset != TimeSpan.Zero || reader.GetInt32(6) != (int)dispatchMode || reader.Read())
         {
             throw Unsupported();
         }

@@ -34,10 +34,10 @@ public sealed class FailureIsolationTests
         List<RequestReceipt> successful = [];
         for (int index = 0; index < 5; index++)
         {
-            SessionSnapshot bad = await host.Catalog.CreateSessionAsync("one", new(Path.GetTempPath(), "bad-" + index), CancellationToken.None);
-            SessionSnapshot good = await host.Catalog.CreateSessionAsync("two", new(Path.GetTempPath(), "good-" + index), CancellationToken.None);
-            failed.Add(await host.Admission.SubmitAsync(new(bad.SessionId, index.ToString(CultureInfo.InvariantCulture), TimeSpan.FromSeconds(5), null, false), CancellationToken.None));
-            successful.Add(await host.Admission.SubmitAsync(new(good.SessionId, "success-" + index, TimeSpan.FromSeconds(5), null, false), CancellationToken.None));
+            SessionSnapshot bad = await host.Catalog.CreateSessionAsync(Guid.NewGuid(), "one", new(Path.GetTempPath(), "bad-" + index), CancellationToken.None);
+            SessionSnapshot good = await host.Catalog.CreateSessionAsync(Guid.NewGuid(), "two", new(Path.GetTempPath(), "good-" + index), CancellationToken.None);
+            failed.Add(await host.Admission.SubmitAsync(Guid.NewGuid(), new(bad.SessionId, index.ToString(CultureInfo.InvariantCulture), TimeSpan.FromSeconds(5), null, false), CancellationToken.None));
+            successful.Add(await host.Admission.SubmitAsync(Guid.NewGuid(), new(good.SessionId, "success-" + index, TimeSpan.FromSeconds(5), null, false), CancellationToken.None));
         }
         await Task.WhenAll(Enumerable.Range(0, 4).Select(async _ =>
         {
@@ -73,14 +73,14 @@ public sealed class FailureIsolationTests
         };
         InMemorySessionStore store = new();
         DispatchLoadHost host = DispatchLoadHost.Create(store, failing, DispatchLoadHost.Provider(Task.CompletedTask), RuntimeOptionsTests.ValidOptions() with { MaxConcurrentRequests = 2 });
-        SessionSnapshot first = await host.Catalog.CreateSessionAsync("one", new(Path.GetTempPath(), "first"), CancellationToken.None);
-        SessionSnapshot second = await host.Catalog.CreateSessionAsync("one", new(Path.GetTempPath(), "second"), CancellationToken.None);
-        SessionSnapshot independent = await host.Catalog.CreateSessionAsync("two", new(Path.GetTempPath(), "independent"), CancellationToken.None);
-        RequestReceipt firstReceipt = await host.Admission.SubmitAsync(new(first.SessionId, "first", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
-        await host.Admission.SubmitAsync(new(second.SessionId, "second", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
+        SessionSnapshot first = await host.Catalog.CreateSessionAsync(Guid.NewGuid(), "one", new(Path.GetTempPath(), "first"), CancellationToken.None);
+        SessionSnapshot second = await host.Catalog.CreateSessionAsync(Guid.NewGuid(), "one", new(Path.GetTempPath(), "second"), CancellationToken.None);
+        SessionSnapshot independent = await host.Catalog.CreateSessionAsync(Guid.NewGuid(), "two", new(Path.GetTempPath(), "independent"), CancellationToken.None);
+        RequestReceipt firstReceipt = await host.Admission.SubmitAsync(Guid.NewGuid(), new(first.SessionId, "first", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
+        await host.Admission.SubmitAsync(Guid.NewGuid(), new(second.SessionId, "second", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
         await Assert.ThrowsAsync<SessionOperationException>(() => host.Dispatcher.TryDispatchAsync(CancellationToken.None).AsTask());
         await Assert.ThrowsAsync<SessionOperationException>(() => host.Dispatcher.TryDispatchAsync(CancellationToken.None).AsTask());
-        RequestReceipt queued = await host.Admission.SubmitAsync(new(independent.SessionId, "independent", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
+        RequestReceipt queued = await host.Admission.SubmitAsync(Guid.NewGuid(), new(independent.SessionId, "independent", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
         Assert.False(await host.Dispatcher.TryDispatchAsync(CancellationToken.None));
         Assert.Equal(new(1, 2, 2), await ((ISessionStore)store).GetRuntimeStatisticsAsync(CancellationToken.None));
         Assert.Equal(RequestState.Queued, (await ((ISessionStore)store).GetRequestAsync(queued.RequestId, CancellationToken.None))!.State);

@@ -1,0 +1,103 @@
+Command: dotnet test tests/Monstertacle.Multisession.UnitTests -c Release -f net10.0 --no-build --filter Framework{Outcome,Invocation,Failure,SessionProvider}Tests (via run-capped 4G/1G)
+Behaviorless signatures only; failing assertions and their first message lines:
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.UncertainFactsCannotCarryEvidenceOfProgress(certainty: Unknown, output: "", continuation: True) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.AwaitsObservationBeforeInvocation [3 ms]
+  Error Message:
+   Assert.Same() Failure: Values are not the same instance
+Expected: Task { Status = WaitingForActivation }
+  Failed Monstertacle.Multisession.UnitTests.FrameworkInvocationTests.ObservationCountIsBounded [3 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 1
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.UncertainFactsCannotCarryEvidenceOfProgress(certainty: NotStarted, output: "partial", continuation: False) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.SerializationFailurePreservesTerminationAndBlocksContinuation [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Succeeded
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.UnqualifiedTypedOutcomeFailsClosed [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: TimedOut, certainty: ConfirmedEnded, complete: False, code: Cancelled) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Interrupted, certainty: Unknown, complete: False, code: Interrupted) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Failed, certainty: 42, complete: False, code: ExecutionFailed) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Failed, certainty: ConfirmedEnded, complete: False, code: null) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Running, certainty: InProgress, complete: False, code: null) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Succeeded, certainty: ConfirmedEnded, complete: False, code: null) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Succeeded, certainty: ConfirmedEnded, complete: True, code: ExecutionFailed) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Cancelled, certainty: ConfirmedEnded, complete: False, code: ExecutionFailed) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Failed, certainty: ConfirmedEnded, complete: False, code: 99) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Succeeded, certainty: Unknown, complete: True, code: null) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.InconsistentFactsFailClosed(state: Failed, certainty: InProgress, complete: False, code: ExecutionFailed) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.NotStartedKeepsContinuation [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: NotStarted
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.TypedEndSurvivesSerializationFailure [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ConfirmedEnded
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.TypedUnknownRemainsUnknown [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.EndedWithoutContinuationBlocksLaterTurns [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+            ↓ (pos 1)
+  Failed Monstertacle.Multisession.UnitTests.FrameworkOutcomeTests.KnownFailurePreservesPartialOutputAndEnd [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ConfirmedEnded
+  Failed Monstertacle.Multisession.UnitTests.FrameworkInvocationTests.HungAcknowledgementIsBoundedByDeadline [207 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+  Failed Monstertacle.Multisession.UnitTests.FrameworkInvocationTests.LateObservationIsRefused [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Succeeded
+  Failed Monstertacle.Multisession.UnitTests.FrameworkInvocationTests.ReportsLinkedEvidenceInOrderWithoutReplacingBinding [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Succeeded
+Failed!  - Failed:    25, Passed:    19, Skipped:     0, Total:    44, Duration: 268 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

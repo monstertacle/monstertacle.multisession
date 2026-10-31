@@ -18,7 +18,8 @@ internal static class FrozenDispatchConsistency
             && frozen.ProviderId == current.ProviderId && frozen.AgentProfileId == current.AgentProfileId
             && frozen.SettingsRevision == current.SettingsRevision && ContextMatches(context, current.Context)
             && current.Binding is { } latest && binding.AdapterId == latest.AdapterId && binding.FormatVersion == latest.FormatVersion
-            && ReferencesMatch(binding, latest, stored.SessionReference, stored.OperationReference);
+            && ReferencesMatch(binding, latest, stored.SessionReference, stored.OperationReference)
+            && (stored.NativeSessionReference is null || !string.IsNullOrWhiteSpace(stored.NativeSessionReference));
     }
 
     private static bool ContextMatches(ProviderSessionContext frozen, ProviderSessionContext current)

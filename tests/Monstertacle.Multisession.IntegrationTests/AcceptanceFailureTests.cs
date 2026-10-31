@@ -20,7 +20,7 @@ public sealed class AcceptanceFailureTests
             [new("connection-I", "fixture-adapter", 7, fixture.Provider)]);
         StoreProbe.Execute(fixture.Directory.DatabasePath, "CREATE TRIGGER FailTypedAdmission AFTER UPDATE OF NextSequence ON Sessions BEGIN SELECT RAISE(FAIL,'private-typed-marker'); END;");
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
-            host.Runtime.Commands.DispatchAsync(new SubmitRequestCommand(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false))));
+            host.Runtime.Commands.DispatchAsync(new SubmitRequestCommand(Guid.NewGuid(), new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false))));
         Assert.Equal(new FailureDetails(FailureStage.StoreTransaction, 19, 1811), failure.Details);
         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
         Assert.DoesNotContain("private-", failure.ToString(), StringComparison.Ordinal);
@@ -39,7 +39,7 @@ public sealed class AcceptanceFailureTests
             """);
         RequestAdmission admission = new(fixture.Store, fixture.Options);
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
-            admission.SubmitAsync(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
         Assert.Equal(new FailureDetails(FailureStage.StoreTransaction, 19, 1811), failure.Details);
@@ -66,7 +66,7 @@ public sealed class AcceptanceFailureTests
             """);
         RequestAdmission admission = new(fixture.Store, fixture.Options);
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
-            admission.SubmitAsync(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
         Assert.Equal(AdmissionStatus.Unknown, failure.Failure.AdmissionStatus);
         Assert.Equal(new FailureDetails(FailureStage.StoreCommit, 19, 787), failure.Details);

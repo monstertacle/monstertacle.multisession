@@ -109,10 +109,13 @@ await using var runtime = new SessionRuntime(store, lease,
     [new AgentProfile("assistant", "openai", modelId, ExecutionKind.ModelResponse,
         new ProfileSettings("revision-1", new Dictionary<string, string>()))]);
 await runtime.StartAsync(options, CancellationToken.None);
+// Vor den Operationen im Host-Auftrag persistieren.
+Guid sessionId = Guid.NewGuid();
+Guid requestId = Guid.NewGuid();
 var session = await runtime.Sessions.CreateSessionAsync(
-    "assistant", new SessionExecutionContext(null, null), CancellationToken.None);
+    sessionId, "assistant", new SessionExecutionContext(null, null), CancellationToken.None);
 var receipt = await runtime.Requests.SubmitAsync(
-    new SubmitRequest(session.SessionId, "Eine kurze Testantwort bitte.",
+    requestId, new SubmitRequest(session.SessionId, "Eine kurze Testantwort bitte.",
         TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
 ```
 

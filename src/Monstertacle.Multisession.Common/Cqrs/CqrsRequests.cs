@@ -4,8 +4,8 @@ namespace Monstertacle.Multisession.Cqrs;
 
 internal sealed class CqrsRequests(RuntimeDispatch dispatch) : IRequests
 {
-    public ValueTask<RequestReceipt> SubmitAsync(SubmitRequest request, CancellationToken cancellationToken)
-        => new(dispatch.Commands.DispatchAsync(new SubmitRequestCommand(request), cancellationToken));
+    public ValueTask<RequestReceipt> SubmitAsync(Guid requestId, SubmitRequest request, CancellationToken cancellationToken)
+        => new(dispatch.Commands.DispatchAsync(new SubmitRequestCommand(requestId, request), cancellationToken));
     public ValueTask CancelRequestAsync(Guid requestId, CancellationToken cancellationToken)
         => new(dispatch.Commands.DispatchAsync(new CancelRequestCommand(requestId), cancellationToken));
     public async ValueTask<RequestSnapshot?> GetRequestAsync(Guid requestId, CancellationToken cancellationToken)

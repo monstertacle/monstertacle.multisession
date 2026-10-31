@@ -21,7 +21,7 @@ internal static class RequestStoreConsistency
             RequestSnapshot snapshot = StoreSerialization.Read<RequestSnapshot>(reader.GetString(9));
             if (!IdentityMatches(reader, snapshot) || !RequestStateMachine.IsValid(snapshot.State, snapshot.Certainty)
                 || reader.GetInt32(3) != (int)snapshot.State || reader.GetInt32(4) != (int)snapshot.Certainty
-                || !TimesMatch(reader, snapshot) || !FinalizationMatches(snapshot))
+                || !TimesMatch(reader, snapshot) || !FinalizationMatches(snapshot) || snapshot.Evidence is not null)
             { throw StorageFailurePolicy.Error(ErrorCode.StorageUnavailable, false, false); }
         }
     }

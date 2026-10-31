@@ -34,6 +34,7 @@ internal static class AcceptanceTransactions
         RequestSnapshot snapshot = new(acceptance.RequestId, submission.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null)
         {
             AcceptedUtc = state.Clock.GetUtcNow(),
+            SubmissionFingerprint = RequestSubmissionFingerprint.Compute(submission),
         };
         SessionSnapshot updated = session with { UpdatedUtc = snapshot.AcceptedUtc };
         using SqliteCommand insert = SqliteStatements.Create(connection, transaction,

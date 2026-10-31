@@ -33,7 +33,7 @@ public static class SqliteStoreFactory
             if (mode == StateFileMode.OpenExisting)
             {
                 stage = FailureStage.StorePreflight;
-                await SqliteStorePreflight.ValidateAsync(path, lease, trustScopeId, cancellationToken);
+                await SqliteStorePreflight.ValidateAsync(path, lease, trustScopeId, options.DispatchMode, cancellationToken);
             }
             stage = FailureStage.StoreOpen;
             return await Task.Run(() => OpenValidated(path, lease, trustScopeId, options, mode, cancellationToken), cancellationToken);
@@ -51,7 +51,7 @@ public static class SqliteStoreFactory
         try
         {
             SqliteConnectionPolicy.Configure(connection);
-            if (mode == StateFileMode.CreateNew) { SqliteSchema.Initialize(connection, trustScopeId, DateTimeOffset.UtcNow); }
+            if (mode == StateFileMode.CreateNew) { SqliteSchema.Initialize(connection, trustScopeId, DateTimeOffset.UtcNow, options.DispatchMode); }
             return new SqliteSessionStore(new(connection, lease, options));
         }
         catch { connection.Dispose(); throw; }

@@ -4,8 +4,8 @@ namespace Monstertacle.Multisession.Cqrs;
 
 internal sealed class CqrsSessions(RuntimeDispatch dispatch) : ISessions
 {
-    public ValueTask<SessionSnapshot> CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
-        => new(dispatch.Commands.DispatchAsync(new CreateSessionCommand(agentProfileId, context), cancellationToken));
+    public ValueTask<SessionSnapshot> CreateSessionAsync(Guid sessionId, string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
+        => new(dispatch.Commands.DispatchAsync(new CreateSessionCommand(sessionId, agentProfileId, context), cancellationToken));
     public ValueTask CloseSessionAsync(Guid sessionId, CancellationToken cancellationToken)
         => new(dispatch.Commands.DispatchAsync(new CloseSessionCommand(sessionId), cancellationToken));
     public ValueTask DeleteSessionAsync(Guid sessionId, CancellationToken cancellationToken)

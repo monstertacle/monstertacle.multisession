@@ -24,7 +24,7 @@ public sealed class AdmissionDiagnosticTests
         SessionSnapshot session = await RequestAdmissionTests.SeedSessionAsync(store);
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
-            admission.SubmitAsync(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.Equal(details, failure.Details);
         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
         Assert.Equal(session.SessionId, failure.Failure.SessionId);
@@ -48,7 +48,7 @@ public sealed class AdmissionDiagnosticTests
         SessionSnapshot session = await RequestAdmissionTests.SeedSessionAsync(store);
         RuntimeOptions options = RuntimeOptionsTests.ValidOptions();
         RequestAdmission admission = new(store, options, clock);
-        Task<RequestReceipt> pending = admission.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask();
+        Task<RequestReceipt> pending = admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask();
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
         clock.Advance(options.AdmissionTimeout);
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => pending);
@@ -90,7 +90,7 @@ public sealed class AdmissionDiagnosticTests
         SessionSnapshot session = await RequestAdmissionTests.SeedSessionAsync(store);
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
         AdmissionCancellationException failure = await Assert.ThrowsAsync<AdmissionCancellationException>(() =>
-            admission.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), caller.Token).AsTask());
+            admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), caller.Token).AsTask());
         Assert.Equal(details, failure.Details);
         Assert.Equal(caller.Token, failure.CancellationToken);
         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);

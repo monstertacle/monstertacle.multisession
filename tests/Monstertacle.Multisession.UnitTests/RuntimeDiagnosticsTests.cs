@@ -21,7 +21,7 @@ public sealed class RuntimeDiagnosticsTests
         await using SessionRuntime runtime = new(scenario.Store, new TestStateDirectoryLease(scenario.Options.StateDirectory),
             [new("connection", "controlled", 1, scenario.Provider)], [], diagnostics: diagnostics);
         await runtime.StartAsync(scenario.Options, CancellationToken.None);
-        RequestReceipt receipt = await runtime.Requests.SubmitAsync(new(scenario.Session.SessionId, "SECRET-INPUT", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
+        RequestReceipt receipt = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(scenario.Session.SessionId, "SECRET-INPUT", TimeSpan.FromSeconds(5), null, false), CancellationToken.None);
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(5));
         RequestSnapshot? request;
         do

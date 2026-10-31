@@ -21,47 +21,46 @@ public sealed class RequestAdmission : IRequests
     }
 
     /// <inheritdoc />
-    public async ValueTask<RequestReceipt> SubmitAsync(SubmitRequest request, CancellationToken cancellationToken)
+    public async ValueTask<RequestReceipt> SubmitAsync(Guid requestId, SubmitRequest request, CancellationToken cancellationToken)
     {
         using CancellationTokenSource deadline = new(_options.AdmissionTimeout, _clock);
         using CancellationTokenSource execution = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
-        Guid? candidateId = null;
         bool committing = false;
         Task<RequestReceipt>? pending = null;
         FailureStage stage = FailureStage.AdmissionLookup;
         try
         {
             execution.Token.ThrowIfCancellationRequested();
+            if (requestId == Guid.Empty) { throw new SessionOperationException(new(ErrorCode.InvalidInput)); }
             SessionSnapshot? session = await _store.GetSessionAsync(request.SessionId, execution.Token).AsTask().WaitAsync(execution.Token);
             if (RequestSubmissionRules.Validate(request, session, _options) is { } failure) { throw new SessionOperationException(failure); }
-            candidateId = Guid.NewGuid();
             committing = true;
             stage = FailureStage.AdmissionCommit;
-            ValueTask<RequestReceipt> operation = _store.CommitAcceptanceAsync(new(candidateId.Value, request), _options.MaxQueuedRequests, execution.Token);
-            if (operation.IsCompletedSuccessfully) { return ValidateReceipt(operation.Result, candidateId.Value); }
+            ValueTask<RequestReceipt> operation = _store.CommitAcceptanceAsync(new(requestId, request), _options.MaxQueuedRequests, execution.Token);
+            if (operation.IsCompletedSuccessfully) { return ValidateReceipt(operation.Result, requestId); }
             pending = operation.AsTask();
-            return ValidateReceipt(await pending.WaitAsync(execution.Token), candidateId.Value);
+            return ValidateReceipt(await pending.WaitAsync(execution.Token), requestId);
         }
         catch (OperationCanceledException failure)
         {
-            if (pending is { IsCompletedSuccessfully: true }) { return ValidateReceipt(pending.Result, candidateId!.Value); }
+            if (pending is { IsCompletedSuccessfully: true }) { return ValidateReceipt(pending.Result, requestId); }
             AdmissionStatus status = !committing || failure is AdmissionCancellationException { Failure.AdmissionStatus: AdmissionStatus.NotAccepted }
                 ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown;
             FailureDetails details = (failure as AdmissionCancellationException)?.Details ?? new(stage);
             if (cancellationToken.IsCancellationRequested)
             {
-                throw new AdmissionCancellationException(Error(ErrorCode.Cancelled, request, candidateId, status), cancellationToken) { Details = details };
+                throw new AdmissionCancellationException(Error(ErrorCode.Cancelled, request, requestId, status), cancellationToken) { Details = details };
             }
-            throw new SessionOperationException(Error(deadline.IsCancellationRequested ? ErrorCode.AdmissionTimedOut : ErrorCode.StorageUnavailable, request, candidateId, status)) { Details = details };
+            throw new SessionOperationException(Error(deadline.IsCancellationRequested ? ErrorCode.AdmissionTimedOut : ErrorCode.StorageUnavailable, request, requestId, status)) { Details = details };
         }
         catch (SessionOperationException failure)
         {
             AdmissionStatus status = !committing || failure.Failure.AdmissionStatus == AdmissionStatus.NotAccepted ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown;
-            throw new SessionOperationException(Error(failure.Failure.Code, request, candidateId, status)) { Details = failure.Details ?? new(stage) };
+            throw new SessionOperationException(Error(failure.Failure.Code, request, requestId, status)) { Details = failure.Details ?? new(stage) };
         }
         catch (Exception)
         {
-            throw new SessionOperationException(Error(ErrorCode.StorageUnavailable, request, candidateId, committing ? AdmissionStatus.Unknown : AdmissionStatus.NotAccepted)) { Details = new(stage) };
+            throw new SessionOperationException(Error(ErrorCode.StorageUnavailable, request, requestId, committing ? AdmissionStatus.Unknown : AdmissionStatus.NotAccepted)) { Details = new(stage) };
         }
     }
 
@@ -75,9 +74,9 @@ public sealed class RequestAdmission : IRequests
     public ValueTask CancelRequestAsync(Guid requestId, CancellationToken cancellationToken)
         => new RequestCancellation(_store).CancelAsync(requestId, cancellationToken);
 
-    private static RequestReceipt ValidateReceipt(RequestReceipt receipt, Guid candidateId)
-        => receipt.RequestId == candidateId && receipt.Sequence > 0 ? receipt
-            : throw new SessionOperationException(new PublicError(ErrorCode.StorageUnavailable, ExecutionCertainty.Unknown, RequestId: candidateId, AdmissionStatus: AdmissionStatus.Unknown));
-    private static PublicError Error(ErrorCode code, SubmitRequest request, Guid? candidateId, AdmissionStatus status)
-        => new(code, status == AdmissionStatus.Unknown ? ExecutionCertainty.Unknown : ExecutionCertainty.NotStarted, request.SessionId, candidateId, status);
+    private static RequestReceipt ValidateReceipt(RequestReceipt receipt, Guid requestId)
+        => receipt.RequestId == requestId && receipt.Sequence > 0 ? receipt
+            : throw new SessionOperationException(new PublicError(ErrorCode.StorageUnavailable, ExecutionCertainty.Unknown, RequestId: requestId, AdmissionStatus: AdmissionStatus.Unknown));
+    private static PublicError Error(ErrorCode code, SubmitRequest request, Guid requestId, AdmissionStatus status)
+        => new(code, status == AdmissionStatus.Unknown ? ExecutionCertainty.Unknown : ExecutionCertainty.NotStarted, request.SessionId, requestId, status);
 }

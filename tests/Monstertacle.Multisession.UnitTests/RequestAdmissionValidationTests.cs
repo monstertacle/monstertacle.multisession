@@ -18,7 +18,7 @@ public sealed class RequestAdmissionValidationTests
         Guid unknown = Guid.NewGuid();
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => admission.SubmitAsync(new(unknown, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            () => admission.SubmitAsync(Guid.NewGuid(), new(unknown, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.NotFound, failure.Failure.Code);
         Assert.Equal(unknown, failure.Failure.SessionId);
@@ -41,7 +41,7 @@ public sealed class RequestAdmissionValidationTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => admission.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            () => admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
 
         Assert.Equal(expected, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.NotStarted, failure.Failure.Certainty);
@@ -61,7 +61,7 @@ public sealed class RequestAdmissionValidationTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions() with { MaxInputBytes = 4 });
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => admission.SubmitAsync(new(session.SessionId, input!, TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            () => admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, input!, TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
 
         Assert.Equal(expected, failure.Failure.Code);
         Assert.Equal(session.SessionId, failure.Failure.SessionId);
@@ -81,7 +81,7 @@ public sealed class RequestAdmissionValidationTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => admission.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromTicks(ticks), null, false), CancellationToken.None).AsTask());
+            () => admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromTicks(ticks), null, false), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.InvalidInput, failure.Failure.Code);
         Assert.Equal(0, commits);
@@ -101,7 +101,7 @@ public sealed class RequestAdmissionValidationTests
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => admission.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromSeconds(10), key, true), CancellationToken.None).AsTask());
+            () => admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromSeconds(10), key, true), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.InvalidInput, failure.Failure.Code);
         Assert.Equal(0, commits);

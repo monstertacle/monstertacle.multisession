@@ -21,7 +21,7 @@ public sealed class SessionOpeningTests
         ControlledProvider provider = new() { OpeningBinding = new("controlled", 1, "ses_pinned_native", "confirmed-head") };
         SessionCatalog catalog = Catalog(store, provider);
 
-        SessionSnapshot created = await catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None);
+        SessionSnapshot created = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None);
 
         Assert.Equal(SessionLifecycle.Open, created.Lifecycle);
         Assert.Equal(SessionBlockReason.None, created.BlockReason);
@@ -48,7 +48,7 @@ public sealed class SessionOpeningTests
         SessionCatalog catalog = Catalog(store, provider);
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
+            () => catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.ProviderUnavailable, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.Unknown, failure.Failure.Certainty);
@@ -71,7 +71,7 @@ public sealed class SessionOpeningTests
         SessionCatalog catalog = Catalog(store, provider);
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
+            () => catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.ProviderUnavailable, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.Unknown, failure.Failure.Certainty);
@@ -98,7 +98,7 @@ public sealed class SessionOpeningTests
         SessionCatalog catalog = Catalog(store, provider);
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), cancellation.Token).AsTask());
+            () => catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), cancellation.Token).AsTask());
 
         Assert.Equal(ErrorCode.Cancelled, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.Unknown, failure.Failure.Certainty);
@@ -115,7 +115,7 @@ public sealed class SessionOpeningTests
         SessionCatalog catalog = Catalog(store, new ControlledProvider());
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
+            () => catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.Unknown, failure.Failure.Certainty);
@@ -135,7 +135,7 @@ public sealed class SessionOpeningTests
         SessionCatalog catalog = Catalog(store, provider);
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
+            () => catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
         Assert.Equal(ExecutionCertainty.Unknown, failure.Failure.Certainty);

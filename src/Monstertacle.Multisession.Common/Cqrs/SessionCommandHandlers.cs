@@ -9,7 +9,7 @@ internal sealed class SessionCommandHandlers(ISessions port) :
     ICommandHandler<DeleteSessionCommand, CommandAcknowledgement>
 {
     public Task<SessionSnapshot> HandleAsync(CreateSessionCommand request, CancellationToken token)
-        => port.CreateSessionAsync(request.AgentProfileId, request.Context, token).AsTask();
+        => port.CreateSessionAsync(request.SessionId, request.AgentProfileId, request.Context, token).AsTask();
     public async Task<CommandAcknowledgement> HandleAsync(CloseSessionCommand request, CancellationToken token)
     {
         await port.CloseSessionAsync(request.SessionId, token);

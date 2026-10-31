@@ -34,8 +34,8 @@ internal static class Program
         await using SessionRuntime runtime = new(store, lease, [new("own", "package-consumer", 1, provider)],
             [new("own", "own", "opaque-model", ExecutionKind.ModelResponse, new("fixed", new Dictionary<string, string>()))]);
         await runtime.StartAsync(options, CancellationToken.None);
-        SessionSnapshot a = await runtime.Commands.DispatchAsync(new CreateSessionCommand("own", new(null, null)));
-        SessionSnapshot b = await runtime.Sessions.CreateSessionAsync("own", new(null, null), CancellationToken.None);
+        SessionSnapshot a = await runtime.Commands.DispatchAsync(new CreateSessionCommand(Guid.NewGuid() ,"own", new(null, null)));
+        SessionSnapshot b = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid() ,"own", new(null, null), CancellationToken.None);
         RequestReceipt firstA = await SubmitAsync(runtime, a.SessionId, "first-a");
         RequestReceipt firstB = await SubmitAsync(runtime, b.SessionId, "first-b");
         try { await provider.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); }
@@ -67,7 +67,7 @@ internal static class Program
         Require((await recovered.GetRuntimeStatisticsAsync(CancellationToken.None)).OccupiedReservations == 0);
     }
     private static ValueTask<RequestReceipt> SubmitAsync(SessionRuntime runtime, Guid session, string input)
-        => new(runtime.Commands.DispatchAsync(new SubmitRequestCommand(new(session, input, TimeSpan.FromSeconds(30), null, false))));
+        => new(runtime.Commands.DispatchAsync(new SubmitRequestCommand(Guid.NewGuid() ,new(session, input, TimeSpan.FromSeconds(30), null, false))));
     private static async Task RequireOutputAsync(SessionRuntime runtime, RequestReceipt receipt, string input)
     {
         RequestSnapshot result = await EndAsync(runtime, receipt.RequestId);

@@ -21,12 +21,12 @@ internal sealed record DispatchScenario(
         AgentProfile[] profiles = [new("profile", "connection", "opaque-model", ExecutionKind.AgentTask,
             new("revision", new Dictionary<string, string> { ["setting"] = "frozen" }))];
         SessionCatalog catalog = new(store, registrations, profiles);
-        SessionSnapshot session = await catalog.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None);
+        SessionSnapshot session = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None);
         return new(store, provider, session, options, new(store, registrations, options, clock));
     }
 
     public ValueTask<RequestReceipt> SubmitAsync(string input = "  only new input\nα🙂\r\n", string? writeKey = null)
-        => new RequestAdmission(Store, Options).SubmitAsync(new(Session.SessionId, input, TimeSpan.FromSeconds(10), writeKey, writeKey is not null), CancellationToken.None);
+        => new RequestAdmission(Store, Options).SubmitAsync(Guid.NewGuid(), new(Session.SessionId, input, TimeSpan.FromSeconds(10), writeKey, writeKey is not null), CancellationToken.None);
 
     public static ProviderReply Success(ProviderBinding binding) => new(
         RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, "complete output", true, binding, null);

@@ -1,0 +1,74 @@
+{
+  "status": "local Linux fingerprint increment qualified; overall feature incomplete",
+  "recordedUtc": "2026-10-31T16:39:03Z",
+  "run": {
+    "SourceHash": "1c159197b6ab21808b9b0e7c09b4c6a28c39a81c0c73c7a949498a1e4f1f3342",
+    "Platform": "linux",
+    "StartedUtc": "2026-10-31T17:34:29.8189816+01:00"
+  },
+  "qualityExitCode": 0,
+  "staticExitCode": 0,
+  "passedTotal": 1151,
+  "skippedTests": 0,
+  "productCoverage": {
+    "Platform": "linux",
+    "ThresholdPercent": 87.0,
+    "TotalLines": 3401,
+    "CoveredLines": 3329,
+    "Percent": 97.883,
+    "Modules": [
+      "Monstertacle.Multisession.AgentFramework",
+      "Monstertacle.Multisession.Common",
+      "Monstertacle.Multisession.Linux",
+      "Monstertacle.Multisession.Providers.Conversations",
+      "Monstertacle.Multisession.Providers.Interactions",
+      "Monstertacle.Multisession.Storage.Sqlite"
+    ],
+    "Reports": 8,
+    "Passed": true
+  },
+  "static": {
+    "files": 525,
+    "types": 545,
+    "violations": 0,
+    "new": 0,
+    "worsened": 0,
+    "baselined": 0,
+    "stale": 0,
+    "parseErrors": 0,
+    "skipped": 0
+  },
+  "coverComplete": true,
+  "coverPassed": true,
+  "coverSummary": {
+    "files": 282,
+    "types": 297,
+    "members": 595,
+    "line": 95.9,
+    "branch": 83.6,
+    "coveredLines": 4137,
+    "coverableLines": 4312,
+    "coveredBranches": 2676,
+    "branches": 3198,
+    "diffLine": 96.9,
+    "diffBranch": 86.3,
+    "violations": 0,
+    "new": 0,
+    "worsened": 0,
+    "baselined": 0,
+    "stale": 0,
+    "tightenable": 0,
+    "unreported": 0,
+    "excluded": 0,
+    "skipped": 6,
+    "unmapped": 0,
+    "listed": 0,
+    "omitted": 0
+  },
+  "pending": [
+    "typed outcomes and native observations",
+    "actual prior-package reader refusal",
+    "native Windows and package qualification for this source",
+    "actual SharpClaw integration after verified-work-control"
+  ]
+}

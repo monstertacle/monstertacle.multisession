@@ -36,7 +36,7 @@ internal static class DiskFullWorker
             var (fullCode, bytes) = await BoundedVolumeFiller.FillAsync(manifest.StateDirectory, deadline.Token);
             stage = "admission";
             PublicError? failure = null;
-            try { await runtime.Requests.SubmitAsync(new(manifest.SessionId, new string('x', options.MaxInputBytes), TimeSpan.FromSeconds(10), null, false), deadline.Token); }
+            try { await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(manifest.SessionId, new string('x', options.MaxInputBytes), TimeSpan.FromSeconds(10), null, false), deadline.Token); }
             catch (SessionOperationException rejected) { failure = rejected.Failure; }
             stage = "release";
             File.Delete(Path.Combine(manifest.StateDirectory, BoundedVolumeFiller.FileName));

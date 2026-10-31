@@ -60,7 +60,7 @@ public sealed class HostCompositionTests
         await using SessionRuntime runtime = new(store, lease, [new("provider", "delayed", 1, provider)],
             [new("profile", "provider", "opaque-model", ExecutionKind.ModelResponse, new("frozen", new Dictionary<string, string>()))]);
         await runtime.StartAsync(Options(), CancellationToken.None);
-        Task<SessionSnapshot> opening = runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None).AsTask();
+        Task<SessionSnapshot> opening = runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None).AsTask();
         await provider.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
         try
         {

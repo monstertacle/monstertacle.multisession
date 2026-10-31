@@ -15,7 +15,7 @@ public sealed class RequestCancellationTests
         await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await fixture.CreateSessionAsync();
         RequestAdmission requests = new(fixture.Store, fixture.Options);
-        RequestReceipt receipt = await requests.SubmitAsync(new(session.SessionId, "  original\n🙂", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt receipt = await requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "  original\n🙂", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         await requests.CancelRequestAsync(receipt.RequestId, CancellationToken.None);
         RequestSnapshot cancelled = (await requests.GetRequestAsync(receipt.RequestId, CancellationToken.None))!;
         Assert.Equal(RequestState.Cancelled, cancelled.State);
@@ -88,7 +88,7 @@ public sealed class RequestCancellationTests
     {
         await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await fixture.CreateSessionAsync();
-        RequestReceipt receipt = await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(new(session.SessionId, "queued", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt receipt = await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(Guid.NewGuid(), new(session.SessionId, "queued", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         StoreProbe.Execute(fixture.Directory.DatabasePath, "CREATE TRIGGER FailCancel AFTER UPDATE OF CancellationRequestedUtc ON Requests BEGIN SELECT RAISE(FAIL,'private-cancel-marker'); END;");
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => fixture.Store.RequestCancellationAsync(receipt.RequestId, CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
@@ -109,7 +109,7 @@ public sealed class RequestCancellationTests
     {
         await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await fixture.CreateSessionAsync();
-        RequestReceipt receipt = await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(new(session.SessionId, "race", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        RequestReceipt receipt = await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(Guid.NewGuid(), new(session.SessionId, "race", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         Task<RequestSnapshot> cancel;
         Task<ExecutionReservation?> reserve;
         if (cancelFirst)

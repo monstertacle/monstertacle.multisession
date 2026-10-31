@@ -21,7 +21,7 @@ public sealed class RuntimeLifecycleTests(ITestOutputHelper output)
         List<Guid> ids = [];
         for (int index = 0; index < 102; index++)
         {
-            RequestReceipt receipt = await requests.SubmitAsync(new(index == 101 ? other.SessionId : first.SessionId,
+            RequestReceipt receipt = await requests.SubmitAsync(Guid.NewGuid(), new(index == 101 ? other.SessionId : first.SessionId,
                 "queued-" + index, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
             ids.Add(receipt.RequestId);
         }
@@ -30,7 +30,7 @@ public sealed class RuntimeLifecycleTests(ITestOutputHelper output)
         long began = Stopwatch.GetTimestamp();
         Task stopping = host.Runtime.StopAsync(TimeSpan.FromSeconds(10), CancellationToken.None).AsTask();
         SessionOperationException rejected = await Assert.ThrowsAsync<SessionOperationException>(() => host.Runtime.Requests.SubmitAsync(
-            new(first.SessionId, "too late", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            Guid.NewGuid(), new(first.SessionId, "too late", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.SessionClosed, rejected.Failure.Code);
         await stopping;
         TimeSpan elapsed = Stopwatch.GetElapsedTime(began);
@@ -59,9 +59,9 @@ public sealed class RuntimeLifecycleTests(ITestOutputHelper output)
         await using AdmissionStoreFixture setup = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await setup.CreateSessionAsync();
         RequestReceipt receipt = await new RequestAdmission(setup.Store, setup.Options).SubmitAsync(
-            new(session.SessionId, "must remain", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            Guid.NewGuid(), new(session.SessionId, "must remain", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         RequestReceipt second = await new RequestAdmission(setup.Store, setup.Options).SubmitAsync(
-            new(session.SessionId, "must also remain", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            Guid.NewGuid(), new(session.SessionId, "must also remain", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         await setup.Store.DisposeAsync();
         await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, []);
         StoreProbe.Execute(setup.Directory.DatabasePath, "CREATE TRIGGER FailStop AFTER UPDATE OF CancellationRequestedUtc ON Requests WHEN NEW.Sequence=2 BEGIN SELECT RAISE(FAIL,'private-stop-marker'); END;");
@@ -102,12 +102,12 @@ public sealed class RuntimeLifecycleTests(ITestOutputHelper output)
                 ExecutionCertainty.ConfirmedEnded, string.Empty, false, null, new(ErrorCode.Cancelled))),
         };
         await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, [new("connection-I", "fixture-adapter", 7, provider)]);
-        RequestReceipt active = await host.Runtime.Requests.SubmitAsync(new(session.SessionId, "active", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+        RequestReceipt active = await host.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "active", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
         List<Guid> followers = [];
         for (int index = 0; index < 2; index++)
         {
-            RequestReceipt receipt = await host.Runtime.Requests.SubmitAsync(new(session.SessionId, "follower-" + index, TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+            RequestReceipt receipt = await host.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "follower-" + index, TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
             followers.Add(receipt.RequestId);
         }
         try

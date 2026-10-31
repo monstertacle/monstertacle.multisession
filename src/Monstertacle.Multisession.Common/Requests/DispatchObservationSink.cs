@@ -7,6 +7,8 @@ internal sealed class DispatchObservationSink(ISessionStore store, Guid dispatch
 {
     private string? _sessionReference = binding.SessionReference;
     private string? _operationReference;
+    private string? _nativeSessionReference;
+    private int _prepared;
     private int _failed;
     private int _pending;
     private int _closed;
@@ -48,6 +50,10 @@ internal sealed class DispatchObservationSink(ISessionStore store, Guid dispatch
         bool valid = observation.Kind switch
         {
             ProviderObservationKind.Progress => true,
+            ProviderObservationKind.InvocationPrepared => observation.Reference == dispatchId.ToString("N") && Interlocked.Exchange(ref _prepared, 1) == 0,
+            ProviderObservationKind.NativeSessionObserved => !string.IsNullOrWhiteSpace(observation.Reference)
+                && (Interlocked.CompareExchange(ref _nativeSessionReference, observation.Reference, null) is not { } native
+                    || string.Equals(native, observation.Reference, StringComparison.Ordinal)),
             ProviderObservationKind.OperationAccepted => !string.IsNullOrWhiteSpace(observation.Reference),
             ProviderObservationKind.SessionEstablished => !string.IsNullOrWhiteSpace(observation.Reference)
                 && (Interlocked.CompareExchange(ref _sessionReference, observation.Reference, null) is not { } current

@@ -25,7 +25,7 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
     ValueTask<Page<HistoryEntry>> ISessionQueryStore.ReadHistoryAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => SqlitePageQueries.History(connection, State.StoreId, sessionId, pageSize, cursor), cancellationToken));
     ValueTask<RequestSnapshot?> ISessionQueryStore.GetRequestAsync(Guid requestId, CancellationToken cancellationToken)
-        => new(State.Queue.ExecuteAsync(connection => QueryTransactions.Request(connection, requestId), cancellationToken));
+        => new(State.Queue.ExecuteAsync(connection => QueryTransactions.PublicRequest(connection, requestId), cancellationToken));
     ValueTask<Page<RequestSnapshot>> ISessionQueryStore.ListRequestsAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
         => new(State.Queue.ExecuteAsync(connection => SqlitePageQueries.Requests(connection, State.StoreId, sessionId, pageSize, cursor), cancellationToken));
     ValueTask<RecoveryCaseSnapshot?> ISessionQueryStore.GetRecoveryCaseAsync(RecoveryTarget target, CancellationToken cancellationToken)
@@ -34,7 +34,12 @@ internal abstract class SqliteQueryStore(SqliteStoreState state) : ISessionQuery
         => new(State.Queue.ExecuteAsync(connection => SqlitePageQueries.Recovery(connection, State.StoreId, pageSize, cursor), cancellationToken));
 
     ValueTask<RequestSnapshot> IRequestCancellationStore.RequestCancellationAsync(Guid requestId, CancellationToken cancellationToken)
-        => new(State.Queue.ExecuteAsync(connection => CancellationTransactions.Request(connection, State, requestId, cancellationToken), cancellationToken));
+        => new(State.Queue.ExecuteAsync(connection =>
+        {
+            RequestSnapshot recorded = CancellationTransactions.Request(connection, State, requestId, cancellationToken);
+            // Return the same public projection as reads, including dispatch evidence from its single envelope.
+            return QueryTransactions.PublicRequest(connection, recorded.RequestId) ?? throw new SessionOperationException(new PublicError(ErrorCode.StorageUnavailable));
+        }, cancellationToken));
     ValueTask IRequestCancellationStore.CancelQueuedSessionAsync(Guid sessionId, CancellationToken cancellationToken)
         => State.Queue.WriteAsync(connection => CancellationTransactions.CancelQueued(connection, State, sessionId, cancellationToken), cancellationToken);
 

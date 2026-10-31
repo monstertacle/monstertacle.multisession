@@ -49,7 +49,7 @@ public sealed class FrameworkSessionProviderTests
         TaskCompletionSource seen = new(TaskCreationOptions.RunContinuationsAsynchronously);
         Task<ProviderReply> running = provider.SendAsync(Call(context), binding, async (observation, token) =>
         {
-            Assert.Equal(ProviderObservationKind.OperationAccepted, observation.Kind);
+            Assert.Equal(ProviderObservationKind.InvocationPrepared, observation.Kind);
             seen.SetResult();
             await acknowledgement.Task.WaitAsync(token);
         }, default).AsTask();

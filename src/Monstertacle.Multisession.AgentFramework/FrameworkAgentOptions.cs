@@ -14,4 +14,8 @@ public sealed record FrameworkAgentOptions
     public int MaximumStateBytes { get; init; } = 1024 * 1024;
     /// <summary>Gets the finite creation/restoration/serialization operation deadline.</summary>
     public TimeSpan SessionOperationTimeout { get; init; } = TimeSpan.FromSeconds(30);
+    /// <summary>Gets whether this registration is qualified to return <see cref="FrameworkExecutionOutcome"/> facts.</summary>
+    public bool QualifiedOutcomes { get; init; }
+    /// <summary>Gets the inclusive number of agent-reported observations accepted per invocation.</summary>
+    public int MaximumObservations { get; init; } = 16;
 }

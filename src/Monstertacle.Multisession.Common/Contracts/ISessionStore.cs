@@ -14,7 +14,7 @@ public interface ISessionStore : ISessionQueryStore, IStoreBootstrap, IRequestCa
     /// <summary>Commits input, sequence and queue capacity atomically.</summary>
     ValueTask<RequestReceipt> CommitAcceptanceAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken);
     /// <summary>Reserves an eligible FIFO head, respecting session, workspace and slot occupancy.</summary>
-    ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken);
+    ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken, Guid? expectedRequestId = null);
     /// <summary>Persists acknowledged native identity before the adapter can continue.</summary>
     ValueTask CommitObservationAsync(Guid dispatchId, ProviderObservation observation, CancellationToken cancellationToken);
     /// <summary>Commits result, history, confirmed binding and eligible reservation release together.</summary>

@@ -18,7 +18,7 @@ public sealed class StoreFormatTests
         {
             Assert.True(directory.IsHeld);
         }
-        Assert.Equal(1L, StoreProbe.Scalar(directory.DatabasePath, "SELECT SchemaVersion FROM Metadata"));
+        Assert.Equal(2L, StoreProbe.Scalar(directory.DatabasePath, "SELECT SchemaVersion FROM Metadata"));
         Assert.Equal(0L, StoreProbe.Scalar(directory.DatabasePath, "SELECT MigrationVersion FROM Metadata"));
         Assert.Equal(1L, StoreProbe.Scalar(directory.DatabasePath, "SELECT BindingEncodingVersion FROM Metadata"));
         Assert.Equal(directory.TrustScopeId.ToString("D"), StoreProbe.Scalar(directory.DatabasePath, "SELECT InstanceTrustScopeId FROM Metadata"));
@@ -75,10 +75,10 @@ public sealed class StoreFormatTests
     /// <summary>Unknown format, schema, metadata and binding encoding are rejected without modifying the original.</summary>
     [Theory]
     [InlineData("PRAGMA user_version=0")]
-    [InlineData("PRAGMA user_version=2")]
+    [InlineData("PRAGMA user_version=3")]
     [InlineData("PRAGMA application_id=0")]
     [InlineData("UPDATE Metadata SET SchemaVersion=0")]
-    [InlineData("UPDATE Metadata SET SchemaVersion=2")]
+    [InlineData("UPDATE Metadata SET SchemaVersion=3")]
     [InlineData("UPDATE Metadata SET MigrationVersion=1")]
     [InlineData("UPDATE Metadata SET BindingEncodingVersion=2")]
     [InlineData("UPDATE Metadata SET StoreId='00000000-0000-0000-0000-000000000000'")]
@@ -162,7 +162,7 @@ public sealed class StoreFormatTests
     {
         await using PrivateStoreDirectory directory = new();
         await (await SqliteStoreFactory.CreateNewAsync(directory, directory.TrustScopeId, directory.Options, CancellationToken.None)).DisposeAsync();
-        if (unsupported) { StoreProbe.Execute(directory.DatabasePath, "UPDATE Metadata SET SchemaVersion=2"); }
+        if (unsupported) { StoreProbe.Execute(directory.DatabasePath, "UPDATE Metadata SET SchemaVersion=3"); }
         string journal = directory.DatabasePath + "-journal";
         await directory.PrepareFileAsync("multisession.db-journal", StateFileMode.CreateNew, CancellationToken.None);
         await File.WriteAllBytesAsync(journal, new byte[64]);

@@ -38,7 +38,7 @@ public sealed class SessionRoutingTests
         SessionCatalog catalog = new(store, providers, profiles);
         SessionExecutionContext workspace = new(Path.GetTempPath(), "canonical-workspace");
 
-        SessionSnapshot? created = await catalog.CreateSessionAsync("profile-a", workspace, CancellationToken.None);
+        SessionSnapshot? created = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile-a", workspace, CancellationToken.None);
 
         Assert.NotNull(created);
         Assert.NotEqual(Guid.Empty, created.SessionId);
@@ -58,7 +58,7 @@ public sealed class SessionRoutingTests
     {
         SessionCatalog first = CreateCatalog(new InMemorySessionStore());
         SessionCatalog other = CreateCatalog(new InMemorySessionStore());
-        SessionSnapshot created = await first.CreateSessionAsync("profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None);
+        SessionSnapshot created = await first.CreateSessionAsync(Guid.NewGuid(), "profile", new(Path.GetTempPath(), "workspace"), CancellationToken.None);
 
         SessionSnapshot? found = await first.GetSessionAsync(created.SessionId, CancellationToken.None);
 
@@ -73,8 +73,8 @@ public sealed class SessionRoutingTests
     {
         SessionCatalog catalog = CreateCatalog(new InMemorySessionStore());
         SessionExecutionContext workspace = new(Path.GetTempPath(), "workspace");
-        SessionSnapshot first = await catalog.CreateSessionAsync("profile", workspace, CancellationToken.None);
-        SessionSnapshot second = await catalog.CreateSessionAsync("profile", workspace, CancellationToken.None);
+        SessionSnapshot first = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", workspace, CancellationToken.None);
+        SessionSnapshot second = await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", workspace, CancellationToken.None);
 
         Assert.NotEqual(first.SessionId, second.SessionId);
         Assert.Equal(first, await catalog.GetSessionAsync(first.SessionId, CancellationToken.None));

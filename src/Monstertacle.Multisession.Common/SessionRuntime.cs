@@ -34,6 +34,14 @@ public sealed class SessionRuntime : IAsyncDisposable
     public Monstertacle.SharpQrs.IQueryDispatcher Queries => _lifecycle.Components.Dispatch.Queries;
     /// <summary>Starts validated ownership and bounded execution workers.</summary>
     public ValueTask StartAsync(RuntimeOptions options, CancellationToken cancellationToken) => _lifecycle.StartAsync(options, cancellationToken);
+    /// <summary>Executes only the named eligible head in a host-controlled runtime, awaiting its durable result.</summary>
+    public ValueTask<bool> DispatchAsync(Guid requestId, CancellationToken cancellationToken)
+    {
+        if (requestId == Guid.Empty) { throw new SessionOperationException(new(ErrorCode.InvalidInput)); }
+        return _lifecycle.RunOperation(token => _lifecycle.Components.Options.DispatchMode == RuntimeDispatchMode.HostControlled
+            ? _lifecycle.Components.Dispatcher.TryDispatchAsync(token, requestId)
+            : throw new SessionOperationException(new(ErrorCode.InvalidConfiguration)), cancellationToken);
+    }
     /// <summary>Stops acceptance and preserves visible durable state.</summary>
     public ValueTask StopAsync(TimeSpan deadline, CancellationToken cancellationToken) => _lifecycle.StopAsync(deadline, cancellationToken);
     /// <summary>Releases resources after controlled stop, without deleting stored state.</summary>

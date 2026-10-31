@@ -39,9 +39,9 @@ public sealed class ReservationPersistenceTests
     public async Task SkipsBlockedWorkspaceHeadWithoutBypassingSessionFifo()
     {
         await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
-        SessionSnapshot first = await fixture.Catalog.CreateSessionAsync("profile-İ", new(null, "shared"), CancellationToken.None);
-        SessionSnapshot second = await fixture.Catalog.CreateSessionAsync("profile-İ", new(null, "shared"), CancellationToken.None);
-        SessionSnapshot third = await fixture.Catalog.CreateSessionAsync("profile-İ", new(null, "independent"), CancellationToken.None);
+        SessionSnapshot first = await fixture.Catalog.CreateSessionAsync(Guid.NewGuid(), "profile-İ", new(null, "shared"), CancellationToken.None);
+        SessionSnapshot second = await fixture.Catalog.CreateSessionAsync(Guid.NewGuid(), "profile-İ", new(null, "shared"), CancellationToken.None);
+        SessionSnapshot third = await fixture.Catalog.CreateSessionAsync(Guid.NewGuid(), "profile-İ", new(null, "independent"), CancellationToken.None);
         List<RequestReceipt> accepted = [];
         foreach (SessionSnapshot session in new[] { first, first, second, third })
         {

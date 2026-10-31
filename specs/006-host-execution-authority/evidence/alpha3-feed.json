@@ -1,0 +1,42 @@
+{
+  "status": "alpha.3 canonical CI packages for 94011f7; local feed only, not published",
+  "recordedUtc": "2026-10-31T19:00:53.7848847+00:00",
+  "sourceCommit": "94011f78b98a2b8c285d3538d8ca859ddd2be8d6",
+  "sourceHash": "44228de414be865fa5813c0aad9fe378ac8a8caa2d5b891cfbcb88d46c4fad79",
+  "githubRun": 41231219057,
+  "jobs": "quality linux/windows, canonical-consumer linux/windows: success",
+  "windowsProductCoveragePercent": 97.9318,
+  "linuxProductCoveragePercent": 97.9511,
+  "priorReaderRefusal": "PASS on all four jobs (prior 0.2.0-alpha.2 rebuilt from 6127f2e)",
+  "nuspecRepositoryCommit": "94011f78b98a2b8c285d3538d8ca859ddd2be8d6",
+  "packages": [
+    {
+      "File": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.3.nupkg",
+      "Sha256": "d52caaa2cedfa16502ffc311bf2e398787a43ac275890eeda3b5375678d56bd2"
+    },
+    {
+      "File": "Monstertacle.Multisession.Common.0.2.0-alpha.3.nupkg",
+      "Sha256": "a3adca673d392acf00c9e338cb5d073411d0fe66ac9b08899243b78b104ee130"
+    },
+    {
+      "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.3.nupkg",
+      "Sha256": "0dd3f2f2b91d2852e2d91d5db60ec0454caf49420d46bcff776b758117a34771"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.3.nupkg",
+      "Sha256": "ebe4d56196b82073acb474915966a51ef862c69866a948ab097de3f941f0f08f"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.3.nupkg",
+      "Sha256": "bb17a5815acee7cd1ee4000ab9b7b2265609703ab73084053a48de9fe48af2e2"
+    },
+    {
+      "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.3.nupkg",
+      "Sha256": "b0103cb0ada8fb0a3e8de3f04ff95c007d00b0c6afc890bc2ece7e918fc62d70"
+    },
+    {
+      "File": "Monstertacle.Multisession.Windows.0.2.0-alpha.3.nupkg",
+      "Sha256": "fcae4337e2230187a2a71b9faa53e5ac99dd37ca2ff3b90888b87b881e28f9e5"
+    }
+  ]
+}

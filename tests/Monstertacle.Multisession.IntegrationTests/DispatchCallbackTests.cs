@@ -33,6 +33,9 @@ public sealed class DispatchCallbackTests
     [InlineData(ProviderObservationKind.OperationAccepted, null)]
     [InlineData(ProviderObservationKind.SessionEstablished, "different-native-session")]
     [InlineData((ProviderObservationKind)99, "opaque")]
+    [InlineData(ProviderObservationKind.InvocationPrepared, "another-dispatch")]
+    [InlineData(ProviderObservationKind.InvocationPrepared, null)]
+    [InlineData(ProviderObservationKind.NativeSessionObserved, " ")]
     public async Task RejectsInvalidObservationWithoutMutation(ProviderObservationKind kind, string? reference)
     {
         await using PersistedDispatchFixture fixture = await PersistedDispatchFixture.CreateAsync();
@@ -61,8 +64,8 @@ public sealed class DispatchCallbackTests
             return new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, "output-" + call.Input, true, binding with { ContinuationState = "next-head" }, null);
         };
         RequestAdmission admission = new(fixture.Store, fixture.Options);
-        await admission.SubmitAsync(new(session.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
-        await admission.SubmitAsync(new(session.SessionId, "second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         RequestDispatcher dispatcher = new(fixture.Store, [new("connection-I", "fixture-adapter", 7, fixture.Provider)], fixture.Options);
         Assert.True(await dispatcher.TryDispatchAsync(CancellationToken.None));
         Assert.True(await dispatcher.TryDispatchAsync(CancellationToken.None));
@@ -70,5 +73,24 @@ public sealed class DispatchCallbackTests
         Assert.Equal(_expectedInputs, inputs);
         Assert.Equal(_expectedHeads, heads);
         Assert.Equal(2L, StoreProbe.Scalar(fixture.Directory.DatabasePath, "SELECT count(*) FROM Results"));
+    }
+
+    /// <summary>Invocation intent is recorded once and a different native session cannot replace the first.</summary>
+    [Fact]
+    public async Task RecordsPreparationAndNativeIdentityOnlyOnce()
+    {
+        await using PersistedDispatchFixture fixture = await PersistedDispatchFixture.CreateAsync();
+        Guid dispatch = fixture.Reservation.DispatchId;
+        await fixture.Host.Store.CommitObservationAsync(dispatch, new(ProviderObservationKind.InvocationPrepared, dispatch.ToString("N")), CancellationToken.None);
+        await fixture.Host.Store.CommitObservationAsync(dispatch, new(ProviderObservationKind.NativeSessionObserved, "native"), CancellationToken.None);
+        await fixture.Host.Store.CommitObservationAsync(dispatch, new(ProviderObservationKind.NativeSessionObserved, "native"), CancellationToken.None);
+        string before = (string)StoreProbe.Scalar(fixture.Host.Directory.DatabasePath, "SELECT ReservedDispatchJson FROM Requests")!;
+        foreach (ProviderObservation invalid in new ProviderObservation[] { new(ProviderObservationKind.InvocationPrepared, dispatch.ToString("N")), new(ProviderObservationKind.NativeSessionObserved, "other") })
+        {
+            SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => fixture.Host.Store.CommitObservationAsync(dispatch, invalid, CancellationToken.None).AsTask());
+            Assert.Equal(ErrorCode.InvalidInput, failure.Failure.Code);
+        }
+        Assert.Equal(before, StoreProbe.Scalar(fixture.Host.Directory.DatabasePath, "SELECT ReservedDispatchJson FROM Requests"));
+        Assert.Equal(new ExecutionEvidence(true, null, "native"), (await fixture.Host.Store.GetRequestAsync(fixture.Reservation.RequestId, default))?.Evidence);
     }
 }

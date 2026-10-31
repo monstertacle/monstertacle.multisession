@@ -36,9 +36,9 @@ internal sealed class ProbeHost(ISessionStore store, SessionRuntime runtime, Run
         }
     }
     internal ValueTask<SessionSnapshot> CreateAsync(string profile, string? workspace = null, string? directory = null)
-        => Runtime.Sessions.CreateSessionAsync(profile, new(directory, workspace), CancellationToken.None);
+        => Runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), profile, new(directory, workspace), CancellationToken.None);
     internal ValueTask<RequestReceipt> SubmitAsync(Guid session, string input, string? workspace = null)
-        => Runtime.Requests.SubmitAsync(new(session, input, TimeSpan.FromSeconds(10), workspace, workspace is not null), CancellationToken.None);
+        => Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session, input, TimeSpan.FromSeconds(10), workspace, workspace is not null), CancellationToken.None);
     internal async Task<RequestSnapshot> EndAsync(Guid id)
     {
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(10));

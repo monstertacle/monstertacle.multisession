@@ -10,3 +10,5 @@
 - [ ] T008 Consume alpha.3 in the isolated SharpClaw feature clone and record exact producer/source/package proof; preserve live work.
 
 Partial milestones: identity/dispatch semantic Reds and canonical ID implementation are complete; T002 still owns outcome/observation Reds, and T003 still owns exact recovered-submission fingerprints. T007 is not complete: local Linux evidence is in evidence/qualification.json; native Windows and package proof remain pending. No feature completion or live cutover is claimed.
+
+Consumer dependency for T008: active SharpClaw feature004 verified-work-control belongs to the concurrent session. Host proposal feature005 is deferred until coordination and reconciliation on that source. Continue T002/T003/T005–T007 in this SDK clone; do not implement SharpClaw work/progress authority in parallel.

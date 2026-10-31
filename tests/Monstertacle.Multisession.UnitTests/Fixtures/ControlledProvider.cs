@@ -2,25 +2,33 @@ using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.UnitTests.Fixtures;
 
-internal sealed class ControlledProvider : ISessionProvider
+internal sealed class ControlledProvider : ISessionProvider, ISessionAvailabilityProvider
 {
     public TaskCompletionSource<ProviderCall> Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public TaskCompletionSource<ProviderReply> Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public ProviderCapabilities Capabilities { get; init; } = new(true, true, false, false, false);
+    public Func<ProviderCall, ProviderBinding, Func<ProviderObservation, CancellationToken, ValueTask>, CancellationToken, ValueTask<ProviderReply>>? Sending { get; init; }
+    public Func<ProviderSessionContext, ProviderBinding, CancellationToken, ValueTask<ProviderBinding>>? Reopening { get; init; }
+    public Func<ProviderSessionContext, string, CancellationToken, ValueTask<ProviderReply>>? Cancelling { get; init; }
+    public Func<ProviderSessionContext, string, CancellationToken, ValueTask<ProviderReply>>? Inspecting { get; init; }
+    public Func<ProviderSessionContext, ProviderBinding>? BindingForContext { get; init; }
     public Action<ProviderSessionContext>? Opening { get; init; }
+    public Func<ProviderSessionContext, CancellationToken, ValueTask>? CheckingAvailability { get; init; }
     public ProviderBinding OpeningBinding { get; init; } = new("controlled", 1, null, null);
+    public ValueTask ValidateAvailabilityAsync(ProviderSessionContext context, CancellationToken cancellationToken)
+        => CheckingAvailability?.Invoke(context, cancellationToken) ?? ValueTask.CompletedTask;
 
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         Opening?.Invoke(context);
-        return ValueTask.FromResult(OpeningBinding);
+        return ValueTask.FromResult(BindingForContext?.Invoke(context) ?? OpeningBinding);
     }
 
     public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return ValueTask.FromResult(binding);
+        return Reopening is null ? ValueTask.FromResult(binding) : Reopening(context, binding, cancellationToken);
     }
 
     public async ValueTask<ProviderReply> SendAsync(
@@ -31,14 +39,18 @@ internal sealed class ControlledProvider : ISessionProvider
     {
         cancellationToken.ThrowIfCancellationRequested();
         Started.TrySetResult(request);
+        if (Sending is not null)
+        {
+            return await Sending(request, binding, observe, cancellationToken);
+        }
         return await Completion.Task.WaitAsync(cancellationToken);
     }
 
     public ValueTask<ProviderReply> InspectAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)
-        => ValueTask.FromResult(Unsupported());
+        => Inspecting is null ? ValueTask.FromResult(Unsupported()) : Inspecting(context, operationId, cancellationToken);
 
     public ValueTask<ProviderReply> CancelAsync(ProviderSessionContext context, string operationId, CancellationToken cancellationToken)
-        => ValueTask.FromResult(Unsupported());
+        => Cancelling is null ? ValueTask.FromResult(Unsupported()) : Cancelling(context, operationId, cancellationToken);
 
     private static ProviderReply Unsupported() => new(
         RequestState.Failed,

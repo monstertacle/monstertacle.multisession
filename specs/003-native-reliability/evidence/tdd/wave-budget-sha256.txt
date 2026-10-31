@@ -1,0 +1,4 @@
+dc1a6e9cc0d28b20a4c37debca0406beb51c4341a890ef38623fcfa0a64516ac  artifacts/tdd/native-reliability/wave-budget-pre-green/head.txt
+3dd79b2644d71337f7fa5a84a4e48f669ee44cf10648157dea427dd3b292fd6d  artifacts/tdd/native-reliability/wave-budget-pre-green/tracked.patch
+e2534a17732a9854c47fe4084e34d6abbc22bb59c99a27af608d6daca491eb85  artifacts/tdd/native-reliability/wave-budget-pre-green/untracked.tar.gz
+a1b7cbc92d919d63d20aac37192d4b13040550ad2ce7673e706aa06cb081ce52  artifacts/tdd/native-reliability/wave-budget-pre-green/utc.txt

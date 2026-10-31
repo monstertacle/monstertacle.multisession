@@ -13,4 +13,14 @@ public sealed record RequestSnapshot(
     long Sequence,
     RequestState State,
     ExecutionCertainty Certainty,
-    ProviderReply? Result);
+    ProviderReply? Result)
+{
+    /// <summary>Gets the UTC instant at which the input was durably accepted.</summary>
+    public DateTimeOffset AcceptedUtc { get; init; }
+    /// <summary>Gets the actual dispatch time, absent while queued.</summary>
+    public DateTimeOffset? StartedUtc { get; init; }
+    /// <summary>Gets the local terminal time, independent from external end certainty.</summary>
+    public DateTimeOffset? EndedUtc { get; init; }
+    /// <summary>Gets separately recorded cancellation intent, which does not prove external end.</summary>
+    public DateTimeOffset? CancellationRequestedUtc { get; init; }
+}

@@ -1,0 +1,43 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/bin/Debug/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Storage.Sqlite/bin/Debug/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/bin/Debug/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/bin/Debug/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Linux/bin/Debug/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/examples/Monstertacle.Multisession.ValidationHost/bin/Debug/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.26]     Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.PreservesPrimaryDetailsAndRunIdentity [FAIL]
+[xUnit.net 00:00:00.31]     Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.PreservesWaveFailureAcrossBothCleanupBoundaries [FAIL]
+[xUnit.net 00:00:00.33]     Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.SeparatesCleanupOnlyFailure [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.PreservesPrimaryDetailsAndRunIdentity [9 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: PublicError { Code = StorageUnavailable, Certainty = NotStarted, SessionId = , RequestId = , AdmissionStatus = Unknown }
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.PreservesPrimaryDetailsAndRunIdentity() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/ScenarioOwnershipTests.cs:line 66
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.PreservesWaveFailureAcrossBothCleanupBoundaries [46 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: NotFound
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.PreservesWaveFailureAcrossBothCleanupBoundaries() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/ScenarioOwnershipTests.cs:line 34
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.SeparatesCleanupOnlyFailure [15 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+                   ↓ (pos 8)
+Expected: "ScenarioCleanupFailed"
+Actual:   "ScenarioExecutionFailed"
+                   ↑ (pos 8)
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.ScenarioOwnershipTests.SeparatesCleanupOnlyFailure() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/ScenarioOwnershipTests.cs:line 49
+--- End of stack trace from previous location ---
+Results File: /home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/tdd/native-reliability/review-delta-red/ownership-original-semantics-red.trx
+
+Failed!  - Failed:     3, Passed:     0, Skipped:     0, Total:     3, Duration: 89 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

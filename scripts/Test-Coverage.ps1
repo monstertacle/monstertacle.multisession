@@ -13,6 +13,13 @@ try {
     $threshold = [decimal]$scope.thresholdPercent
     if ($threshold -lt 87 -or $threshold -gt 100) { throw 'Coverage threshold must be between 87 and 100 percent.' }
     $allModules = @($scope.commonAssemblies) + @($scope.platformAssemblies.Values)
+    $validation = @()
+    if ($scope.ContainsKey('validationAssemblies')) { $validation = @($scope.validationAssemblies) }
+    foreach ($module in $validation) {
+        if ($module -cin $allModules -or -not (Test-Path (Join-Path $ProjectRoot "examples/$module/$module.csproj") -PathType Leaf)) {
+            throw 'Validation coverage inventory must name separate existing example projects.'
+        }
+    }
     if (@($allModules | Sort-Object -Unique).Count -ne $allModules.Count) { throw 'Duplicate product modules in scope inventory.' }
     $expected = @($scope.commonAssemblies) + $scope.platformAssemblies[$Platform]
     $sourceDirectory = Join-Path $ProjectRoot $scope.productDirectory
@@ -30,12 +37,14 @@ try {
     $comparer = if ($Platform -eq 'windows') { [StringComparer]::OrdinalIgnoreCase } else { [StringComparer]::Ordinal }
     $lineHits = [Collections.Generic.Dictionary[string, bool]]::new($comparer)
     $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $validationSeen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 
     foreach ($report in $reports) {
         $data = Get-Content -LiteralPath $report.FullName -Raw | ConvertFrom-Json -AsHashtable
         if ($data -isnot [Collections.IDictionary]) { throw "Invalid collector report: $($report.Name)" }
         foreach ($moduleFile in $data.Keys) {
             $module = [IO.Path]::GetFileNameWithoutExtension($moduleFile)
+            if ($module -cin $validation) { $null = $validationSeen.Add($module); continue }
             if ($module -cnotin $expected) { throw "Unexpected assembly in platform report: $module" }
             $null = $seen.Add($module)
             $documents = $data[$moduleFile]
@@ -68,6 +77,9 @@ try {
 
     foreach ($module in $expected) {
         if (-not $seen.Contains($module)) { throw "Missing product assembly: $module" }
+    }
+    foreach ($module in $validation) {
+        if (-not $validationSeen.Contains($module)) { throw "Missing validation assembly: $module" }
     }
     $total = $lineHits.Count
     if ($total -eq 0) { throw 'Zero measured product lines cannot pass coverage.' }

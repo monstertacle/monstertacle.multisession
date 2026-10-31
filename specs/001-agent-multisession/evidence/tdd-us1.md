@@ -174,3 +174,307 @@ Sourcehash `5f6ef71246cb3758190f8cc6debdca98587fbfb3f8168e71cc46ed2e33ad7fc6`,
 Artefakte `artifacts/quality/windows/53582390efb54d0e8c568b3d84615c9f/`.
 Coverage **233/264 = 88,2576 %**, Runner **FAIL / Exit 1**. Keine Freigabe;
 Linux-/CI-/Zielsystem-/Provider-/Paketnachweise und initiale Manifestlücke bleiben offen.
+
+## T112 — reservierter Dispatch-Snapshot (2026-10-28)
+
+Owner: aktuelle Implementierungssitzung; Arbeitsbranch `feature/reserved-dispatch-contract`,
+Basiscommit `0cd4ac8`. Vorabanalyse: `architecture/2026-10-28-reserved-dispatch.md`.
+Bezug FR-007/FR-018/FR-019 und Orchestrierungsvertrag §1. T112 ist lokal umgesetzt;
+keine abgeschlossene US1, kein produktiver Store/Dispatcher und keine Produktfreigabe.
+
+### Tatsächlich beobachtetes Red vor Green
+
+Befehl für die ersten drei Läufe:
+`dotnet test tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~ReservedDispatchContractTests --logger trx --results-directory artifacts/tdd/<Verzeichnis>`.
+Alle .NET-Läufe erfolgen über `bash /home/user1/dev/scripts/run-capped.sh --`.
+TRX und vor jedem Lauf erfasste `sources.sha256` bleiben in der ignorierten lokalen Ablage.
+Die Sourcehashes unten sind SHA256 der jeweiligen Manifestdatei, keine Commit-IDs.
+
+| Reihenfolge / Verzeichnis | Beobachtetes Ergebnis | Manifest-SHA256 |
+| --- | --- | --- |
+| `reserved-dispatch-red-compiled` | Exit 1; sieben ausgeführte fachlich rote Fälle: fehlender Snapshot (5), fehlender Completionablauf und falscher Konfliktfehlertyp (2) | `6534fb769964f735292bd4cffa4468687b7bf0a8970d62063ad6905f2480fe78` |
+| `reserved-dispatch-projection` | Exit 1; vollständige Submission und reine Reads grün (2); Cancel/nicht laufend noch lesbar (2), aktuelle Revision 0 statt 1 (1), Completion noch Stub (2) | `d2e9b344ec15ec82553dd9b20c4d8051155c06368a7104b1c1b4cf287df3baba` |
+| `reserved-dispatch-green` | Exit 0; sieben Fälle grün einschließlich Revisionskonflikt ohne Result-/History-/Binding-/Releasewirkung, einmaligem Abschluss und nächster Sequenz/Revision | `7dcfd07351b68e1e59e603d5f3e09b38c63286740fb7cd348cee97d486035aba` |
+| `reserved-dispatch-evidence-red` | Filter `FullyQualifiedName~RefusesUnmodelledCompletionWithoutRelease`; Exit 1; zwei Fälle: Unknown/InProgress-Completion wurde fälschlich ohne Exception akzeptiert | `4aece24c74e7bf96ac2ae8f0abf4a52c095f3692dc3041d91d0c8ae11711136d` |
+| `reserved-dispatch-final` | Sourcefassung des anschließenden vollständigen nativen Qualitätslaufs; alle neun T112-Fälle grün innerhalb 26 Contractfällen | `c4e7274a77772a68d5aeffae0119ac5372c915c91fdd6f9e0dc82e2ebe7bad9e` |
+
+Der erste Versuch unter `reserved-dispatch-red` scheiterte am Analyzer CA1859 einer
+Testvariable; er ist ausdrücklich kein fachlicher Red-Nachweis. Nach Änderung zur
+expliziten Schnittstellenkonvertierung folgte der tatsächlich ausgeführte Red-Lauf oben.
+Vor Erweiterung und erneut vor Refactoring bestanden jeweils 158 Unitfälle.
+
+### Umsetzung, Refactoring und Grenzen
+
+- Common ergänzt ReservedDispatch, die explizite ISessionQueryStore-Leseoperation und
+  SessionSnapshot.BindingRevision; vorhandene Reservierungsrückgabe bleibt unverändert.
+- Das bestehende Double erfasst Submission/Session/Sequence/Revision unter demselben
+  Gate wie Running/Reservierung. Settings sind bereits durch ProviderSessionContext
+  eingefroren. Reads verändern weder Zustand noch Revision und prüfen aktive
+  Reservierung, Running und fehlende Abbruchmarkierung zum Lesezeitpunkt.
+- Kontrollierte bestätigte Completion prüft offene Reservierung und aktuelle Revision
+  vor jeder Teilwirkung; Ergebnis, History, Binding und Freigabe folgen im selben Lock.
+  Erstes Opening-Binding hat Revision 0, bestätigte Folgepublikation erhöht sie.
+  Mehrmaliges Lesen ist keine Send-/Retryberechtigung. Ein doppelter Abschluss scheitert.
+- Das Double modelliert hier ausschließlich bestätigte Completion. Unknown/InProgress
+  werden ausdrücklich als noch nicht implementiert abgewiesen und behalten Reservierung
+  und unveränderten Request. Produktionsverhalten dazu bleibt T051/T060/T070/T075/T080;
+  bereits vorhandenes MarkUncertain wird nicht durch eine unsichere Freigabe ersetzt.
+- Nach grünem Stand meldete Codemetr zunächst Storekopplung 41 bei Grenze 40.
+  Abbruchcollection und Historyaufnahme wurden in ControlledDispatchState gekapselt.
+  Danach voller Guard und Regression grün; keine Schwellen-/Pin-/Scopeänderung.
+- ContractTests kompilieren die drei bestehenden kontrollierten Fixturequellen per Link;
+  keine Produktabhängigkeit auf Testassemblies und keine zweite Storeimplementierung.
+
+### Native Gesamtprüfung des geänderten Quellstands
+
+`pwsh -NoProfile -File scripts/Invoke-Quality.ps1 -Platform linux` über run-capped:
+**Exit 0**. Artefakte: `artifacts/quality/linux/b83d5853697d45c5aa01d3a26f4d8883/`.
+Qualitätsscope-Sourcehash aus run.json:
+`617d3f67adf713058c7a60950846899f93893a58ddc4fd23ac3af55e2db4417f`.
+
+- Locked-Restore, Release-Build, Format-/Analyzerprüfung und transitiver NuGet-Audit bestanden;
+  Build 0 Warnungen/Fehler. Ein erster Formatlauf fand zwei Zeilenumbrüche im neuen
+  Initializer; korrigiert, der vollständige finale Lauf bestand.
+- TRX maschinell gezählt: **186 Tests bestanden**, 158 Unit, 26 Contract, je 1 Integration-
+  und Linux-Infrastrukturtest; 0 fehlgeschlagen/nicht ausgeführt. Zusätzlich 13 bestandene
+  Coverage-Gateverhaltensfälle (aus Log gezählt).
+- Gesamter nativer Produktumfang: **241/271 = 88,9299 %**, Mindestwert 87 % erfüllt;
+  8 Reports, gemeinsame vier Bibliotheken plus Linux. Windows ist der fremden nativen
+  Plattform zugeordnet, nicht still aus beiden Läufen entfernt.
+- Full-Guard `dotnet tool run codemetr-csharp -- check --format json`, CLI 0.1.0:
+  **76 Dateien/Typen**, 0 Verstöße/Parsefehler/übersprungene Typen, Exit 0;
+  `artifacts/tdd/reserved-dispatch-codemetr-final.json`.
+- Lokaler Host: Debian GNU/Linux 13, PowerShell 7.6.9, SDK 10.0.403. Dieser native
+  Linuxlauf ist kein Ubuntu-24.04-, Windows-, GitHub-CI-, Rechte-/Crash-/Liveprovider-
+  oder Paketabnahmenachweis. Finale Q-Gates bleiben offen.
+
+Der Linuxrunner scheiterte zunächst vor der Prüfung an der vorhandenen versteckten
+.editorconfig. Mechanische Metadatenkorrektur `Get-Item -Force` in der festen Rootliste;
+Vorabanalyse/Reproduktion: `architecture/2026-10-28-linux-quality-file-discovery.md`.
+Der vollständige Lauf oben validiert die korrigierte Erfassung ohne Änderung der Gates.
+
+### Abgleich der Befunde und Folgearbeit
+
+| Gegenstand | Disposition / zuständige Folgeaufgabe |
+| --- | --- |
+| Fehlende Dispatchprojektion und Completion-Revisionsprüfung | T112 umgesetzt und durch die neun neuen Fälle geprüft |
+| Zu hohe Kopplung im erweiterten Double | Gekapselt; vollständiger Codemetr-Guard bestanden |
+| Unmodellierte Completion konnte im neuen Double freigeben | Zwei beobachtete Red-Fälle, ausdrücklicher Stubguard, finale Regression grün |
+| Linuxrunner findet versteckte Rootdatei nicht | `-Force` ergänzt; originaler vollständiger Linuxrunner bestanden |
+| Echte SQLite-Atomizität / Crash / Operations-ID-Sicherung | Bestehende T051/T059/T060, Owner: ausführende US5-Implementierungssitzung; atomare Reservierung/Completion und Crashfälle sind deren Abnahme |
+| Dispatcher und tatsächliche Sends | Nächster begrenzter Auftrag T025 mit passenden Red-Fällen T016–T019, Owner: nächste US1-Implementierungssitzung; keine Wiederholung alter DispatchId, nur neue Eingabe, einmaliger bestätigter Abschluss |
+| Paging / native Recovery-/Lifecyclezustände | Bestehende T113/T115/T062/T070/T075/T077/T080; jeweilige US5-/US3-Sitzung, Abnahme gemäß dortigen konkreten Fällen; kein stiller Zusatzumfang zu T112 |
+| Externe native CI / Produktfreigabe | Bestehende T111/T104 und Q-01–Q-06, Owner: freigebende Projektverantwortliche und jeweilige ausführende Sitzung |
+
+T112 verändert weder historische Nachweise noch die dokumentierte anfängliche Manifestlücke.
+Keine neuen offenen T112-Abnahmeblocker. Andere Storytasks bleiben unverändert offen.
+
+## T025 — Dispatcher (2026-10-29)
+
+Owner: aktuelle Implementierungssitzung, Branch `feature/reserved-dispatch-contract`.
+Basiscommit `4f01cb1`; Vorabanalyse `architecture/2026-10-29-dispatcher.md` wurde vor
+Entwurf/Implementierung geschrieben. T025 lokal abgeschlossen, keine vollständige US1-
+oder Produktabnahme. Die Runtimekomposition T026 und echte Persistenz bleiben offen.
+
+### Beobachtete Red–Green-Zyklen
+
+Befehlsform: `dotnet test tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj -c Release --no-restore --filter <Filter> --logger trx --results-directory artifacts/tdd/<Ordner>`.
+Jeder .NET-Lauf über `bash /home/user1/dev/scripts/run-capped.sh --`.
+Vor Laufstart erfasste `sources.sha256` und originale TRX bleiben in der ignorierten
+lokalen Ablage. Manifest-SHA256 bezeichnet die Manifestdatei, keine Commit-ID.
+
+| Zyklus / Filter | Tatsächliches Red vor Umsetzung | Green / Manifest-SHA256 Red → Green |
+| --- | --- | --- |
+| Core, `FullyQualifiedName~RequestDispatcherTests` | `dispatcher-core-red-valid`: sechs fehlgeschlagene Assertions (Send-/Completionbarriere nicht betreten, keine Reservierung, keine Fortsetzung, Queryfehler verschluckt), leere Queue bereits grün | `dispatcher-core-green`: 7/7, Exit 0; `273e375be9f0b8378ddfeb2e58e8dfa84a763cfbec323dd1ab795bb579856808` → `ba902207b75cdbcd9d688cbcaccad2475d8e462891b2c379b2b789f5a1461e3d` |
+| Callback/Antwort, `FullyQualifiedName~DispatchSafetyTests\|FullyQualifiedName~DispatchObservationTests` | `dispatcher-safety-red`: 14 Fehler; Callbackcommit fehlt/Fehler als Erfolg behandelt, Zwischenstatus/Unknown/Identitätswechsel freigegeben, Ausgabegrenze nicht integriert, rohe Provider-/Registrierungsexceptions | `dispatcher-safety-green`: 21/21 einschließlich 7 Core-Regressionsfällen; `74189761a20b09e879ff8625157a8625cafeeea39023f2debb08977c96e05fa3` → `744b387b5d5e7ac2b997303e36596f4f5160bab124399dd607a2247e0a15501c` |
+| Deadline, `FullyQualifiedName~DispatchDeadlineTests` | `dispatcher-deadline-red-compiled`: 4 Fehler/2 Regressionen grün; kein Timer, Cancel als ExecutionFailed, nicht kooperativer Send kehrt auch nach Caller-Cancel nicht zurück (5-s-Testwächter) | `dispatcher-deadline-green`: 6/6, Exit 0; `26c8438b08181f6629e71026e60b82b8b9f019c6d7d77b8a6d788a73d72d67bd` → `aa7cdeb4f6489f8c14f536ea802a53268c6eac3ef0a480a8d7f904e79513a2ac` |
+| Storegrenzen, `FullyQualifiedName~DispatchStoreFailureTests` | `dispatcher-store-red`: 2 Fehler/3 bereits grüne Regressionen; roher Reservierungsfehler, Cancel im Snapshotread als StorageUnavailable statt Cancelled/NotStarted | `dispatcher-store-green`: 5/5, Exit 0; `72ce404b886e7ef596c8536002d12ac52f05ad42489e23d1be6924900e8aaa77` → `55bd3649c69fba3dc6bc8c741c43a27ae1d760bfa219cb81b1bbbcd081d40811` |
+
+Kein fachliches Red waren der erste Core-Compileversuch (IDE0005), ein zunächst falsch
+gebundener Workspace im Test und der erste Deadline-Compileversuch (CA1001 am eigenen
+Timerfixture). Diese wurden vor den gültigen obigen Läufen korrigiert. Keine Änderung an
+fachlichen Validierungsregeln oder Unterdrückung von Analyzern, um Tests ausführbar zu machen.
+
+Vor Erweiterung 158 Unitfälle grün. Nach ersten drei Zyklen plus Lastregression 187 Unitfälle
+grün. Folgende zusätzliche Fälle waren **bereits grüne Regression**, kein erfundener Red:
+100 eindeutig markierte Requests/Ergebnisse über zehn Sitzungen und zwei überlappende
+Provider, SC-005-Ausgangslage mit zwei laufenden Sends plus acht Eingängen und Queue-Limit
+3 (genau 3 Annahmen/5 QueueFull), verlorenes Acknowledgement nach erfolgreichem Commit,
+RevisionConflict, Ausfall von MarkUncertain sowie unawaitete/späte Callbacks und lazy
+Native-ID ohne bestätigte Eröffnungsbeobachtung. Finale Unit-Suite: 195/195.
+
+### Implementierung und Selbstprüfung
+
+- RequestDispatcher erwirbt frische Reservierungen selbst und liest nur ReservedDispatch;
+  keine öffentliche Methode zum Resenden alter IDs und kein unbegrenztes Wiederholungsregister.
+  False bedeutet kein zulässiger Dispatch; true bestätigt ein gespeichertes lokales
+  Endergebnis, auch ein bestätigtes Fehlerergebnis. Storefehler sind Exceptions, keine Queueleere.
+- Providerwahl ist ordinal und am Konstruktor fixiert. ProviderCall enthält ausschließlich
+  neue Eingabe sowie den eingefrorenen Modell-/Workspace-/Settingskontext und das festgelegte
+  Outputlimit. Fehlende/inkompatible Registrierung ergibt Failed/NotStarted ohne Ersatzadapter.
+- DispatchObservationSink bestätigt Beobachtungen erst nach dispatchgebundenem Storecommit,
+  hält Fehlversuche/pending Callbacks fest und sperrt spätere Callbackwrites. Ein Adapter,
+  der Callbackfehler ignoriert, kann damit keinen Erfolg erzwingen. Native SessionEstablished-
+  Identität darf eine bestehende Identität nicht austauschen. Beobachtungen veröffentlichen
+  im Double keinen neuen bestätigten Fortsetzungskopf.
+- DispatchReplyPolicy prüft terminales Ergebnis und kompatibles Binding und verwendet
+  ProviderReplyPolicy für die schon vorhandene UTF-8-Ausgabegrenze. Kein eigener Kontext,
+  keine Tools oder Historienwiederholung. Ausgabeüberlauf wird leerer Fehler, kein gekürzter Erfolg.
+- Externe Wartezeit verwendet Submission.Timeout, TimeProvider-Timer und verknüpften
+  Caller-/Deadline-Token. Ein nicht kooperativer asynchroner Adapter wird lokal nicht
+  unbegrenzt abgewartet. Exception, Abbruch und unbestätigte Antwort sichern konservativ
+  Unknown und behalten Sitzung/Workspace/Slot; ein spätes Ergebnis wird nicht committed.
+- Ein nach dem Send bekanntes finales Ergebnis verwendet für den Abschluss die endliche
+  Storefrist statt des Caller-Tokens. Bei verlorenem Commit-Acknowledgement kein zweiter
+  Send und kein blinder MarkUncertain-Overwrite. RevisionConflict bleibt ohne Teilcommit.
+  Cancel im Snapshotread liegt nach Reservierung, aber vor jedem Send und wird daher als
+  Cancelled/NotStarted abgeschlossen. Reservierungsfehler ohne sichere lokale Kennung
+  meldet StorageUnavailable/Unknown, keine erfundene Nichtannahme und keinen Retry.
+- Der kontrollierte Store wurde nur um benötigte Observation-/NotStarted-Pfade und Hooks
+  erweitert. Callback-/Commit-Gates sind Testbarrieren, keine SQLite-Haltbarkeit. Bestehende
+  T112-Vertragsregression bleibt grün. Timerfixture erzeugt keinerlei native Wartedauer.
+- SOLID/KISS: Reservierung bleibt beim Scheduler/Store, Ausführung beim Dispatcher,
+  Callbackbestätigung und Replyregeln besitzen eigene kleine Verantwortlichkeiten.
+  DRY: vorhandene Ausgabe-/Options-/Reservierungsregeln werden wiederverwendet. Kein
+  Herstellerzweig, keine neue Produktabhängigkeit, kein SDK-/Toolpin- oder Scopewechsel.
+- Nach 187 grünen Unitfällen meldete Codemetr Testkopplung 41 bei Grenze 40. Hostsetup
+  unverändert in DispatchLoadHost gekapselt; Regression und voller Guard danach grün.
+
+### Finale lokale Prüfungen
+
+`pwsh -NoProfile -File scripts/Invoke-Quality.ps1 -Platform linux` über run-capped:
+**Exit 0**. Originalberichte `artifacts/quality/linux/00ee4f74a76e4f64be51e24f8308be76/`.
+Sourcehash aus run.json: `790529a286d607b236aa25aabba02462a5f17a4ed289d3ca61143404349f8916`.
+Manifest der abschließenden TDD-Fassung: `artifacts/tdd/dispatcher-final/sources.sha256`,
+SHA256 `67284079818b2686f64170bb6b0abe473cf31b47e75c51eee35e4bb5ba62b439`.
+
+- Locked-Restore, Release-Build, Format/Analyzer und direkter/transitiver NuGet-Audit
+  bestanden; Build 0 Warnungen/Fehler. SDK/Toolpins und Gates unverändert.
+- Maschinell aus den vier TRX gezählt: **223 Tests bestanden**, davon 195 Unit, 26 Contract,
+  je 1 Integration-/Linux-Infrastrukturtest; 0 fehlgeschlagen/nicht ausgeführt.
+  Zusätzlich 13 Coverage-Gateverhaltensfälle bestanden (Logzählung).
+- Gesamter nativer Produktumfang: **376/400 = 94,0 %** Zeilenabdeckung, Mindestwert 87 %
+  erfüllt. 8 Reports; vier gemeinsame Produktbibliotheken plus Linuxbibliothek.
+- `dotnet tool run codemetr-csharp -- check --format json`, CLI 0.1.0: **88 Dateien/89 Typen**,
+  0 Verstöße/Parsefehler/übersprungene Typen, Exit 0; `artifacts/tdd/dispatcher-codemetr-final.json`.
+- Debian GNU/Linux 13/PowerShell 7.6.9/SDK 10.0.403. Kein Ersatz für Windows-/Ubuntu-
+  Zielsystem-/native Rechte-/Crash-/Liveprovider-/Paketabnahmen oder finale Q-Gates.
+
+### Befundabgleich und nächste Arbeit
+
+| Gegenstand | Disposition / Owner und Abnahme der Folgearbeit |
+| --- | --- |
+| Fehlender Dispatcher, Callbackbestätigung, Ergebnisintegration | T025 lokal umgesetzt, obige Red–Green-Zyklen und finale Regression |
+| Timeout/Cancel konnte Sendwartezeit offen lassen | Beobachtetes Red, begrenzte WaitAsync-/Tokenbehandlung, vier grüne kooperative/nicht kooperative Fälle |
+| Roher Reservierungsfehler und falsch klassifizierter Read-Cancel | Zwei Red-Fälle, bereinigter Fehler bzw. Cancelled/NotStarted, fünf Storegrenzenfälle grün |
+| Zu hohe Kopplung der Lasttests | Hostfixture gekapselt, voller Guard bestanden |
+| Runtimekomposition, öffentliche Queries/Paging und automatischer Worker | Nächste US1-Sitzung, T026/T027; aktueller Deep-Dive, fehlende Red-Fälle und öffentliche Runtimeabnahme; Paging erst nach T113/T115 |
+| Persistente Callback-/Completion-/Reservierungsregeln und Crash | US5-Sitzung, bestehende T051/T059/T060; echte SQLite-Transaktionen, Prozess-Kill und Reopen-Abnahme |
+| Vollständige Cancel-/Recovery-/Stop-/Diagnoseautomaten | US3-/US5-Sitzung, T062/T070–T085; deren Zustands-/Fristen-/Stop-/Datenschutzabnahme, nicht durch diesen lokalen Dispatchzyklus erledigt |
+| Native CI / Freigabe und reale Provider-/Paketabnahme | Projektverantwortliche und Freigabesitzung, T104–T111/Q-01–Q-06; erforderliche externe Nachweise separat |
+
+Keine offenen T025-Abnahmeblocker. Andere Storytasks werden durch erfolgreiche lokale
+Regressions-/Lastfälle nicht pauschal geschlossen. Keine Änderung historischer Belege.
+
+## T026/T027: öffentliche Runtimekomposition
+
+Updated: 2026-10-29T07:41:18Z
+Vorabanalyse: architecture/2026-10-29-runtime-composition.md, Basis 86ea819.
+SpecKit-Prerequisites erneut erfolgreich; Checklisten unverändert vollständig geprüft.
+
+Alle folgenden dotnet-Aufrufe liefen über run-capped, Release/no-restore.
+Zuerst ParallelSessionsTests: zwei ausführbare fachliche Fehler (Runtimefacetten/Start
+noch Stubs), danach 2/2 grün. Keine Compiler-/Analyzerfehler als Red gewertet.
+Manifest-SHA256 Red `1bf7be4432194f346869359ab7f942df5873ea89aa9fbbbb6267c791acb1b0a0`,
+Green `33ef04b083fd1a6c1f0be57aa4b2f9c3581b76b57e9c1a3ebd5e483ca645d95f`.
+Befehl: `dotnet test tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~ParallelSessionsTests`.
+Zehn Sitzungen, je zwei geordnete Ergebnisse, zwei herstellerübergreifend überlappende
+Sends unter Limit zwei; lokale Identitäten, Modelle, Inhalte und History isoliert.
+
+RuntimeStartupTests: vier fehlende Verhaltenspfade rot, ein bereits grüner Queued-Fall
+nur Regression. Fehlende Opening-/Running-Recovery, Storebesitz und Annahmestopp danach
+mit öffentlicher Komposition 7/7 grün. Manifest Red
+`e8da62c3ee4c4a1a6bc53fc3191f4d52f82dba31650a30b0f74c22bfb6b457d9`, Green
+`5ac650017772db76d9a1d0040b565eaabc38fd311148789fb826a506f754ab1b`.
+Zusätzlicher Hintergrundfehlerfall: Assertion erwartete Unknown, bekam NotStarted.
+Nach bereinigter konservativer Fehlermappingkorrektur gesamte Vertragssuite 52/52 grün.
+Manifest Red `4f0863b850b2b69f2f676f229d49ae78519df83b4743c2d01f97ee7f99ef1bce`,
+Regression `a7f09156a7194119d1a628d0a7b89acfb1b3cd687c154dc80768bf1ee23f5119`.
+Die Ownership-/Admissionstop-/Workerfehlerfälle liegen nach grünem Refactor in
+RuntimeOwnershipTests; gemeinsame Konfiguration im RuntimeTestComposition-Fixture.
+
+SessionRuntime komponiert kleine Facetten/Lifecycle und begrenzte Worker. Store bleibt
+alleinige Reservierungsautorität; Wakeup plus endlicher Poll verhindert Signallücken.
+IStoreBootstrap/Leasestatus sind explizite Host-/Storegrenzen. Storestart im Double
+blockiert alte Running/Opening konservativ, ohne Send/Open/Reopen. Native Persistenz
+und Rechte folgen T055–T066/T087–T093. Fehler der Hintergrundarbeit sind über Completion
+beobachtbar; Resources werden nach Workerende freigegeben. Keine globale Registry.
+
+Finaler lokaler Qualitätslauf Exit 0:
+`artifacts/quality/linux/001dbaee9abd4abe8c56095e8deed37f/`, Sourcehash
+`c182c6e2a5813ff671b4e34a546042bc607a5f7a3e3781d2e6ca703c70fef627`.
+Maschinell aus vier TRX: 279/279 Tests, 225 Unit/52 Contract/je 1 Infrastrukturtest;
+keine Fehler/Skips. 13 Coveragegatefälle, Locked-Restore, Build, Analyzer/Format und
+transitiver Audit grün. 674/706 Produktzeilen = 95,4674 %, Mindestwert 87 %.
+Voller Codemetr-Guard Exit 0, 129 Dateien/131 Typen, keine Verstöße/Parsefehler/Skips;
+Originalbericht artifacts/tdd/runtime-codemetr-final.json. SDK/Toolpins/Scope unverändert.
+Debian 13 ist kein Nachweis aller Zielsysteme. T114-CI auf Windows/Ubuntu erfolgreich
+(quality 40834562210, codemetr 40834562137); neuer Runtime-CI-Nachweis folgt nach Push.
+
+T026-Komposition und T027-Ablauf umgesetzt. Vollständiger Stop/Cancel/Close und Diagnose
+bleiben T070–T085 mit Owner ausführende Gesamtimplementierungssitzung: zuerst deren
+Red-Fälle, danach dauerhafte Queuefinalisierung/native Endbestätigung, begrenzte Stopfrist,
+Regression an SQLite. Idle-Stop ist keine vollständige Stopabnahme. T021–T024 und die
+zugehörigen Tests werden im US1-Gesamtabgleich einzeln gegen ihre Abnahme geprüft;
+keine pauschale Storyfreigabe. Nächste konkrete Arbeit: T030/T036 Konfiguration und
+US2-Adapter, danach SQLite, Lifecycle und Plattform/Konsum gemäß implementation-progress.md.
+
+### Native CI-Korrektur der Testbarriere
+
+Updated: 2026-10-29T07:46:06Z
+Runtime-CI quality 40837103927 war auf Windows rot: ParallelSessionsTests Zeile 49
+beobachtete calls.Count=0 statt 2. Das allgemeine Started-Signal precediert den
+Sending-Delegate. Die neue eigene Eintrittsbarriere sitzt nach dessen Enqueue;
+keine Sleeps oder gelockerten Overlapassertions. Vorabanalyse im Runtime-Architekturbeleg.
+Alle weiteren Started.Task-Aufrufer geprüft: sie verlangen nur bereits geschehene
+Reservierung oder begonnenen Send, keinen späteren Delegateeintrag. Vertragssuite danach
+52/52 grün; Full-Guard erneut sauber (runtime-ci-guard.json). CI erneut nach Push nötig.
+
+## Einzelabgleich der implementierten US1-Aufgaben
+
+Gemessen 2026-10-29T21:30:10Z, Basis 5774e4f; ausdrückliche Selbstprüfung der
+vorhandenen Tests und Produktverantwortlichkeiten. Historische Abschnitte oben
+bleiben unverändert; ihre damaligen offenen Grenzen sind keine aktuelle Rücknahme
+späterer Implementierung. Dies schließt den lokalen US1-Auftrag ab, keine Produktfreigabe.
+
+| Task | Konkreter aktueller Nachweis |
+| --- | --- |
+| T016 | SessionRoutingTests: lokale Identität vor Open, Lookup/Isolation; ProviderContextTests: unveränderliche Settings; RequestAdmissionTests: Originalinput, RequestId, Sequence; RequestDispatcherTests: erste/Folgeanfrage ohne Replay; native Credentialtrennung zusätzlich in US2 |
+| T017 | SchedulingTests: Sessionsequence, ältester zulässiger Kopf, ordinaler ID-Gleichstand; WorkspaceReservationTests: blockierter Kopf wird nicht übergangen; DispatchConcurrencyTests/ParallelSessionsTests: überlappende echte kontrollierte Sends |
+| T018 | WorkspaceReservationTests und RequestSchedulerTests: Session-/Workspace-/globale Reservation, dritter Workspace, Unknown als belegter Slot; DispatchSafety-/Observationtests: keine Freigabe ohne bestätigtes Ende |
+| T019 | DispatchConcurrencyTests: exakt 100 eindeutige Originalkennungen über zehn Sitzungen, zwei kontrollierte Provider gleichzeitig gehalten; SC-005 exakt zwei laufend plus acht gleichzeitige Eingänge, drei zusätzliche Annahmen/fünf QueueFull. Keine laufenden Sends vor Barrierefreigabe beendet |
+| T020 | SessionSnapshot/RequestSnapshot/ExecutionReservation wiederverwendet; keine zusätzlichen bedeutungsgleichen Session-/Request-Domänenklassen ohne eigenes Verhalten eingeführt |
+| T021 | SessionCatalog: feste ordinale Registrierung, lokaler Snapshot vor externem Open; unbekanntes Profil und ungültige Registrierung typisiert, kein Fallback |
+| T022 | RequestAdmission: eingefrorene gültige Submission, Storecommit vor Receipt, bei bekannter Annahme Receipt trotz späterem Cancel; Runtime- und SQLitezyklen ergänzen die ursprünglichen Doubles |
+| T023 | RequestScheduler delegiert ausschließlich TryReserveHeadAsync; keine zweite Slotzählung, keine unbeschränkte Taskliste; Runtime besitzt fest begrenzte Worker |
+| T024 | ReservationPolicy bildet zuerst Sessionköpfe, filtert danach belegte Sitzungen/ordinale Schreibkeys; alle unfreigegebenen Slots zählen unabhängig vom lokalen Endzustand |
+| T028 | Scheduler, ReservationPolicy und Dispatcher am aktuellen Code erneut auf Verantwortlichkeiten/DRY/Magic Values geprüft: Auswahl bleibt rein, Atomizität beim Store, Provider-I/O beim Dispatcher, vorhandene Reply-/Observation-/Fristregeln wiederverwendet. Kein weiterer verhaltensloser Umbau begründet |
+| T029 | Chronologische echten Red-/Greenfälle oben sowie dieser konkrete Kennungs-/Barrierennachweis; ursprüngliche Grenzen und spätere Ergänzungen unterscheidbar |
+
+Die Lastfälle T019 waren bei ihrer Ergänzung bereits grüne Regressionen der zuvor
+fachlich rot entwickelten Scheduler-/Dispatcherregeln. Sie werden ausdrücklich
+nicht als eigene rote Lastzyklen behauptet. Der Q-06-Audit muss diese Einordnung
+bewerten; Checkboxen bestätigen implementierte lokale Aufgaben und deren ehrlichen
+Nachweis, keine nachträglich erfundene Historie.
+
+Geprüfte aktuelle SHA256: RequestScheduler
+7ff2178ac5379b7713260475af45ea90368f50a16985332bef114b56912183e3,
+ReservationPolicy 572cf1e25e51fbec1cb9e3c3646a576396f6a531c89fdd955b5278a78791fe19,
+RequestDispatcher 06019f376c82c683e0aaffd392569f18aadf55f334213b2942b9fa929bf15724,
+RequestAdmission 1be37a42532e240b21545aa0cc90ffad5aec23f4b620cb0d40cc7b42ae83806e,
+SessionCatalog 42e80c09dacc35c890b17f482e230443d65b936b8d3cf9b3d7aca0be6779c19c.
+Relevante gesamte Regression vor Abgleich: 996 Tests im Linuxvolltor
+ca1f7230bdc7416e81a0fc06ef35ea9b; Fullguard 429 Dateien/447 Typen ohne Befund.
+Zwei Hersteller werden hier durch kontrollierte registrierte Adapter dargestellt;
+kein Beleg echter OpenAI-/Gemini-Konten, nativer Rechte oder Stundenbetrieb daraus.
+Die seitdem ergänzte native Startupprüfung braucht weiterhin ihren eigenen Volltorlauf.

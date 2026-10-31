@@ -1,0 +1,62 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/bin/Debug/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.Gemini/bin/Debug/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Providers.OpenAI/bin/Debug/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.ContractTests -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/bin/Debug/net10.0/Monstertacle.Multisession.ContractTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/bin/Debug/net10.0/Monstertacle.Multisession.ContractTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.25]     Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.MissingLookupsRemainExplicit [FAIL]
+[xUnit.net 00:00:00.26]     Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.ExposesExecutionOnlyAndRejectsUnknownMessages [FAIL]
+[xUnit.net 00:00:00.26]     Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.KeepsIsolationAndLifecycleProtections [FAIL]
+[xUnit.net 00:00:00.27]     Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.PreservesCancellationAndTypedErrors [FAIL]
+[xUnit.net 00:00:00.27]     Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.TypedSubmissionAndLegacyReadsShareOneAdmission [FAIL]
+  Failed Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.MissingLookupsRemainExplicit [35 ms]
+  Error Message:
+   System.NotSupportedException : CQRS is not composed.
+  Stack Trace:
+     at Monstertacle.Multisession.SessionRuntime.get_Queries() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/SessionRuntime.cs:line 34
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.MissingLookupsRemainExplicit() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 39
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.MissingLookupsRemainExplicit() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 43
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.ExposesExecutionOnlyAndRejectsUnknownMessages [4 ms]
+  Error Message:
+   System.NotSupportedException : CQRS is not composed.
+  Stack Trace:
+     at Monstertacle.Multisession.SessionRuntime.get_Commands() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/SessionRuntime.cs:line 32
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.ExposesExecutionOnlyAndRejectsUnknownMessages() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 52
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.ExposesExecutionOnlyAndRejectsUnknownMessages() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 55
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.KeepsIsolationAndLifecycleProtections [13 ms]
+  Error Message:
+   System.NotSupportedException : CQRS is not composed.
+  Stack Trace:
+     at Monstertacle.Multisession.SessionRuntime.get_Queries() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/SessionRuntime.cs:line 34
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.KeepsIsolationAndLifecycleProtections() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 69
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.KeepsIsolationAndLifecycleProtections() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 74
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.KeepsIsolationAndLifecycleProtections() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 74
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.PreservesCancellationAndTypedErrors [4 ms]
+  Error Message:
+   Assert.ThrowsAny() Failure: Exception type was not compatible
+Expected: typeof(System.OperationCanceledException)
+Actual:   typeof(System.NotSupportedException)
+---- System.NotSupportedException : CQRS is not composed.
+  Stack Trace:
+     at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.PreservesCancellationAndTypedErrors() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 85
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.PreservesCancellationAndTypedErrors() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 89
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+   at Monstertacle.Multisession.SessionRuntime.get_Commands() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/SessionRuntime.cs:line 32
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.<>c__DisplayClass4_0.<PreservesCancellationAndTypedErrors>b__0() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 85
+  Failed Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.TypedSubmissionAndLegacyReadsShareOneAdmission [2 ms]
+  Error Message:
+   System.NotSupportedException : CQRS is not composed.
+  Stack Trace:
+     at Monstertacle.Multisession.SessionRuntime.get_Commands() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/SessionRuntime.cs:line 32
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.TypedSubmissionAndLegacyReadsShareOneAdmission() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 22
+   at Monstertacle.Multisession.ContractTests.CqrsRuntimeTests.TypedSubmissionAndLegacyReadsShareOneAdmission() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.ContractTests/CqrsRuntimeTests.cs:line 29
+--- End of stack trace from previous location ---
+Results File: /home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/tdd/sharpqrs/red/cqrs-red.trx
+
+Failed!  - Failed:     5, Passed:     0, Skipped:     0, Total:     5, Duration: 78 ms - Monstertacle.Multisession.ContractTests.dll (net10.0)

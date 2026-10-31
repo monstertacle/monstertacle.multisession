@@ -1,0 +1,125 @@
+{
+  "qualifiedHead": "4be2e1acdfbb07652bc97aff23ebe503f6d50654",
+  "run": "https://github.com/monstertacle/monstertacle.multisession/actions/runs/41209979809",
+  "conclusion": "success",
+  "native": [
+    {
+      "platform": "linux",
+      "sourceHash": "3ceb1b6ba88275c5b7cf740710c4a0be09d88e1b7a7bf5049b93529f75d5a332",
+      "product": {
+        "Platform": "linux",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3374,
+        "CoveredLines": 3301,
+        "Percent": 97.8364,
+        "Modules": [
+          "Monstertacle.Multisession.AgentFramework",
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Linux",
+          "Monstertacle.Multisession.Providers.Conversations",
+          "Monstertacle.Multisession.Providers.Interactions",
+          "Monstertacle.Multisession.Storage.Sqlite"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "cover": {
+        "passed": true,
+        "complete": true,
+        "summary": {
+          "files": 280,
+          "types": 295,
+          "members": 592,
+          "line": 95.8,
+          "branch": 83.7,
+          "coveredLines": 4109,
+          "coverableLines": 4285,
+          "coveredBranches": 2657,
+          "branches": 3174,
+          "diffLine": 96.5,
+          "diffBranch": 86.3,
+          "violations": 0,
+          "new": 0,
+          "worsened": 0,
+          "baselined": 0,
+          "stale": 0,
+          "tightenable": 0,
+          "unreported": 0,
+          "excluded": 0,
+          "skipped": 6,
+          "unmapped": 0,
+          "listed": 0,
+          "omitted": 0
+        },
+        "warnings": [
+          "1 file(s) have no coverage data and count as 0% (no test project covers them); see 'unreported'."
+        ]
+      }
+    },
+    {
+      "platform": "windows",
+      "sourceHash": "3ceb1b6ba88275c5b7cf740710c4a0be09d88e1b7a7bf5049b93529f75d5a332",
+      "product": {
+        "Platform": "windows",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3438,
+        "CoveredLines": 3361,
+        "Percent": 97.7603,
+        "Modules": [
+          "Monstertacle.Multisession.AgentFramework",
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Providers.Conversations",
+          "Monstertacle.Multisession.Providers.Interactions",
+          "Monstertacle.Multisession.Storage.Sqlite",
+          "Monstertacle.Multisession.Windows"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "cover": {
+        "passed": true,
+        "complete": true,
+        "summary": {
+          "files": 280,
+          "types": 295,
+          "members": 597,
+          "line": 95.9,
+          "branch": 83.7,
+          "coveredLines": 4171,
+          "coverableLines": 4349,
+          "coveredBranches": 2718,
+          "branches": 3246,
+          "diffLine": 96.5,
+          "diffBranch": 86.3,
+          "violations": 0,
+          "new": 0,
+          "worsened": 0,
+          "baselined": 0,
+          "stale": 0,
+          "tightenable": 0,
+          "unreported": 0,
+          "excluded": 0,
+          "skipped": 6,
+          "unmapped": 0,
+          "listed": 0,
+          "omitted": 0
+        },
+        "warnings": [
+          "1 file(s) have no coverage data and count as 0% (no test project covers them); see 'unreported'."
+        ]
+      }
+    }
+  ],
+  "canonicalConsumers": [
+    {
+      "name": "canonical-consumer (ubuntu-24.04)",
+      "conclusion": "success",
+      "url": "https://github.com/monstertacle/monstertacle.multisession/actions/runs/41209979809/job/124564929542"
+    },
+    {
+      "name": "canonical-consumer (windows-latest)",
+      "conclusion": "success",
+      "url": "https://github.com/monstertacle/monstertacle.multisession/actions/runs/41209979809/job/124564929628"
+    }
+  ]
+}

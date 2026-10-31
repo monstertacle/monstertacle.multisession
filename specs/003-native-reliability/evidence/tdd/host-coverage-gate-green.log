@@ -1,0 +1,17 @@
+PASS exactly 87 percent passes
+PASS below 87 percent fails
+PASS threshold 86 is rejected
+PASS threshold 101 is rejected
+PASS missing reports fail
+PASS empty report directory fails
+PASS zero measured lines fail
+PASS invalid JSON fails
+PASS missing native product assembly fails
+PASS product projects outside inventory fail
+PASS duplicate reports count source lines only once
+PASS complementary suites merge line hits rather than percentages
+PASS negative hit counts fail
+PASS declared co-collected validation assembly preserves product denominator
+PASS missing declared validation report fails
+PASS foreign platform remains rejected
+All coverage-gate behavior tests passed.

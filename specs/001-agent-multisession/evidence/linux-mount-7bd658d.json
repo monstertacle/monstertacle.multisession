@@ -1,0 +1,94 @@
+{
+  "Status": "PASS",
+  "MeasuredUtc": "2026-10-29T23:24:56.0188926+00:00",
+  "ProducerWorkflow": 40972345390,
+  "ProducerSourceHash": "203fbcf8453fe8baabdf184e0ed40265bd5fbbfb7313dd16fc8a7db9998017ed",
+  "PackageSha256": "76ac3ac520ef03c4bd562dc4477ef95aaca07d108348d26d4f050c76ea3531b2",
+  "NativeAssemblySha256": "d8b87cf53fcb3c6a0d2aa99fa6e0c0c8b137197252334c05146fef286a4119ff",
+  "Harness": "/home/user1/dev/.agenttemp/multisession-mount-7bd658d",
+  "Inputs": [
+    {
+      "File": "Program.cs",
+      "Sha256": "e7f58e94d02c23d52000a1643097e09ad835ef669af4c8382c20fe04adbebe90"
+    },
+    {
+      "File": "MountProbe.csproj",
+      "Sha256": "8f128cfc33d5e979db3544aeb43d142f503a31a7d8e7c6f1411d187181c63989"
+    },
+    {
+      "File": "NuGet.Config",
+      "Sha256": "f36869a26403e3841527f21316b0d0a539a3243ebdb612cc1c327e737ad2ebb2"
+    },
+    {
+      "File": "packages.lock.json",
+      "Sha256": "0ad9e2115a86fe0308065739412153aa24398399bb9a727d8cafa45861f7f7e5"
+    },
+    {
+      "File": "run-private.sh",
+      "Sha256": "a294bbbc6daff92e0caa91b495afec2db7cd554aad4b1b2f9fc5b8bbc766283b"
+    },
+    {
+      "File": "check-network-magic.ps1",
+      "Sha256": "8a987dbff009beb85f867ad0c229bc7397ce2a079fe867897f60f5bedfdb04f8"
+    },
+    {
+      "File": "fresh-build.log",
+      "Sha256": "0f8ffb243e8e0327bd4e8b560701c2b1c47093e435127e163475aeb8978ff08b"
+    },
+    {
+      "File": "proof.log",
+      "Sha256": "78066299079f9c3993b2cf95c3bccbb22166c5cdeb2fa34506ef8db099f0de6d"
+    }
+  ],
+  "NativeProof": {
+    "Status": "PASS",
+    "OperatingSystem": "Debian GNU/Linux 13 (trixie)",
+    "BindAliasExclusive": true,
+    "AliasReacquired": true,
+    "UnsupportedFilesystemRejected": true,
+    "IdentityAndPermissionsPreserved": true,
+    "ValidatedUtc": "2026-10-30T00:24:51.8051562+01:00"
+  },
+  "ClosedNetworkPolicy": {
+    "Status": "PASS",
+    "ValidatedUtc": "2026-10-30T00:24:52.2111581+01:00",
+    "SourceSha256": "15fffdcc0e3f7005966c871a028472e705f419c4e2b1edf4072297f288fc788e",
+    "HeaderSha256": "e9db5b4791371c03a4f9be955417bb7814987bfae032ad86bd27003d2df8796e",
+    "NativeConstants": [
+      {
+        "Name": "NFS_SUPER_MAGIC",
+        "NativeMagic": "0x6969",
+        "Excluded": true
+      },
+      {
+        "Name": "CIFS_SUPER_MAGIC",
+        "NativeMagic": "0xFF534D42",
+        "Excluded": true
+      },
+      {
+        "Name": "SMB2_SUPER_MAGIC",
+        "NativeMagic": "0xFE534D42",
+        "Excluded": true
+      },
+      {
+        "Name": "V9FS_MAGIC",
+        "NativeMagic": "0x01021997",
+        "Excluded": true
+      },
+      {
+        "Name": "CEPH_SUPER_MAGIC",
+        "NativeMagic": "0x00c36400",
+        "Excluded": true
+      }
+    ],
+    "Method": "Closed allowlist compared with installed Linux ABI; no actual NFS/SMB/9p/Ceph server or mount claimed."
+  },
+  "Codemetr": {
+    "Files": 1,
+    "Violations": 0,
+    "ParseErrors": 0,
+    "Skipped": 0,
+    "Types": 1
+  },
+  "Method": "Real bind mount and ramfs in private mount namespace; worker runs as original nonroot user. Network magic exclusions are deterministic source/ABI evidence, not a live NFS/SMB mount."
+}

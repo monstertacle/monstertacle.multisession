@@ -6,4 +6,10 @@ namespace Monstertacle.Multisession.Contracts;
 /// <param name="Sequence">Request order.</param>
 /// <param name="Input">Observed input.</param>
 /// <param name="Result">Recorded final result.</param>
-public sealed record HistoryEntry(Guid SessionId, Guid RequestId, long Sequence, string Input, ProviderReply Result);
+public sealed record HistoryEntry(Guid SessionId, Guid RequestId, long Sequence, string Input, ProviderReply Result)
+{
+    /// <summary>Gets the monotonically assigned session-local history ordinal.</summary>
+    public long HistoryOrdinal { get; init; }
+    /// <summary>Gets the immutable local history identity.</summary>
+    public Guid HistoryId { get; init; }
+}

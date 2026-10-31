@@ -1,0 +1,327 @@
+{
+  "schema": 1,
+  "tool": "codemetr-csharp-cover",
+  "version": "0.1.1",
+  "command": "check",
+  "passed": false,
+  "complete": true,
+  "summary": {
+    "files": 222,
+    "types": 226,
+    "members": 474,
+    "line": 91.2,
+    "branch": 83.7,
+    "coveredLines": 2965,
+    "coverableLines": 3251,
+    "coveredBranches": 1980,
+    "branches": 2363,
+    "diffLine": 99,
+    "violations": 7,
+    "new": 7,
+    "worsened": 0,
+    "baselined": 0,
+    "stale": 0,
+    "tightenable": 0,
+    "unreported": 27,
+    "excluded": 0,
+    "skipped": 41,
+    "unmapped": 0,
+    "listed": 7,
+    "omitted": 0
+  },
+  "violations": [
+    {
+      "rule": "crapScore",
+      "status": "new",
+      "type": "Monstertacle.Multisession.Windows.WindowsDirectoryPath",
+      "member": "Validate(string)",
+      "file": "src/Monstertacle.Multisession.Windows/WindowsDirectoryPath.cs",
+      "line": 16,
+      "value": 306,
+      "limit": 30,
+      "coverage": {
+        "line": 0,
+        "branch": 0
+      },
+      "complexity": 17,
+      "crap": 306,
+      "uncoveredLines": [
+        [
+          17,
+          18
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          22,
+          22
+        ],
+        [
+          27,
+          27
+        ],
+        [
+          29,
+          34
+        ],
+        [
+          37,
+          37
+        ],
+        [
+          39,
+          39
+        ]
+      ],
+      "message": "Monstertacle.Multisession.Windows.WindowsDirectoryPath.Validate(string): CRAP 306 exceeds max 30 (complexity 17, line coverage 0.0%).",
+      "hint": "Write tests that cover each branch and assert the result, or split the member to reduce its complexity; do not exclude, delete or move it to lower the score."
+    },
+    {
+      "rule": "crapScore",
+      "status": "new",
+      "type": "Monstertacle.Multisession.Windows.WindowsDirectoryPath",
+      "member": "ValidFileName(string)",
+      "file": "src/Monstertacle.Multisession.Windows/WindowsDirectoryPath.cs",
+      "line": 40,
+      "value": 272,
+      "limit": 30,
+      "coverage": {
+        "line": 0,
+        "branch": 0
+      },
+      "complexity": 16,
+      "crap": 272,
+      "uncoveredLines": [
+        [
+          41,
+          47
+        ],
+        [
+          49,
+          49
+        ]
+      ],
+      "message": "Monstertacle.Multisession.Windows.WindowsDirectoryPath.ValidFileName(string): CRAP 272 exceeds max 30 (complexity 16, line coverage 0.0%).",
+      "hint": "Write tests that cover each branch and assert the result, or split the member to reduce its complexity; do not exclude, delete or move it to lower the score."
+    },
+    {
+      "rule": "crapScore",
+      "status": "new",
+      "type": "Monstertacle.Multisession.Windows.WindowsDirectoryPath",
+      "member": "Open(string, bool)",
+      "file": "src/Monstertacle.Multisession.Windows/WindowsDirectoryPath.cs",
+      "line": 50,
+      "value": 42,
+      "limit": 30,
+      "coverage": {
+        "line": 0,
+        "branch": 0
+      },
+      "complexity": 6,
+      "crap": 42,
+      "uncoveredLines": [
+        [
+          51,
+          53
+        ],
+        [
+          55,
+          58
+        ],
+        [
+          60,
+          61
+        ],
+        [
+          63,
+          64
+        ],
+        [
+          66,
+          66
+        ],
+        [
+          68,
+          69
+        ],
+        [
+          71,
+          72
+        ]
+      ],
+      "message": "Monstertacle.Multisession.Windows.WindowsDirectoryPath.Open(string, bool): CRAP 42 exceeds max 30 (complexity 6, line coverage 0.0%).",
+      "hint": "Write tests that cover each branch and assert the result, or split the member to reduce its complexity; do not exclude, delete or move it to lower the score."
+    },
+    {
+      "rule": "crapScore",
+      "status": "new",
+      "type": "Monstertacle.Multisession.Windows.WindowsFileIdentity",
+      "member": "RequireType(SafeFileHandle, bool)",
+      "file": "src/Monstertacle.Multisession.Windows/WindowsFileIdentity.cs",
+      "line": 25,
+      "value": 72,
+      "limit": 30,
+      "coverage": {
+        "line": 0,
+        "branch": 0
+      },
+      "complexity": 8,
+      "crap": 72,
+      "uncoveredLines": [
+        [
+          26,
+          29
+        ],
+        [
+          35,
+          35
+        ],
+        [
+          37,
+          37
+        ]
+      ],
+      "message": "Monstertacle.Multisession.Windows.WindowsFileIdentity.RequireType(SafeFileHandle, bool): CRAP 72 exceeds max 30 (complexity 8, line coverage 0.0%).",
+      "hint": "Write tests that cover each branch and assert the result, or split the member to reduce its complexity; do not exclude, delete or move it to lower the score."
+    },
+    {
+      "rule": "crapScore",
+      "status": "new",
+      "type": "Monstertacle.Multisession.Windows.WindowsOwnershipLock",
+      "member": "Acquire(string)",
+      "file": "src/Monstertacle.Multisession.Windows/WindowsOwnershipLock.cs",
+      "line": 13,
+      "value": 42,
+      "limit": 30,
+      "coverage": {
+        "line": 0,
+        "branch": 0
+      },
+      "complexity": 6,
+      "crap": 42,
+      "uncoveredLines": [
+        [
+          14,
+          17
+        ],
+        [
+          19,
+          19
+        ],
+        [
+          21,
+          24
+        ],
+        [
+          27,
+          27
+        ],
+        [
+          29,
+          31
+        ],
+        [
+          33,
+          33
+        ],
+        [
+          35,
+          37
+        ],
+        [
+          39,
+          40
+        ]
+      ],
+      "message": "Monstertacle.Multisession.Windows.WindowsOwnershipLock.Acquire(string): CRAP 42 exceeds max 30 (complexity 6, line coverage 0.0%).",
+      "hint": "Write tests that cover each branch and assert the result, or split the member to reduce its complexity; do not exclude, delete or move it to lower the score."
+    },
+    {
+      "rule": "crapScore",
+      "status": "new",
+      "type": "Monstertacle.Multisession.Windows.WindowsPrivateSecurity",
+      "member": "Require(string, bool)",
+      "file": "src/Monstertacle.Multisession.Windows/WindowsPrivateSecurity.cs",
+      "line": 27,
+      "value": 380,
+      "limit": 30,
+      "coverage": {
+        "line": 0,
+        "branch": 0
+      },
+      "complexity": 19,
+      "crap": 380,
+      "uncoveredLines": [
+        [
+          28,
+          29
+        ],
+        [
+          32,
+          35
+        ],
+        [
+          37,
+          38
+        ],
+        [
+          45,
+          45
+        ],
+        [
+          47,
+          47
+        ]
+      ],
+      "message": "Monstertacle.Multisession.Windows.WindowsPrivateSecurity.Require(string, bool): CRAP 380 exceeds max 30 (complexity 19, line coverage 0.0%).",
+      "hint": "Write tests that cover each branch and assert the result, or split the member to reduce its complexity; do not exclude, delete or move it to lower the score."
+    },
+    {
+      "rule": "crapScore",
+      "status": "new",
+      "type": "Monstertacle.Multisession.Windows.WindowsStateDirectoryLease",
+      "member": "PrepareFileAsync(string, StateFileMode, CancellationToken)",
+      "file": "src/Monstertacle.Multisession.Windows/WindowsStateDirectoryLease.cs",
+      "line": 31,
+      "value": 110,
+      "limit": 30,
+      "coverage": {
+        "line": 0,
+        "branch": 0
+      },
+      "complexity": 10,
+      "crap": 110,
+      "uncoveredLines": [
+        [
+          32,
+          34
+        ],
+        [
+          36,
+          39
+        ],
+        [
+          41,
+          43
+        ],
+        [
+          46,
+          48
+        ],
+        [
+          50,
+          52
+        ],
+        [
+          54,
+          55
+        ]
+      ],
+      "testIn": "tests/Monstertacle.Multisession.PlatformTests/WindowsOwnershipRejectionTests.cs",
+      "message": "Monstertacle.Multisession.Windows.WindowsStateDirectoryLease.PrepareFileAsync(string, StateFileMode, CancellationToken): CRAP 110 exceeds max 30 (complexity 10, line coverage 0.0%).",
+      "hint": "Write tests that cover each branch and assert the result, or split the member to reduce its complexity; do not exclude, delete or move it to lower the score."
+    }
+  ]
+}

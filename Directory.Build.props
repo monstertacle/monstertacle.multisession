@@ -1,5 +1,12 @@
 <Project>
   <PropertyGroup>
+    <Version>0.2.0-alpha.2</Version>
+    <Authors>Alexander Bleissem</Authors>
+    <Description>Provider-neutral session orchestration with durable request identity and explicit recovery.</Description>
+    <RepositoryUrl>https://github.com/monstertacle/monstertacle.multisession</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>sessions;orchestration;sqlite;concurrency</PackageTags>
     <LangVersion>14.0</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -15,4 +22,7 @@
     <NuGetAuditMode>all</NuGetAuditMode>
     <NuGetAuditLevel>low</NuGetAuditLevel>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
 </Project>

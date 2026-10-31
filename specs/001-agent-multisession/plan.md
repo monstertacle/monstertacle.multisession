@@ -5,12 +5,26 @@
 
 **Input**: `specs/001-agent-multisession/spec.md`
 
+**Aktueller Ausführungsabgleich 2026-10-30T00:02:08Z:** Runtime, beide nativen
+Provideradapter, SQLite/Recovery, beide Plattformleasen, Diagnostik, ValidationHost
+und Paketkonsum sind implementiert; einzelne frühere Statusabsätze darunter
+beschreiben den damaligen Planungsstand. T112–T115 sind inzwischen ausgeführt,
+keine NotImplemented-Gerüste im Produktcode. Maßgeblich für aktuelle Aufgaben
+ist tasks.md, für technische Nachweise evidence/acceptance-audit.md/build-native.json,
+für fehlende Abnahme evidence/release.md/remaining-acceptance.md. Keine Produktfreigabe:
+fehlende Win11-/Live-/Integrator-/historische Q06-Belege bleiben gesperrt.
+T125/T126 sind mit nativen Red-/Greenbelegen und Testisolation abgeschlossen;
+aktueller technischer Kandidat fb1a167, vollständiger Sourcehash und Prüfstand
+in evidence/delivery-candidate.md. Die tatsächlich laufenden Stunden werden erst
+nach ihrem Ende als bestanden bewertet.
+
 **Status**: Phase 0 und Phase 1 dokumentiert; inkrementelle Implementierung läuft,
 keine Produktfreigabe. Aktuelle Teilnachweise und Grenzen: tasks.md sowie
 evidence/tdd-foundation.md, tdd-us1.md, tdd-us2.md und coverage.md.
 Nach FR-027 und Constitution v2.0.0 erneut geprüft: generische Backendgrenze, verbindliches
 TDD, mindestens 87 % Zeilenabdeckung und offizieller Codemetr-Guard. Genehmigt sind
-Toolversion und Standardgrenzwerte, keine Debt-Baseline; finale Q-01–Q-06 bleiben offen.
+Toolversion und Standardgrenzwerte, keine Debt-Baseline. Q-01 ist am eingefrorenen
+Kandidaten nativ geprüft; fehlende weitere Q-Gates bleiben Freigabebedingungen.
 
 **Zielhostabgleich**: R-13/R-14 und provider-contract.md §8 konkretisieren den tatsächlich
 untersuchten Agent-Backend-/Sessionvertrag: explizite Fähigkeiten/ExecutionKind,
@@ -133,7 +147,7 @@ Technikauswahl oder Ausweitung auf eine eigene Agent-Laufzeit ist erforderlich.
 | --- | --- | --- | --- |
 | I: C#/.NET, kein Python, Analyzer, Nullable, async/await | PASS: Stack passt, konkrete Auswahl in Recherche | PASS (Design); kein behaupteter Implementierungsnachweis | SDK-/Paketpins; Scripting-/Toolinggrenze; Cancellation und endliche Fristen im Vertrag |
 | II: SOLID, DRY, KISS, YAGNI, generische Backends | Kern ohne Herstellerabhängigkeit vorgesehen | PASS (Design): Agent-/Zielhostvertrag explizit abgebildet, Ausführung offen | Common ohne Rückabhängigkeit; provider-contract.md §8; T010/T035/T089 |
-| III: Pflichtprüfung mit Codemetr | PASS für Recherche ohne Code; Freigabe vorbehalten | Tool und Standardregeln genehmigt; Produktprüfung Q-01 offen | R-09, evidence/codemetr-approval.md, lokaler Skill und CI-Guard |
+| III: Pflichtprüfung mit Codemetr | PASS für Recherche ohne Code; Freigabe vorbehalten | Tool/Regeln genehmigt; native technische Prüfung am eingefrorenen Kandidaten PASS, übrige Freigabegates offen | R-09, evidence/codemetr-approval.md, evidence/codemetr-results.md und CI-Guard |
 | IV: TDD, ≥87 % Line Coverage, Windows/Linux, CI | PASS (Design): Red vor Verhalten und Coverage-Gate vorgesehen | PASS (Design); tatsächliche Teilnachweise siehe evidence/coverage.md, keine Produktfreigabe | TDD-Strategie, T005/T015/T104, quickstart.md und Q-06 |
 | V: Sicherheit und Diagnose | PASS: ein Vertrauensbereich, Host-Auth | PASS (Design) | Private Store-Rechte, keine Secrets im Zustand/Log, Audit-Gate |
 | Kultur, Zeit, Pfade, unterstützte Plattformen | PASS: keine entgegenstehende Vorgabe | PASS (Design) | UTC, ordinal IDs, explizite Matrix, Plattformadapter |
@@ -150,11 +164,12 @@ Annahme der Constitution-Dokumentation. Bis dahin bleibt der vorhandene TODO sic
 Er hat CLI 0.1.0 mit Standardregeln ohne Debt-Baseline bestätigt. Am 2026-10-28
 wurde SDK 10.0.403 ausdrücklich freigegeben, da 10.0.402 lokal nicht mehr installiert ist.
 Constitution v1.6.0 bildet diese Entscheidung ab; keine Ausnahme und kein Datum werden erfunden.
-Bekannte Dokumentations-TODOs sind von nicht erfüllten Q-01-/Produktfreigabegates getrennt.
+Bekannte Dokumentations-TODOs sind von der Produktfreigabe getrennt.
 
-Q-01 bleibt ein finaler Freigabenachweis; vorhandene lokale Codemetr-Ergebnisse stehen in
-den jeweiligen Arbeitsnachweisen. Sie sind weder eine CI-Abnahme noch eine allgemeine
-Codefreigabe. Jede weitere Erweiterung benötigt ihre aktuelle Bestandsanalyse.
+Q-01 ist für den eingefrorenen technischen Kandidaten auf beiden nativen CI-Systemen
+nachgewiesen: 442 Dateien/459 Typen, keine Regelverstöße; semantische Messgrenzen
+in evidence/codemetr-results.md. Das ersetzt keine übrige Produktfreigabe.
+Jede weitere Erweiterung benötigt ihre aktuelle Bestandsanalyse und neue Prüfungen.
 
 ## Project Structure
 
@@ -181,8 +196,8 @@ Ergänzungen T111–T115 aus der Analysebereinigung vom 2026-10-28.
 
 ### Source Code (repository root)
 
-Zielaufbau: Projekte und Teile des Common-Kerns sind vorhanden; noch nicht implementierte
-Bestandteile bleiben in tasks.md offen. Die Übersicht ist kein Fertigstellungsnachweis:
+Der folgende Aufbau ist implementiert. Einzelne noch fehlende Abnahmen und externe
+Voraussetzungen bleiben in tasks.md offen; die Übersicht ersetzt ihre Nachweise nicht:
 
 ```text
 Monstertacle.Multisession.slnx
@@ -252,9 +267,11 @@ Migrations-/Rückkehrplan. Es wird hier kein unzureichend spezifizierter Updater
 ## Konkretisierte Orchestrierungsverträge und Umsetzungsvoraussetzungen
 
 Verbindliche Details: [contracts/orchestration-details.md](contracts/orchestration-details.md).
-Die dort geplanten C#-Vertragsänderungen sind **noch nicht implementiert**. Aktuelle
-ISessionStore-/IRecovery-Signaturen und Doubles werden erst nach fachlichem Red erweitert;
-T009/T010 belegen nur ihren damaligen Signaturumfang, nicht die neuen Ergänzungen.
+ReservedDispatch samt Query und Dispatcher sowie Recovery-/Annahme-/Pagingänderungen
+T112–T115 sind nach den chronologischen Red-/Greenzyklen implementiert.
+Nachweise in evidence/tdd-us1.md, tdd-us3.md und tdd-us5.md. T009/T010 bezeichnen
+weiterhin nur ihren ursprünglichen Signaturumfang; die spätere Implementierungsabnahme
+beruht auf den tatsächlichen ergänzenden Tests und aktuellen nativen Gesamtprüfungen.
 
 | Befund | Architekturentscheidung | Voraussetzung vor Green |
 | --- | --- | --- |
@@ -263,18 +280,19 @@ T009/T010 belegen nur ihren damaligen Signaturumfang, nicht die neuen Ergänzung
 | U4 | Vorab erzeugte Kandidatenkennung in RequestAcceptance; AdmissionStatus getrennt von externer Gewissheit, bestätigter Commit liefert Receipt | T114 vor T058/T076 |
 | A2 | Gemeinsame Seitengrenzen und bereichsgebundene Keysetcursor; HistoryOrdinal/HistoryId und eigene Recoveryfallsnapshots | T115 vor Pagingteilen T026/T037/T063 |
 
-Für die nächste Dispatchervertikale gilt: aktueller Deep-Dive → T112-Red/Green → passende
-T016–T019- und Dispatch-Red-Fälle → T025/T026. Die bestehenden Storytasks bleiben bis
-zu ihrer vollständigen Abnahme offen; einzelne vorgezogene Teilfälle schließen keine Story.
-T112–T115 sind fachliche Ergänzungszyklen, kein gemeinsamer Block, der vor jeder weiteren
-Arbeit vollständig abgeschlossen werden muss. Jeder Schnitt benötigt nur seine relevanten
-Abhängigkeiten und Tests. Native SQLite-/Provider-/Recoverybelege folgen getrennt.
+Die in der Tabelle genannten Abhängigkeiten wurden bei den jeweiligen Zyklen
+eingehalten. Runtimevertikale, Paging und revisionierte Recovery sind inzwischen
+vollständig im technischen Prüfumfang. Einzelne grüne Teilschnitte schließen keine
+fehlende Live-/Zielsystem-/Integratorabnahme; diese bleibt konkret in tasks.md und
+evidence/remaining-acceptance.md zugeordnet. Native SQLite-/Provider-/Recoverybelege
+sind im aktuellen evidence/build-native.json und den TDD-Akten verknüpft.
 
 T015 umfasst lokale Workflow-/Runnerkonfiguration und synthetische Gate-Verhaltenstests.
 Reale Windows-/Linux-CI und erforderliche Branchchecks sind T111 und T104: verpflichtende
 **Freigabegates**, aber keine Voraussetzung für lokale testgetriebene Weiterentwicklung.
-Ohne Repositoryanbindung bleiben sie NOT RUN; ein Repository wird nicht eigenmächtig
-angelegt. Gleiches gilt für ausstehende Live-/Zielsystem-/Integratorfreigaben.
+Die freigegebene Repositoryanbindung besteht; native Quality, Guard, Audit und sechs
+erforderliche Branchchecks sind tatsächlich nachgewiesen. Die ausstehenden Live-/
+Zielsystem-/Integratorfreigaben bleiben eigenständige Abnahmevoraussetzungen.
 
 ## TDD-Umsetzungsstrategie
 

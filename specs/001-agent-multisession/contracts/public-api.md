@@ -2,16 +2,17 @@
 
 **Datum**: 2026-10-27 | **Basis**: [spec.md](../spec.md), [data-model.md](../data-model.md)
 
-Dies ist ein Entwurfsvertrag für C#-Bibliotheken, keine erzeugte Implementierung.
+Dies ist der Bibliotheksvertrag mit Implementierungsabgleich vom 2026-10-29T21:57:58Z.
 Er definiert keine HTTP-Routen, Dienstinstallation oder Benutzeroberfläche.
-Geplante Namespace-Wurzel: `Monstertacle.Multisession`.
+Namespace-Wurzel: `Monstertacle.Multisession`.
 
 Erneut gegen Constitution v2.0.0 geprüft; Konkretisierung des bestehenden Umfangs.
 Für seine Verhaltenszusagen sind zuerst ausführbare fehlschlagende Vertrags-/Konsumtests
 zu schreiben (insbesondere TDD-01/TDD-04/TDD-07), bevor das jeweilige Verhalten entsteht.
 Die verbindlichen Dispatch-/Recovery-/Annahme-/Pagingdetails stehen in
 [orchestration-details.md](orchestration-details.md). T112–T115 setzen die dort ausdrücklich
-benannten Unterschiede zu den derzeitigen C#-Signaturen erst nach passendem Red um.
+benannten Unterschiede nach passendem Red um; diese vier Vertragsschnitte sind
+inzwischen implementiert und in den storybezogenen TDD-Nachweisen belegt.
 
 SharpClaw ist als langfristiger In-Process-Konsument vorgesehen. Es nutzt dieselben
 öffentlichen Verträge wie andere Hosts, ohne Sonderzugriffe auf interne Klassen.
@@ -55,7 +56,7 @@ bleibt sichtbar, und der zuletzt gesicherte Zustand ist beim nächsten Start ma�
 
 | Operation | Eingabe | Ergebnis und Semantik |
 | --- | --- | --- |
-| CreateSessionAsync | AgentProfileId, optionaler deklarierter WorkspaceKey | Lokale SessionId und Snapshot; native Eröffnung soweit der Provider sie separat unterstützt |
+| CreateSessionAsync | string agentProfileId, SessionExecutionContext context, CancellationToken | Lokale SessionId und Snapshot; Context enthält nullable WorkspaceDirectory/WorkspaceKey; native Eröffnung soweit der Provider sie separat unterstützt |
 | GetSessionAsync | SessionId | Snapshot einschließlich Providerbindung, Lifecycle und BlockReason; keine Geheimnisse |
 | ListSessionsAsync | Begrenzte Seitengröße, optionaler Cursor | Nur Sitzungen dieser Instanz; stabile Sortierung nach CreatedUtc und SessionId |
 | ReadHistoryAsync | SessionId, begrenzte Seitengröße, Cursor | Lokal beobachtete Eingaben, Ergebnisse und Betriebsereignisse; kein behaupteter vollständiger nativer Chat |
@@ -78,7 +79,7 @@ Die Schließabsicht allein ist weder Beendigungsbeweis noch Freigabe des Workspa
 
 | Operation | Eingabe | Ergebnis und Semantik |
 | --- | --- | --- |
-| SubmitAsync | SessionId, neue Textnachricht, endliches Timeout, optionaler WorkspaceKey/WriteIntent | RequestReceipt mit RequestId und Sequence erst nach Commit |
+| SubmitAsync | SubmitRequest(SessionId, Input, Timeout, WorkspaceKey, WriteIntent), CancellationToken | RequestReceipt mit RequestId und Sequence erst nach Commit; WorkspaceKey ist nullable, WriteIntent ist ein expliziter bool |
 | GetRequestAsync | RequestId | Snapshot von Zustand, Ergebnis, Gewissheit und bereinigtem Fehler |
 | ListRequestsAsync | SessionId, begrenzte Seitengröße, Cursor | Auffindbarkeit auch nach verlorener Annahmebestätigung |
 | CancelRequestAsync | RequestId | Sichtbarer Abbruchwunsch; Rückgabe beweist nicht die externe Beendigung |
@@ -190,18 +191,24 @@ angenommene/validierte Queued-Datensätze mit Sequence/AcceptedUtc; WriteWorkspa
 nur für Schreibaufträge gesetzt. Auswahl und anschließende Reservierung müssen unter
 derselben Transaktion erfolgen. Ein Policyaufruf allein reserviert nichts.
 `RequestScheduler.TryReserveAsync` delegiert eine solche Operation an den Store;
-die Runtime-/Dispatcherintegration ist noch nicht implementiert.
+RequestDispatcher.TryDispatchAsync verarbeitet eine frische Reservierung mit deren
+ReservedDispatch und fixierten Registrierungen. False bedeutet kein zulässiger Dispatch;
+true bestätigt ein gespeichertes lokales Endergebnis, auch ein bestätigtes Fehlerergebnis.
+Storefehler werden als Fehler gemeldet, nicht als leere Queue. Callbackbestätigung,
+Bindingidentität und Ausgabegrenze werden vor Completion geprüft; unbestätigte Arbeit
+behält ihre Reservierung. SessionRuntime-/Workerkomposition bleibt T026.
 
 Der in derselben Reservierungstransaktion gespeicherte ReservedDispatch ist über
 GetReservedDispatchAsync lesbar und trägt Eingabe, Timeout, eingefrorenen Sitzungskontext
 und BindingRevision. Öffentliche RequestSnapshots ersetzen diesen Datensatz nicht.
-Die aktuelle C#-Queryschnittstelle erhält diese Operation in T112; Vertrag siehe
-orchestration-details.md §1. Die Annahme erhält in T114 RequestAcceptance mit vorab
+Die C#-Queryschnittstelle besitzt diese Operation seit T112; Vertrag siehe
+orchestration-details.md §1. Die Annahme verwendet seit T114 RequestAcceptance mit vorab
 erzeugter Kandidatenkennung; nur Sequence/Queuekapazität bleiben Storeautorität (§3).
 
 Alle Listen folgen denselben PageLimits-/Cursorregeln aus orchestration-details.md §4:
 Seitengröße 1–100, versionierte bereichsgebundene Keysetcursor, keine seitenübergreifende
-Snapshotzusage. Diese Ergänzungen sind in T115 und den produktiven Queries testgetrieben umzusetzen.
+Snapshotzusage. Diese Regeln sind in T115 lokal testgetrieben umgesetzt; produktive SQLitequeries und
+Persistenzabnahmen bleiben T063.
 
 `IStateDirectoryLease` repräsentiert geprüften privaten Speicher und exklusiven Besitz.
 Windows-/Linux-Implementierungen prüfen Rechte, lokale Pfade und den Lifetime-Lock.
@@ -273,3 +280,29 @@ Providerpräfix noch UUID-Format darf für externe Kennungen zentral vorausgeset
 Die Integration mit dem Zielhost erfordert passende Vertragsfälle mit beobachteter
 nativer ID, bestätigtem terminalem Ende, Workspace und Cancellation. Ein Modell-REST-
 Fixture allein erfüllt diesen Nachweis nicht. Bestehende Sitzungen werden nicht migriert.
+
+## Implementierungsabgleich: Wiederaufnahme und Availability
+
+Der aktuelle öffentliche Aufruf für die Erzeugung lautet
+`CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)`;
+`SessionExecutionContext` trägt optionalen WorkspaceDirectory und WorkspaceKey. Die
+Tabellen oben sind semantische Kurzformen. Vor Workerstart werden gespeicherte Open-
+Sitzungen lokal und über ihren gleichen nativen Reopenbezug geprüft. Die optionale
+Facette `ISessionAvailabilityProvider.ValidateAvailabilityAsync(ProviderSessionContext,
+CancellationToken)` ermöglicht eine ausdrücklich lesende Modell-/Credentialprüfung;
+beide nativen Adapter implementieren sie, die generische Runtime kennt keine Herstellernamen.
+
+SessionSnapshot ergänzt `ConfigurationUnavailable` als Herkunft einer erneut prüfbaren
+Verfügbarkeitssperre und nullable `AvailabilityError` als bereinigte ErrorCode-Kategorie.
+Erfolgreiche erneute Prüfung entfernt ausschließlich eigene Sperren/Ursache; andere
+native Restriktionen und Recoveryvorrang bleiben. Kein gebundenes Modell, native ID,
+Settings oder Bindingrevision werden aus Metadaten ersetzt. Queued bleibt bei Start-
+ablehnung unverändert. Die Prüfung verwendet die Runtimeausführungsfrist; ein verfügbarer
+anderer Provider kann nach Vorbereitung weiterhin arbeiten. Details und Grenzen in
+`docs/operations.md`, konkrete Red-/Greennachweise in `evidence/tdd-us2.md`.
+
+Der bestehende Availability-Storewrite erhält als optionalen letzten Parameter eine
+ErrorCode-Kategorie; alte Aufrufe bleiben quellkompatibel. Aktuelle Snapshots persistieren
+das Feld im vorhandenen JSON. Ältere Snapshots ohne Property bleiben lesbar; ältere
+Binärstände können unbekannte neue Felder sicher ablehnen. Daraus folgt keine Zusage
+rückwärtskompatibler Vorabformatmigration oder einer neuen Schemaversion.

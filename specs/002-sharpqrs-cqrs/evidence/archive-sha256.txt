@@ -1,0 +1,10 @@
+5d9bd6a8ee76fe45c56d7f87c0d30df1377119f2c86581f30f3a378b63812b62  artifacts/tdd/sharpqrs/pre-green/head.txt
+92190d931dbe13be182c8968d51f80e019a889376b0ba883c1e276bb39405830  artifacts/tdd/sharpqrs/pre-green/tracked.patch
+aed83220402b3fae709eb1f038cadf7bd7ddd0923bef446738e4bf1684fdb535  artifacts/tdd/sharpqrs/pre-green/untracked.tar.gz
+fa7e66e589a647da6ebea9841543463a9f365c03ee6878ecdc20f06fd7f94ca0  artifacts/tdd/sharpqrs/pre-green/utc.txt
+4c6b8d952599e6fd03fdcfedd94e5aaf96a1bbfb30f0837b476aa132beb68bf6  artifacts/tdd/sharpqrs/source-hash-pre-green/tracked.patch
+a80bd6d998aebf6a080f5716b72623937fe8265667b88f2b045ab96925294390  artifacts/tdd/sharpqrs/source-hash-pre-green/untracked.tar.gz
+bac611366684db1e3a1ae7902f81626af0f43ca1831c69e9eb53fb6af8d7e165  artifacts/tdd/sharpqrs/drain-pre-green/expanded-tracked.patch
+0f1073e2d783460c30d9ed7c5d38e46a2564ceb0a3cb1addd5efd2c37b8a4c95  artifacts/tdd/sharpqrs/drain-pre-green/tracked.patch
+16ad4233b6c3f1cb3e8bbff183e169aa8c7ea147d938b5d920d9f281e7949553  artifacts/tdd/sharpqrs/drain-pre-green/expanded-untracked.tar.gz
+27957cb48f06aee9f23120e0c1747a83166c57f05a32bf07b3b3dce28731c9ac  artifacts/tdd/sharpqrs/drain-pre-green/untracked.tar.gz

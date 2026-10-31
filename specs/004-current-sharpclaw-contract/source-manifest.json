@@ -1,0 +1,50 @@
+[
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/IAgentBackend.cs",
+    "Sha256": "db8e99e5433bb184c28f07de4d11311d06ba832a3b1b46956a11612627560abf"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/ICliProtocol.cs",
+    "Sha256": "37b2257906990bb9dd67ba33e22f044a838d325a7216e9030014f5bcf15d9374"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/Session.cs",
+    "Sha256": "d05e16d0c15ee5fd4e43aed54901fb6fe3d749f7048dfb4d7fda847abb14466e"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/RunContext.cs",
+    "Sha256": "1bb24c073e4eaa53d408a8dd5bdfa956635560f99c62cd8006d719f715be85b5"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/Observation.cs",
+    "Sha256": "4e6750b6963086e239ce37d6fbc0e940e9c7c36540747721af79d5d2ef7147fd"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/BackendResult.cs",
+    "Sha256": "950f4eff312a7d758fd9dec34cc4921fbd0580058911136db3ad324c840709b8"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/CliBackend.cs",
+    "Sha256": "7ba35f8f4e8158ce97972d60118fc10a4b535b3e1650a606539d27b2ce7d2eb7"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/CliExecution.cs",
+    "Sha256": "04bafaf7dafe9f1fdd6d2e950b6736f20749068d58e2dd99daeba71a5f668a89"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/Native.cs",
+    "Sha256": "003a5a394b8491ea1b7d0703416b8d3c7c65c349d32b967f91ad1239c912350a"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/RunSessions.cs",
+    "Sha256": "90c512d4f49d781fa89242fdac73e44dbfdc7d5b80b9fb39679a571e24071ebb"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/SessionSelection.cs",
+    "Sha256": "ec6a8ba154833613ea2ab15e22ef00187a67da57df7cbe8e181468a63b897fc8"
+  },
+  {
+    "File": "/home/user1/dev/github.com/monstertacle/sharpclaw/src/SharpClaw/RunReservation.cs",
+    "Sha256": "eb167430b00ee52da960601cb499d4a5692c98be9b8a6fd19b34ab80f62950c1"
+  }
+]

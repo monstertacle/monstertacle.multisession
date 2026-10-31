@@ -1,0 +1,13 @@
+FAIL canonical package hashes: valid
+FAIL canonical package hashes: producer-input-hashes
+PASS canonical package hashes: tampered
+PASS canonical package hashes: missing
+PASS canonical package hashes: extra
+PASS canonical package hashes: duplicate
+PASS canonical package hashes: malformed
+PASS canonical package hashes: failed-producer
+Exception: /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/quality/Test-CanonicalPackageHashes.Tests.ps1:41
+Line |
+  41 |  … nt -gt 0) { throw "$($failures.Count) canonical package hash cases fa …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | 2 canonical package hash cases failed: valid, producer-input-hashes

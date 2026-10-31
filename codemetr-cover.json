@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "lineCoverage": 87
+  },
+  "exclude": [
+    "artifacts/**"
+  ],
+  "unreported": "zero",
+  "diff": {
+    "base": "4494f9a0749c76975418682113f19f7839340f54"
+  },
+  "test": {
+    "target": "Monstertacle.Multisession.slnx",
+    "configuration": "Release"
+  }
+}

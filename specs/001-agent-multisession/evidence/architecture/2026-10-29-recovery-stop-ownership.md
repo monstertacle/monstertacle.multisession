@@ -1,0 +1,17 @@
+# T076/T083 öffentliche Recoveryoperationen beim Stop
+
+Bestandsprüfung2026-10-29T17:44:24Z an0d19631. RuntimeRecovery SHA256
+bc2828d45247a7ec7a1ab8996c5050baf5e3286c22ed299a9121fc0c618d3012,
+RecoveryService99f23df816ae10bc21f7d886e5372a0ad8c868a135f3790baf5cb0cd0e924749.
+Service begrenztInspect/Reopen bereitsmitWaitAsync überCaller/RequestTimeout undprüft
+RevisionvoratomaremCAS. Runtimefacade verwendetjedochnurCallerToken undregistriert
+keinenlaufendenProvideraufruf; StopkannStore/Lease währenddiesesAufrufsfreigeben.
+RuntimeOperations ausdemvorherigenOpen-Redzyklus istdervorhandeneWiederverwendungspunkt.
+
+Entscheidung vorCode: InspectundResolve überdasselbeatomareRunning-/Operationsregister
+führen. DamitStop denService-CallerToken abbricht, vorhandeneWaitAsync-Grenze wirkt und
+keinspäterReopen-/Inspectabschluss eineEntscheidungnachCleanupveröffentlicht. Keine
+ÄnderungdesEntscheidungs-/Revisionsvertrags, keineimpliziteConfirmEnded, keinRetry.
+Zwei kontrollierteRedfälle fürunkooperativeInspect-/Reopenawaits; nachStop öffentliche
+Aufgabeabgebrochen, Case/Binding/Reservationunverändert. KeinTiming-SleepfürdieRace,
+Providerbarriere vorStop. Caller-/Start-/Close-/Native-Endaudits bleiben gesondert offen.

@@ -1,0 +1,138 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Gemini/bin/Release/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.OpenAI/bin/Release/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.28]     Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.RecreatesAdapterAndContinuesWithoutReplay [FAIL]
+[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: "tool_calls") [FAIL]
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: null) [FAIL]
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: "content_filter") [FAIL]
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: "length") [FAIL]
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.AwaitsObservationBeforeInvocation [FAIL]
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.OutputLimitKeepsAdvancedState [FAIL]
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.SelectsFinalAssistantText [FAIL]
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(state: "not-json") [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: "tool_calls") [10 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+Actual:   NotStarted
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(String reason) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 75
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.RecreatesAdapterAndContinuesWithoutReplay [11 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Succeeded
+Actual:   Failed
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.RecreatesAdapterAndContinuesWithoutReplay() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkSessionProviderTests.cs:line 29
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: null) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+Actual:   NotStarted
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(String reason) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 75
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: "content_filter") [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+Actual:   NotStarted
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(String reason) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 75
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(reason: "length") [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+Actual:   NotStarted
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.IncompleteResponseIsUnknown(String reason) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 75
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.AwaitsObservationBeforeInvocation [1 ms]
+  Error Message:
+   Assert.Same() Failure: Values are not the same instance
+Expected: Task { Status = WaitingForActivation }
+Actual:   Task<ProviderReply> { Status = RanToCompletion }
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.AwaitsObservationBeforeInvocation() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkSessionProviderTests.cs:line 57
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.OutputLimitKeepsAdvancedState [3 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OutputLimitExceeded
+Actual:   UnsupportedProviderAction
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.OutputLimitKeepsAdvancedState() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 104
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.SelectsFinalAssistantText [2 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "final"
+Actual:   ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkSessionProviderTests.SelectsFinalAssistantText() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkSessionProviderTests.cs:line 79
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(state: "not-json") [2 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Contracts.SessionOperationException)
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(String state) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 55
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.31]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(state: null) [FAIL]
+[xUnit.net 00:00:00.31]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(state: "{}") [FAIL]
+[xUnit.net 00:00:00.31]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvocationFailureIsUnknown [FAIL]
+[xUnit.net 00:00:00.31]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.SerializationFailurePreservesTerminationAndBlocksContinuation [FAIL]
+[xUnit.net 00:00:00.31]     Monstertacle.Multisession.UnitTests.FrameworkFailureTests.UnsupportedActionsRemainUnknownAndDoNotInvoke [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(state: null) [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Contracts.SessionOperationException)
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(String state) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 55
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(state: "{}") [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Contracts.SessionOperationException)
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvalidContinuationFailsBeforeRun(String state) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 55
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvocationFailureIsUnknown [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+Actual:   NotStarted
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.InvocationFailureIsUnknown() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 20
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.SerializationFailurePreservesTerminationAndBlocksContinuation [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ConfirmedEnded
+Actual:   NotStarted
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.SerializationFailurePreservesTerminationAndBlocksContinuation() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 90
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.FrameworkFailureTests.UnsupportedActionsRemainUnknownAndDoNotInvoke [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Unknown
+Actual:   NotStarted
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkFailureTests.UnsupportedActionsRemainUnknownAndDoNotInvoke() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkFailureTests.cs:line 38
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:    14, Passed:     1, Skipped:     0, Total:    15, Duration: 58 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

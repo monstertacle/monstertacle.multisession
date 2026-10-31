@@ -1,0 +1,334 @@
+{
+  "RecordedUtc": "2026-10-30T10:55:12.2479543+00:00",
+  "Quality": {
+    "conclusion": "failure",
+    "event": "pull_request",
+    "headSha": "af6aaa66fef4491caa404d654e470025e2d025c5",
+    "status": "completed",
+    "url": "https://github.com/monstertacle/monstertacle.multisession/actions/runs/41042889858"
+  },
+  "Static": {
+    "conclusion": "success",
+    "event": "pull_request",
+    "headSha": "af6aaa66fef4491caa404d654e470025e2d025c5",
+    "status": "completed",
+    "url": "https://github.com/monstertacle/monstertacle.multisession/actions/runs/41042889914"
+  },
+  "NativeResults": [
+    {
+      "Platform": "linux",
+      "Run": {
+        "SourceHash": "c2118349915f323fb7dd9437de26d59a5eef13ed40656f8944e4b6666040a1c5",
+        "Platform": "linux",
+        "StartedUtc": "2026-10-30T10:44:11.5422573+00:00"
+      },
+      "Tests": [
+        {
+          "Suite": "UnitTests",
+          "Total": 368,
+          "Passed": 368,
+          "Failed": 0,
+          "NotExecuted": 0
+        },
+        {
+          "Suite": "IntegrationTests",
+          "Total": 408,
+          "Passed": 408,
+          "Failed": 0,
+          "NotExecuted": 0
+        },
+        {
+          "Suite": "ContractTests",
+          "Total": 252,
+          "Passed": 252,
+          "Failed": 0,
+          "NotExecuted": 0
+        },
+        {
+          "Suite": "PlatformTests",
+          "Total": 32,
+          "Passed": 32,
+          "Failed": 0,
+          "NotExecuted": 0
+        }
+      ],
+      "TotalTests": 1060.0,
+      "ProductCoverage": {
+        "Platform": "linux",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3144,
+        "CoveredLines": 3074,
+        "Percent": 97.7735,
+        "Modules": [
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Linux",
+          "Monstertacle.Multisession.Providers.Gemini",
+          "Monstertacle.Multisession.Providers.OpenAI",
+          "Monstertacle.Multisession.Storage.Sqlite"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "Cover": {
+        "Complete": true,
+        "Passed": false,
+        "Summary": {
+          "files": 219,
+          "types": 223,
+          "members": 449,
+          "line": 97.7,
+          "branch": 87.4,
+          "coveredLines": 2988,
+          "coverableLines": 3057,
+          "coveredBranches": 2009,
+          "branches": 2297,
+          "diffLine": 99.4,
+          "diffBranch": 88.2,
+          "violations": 8,
+          "new": 8,
+          "worsened": 0,
+          "baselined": 0,
+          "stale": 0,
+          "tightenable": 0,
+          "unreported": 0,
+          "excluded": 0,
+          "skipped": 49,
+          "unmapped": 0,
+          "listed": 8,
+          "omitted": 0
+        },
+        "Violations": [
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/Program.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/Program.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/StoreSchedulerProbe.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/StoreSchedulerProbe.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ValidationFailure.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ValidationFailure.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          }
+        ],
+        "InputErrors": []
+      },
+      "Artifacts": [
+        {
+          "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/ci-pr3-target-linux-artifacts/faa6a590dc9445809cb357686dcb2019/run.json",
+          "Sha256": "4452b95996833377fe711fa77d8052e30700731505fe64efd0dcf3fb404e3e8b"
+        },
+        {
+          "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/ci-pr3-target-linux-artifacts/faa6a590dc9445809cb357686dcb2019/coverage-summary.json",
+          "Sha256": "5722469a88f37d5aafd34487e29115f5362d9a997406d057f5e3fdc4a2150dbc"
+        },
+        {
+          "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/ci-pr3-target-linux-artifacts/faa6a590dc9445809cb357686dcb2019/codemetr-cover.json",
+          "Sha256": "8604f077beeaf760a79e9322c0f79c66fc0b11064f500943f2ac40694ff2c623"
+        }
+      ]
+    },
+    {
+      "Platform": "windows",
+      "Run": {
+        "SourceHash": "c2118349915f323fb7dd9437de26d59a5eef13ed40656f8944e4b6666040a1c5",
+        "Platform": "windows",
+        "StartedUtc": "2026-10-30T10:44:43.7448095+00:00"
+      },
+      "Tests": [
+        {
+          "Suite": "UnitTests",
+          "Total": 368,
+          "Passed": 368,
+          "Failed": 0,
+          "NotExecuted": 0
+        },
+        {
+          "Suite": "IntegrationTests",
+          "Total": 408,
+          "Passed": 408,
+          "Failed": 0,
+          "NotExecuted": 0
+        },
+        {
+          "Suite": "ContractTests",
+          "Total": 252,
+          "Passed": 252,
+          "Failed": 0,
+          "NotExecuted": 0
+        },
+        {
+          "Suite": "PlatformTests",
+          "Total": 38,
+          "Passed": 38,
+          "Failed": 0,
+          "NotExecuted": 0
+        }
+      ],
+      "TotalTests": 1066.0,
+      "ProductCoverage": {
+        "Platform": "windows",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3208,
+        "CoveredLines": 3136,
+        "Percent": 97.7556,
+        "Modules": [
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Providers.Gemini",
+          "Monstertacle.Multisession.Providers.OpenAI",
+          "Monstertacle.Multisession.Storage.Sqlite",
+          "Monstertacle.Multisession.Windows"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "Cover": {
+        "Complete": true,
+        "Passed": false,
+        "Summary": {
+          "files": 219,
+          "types": 223,
+          "members": 454,
+          "line": 97.7,
+          "branch": 87.2,
+          "coveredLines": 3050,
+          "coverableLines": 3121,
+          "coveredBranches": 2068,
+          "branches": 2369,
+          "diffLine": 99.4,
+          "diffBranch": 88.2,
+          "violations": 8,
+          "new": 8,
+          "worsened": 0,
+          "baselined": 0,
+          "stale": 0,
+          "tightenable": 0,
+          "unreported": 0,
+          "excluded": 0,
+          "skipped": 49,
+          "unmapped": 0,
+          "listed": 8,
+          "omitted": 0
+        },
+        "Violations": [
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/Program.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/Program.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/StoreSchedulerProbe.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/StoreSchedulerProbe.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ValidationFailure.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ValidationFailure.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          },
+          {
+            "rule": "unmeasuredChange",
+            "status": "new",
+            "file": "examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs",
+            "message": "examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs: changed, but generated or excluded code is never measured.",
+            "hint": "This change lies in generated or excluded code that is never measured; move hand-written code to a measured file."
+          }
+        ],
+        "InputErrors": []
+      },
+      "Artifacts": [
+        {
+          "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/ci-pr3-target-windows-artifacts/a6a26c24a3dd4d829c41d01a5f6f70f6/run.json",
+          "Sha256": "5c7a7a6f2653ae85711cb9d34d4ea9ac28d525a259a125e7736f9ae9b3b0444f"
+        },
+        {
+          "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/ci-pr3-target-windows-artifacts/a6a26c24a3dd4d829c41d01a5f6f70f6/coverage-summary.json",
+          "Sha256": "214e3c16487c0dbf63289fd71c0571207375fd3ddbbeb9ac13c41c3b48178325"
+        },
+        {
+          "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/ci-pr3-target-windows-artifacts/a6a26c24a3dd4d829c41d01a5f6f70f6/codemetr-cover.json",
+          "Sha256": "c51d5e7812378ae2b78041b977c28e71100f6afef017054b672ea11f172984e3"
+        }
+      ]
+    }
+  ],
+  "Acceptance": "Not accepted: eight existing-scope unmeasured validation-host changes on each platform; scope decision pending. Native target contamination corrected; no historical Windows root-cause claim."
+}

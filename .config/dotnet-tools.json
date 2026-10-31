@@ -4,7 +4,17 @@
   "tools": {
     "codemetr.csharp.tool": {
       "version": "0.1.0",
-      "commands": ["codemetr-csharp"]
+      "commands": [
+        "codemetr-csharp"
+      ],
+      "rollForward": false
+    },
+    "codemetr.csharp.cover.tool": {
+      "version": "0.1.1",
+      "commands": [
+        "codemetr-csharp-cover"
+      ],
+      "rollForward": false
     }
   }
 }

@@ -1,0 +1,6 @@
+{
+  "conversation": {"id":"conv_fixture","object":"conversation","created_at":1},
+  "queued": {"id":"resp_fixture","object":"response","status":"queued","output":[]},
+  "completed": {"id":"resp_fixture","object":"response","status":"completed","output":[{"type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"fixture output"}]}]},
+  "requires_client_action": {"id":"resp_fixture","object":"response","status":"completed","output":[{"type":"function_call","name":"fixture_action","call_id":"call_fixture","arguments":"{}"}]}
+}

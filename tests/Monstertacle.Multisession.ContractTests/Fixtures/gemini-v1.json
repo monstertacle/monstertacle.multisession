@@ -1,0 +1,7 @@
+{
+  "root_completed": {"id":"interaction_root","object":"interaction","status":"completed","steps":[{"type":"model_output","content":[{"type":"text","text":"first output"}]}]},
+  "head_completed": {"id":"interaction_head","object":"interaction","status":"completed","previous_interaction_id":"interaction_root","steps":[{"type":"model_output","content":[{"type":"text","text":"second output"}]}]},
+  "new_in_progress": {"id":"interaction_next","object":"interaction","status":"in_progress","previous_interaction_id":"interaction_head","steps":[]},
+  "new_completed": {"id":"interaction_next","object":"interaction","status":"completed","previous_interaction_id":"interaction_head","steps":[{"type":"model_output","content":[{"type":"text","text":"next output"}]}]},
+  "requires_action": {"id":"interaction_next","object":"interaction","status":"requires_action","previous_interaction_id":"interaction_head","steps":[{"type":"function_call","name":"fixture_action","id":"call_fixture","arguments":{}}]}
+}

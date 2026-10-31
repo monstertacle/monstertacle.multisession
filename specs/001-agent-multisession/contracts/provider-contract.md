@@ -206,3 +206,53 @@ abweisen; Exit 0 ohne terminalen Erfolg und Tool-Zwischenschritt nicht als Erfol
 Callbackfehler und Cancel ohne Endbeleg behalten Unknown; nicht unterstützte Fähigkeiten
 vor Übergabe ablehnen. Diese Fälle ergänzen, ersetzen aber nicht die zwei nativen
 Herstellerverträge, Persistenz-/Prozessproben oder den tatsächlichen Paketkonsum.
+
+## 9. Operationsgebundene Wiederaufnahme nach Unknown
+
+Ein Adapter, dessen ungewisse Ausführung einen nativen Fortsetzungskopf ändern kann,
+setzt `ProviderCapabilities.RequiresOperationAwareRecovery=true` und implementiert
+`IExecutionRecoveryProvider.ReopenAfterExecutionAsync`. Der Port erhält den gespeicherten
+bekannten Bindingbezug und die optionale persistierte Operationskennung. Er liest native
+Belege und liefert ausschließlich einen bestätigten kompatiblen Fortsetzungsstand.
+Er eröffnet und sendet keine Arbeit. Ein noch lesbarer alter Kopf allein genügt nicht.
+Fehlt ein für diese Prüfung nötiger Bezug, bleibt UnsupportedProviderAction/Unknown;
+fehlender Port ist kein Anlass zum Rückfall auf gewöhnliches Reopen.
+
+Bei stabilen nativen Conversation-IDs bleibt gewöhnliches Reopen zulässig. Die Auswahl
+ist capability-/interfacegebunden, ohne Herstellernamen im Kern. Bestätigtes Ende und
+Fortsetzungsstand werden erst mit der ausdrücklichen revisionierten Recoveryentscheidung
+veröffentlicht; Inspect allein ändert nichts. Die historische Anfrage wird nicht nachträglich
+Succeeded. Close/Closing erfordert keine Wiederöffnung zur Fortsetzung.
+
+## 10. Ende und Fortsetzungsverfügbarkeit
+
+`ProviderReply.ContinuationAvailable` ist eine optionale Aussage des Adapters. `false`
+benennt einen bekannten Fortsetzungsblocker, `null` überlässt unveränderte Legacy-/Fehlerpolicy,
+`true` ist kein Beweis für ein externes Ende. Common interpretiert keine herstellerspezifischen
+ContinuationState-Strings. Nach sicherem Abschluss werden Ergebnis/History/Binding,
+ProviderUnavailable-Sperre und sichere Slotfreigabe gemeinsam gespeichert. Native Expiry
+blockiert auch Legacy-Produzenten ohne dieses optionale Feld.
+
+Bei Unknown hat RecoveryRequired samt gehaltener Reservierung Vorrang. Ein negatives
+Fortsetzungssignal darf fehlende Endgewissheit nicht ersetzen. Umgekehrt bleibt ein nativer
+completed-Head auch bei lokaler OutputLimitExceeded nutzbar; allein ein lokaler Textfehler
+rechtfertigt keinen Rückfall auf einen veralteten Kopf. Der erste sicher fehlgeschlagene
+Interaktionsaufruf ohne completed-Head kann seinen bekannten Root bewahren, aber keine
+neue Wurzel oder weitere Annahme stillschweigend erlauben.
+
+## Optionale lesende Zugangsprüfung vor Wiederaufnahme
+
+`ISessionAvailabilityProvider.ValidateAvailabilityAsync` ist eine zusätzliche generische
+Facette; sie ändert keinen bestehenden Reopen-/Lazyvertrag. Native Adapter lesen den
+gewählten Modell-Metadateneintrag über ihren bereits konfigurierten Endpoint und aktuellen
+Hostcredentialresolver. Grundlage sind [OpenAI Model retrieve](https://developers.openai.com/api/reference/resources/models/methods/retrieve)
+und der stabile GET `v1/models/{modelsId}` in [Geminis offizieller v1-Discovery](https://generativelanguage.googleapis.com/$discovery/rest?version=v1).
+Es wird kein Prompt gesendet und kein vollständiger Katalog aufgebaut. Eine fehlende
+Modellressource ist ProviderUnavailable; Auth bleibt AuthenticationFailed, statt als
+abgelaufene native Sitzungsidentität zu erscheinen. ModelId und Binding bleiben gefroren.
+
+Dritte Adapter können diese Facette ausdrücklich implementieren oder dieselbe eigene
+Zugangsprüfung bereits in Reopen erfüllen. Der Kern leitet Fähigkeiten aus dem Vertrag
+ab, nicht aus Hersteller-/Modellnamen. RecoveryRequired und andere native Sperren werden
+nicht durch einen erfolgreichen Metadatenread aufgehoben. Aliasmetadata belegen keine
+Modellsubstitution durch die Bibliothek. Die reale Konten-/Backendabnahme bleibt T105.

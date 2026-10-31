@@ -11,4 +11,8 @@ public sealed record ProviderCapabilities(
     bool SupportsAgentTasks,
     bool SupportsInspection,
     bool SupportsCancellation,
-    bool RequiresWorkspace);
+    bool RequiresWorkspace)
+{
+    /// <summary>Gets whether recovery must verify the uncertain execution before publishing a continuation.</summary>
+    public bool RequiresOperationAwareRecovery { get; init; }
+}

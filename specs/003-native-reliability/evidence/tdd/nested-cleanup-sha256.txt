@@ -1,0 +1,6 @@
+8c4d4e1d1b7faf2c73607ba6668fdf9f76da332cfeb792938e433901d875c0cf  artifacts/tdd/native-reliability/nested-cleanup-pre-green/head.txt
+e38774d4e8d19ab9047bd05f26a1dabc728afa3be233d6a8ebfbfb43919ef45c  artifacts/tdd/native-reliability/nested-cleanup-pre-green/tracked.patch
+405ef32649b1aee787b44f4d14a40dc31eba09fa6d0816a9ec430f420f758106  artifacts/tdd/native-reliability/nested-cleanup-pre-green/untracked.tar.gz
+c7a41aaab26a97dfb26d1831e43875274154a4f02a84316e5a6627508e11fc07  artifacts/tdd/native-reliability/nested-cleanup-pre-green/utc.txt
+88e612354b2edfd51eec05670df25f5795d14cb6676af05a1135f05fe920819e  artifacts/tdd/native-reliability/nested-cleanup-red/nested-cleanup-red.log
+e74eee4fd020f68b174c5fe36114bd108dee9d75e5da81d2bd0029c51eb85618  artifacts/tdd/native-reliability/nested-cleanup-red/nested-cleanup-red.trx

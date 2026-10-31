@@ -1,5 +1,34 @@
 # Coverage — aktueller nicht freigegebener Arbeitsstand
 
+Aktueller technischer Kandidat nach T125/T126: **fb1a167 / Source d51bf9f9...**,
+native Gesamt-/Paket-/Guard-/Auditprüfungen erfolgreich. Verbindlicher aktueller
+Index mit vollständigem Sourcehash, ausgewähltem Paketartefakt, Laufnummern und
+Abnahmegrenzen: [delivery-candidate.md](delivery-candidate.md),
+[build-native.json](build-native.json), [canonical-package-final.json](canonical-package-final.json).
+Die älteren Zahlen/Quellstände in den folgenden Abschnitten bleiben historische
+Checkpoints; sie ersetzen diesen aktuellen Bericht nicht. Die reale finale Stunde
+und fehlenden externen Freigaben bleiben separat ausgewiesen.
+
+## Aktueller nativer Kandidat
+
+Prüfstand2026-10-29T23:00:40Z: gleicher Sourcehash
+`dba419f35bf40fd7282a5b2f3bfe7c685576e2c62ceb570d5fec2d0f4f84498b`
+auf beiden Systemen, tatsächlicher Qualityrun40968636580. Rohzusammenfassungen,
+TRX-Digests und eigenes Modul-/Projektinventar in [build-native.json](build-native.json).
+Ubuntu24.04:2943/3016 Zeilen=97,5796 %,1036Tests; WindowsServer2025:
+3004/3080=97,5325 %,1042Tests. Beide PASS bei unverändert87 %, keine Skips.
+Pro OS Common/SQLite/beide Provider plus eigene native Plattformbibliothek;
+fremde Plattform ausschließlich im anderen nativen Bericht. Shared-NativeHttp
+ist in beiden Providerassemblies tatsächlich gemessener Produktcode.
+Tests/ValidationHost nicht im Produktnenner; eigener nicht ausgeführter Produktcode
+wird nicht ausgeblendet. Acht tatsächlich erzeugte Coverletberichte je Lauf,
+keine alten Reports aus vorigen Verzeichnissen zusammengezählt. SDK10.0.403,
+Collector10.1.0, Runtime10.0.14, VSTest, tests/coverage.runsettings.
+Keine zusätzliche Exklusion oder Schwellenabsenkung. Fehlendes Windows11 bleibt
+Plattformabnahmeblocker, keine Behauptung eigener Win11-Coveragemessung.
+
+## Historische Zwischenmessungen
+
 **Datum**: 2026-10-28. **Plattform**: Windows x64. **SDK**: 10.0.403.
 Collector: coverlet.collector 10.1.0, VSTest; Einstellungen `tests/coverage.runsettings`.
 Inventar `tests/coverage-scope.json`, ausdrücklich genehmigter Grenzwert **87 %**
@@ -54,3 +83,25 @@ unter dem damaligen 90-%-Gate jeweils FAIL. Letzter 90-%-Lauf nach FIFO:
 Diese historischen Ergebnisse wurden nicht umgeschrieben. Der neue PASS entsteht
 durch die genehmigte Schwellenänderung, nicht durch zusätzlich abgedeckten Produktcode.
 Ein Fortschritt der Coverage ist keine Abnahme unimplementierter Funktionen.
+
+## T112: nativer Linuxlauf nach Repositoryübernahme
+
+SDK 10.0.403 / Debian GNU/Linux 13, vollständiger Runner
+`pwsh -NoProfile -File scripts/Invoke-Quality.ps1 -Platform linux`: Exit 0.
+Sourcehash `617d3f67adf713058c7a60950846899f93893a58ddc4fd23ac3af55e2db4417f`,
+Artefakte `artifacts/quality/linux/b83d5853697d45c5aa01d3a26f4d8883/`.
+**241/271 = 88,9299 %** des gesamten nativen Produktumfangs, Mindestwert 87 % erfüllt.
+158 Unit-, 26 Contract-, 1 Integration- und 1 Linux-Infrastrukturtest bestanden;
+13 Coverage-Gateverhaltensfälle bestanden. Vollständiger Codemetr-Guard: 76 Typen,
+0 Verstöße/Parsefehler/übersprungene Typen. TDD und Grenzen: [tdd-us1.md](tdd-us1.md).
+Kein Windows-/Ubuntu-Zielsystem-/CI-Nachweis für diesen Stand; keine Produktfreigabe.
+
+## T025: Dispatcher
+
+Vollständiger nativer Linuxrunner: Exit 0, **376/400 = 94,0 %** Produkt-Zeilenabdeckung.
+Sourcehash `790529a286d607b236aa25aabba02462a5f17a4ed289d3ca61143404349f8916`;
+Originalberichte `artifacts/quality/linux/00ee4f74a76e4f64be51e24f8308be76/`.
+223 .NET-Tests und 13 Gateverhaltensfälle bestanden, 0 fehlgeschlagen/nicht ausgeführt.
+Full-Codemetr 0.1.0: 88 Dateien/89 Typen, 0 Verstöße/Parsefehler/übersprungene Typen.
+TDD, Selbstprüfung und Freigabegrenzen: [tdd-us1.md](tdd-us1.md), Abschnitt T025.
+Kein neuer Windows-/CI-/Zielsystem-/Liveprovider-/Paketabnahmenachweis.

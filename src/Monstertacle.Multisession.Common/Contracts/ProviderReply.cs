@@ -13,4 +13,8 @@ public sealed record ProviderReply(
     string Output,
     bool OutputComplete,
     ProviderBinding? Binding,
-    PublicError? Error);
+    PublicError? Error)
+{
+    /// <summary>Gets explicit continuation evidence; false blocks later turns, null preserves existing policy, and true does not prove external termination.</summary>
+    public bool? ContinuationAvailable { get; init; }
+}

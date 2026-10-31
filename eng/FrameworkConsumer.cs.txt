@@ -1,0 +1,56 @@
+using System.Text.Json;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
+using Monstertacle.Multisession;
+using Monstertacle.Multisession.AgentFramework;
+using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Storage.Sqlite;
+
+internal static class Program
+{
+    private static async Task Main(string[] args)
+    {
+        using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(30));
+        CancellationToken token = deadline.Token;
+        await using NativeLease lease = NativeLease.CreateNew(args[0]);
+        RuntimeOptions options = new() { StateDirectory = args[0], Retention = new(true, null) };
+        ISessionStore store = await SqliteStoreFactory.CreateNewAsync(lease, Guid.NewGuid(), options, token);
+        FrameworkSessionProvider provider = new(new() { AdapterId = "fixture-framework-v1" }, _ => new FixtureAgent());
+        await using SessionRuntime runtime = new(store, lease, [new("framework", "fixture-framework-v1", 1, provider)],
+            [new("agent", "framework", "host-selected", ExecutionKind.AgentTask, new("v1", new Dictionary<string, string>()))]);
+        await runtime.StartAsync(options, token);
+        SessionSnapshot session = await runtime.Sessions.CreateSessionAsync("agent", new(null, null), token);
+        for (int turn = 1; turn <= 2; turn++)
+        {
+            RequestReceipt receipt = await runtime.Requests.SubmitAsync(new(session.SessionId, $"input-{turn}", TimeSpan.FromSeconds(10), null, false), token);
+            RequestSnapshot snapshot;
+            do
+            {
+                snapshot = (await runtime.Requests.GetRequestAsync(receipt.RequestId, token))!;
+                if (snapshot.State is RequestState.Queued or RequestState.Running) { await Task.Delay(10, token); }
+            } while (snapshot.State is RequestState.Queued or RequestState.Running);
+            if (snapshot.State != RequestState.Succeeded || snapshot.Result?.Output != $"turn-{turn}") { throw new InvalidOperationException("Framework package contract failed."); }
+        }
+        Console.WriteLine("FRAMEWORK-PASS two confirmed turns through packaged runtime");
+    }
+}
+
+internal sealed class FixtureSession : AgentSession
+{
+    internal int Turns { get; set; }
+}
+
+internal sealed class FixtureAgent : AIAgent
+{
+    protected override string? IdCore => "stable-fixture-agent";
+    protected override ValueTask<AgentSession> CreateSessionCoreAsync(CancellationToken cancellationToken = default)
+        => ValueTask.FromResult<AgentSession>(new FixtureSession());
+    protected override ValueTask<JsonElement> SerializeSessionCoreAsync(AgentSession session, JsonSerializerOptions? jsonSerializerOptions = null, CancellationToken cancellationToken = default)
+        => ValueTask.FromResult(JsonSerializer.SerializeToElement(((FixtureSession)session).Turns));
+    protected override ValueTask<AgentSession> DeserializeSessionCoreAsync(JsonElement serializedState, JsonSerializerOptions? jsonSerializerOptions = null, CancellationToken cancellationToken = default)
+        => ValueTask.FromResult<AgentSession>(new FixtureSession { Turns = serializedState.GetInt32() });
+    protected override Task<AgentResponse> RunCoreAsync(IEnumerable<ChatMessage> messages, AgentSession? session = null, AgentRunOptions? options = null, CancellationToken cancellationToken = default)
+        => Task.FromResult(new AgentResponse(new ChatMessage(ChatRole.Assistant, $"turn-{++((FixtureSession)session!).Turns}")) { FinishReason = ChatFinishReason.Stop });
+    protected override IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(IEnumerable<ChatMessage> messages, AgentSession? session = null, AgentRunOptions? options = null, CancellationToken cancellationToken = default)
+        => throw new NotSupportedException();
+}

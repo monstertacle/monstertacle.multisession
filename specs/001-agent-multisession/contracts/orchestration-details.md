@@ -1,8 +1,9 @@
 # Orchestrierungsverträge v1 — verbindlicher Zielentwurf
 
-Stand 2026-10-28. Konkretisiert FR-005/FR-007/FR-018–FR-021 und die Analysebefunde.
-**Noch nicht vollständig in C# umgesetzt.** T112–T115 sichern die folgenden Änderungen
-vor ihrer jeweiligen Implementierung durch fachliche Red-Fälle ab. Der Paketstand bleibt
+Ursprungsentwurf 2026-10-28; Implementierungsabgleich 2026-10-29T21:57:58Z.
+Konkretisiert FR-005/FR-007/FR-018–FR-021. T112–T115 sind nach den dokumentierten
+fachlichen Red-Fällen implementiert: ReservedDispatch mit SQL-Fence, Recoveryziele/CAS,
+Annahmegewissheit und alle vier begrenzten SQL-Keysetlisten. Der Paketstand bleibt
 vor Veröffentlichung; dies ist keine ausgeführte Migration oder neue Produktfreigabe.
 
 ## 1. Reservierter Dispatch-Snapshot (U1)
@@ -68,8 +69,11 @@ ohne native Öffnung, Send oder erfundene Endbestätigung.
 
 RecoveryDecision enthält DecisionId, **Target statt RequestId**, ExpectedRevision, Kind,
 Explanation und EvidenceReference. Der Store verwendet eine atomare ResolveRecoveryAsync-
-Operation für beide Targetarten; die bisherige requestgebundene ResolveReservationAsync-
-Signatur ist in T113 entsprechend abzulösen. Ein unbekanntes/fremdes Target ergibt NotFound.
+Operation für beide Targetarten; die frühere requestgebundene ResolveReservationAsync-
+Signatur ist seit T113 abgelöst. Der Store erhält neben der Entscheidung ein optionales
+confirmedBinding aus dem vorab ausgeführten Reopen. Dieses gehört nicht zur öffentlichen
+Operatorentscheidung: der Service prüft native Identität/Adapter/Format, der Store prüft
+ExpectedRevision erneut und veröffentlicht Klärung und bestätigtes Binding gemeinsam. Ein unbekanntes/fremdes Target ergibt NotFound.
 
 Revision ist eine positive persistierte long-Zahl je Target: erster Fall Revision 1,
 jede angenommene zustands-/beweisrelevante Falländerung erhöht sie genau um 1. Auch nach
@@ -135,7 +139,7 @@ für Nichtannahme. Es gibt keinen automatischen erneuten Submit oder späteren R
 
 Für alle Session-/Request-/History-/Recoverylisten gilt explizit `1 <= pageSize <= 100`;
 es wird weder still gekappt noch korrigiert. Die empfohlene Hostseitengröße ist 50,
-kein impliziter Parameterdefault. Gemeinsame benannte Konstanten stehen künftig in
+kein impliziter Parameterdefault. Gemeinsame benannte Konstanten stehen seit T115 in
 Contracts/PageLimits.cs. Cursor ist null für die erste Seite; ein leerer String ist ungültig.
 
 | Liste | Aufsteigender stabiler Sortierschlüssel |
@@ -164,3 +168,142 @@ Seiten sind eine **Livesicht**, keine Snapshottransaktion: neu eingefügte Eleme
 dem Cursor können erscheinen, davor erst bei neuem Scan. Zustände können sich zwischen
 Reads ändern; zurückgegebene DTOs selbst sind unveränderliche Snapshots. So werden weder
 Snapshotisolation noch vollständige Auffindbarkeit durch nur einen parallelen Scan behauptet.
+
+## 5. Beleggebundener Fortsetzungskopf (T116)
+
+Für `RequiresOperationAwareRecovery` verwendet RecoveryService den optionalen Port
+`IExecutionRecoveryProvider` statt des gewöhnlichen Reopen. Ein providerdefinierter neuer
+Kopf muss aus der bekannten ungewissen Operation verifiziert werden. Ohne notwendigen
+Bezug oder passenden Port bleiben Fall und Reservierung gesperrt. Die vorhandenen
+Identitäts-/Adapter-/Versions- und CAS-Regeln gelten unverändert.
+
+Ein erfolgreich bestätigtes `SessionEstablished` darf die zuvor leere SessionReference
+im RecoveryCase.Binding konkretisieren. Dies veröffentlicht weder einen neuen bestätigten
+Kopf noch das Binding im SessionSnapshot. Der Fall bewahrt die bekannte native Identität
+für explizite Klärung; der Service erhält diese bekannte Fallbindung, und der Store prüft
+sie beim gemeinsamen Entscheidungs-/Bindingcommit. Kein beobachteter Bezug wird durch
+Neueröffnen ersetzt. Produktive Persistenz dieser Projektion gehört zu T060–T062.
+
+## 6. Atomare Sperre bei unbrauchbarer Fortsetzung (T117)
+
+CommitCompletionAsync speichert bei `ContinuationAvailable=false` oder einer bekannten
+ProviderSessionExpired-Kategorie den Blockgrund ProviderUnavailable zusammen mit Result,
+History, bestätigtem Binding und zulässiger Reservierungsfreigabe. Null/true alleine ändern
+keine bestehende Policy. RecoveryRequired wird nicht herabgestuft. Eine ungewisse Antwort
+läuft weiterhin über den separaten Unsicherheitscommit und bleibt reserviert. Die Sitzung
+nimmt mit bekanntem Fortsetzungsblocker keine weiteren Requests an; bereits Queued bleiben
+für explizite Close-/Stop-/Klärung sichtbar. Kein neuer nativer Bezug und keine automatische
+Wiederholung. Produktive Transaktionen müssen dieselbe atomare Grenze erfüllen.
+
+### Autoritativer Snapshot bei bestätigter Eröffnung
+
+CommitSessionBindingAsync liefert den in derselben Transaktion bestätigten
+SessionSnapshot. CreateSessionAsync gibt diesen zurück. SettingsRevision und CreatedUtc
+bleiben unverändert; UpdatedUtc bezeichnet die letzte gespeicherte Sessionmutation.
+ClosedUtc ist vor tatsächlichem Closed null, auch bei Closing mit ungeklärter Arbeit.
+Die chronologischen lokalen UTC-Zeitpunkte ersetzen keine monotonen Ausführungsfristen.
+
+### Lokale Konfigurationssperre vor Workerstart
+
+CommitConfigurationAvailabilityAsync wendet ausschließlich eine lokale Availability-
+entscheidung atomar an. SessionSnapshot.ConfigurationUnavailable markiert deren Herkunft.
+Wieder gültige Konfiguration darf nur eine so markierte ProviderUnavailable-Sperre lösen;
+RecoveryRequired und nicht markierte native Fortsetzungsrestriktionen bleiben bestehen.
+Registry-/Binding-/Executionkind-/Workspaceprüfung erfolgt nach Bootstrap vor Workers.
+Opaque Modell-/Settingsdaten bleiben unverändert; native Auth-/Modellverfügbarkeit wird
+nicht durch einen erfundenen lokalen Featurekatalog vorgetäuscht.
+
+## 5. Atomare lokale Cancel-/Close-Facetten
+
+ISessionStore erbt die schmalen Facetten IRequestCancellationStore und ISessionClosureStore.
+RequestCancellationAsync speichert bei Running nur den ersten CancellationRequestedUtc;
+Queued wird atomar Cancelled/NotStarted samt Result/History. Finale Ergebnisse bleiben
+unverändert. CancelQueuedSessionAsync verarbeitet die Menge noch wartender Einträge einer
+lokalen Session in einem Commit mit begrenzten Sequence-Keysetseiten; eine leere Treffer-
+menge ist ein erfolgreicher leerer Sammelabbruch. Dieser Storeport ist kein öffentlicher
+Close oder Ersatz für IRequests.CancelRequestAsync mit dessen NotFound-Vertrag.
+
+BeginSessionCloseAsync sperrt Annahme, finalisiert Queued und speichert Running-Intent
+zusammen. RefreshSessionCloseAsync prüft aktive/ungewisse Requests, unfreigegebene
+Reservierungen und offene Fälle. Closed benötigt die Abwesenheit aller dieser Hindernisse;
+ClosedUtc wird einmal gesetzt. Opening bekommt einen eigenen Fall. Ein später Binding-
+Commit darf Closing/Closed nicht wieder öffnen. Der SessionClosure-Kern beobachtet den
+Fortschritt begrenzt; Completion beziehungsweise Recovery aktualisieren Closing auch ohne
+wartenden Caller. Keine dieser Transaktionen ruft einen Provider auf oder löscht dessen Daten.
+
+## 6. Store- und Runtimeoptionen vor Startup
+
+SessionRuntime wartet ValidateRuntimeOptionsAsync auf IStoreBootstrap vor StartAsync,
+Recovery und Workeranlage ab. Der SQLite-Store vergleicht die wirksamen RuntimeOptions
+mit seinem bei CreateNew/OpenExisting validierten immutable Factoryrecord. Alle Werte
+müssen übereinstimmen; StateDirectory wird über den gehaltenen Leasebezug abgeglichen,
+kanonisch äquivalente Schreibweisen sind kein anderer Store. Unterschiedliche Retention,
+Limits oder Fristen ergeben InvalidConfiguration vor Änderung gespeicherter Nutzerzustände.
+
+Ein explizites OpenExisting mit neuer gültiger Konfiguration ist erlaubt; danach benutzt
+seine Runtime dieselbe Konfiguration. Options werden nicht im Schema ersetzt oder still
+überschrieben. Ein direkter Storeconsumer verwendet bereits seine ausdrücklich validierte
+Factorykonfiguration. Scheitert die Runtime vor erfolgreicher Storevorbereitung, verbleiben
+Store und Lease im Eigentum des Hosts. Zweitbesitz bleibt StoreAlreadyOwned.
+
+## 7. Ausdrückliche lokale Löschung und Retention
+
+ISessionRetentionStore.DeleteClosedSessionAsync prüft und löscht den lokalen Teilgraph
+atomar. SessionCatalog.DeleteSessionAsync delegiert über den begrenzten SessionDeletion-
+Kern; keine Provideroperation ist daran beteiligt. Closed und ClosedUtc reichen allein
+nicht: dieselbe aktuelle Prüfung für aktive/ungewisse Anfragen, Reservierungen und offene
+Fälle wird in der Löschtransaktion erneut ausgeführt. Ineligible SessionBlocked, fehlende
+Session NotFound, keine teilweise bestätigte Löschung nach Speicherfehler.
+
+RetainUntilExplicitDeletion erlaubt den ausdrücklichen Delete ohne Zeitfrist. Bei Duration
+ist die volle Frist ab ClosedUtc inklusive abzuwarten; währenddessen bleiben Inhalte
+abfragbar. Es gibt keinen automatischen Löschlauf beim Start, Stop oder Fristablauf. Der
+Host löst Delete aus. Factory- und Runtimepolicy sind gemäß Abschnitt6 identisch; ein
+explizites Reopen darf eine neue gültige Hostkonfiguration wählen. Löschung entfernt auch
+lokale Resultate, Historie, freigegebene Reservierungen sowie aufgelöste Fälle/Entscheidungen
+nur dieser Sitzung. Andere Sessions und Storemetadaten bleiben erhalten. Keine Zusage
+physischer SQLite-Seitensäuberung, externer Herstellerlöschung oder Backupentfernung.
+
+## 8. Optionale lokale Diagnosen
+
+Ein hosteigenes `SessionDiagnostics` je Runtime wird als optionaler sechster
+Konstruktorparameter übergeben und vom Host erst nach Runtimeende entsorgt.
+`SourceName` identifiziert ActivitySource und Meter. `InstanceId` korreliert Logs/Traces;
+bei Metriken unterscheidet `Meter.Scope` die lokale Instrumentinstanz. Messlabels
+enthalten ausschließlich `request.state`, `execution.certainty` und `error.code`,
+keine lokalen oder nativen IDs. `FailureCount` zählt abgefangene Senken-/Samplingfehler.
+
+Annahme-/Ausführungsdauerhistogramme verwenden Sekunden. `multisession.requests.completed`
+zählt beobachtete, bestätigt gespeicherte Abschlüsse dieser Instrumentierung; historische
+Ergebnisse und verlorene Commitbestätigungen sind keine zusätzlich behaupteten Events.
+Queue-/Occupied-/Unknown-Gauges beruhen auf `ISessionStatisticsStore.GetRuntimeStatisticsAsync`
+als einer konsistenten lokalen Leseprojektion. Occupied schließt Unknown ein. Der Runtime-
+Monitor aktualisiert initial und nach jeweils einer Sekunde Pause. Observablecallbacks
+lesen nur den atomaren Cache, blockieren keine DBqueue. Bis zur ersten Probe, bei Fehler
+und nach Stop werden Werte zurückgezogen, nicht als Null interpretiert. Cachewerte sind
+keine Kapazitätsentscheidung. Die vollständige Lifecycle-Diagnoseabnahme ist weiterhin offen.
+
+Providerantworten dürfen ausschließlich die in `ProviderFailurePolicy` ausdrücklich
+aufgeführten Kategorien liefern. Lokale Queue-/Ownership-/Store-/Admission-/CASkategorien
+und undefinierte Werte werden als ExecutionFailed behandelt. Fehlerobjekte erhalten die
+Gewissheit des Reply und keine providerseitig gelieferten lokalen IDs/Annahmestatus.
+Typisierte Providerexceptions erhalten eine erlaubte Kategorie, bleiben ohne gesonderten
+Endbeleg Unknown. Tatsächlich lokal erkannte Observation-/Speicherfehler behalten ihre
+lokale Kategorie; sie sind keine unbestätigte Behauptung des Adapters.
+
+## 9. Aktueller Umsetzungsschnitt und verbleibende Freigaben
+
+Alle Verträge dieses Dokuments besitzen Common-/SQLiteumsetzung und automatische
+Vertrags-/Persistenzregression. Separate Endpunkt-/Konten-/Zielsystemabnahmen werden
+nicht aus diesen Tests abgeleitet. Nach T118 wird Factory-/Runtimekonfiguration vor
+Recovery gleich geprüft. Native Bindings und optionale Modell-/Credentialverfügbarkeit
+werden vor Workerfreigabe kontrolliert; eigene konfigurationsbedingte Sperren tragen
+eine nullable bereinigte AvailabilityError, ohne Recovery-/Nativefremdsperren zu lösen.
+Workerabbruch wartet auf asynchrone Cancellationcallbacks vor Ressourcenfreigabe, hält
+aber die callergebundene Stopfrist ein. Linux disponiert explizit seine flock-Sperre.
+
+Noch offene Gesamtgates sind insbesondere T034s eindeutige native Gemini-Kontextfehler-
+zuordnung, die fehlenden Plattform-/Stunden-/Live-/Integratornachweise und der historische
+TDD-Audit. Aufgabenstatus und konkrete Folgezuordnung stehen in tasks.md sowie den
+Abnahmematrizen unter evidence. Keine Schema-/Bindingmigration, NuGetveröffentlichung,
+Hostport/Dienstinstallation oder SharpClaw-Bestandsumstellung gehört zur Umsetzung.

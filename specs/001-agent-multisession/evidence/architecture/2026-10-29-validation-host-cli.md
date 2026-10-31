@@ -1,0 +1,21 @@
+# T089/T094 ValidationHost Argumente und ehrliche Ergebnisse
+
+Bestandsprüfung2026-10-29T17:59:03Z an468b401. Program SHA256
+9922dca5d505160def88f9749ce7ea66e325f7b884277f7cf94af053aa9f3147,
+ProbeProcess828cc5dba9fcbfe1965244062d8af063c781ad543d067e3807a10519d18a344a.
+Program verarbeitetnurinterneCrash-/Diskfull-/LinuxOwnershiptestprotokolle; leereoder
+unbekannteArgumenteergebenstilles0. ÖffentlicheSzenarioauswahl undReports fehlen.
+ProbeProcess bietetbereitsbegrenzteKindprozessausführungmitparallelgeleertenStreams,
+Killcleanup undExitcode. WorkerlocatorwähltdasnativeTFM desbereitsgebautenHosts.
+
+Entscheidung vorErweiterung: eigeneArgument-/Szenariokatalog-/Reportverantwortlichkeiten,
+kleinerDispatch ausProgram; vorhandeneTestworkerprotokolle zuerstweiterbedienen.
+Exakt--scenario und--state-root, keinDefault-PASS. AlleQuickstartnamen einschließlich
+live-openai/live-gemini erkennen. UngültigeArgumente/relativeRoots vorjeglichemI/O
+mitFAIL undExit2. OhneexpliziteLivefreigabe NOT RUN/Exit3, keinNetzwerk-/Credential-
+oderStatezugriff. NochunimplementierteSzenarienbleibenehrlichNOT RUN/Exit3, nichtPASS.
+JSONReportnurnormierteSzenario-/Status-/Reasonwerte, keineübernommenenRohargumente/
+Exceptiontexte. ErstCLI-Sicherheitsvertragrot, dannminimalParser/Report; tatsächliche
+Szenariodurchführung, neueprivateUnterablagen undPaket-/SC-011-Flows folgenT089/T094.
+RegistrytestsverwendenrelativeRoots, damitSoak/Live niemalszurNamensprüfungausgeführt
+werden. KeinezusätzlicheListCLI/Hostingframework-/Dienstpflicht.

@@ -1,0 +1,456 @@
+{
+  "Status": "PASS",
+  "MeasuredUtc": "2026-10-30T00:50:02.3038181+00:00",
+  "Commit": "fb1a16771a3ecd0e20bc6103c89c6f3ed2a65b71",
+  "SourceHash": "d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf",
+  "QualityRun": 40974541005,
+  "GuardRun": 40974541014,
+  "DependencyRun": 40975671555,
+  "Platforms": [
+    {
+      "Platform": "linux",
+      "Run": {
+        "SourceHash": "d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf",
+        "Platform": "linux",
+        "StartedUtc": "2026-10-29T23:38:53.6825935+00:00"
+      },
+      "Coverage": {
+        "Platform": "linux",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3016,
+        "CoveredLines": 2943,
+        "Percent": 97.5796,
+        "Modules": [
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Linux",
+          "Monstertacle.Multisession.Providers.Gemini",
+          "Monstertacle.Multisession.Providers.OpenAI",
+          "Monstertacle.Multisession.Storage.Sqlite"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "Tests": [
+        {
+          "Suite": "UnitTests",
+          "Total": 359,
+          "Passed": 359,
+          "Failed": 0,
+          "Executed": 359,
+          "TrxSha256": "b0eb1dd96ea586c8d3cf3fb70b7c4eea4d265dbcdc84d3755e1b4d7140279d21"
+        },
+        {
+          "Suite": "ContractTests",
+          "Total": 241,
+          "Passed": 241,
+          "Failed": 0,
+          "Executed": 241,
+          "TrxSha256": "3fe99a2575d410ec69d1ddca24984b9f4508f450ff2222133dfba633908a8829"
+        },
+        {
+          "Suite": "IntegrationTests",
+          "Total": 405,
+          "Passed": 405,
+          "Failed": 0,
+          "Executed": 405,
+          "TrxSha256": "1c4180d5f60a615079c41f2171c78c62779b19c17feb607eb3d9c9a58e951066"
+        },
+        {
+          "Suite": "PlatformTests",
+          "Total": 31,
+          "Passed": 31,
+          "Failed": 0,
+          "Executed": 31,
+          "TrxSha256": "8a99682dda2dfbb3fb0d77d95f2313b5681c8cb6b6e9e7c0f5b11fad7a7a7676"
+        }
+      ],
+      "AuditProjectCount": 11,
+      "KnownReportedAdvisories": 0,
+      "AuditSha256": "acba580477cdcb7c2e288e219d03bbb5c596b1fe255f12ae3a213ae1f206f316",
+      "NativeScenarios": [
+        {
+          "Scenario": "deterministic",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.5778221,
+          "RunId": "f5709921-7f87-4685-a40e-35fe4e23d8bb",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "routing",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.5044173,
+          "RunId": "e7194843-209e-4422-8ca4-2b859b0ac364",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "failures",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.5344724,
+          "RunId": "ce1afb67-9759-4de8-9477-66c69720d6ec",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "cancellation",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.5071291,
+          "RunId": "8275d559-af9c-4a6d-b99d-35119e8b5466",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "shutdown",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.4359137,
+          "RunId": "c52a29a0-e17e-4d94-b821-f996afce62b7",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "capacity",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.4627388,
+          "RunId": "494f0d55-e934-46fe-8ac3-23357f47b276",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "workspace",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.4393168,
+          "RunId": "8bf31547-a721-4233-bf2d-9a020eba97e8",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "extensions",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.4767822,
+          "RunId": "0bed531c-29f6-4256-8c59-b5d0caf8f3b4",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "recovery",
+          "Status": "PASS",
+          "ElapsedSeconds": 5.3378973,
+          "RunId": "d6712db3-26bf-48ba-9f7b-b4230ce50e9b",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "native-context",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.4293845,
+          "RunId": "6fbd0235-05bc-4be3-9bc3-a723dc6d8f09",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "isolation",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.3761104,
+          "RunId": "dc157d74-f9b4-46d8-9e89-b72bb0db3605",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "embedded-consumer",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.5186115,
+          "RunId": "4814ea46-8344-4c80-b817-0539d67ce85a",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "retention",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.5037528,
+          "RunId": "59be1832-70d5-4354-8346-7c2ce6a33378",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        },
+        {
+          "Scenario": "limits",
+          "Status": "PASS",
+          "ElapsedSeconds": 0.3835705,
+          "RunId": "72a9dad0-9fcd-4617-aaee-5c7b7274c2c7",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Ubuntu 24.04.5 LTS"
+        }
+      ],
+      "HostAssemblySha256": "d1e794191ab5d4caf4fc12411a922f1adb3e3168165396ed1e6cc84e81760f43",
+      "ScenarioManifestSha256": "41f42c281ecfb2d96a7c5437466cd074e210353fa7e6632c74f50f790cd341bb",
+      "Consumer": {
+        "Status": "PASS",
+        "Sessions": 2,
+        "Requests": 5,
+        "ReopenedRequests": 5
+      }
+    },
+    {
+      "Platform": "windows",
+      "Run": {
+        "SourceHash": "d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf",
+        "Platform": "windows",
+        "StartedUtc": "2026-10-29T23:39:27.9955616+00:00"
+      },
+      "Coverage": {
+        "Platform": "windows",
+        "ThresholdPercent": 87.0,
+        "TotalLines": 3080,
+        "CoveredLines": 3004,
+        "Percent": 97.5325,
+        "Modules": [
+          "Monstertacle.Multisession.Common",
+          "Monstertacle.Multisession.Providers.Gemini",
+          "Monstertacle.Multisession.Providers.OpenAI",
+          "Monstertacle.Multisession.Storage.Sqlite",
+          "Monstertacle.Multisession.Windows"
+        ],
+        "Reports": 8,
+        "Passed": true
+      },
+      "Tests": [
+        {
+          "Suite": "UnitTests",
+          "Total": 359,
+          "Passed": 359,
+          "Failed": 0,
+          "Executed": 359,
+          "TrxSha256": "70ad9c2b00ff142f7b9e1e12cdbcde6eda447e2eba778a5e1694fdd78938de81"
+        },
+        {
+          "Suite": "ContractTests",
+          "Total": 241,
+          "Passed": 241,
+          "Failed": 0,
+          "Executed": 241,
+          "TrxSha256": "7c17bdc435dae26f8a64ead15446bd9a2e7943f141d3eed3bc449f265783b1c0"
+        },
+        {
+          "Suite": "IntegrationTests",
+          "Total": 405,
+          "Passed": 405,
+          "Failed": 0,
+          "Executed": 405,
+          "TrxSha256": "f08f28a3bee8bbb8ed27d6b0e0cecb4006b7124fdd060b754ff95c27412dfc29"
+        },
+        {
+          "Suite": "PlatformTests",
+          "Total": 37,
+          "Passed": 37,
+          "Failed": 0,
+          "Executed": 37,
+          "TrxSha256": "ddf10721e45b6c7aa1b50a0beca1eba31524520533e919ebe833beece1c7dc1f"
+        }
+      ],
+      "AuditProjectCount": 11,
+      "KnownReportedAdvisories": 0,
+      "AuditSha256": "38d2596eeb6fa09fe5a0d0a81247eb2a46f1722c433bf1af40d965296df94139",
+      "NativeScenarios": [
+        {
+          "Scenario": "deterministic",
+          "Status": "PASS",
+          "ElapsedSeconds": 5.346088,
+          "RunId": "d0f38ee3-9723-4feb-bdd9-26843d080d99",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "routing",
+          "Status": "PASS",
+          "ElapsedSeconds": 37.4096446,
+          "RunId": "06527b39-f5e5-4ecf-822f-deea05958855",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "failures",
+          "Status": "PASS",
+          "ElapsedSeconds": 12.6148229,
+          "RunId": "219a3904-2d7d-47e2-a8c6-351ab62cb02d",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "cancellation",
+          "Status": "PASS",
+          "ElapsedSeconds": 2.0121688,
+          "RunId": "52e81a54-0d80-4b44-80b9-5c3d90640148",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "shutdown",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.8471757,
+          "RunId": "4b123599-1681-4c5a-af99-ad089deccd40",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "capacity",
+          "Status": "PASS",
+          "ElapsedSeconds": 3.6343368,
+          "RunId": "f3cdd3f1-5060-48f9-901f-2f0869a2bdaa",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "workspace",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.7926605,
+          "RunId": "f2153800-e4cf-4a5f-a3ef-10bb6c86055d",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "extensions",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.7162143,
+          "RunId": "2b01a568-6441-4e03-ad17-ddf5802517f7",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "recovery",
+          "Status": "PASS",
+          "ElapsedSeconds": 77.5620834,
+          "RunId": "480633fa-117f-4cb6-8e7a-25ffeba626c7",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "native-context",
+          "Status": "PASS",
+          "ElapsedSeconds": 2.4442506,
+          "RunId": "9408c0a7-78de-4704-91da-216d23e007e2",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "isolation",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.6553272,
+          "RunId": "7b20e29d-c2b1-452c-a329-352d2cfcb10c",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "embedded-consumer",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.5342472,
+          "RunId": "b0490c96-b682-4545-92c2-85ce0879b51a",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "retention",
+          "Status": "PASS",
+          "ElapsedSeconds": 2.0478225,
+          "RunId": "799afb7e-ec74-4f58-a848-a0c44ae917ed",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        },
+        {
+          "Scenario": "limits",
+          "Status": "PASS",
+          "ElapsedSeconds": 1.0075783,
+          "RunId": "226cbd44-3c72-4fd6-8e8c-5a68b19cdb94",
+          "RuntimeVersion": "10.0.14",
+          "SqliteVersion": "3.53.3",
+          "OperatingSystem": "Microsoft Windows 10.0.26100"
+        }
+      ],
+      "HostAssemblySha256": "96147ac03783c554809ffa62af7e09131296f6fa1722ef97cc9fccec68021e30",
+      "ScenarioManifestSha256": "bd10674001f4b3dd724eb1d690f0d5430ac7269d799319374cdb99bbc9eaa4af",
+      "Consumer": {
+        "Status": "PASS",
+        "Sessions": 2,
+        "Requests": 5,
+        "ReopenedRequests": 5
+      }
+    }
+  ],
+  "RequiredChecks": {
+    "allow_deletions": {
+      "enabled": false
+    },
+    "allow_force_pushes": {
+      "enabled": false
+    },
+    "enforce_admins": {
+      "enabled": true,
+      "url": "https://api.github.com/repos/monstertacle/monstertacle.multisession/branches/main/protection/enforce_admins"
+    },
+    "required_status_checks": {
+      "checks": [
+        {
+          "app_id": 15368,
+          "context": "quality (ubuntu-24.04)"
+        },
+        {
+          "app_id": 15368,
+          "context": "quality (windows-latest)"
+        },
+        {
+          "app_id": 15368,
+          "context": "guard (ubuntu-24.04)"
+        },
+        {
+          "app_id": 15368,
+          "context": "guard (windows-latest)"
+        },
+        {
+          "app_id": 15368,
+          "context": "canonical-consumer (ubuntu-24.04)"
+        },
+        {
+          "app_id": 15368,
+          "context": "canonical-consumer (windows-latest)"
+        }
+      ],
+      "contexts": [
+        "quality (ubuntu-24.04)",
+        "quality (windows-latest)",
+        "guard (ubuntu-24.04)",
+        "guard (windows-latest)",
+        "canonical-consumer (ubuntu-24.04)",
+        "canonical-consumer (windows-latest)"
+      ],
+      "contexts_url": "https://api.github.com/repos/monstertacle/monstertacle.multisession/branches/main/protection/required_status_checks/contexts",
+      "strict": true,
+      "url": "https://api.github.com/repos/monstertacle/monstertacle.multisession/branches/main/protection/required_status_checks"
+    }
+  }
+}

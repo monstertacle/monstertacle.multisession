@@ -12,4 +12,6 @@ public sealed class SessionOperationException : InvalidOperationException
 
     /// <summary>Gets the category, local identities and separately recorded execution evidence.</summary>
     public PublicError Failure { get; }
+    /// <summary>Gets optional safe operational diagnostics, separate from the durable error value.</summary>
+    public FailureDetails? Details { get; init; }
 }

@@ -136,20 +136,43 @@
       "monstertacle.multisession.common": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "[10.0.14, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.14, )",
+          "Monstertacle.SharpQrs": "[0.2.0-alpha.1, )"
         }
       },
       "monstertacle.multisession.linux": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[1.0.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
+        }
+      },
+      "monstertacle.multisession.providers.conversations": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
+        }
+      },
+      "monstertacle.multisession.providers.interactions": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
         }
       },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[1.0.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
+        }
+      },
+      "monstertacle.multisession.validationhost": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Linux": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Providers.Conversations": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Providers.Interactions": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.2, )"
         }
       },
       "Microsoft.Data.Sqlite": {
@@ -171,6 +194,12 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.14"
         }
+      },
+      "Monstertacle.SharpQrs": {
+        "type": "CentralTransitive",
+        "requested": "[0.2.0-alpha.1, )",
+        "resolved": "0.2.0-alpha.1",
+        "contentHash": "PuXg49yLAKcBZeKZrtUaMjzuSEuPbZRRUQX99FRKT7NpWs8dhMxF9Jmm/g8djudJgDtYrBVjQUB2YZ92xesFTw=="
       }
     },
     "net10.0-windows7.0": {
@@ -308,20 +337,43 @@
       "monstertacle.multisession.common": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "[10.0.14, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.14, )",
+          "Monstertacle.SharpQrs": "[0.2.0-alpha.1, )"
+        }
+      },
+      "monstertacle.multisession.providers.conversations": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
+        }
+      },
+      "monstertacle.multisession.providers.interactions": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
         }
       },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[1.0.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
+        }
+      },
+      "monstertacle.multisession.validationhost": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Providers.Conversations": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Providers.Interactions": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.2, )",
+          "Monstertacle.Multisession.Windows": "[0.2.0-alpha.2, )"
         }
       },
       "monstertacle.multisession.windows": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[1.0.0, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
         }
       },
       "Microsoft.Data.Sqlite": {
@@ -343,6 +395,12 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.14"
         }
+      },
+      "Monstertacle.SharpQrs": {
+        "type": "CentralTransitive",
+        "requested": "[0.2.0-alpha.1, )",
+        "resolved": "0.2.0-alpha.1",
+        "contentHash": "PuXg49yLAKcBZeKZrtUaMjzuSEuPbZRRUQX99FRKT7NpWs8dhMxF9Jmm/g8djudJgDtYrBVjQUB2YZ92xesFTw=="
       }
     }
   }

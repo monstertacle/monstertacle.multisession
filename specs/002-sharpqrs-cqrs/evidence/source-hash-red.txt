@@ -1,0 +1,5 @@
+Exception: /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/quality/Test-SourceHash.Tests.ps1:25
+Line |
+  25 |  … sh) -eq $before) { throw "Source hash omitted package input: $file" }
+     |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Source hash omitted package input: codemetr-cover.json

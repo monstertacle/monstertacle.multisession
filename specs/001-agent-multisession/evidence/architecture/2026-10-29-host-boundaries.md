@@ -1,0 +1,18 @@
+# T094 Kapazität, Workspace, Shutdown und Größenlimits
+
+Bestandsprüfung2026-10-29T19:04:34Z an242c5f4. ProbeHost SHA256
+032c9bdbbc4b1b73c29bcfb40fec9e664f8780a333a76f27b9898dbb7aaee482,
+ScenarioRunner4611cb37cd7e54deb5aed818417aa56005d7165b10b62fddf68f05c39aac7728.
+ÖffentlicheRuntime-/Storeverträge undProbeProvider/Trace/Barrier vorhanden; neueSzenarien
+werdennurNOT RUN gemeldet. Vorangegangene4Szenarien/976Gesamttestsgrün.
+
+Entscheidung vorErweiterung: dieselbenHostportsnutzen, jedeAbnahme eigeneFlowklasse.
+capacity:2gehalteneRunning,danach8gleichzeitigeEingängebeiQueue3 =>3weitereangenommen/
+5QueueFull,insgesamt5von10. workspace:2gleicheSchreibkeysund1unabhängigerKey,
+2überlappendeSendsnurinverschiedenenKeys, dritterFIFOdanach. shutdown:absichtlich
+unkooperativerProvider,2Queued =>Cancelled/NotStarted,1UnknownmitReservationnach
+Stop/Reopen,FristabStopgemessen<=10s,späterProviderabschlussdarfkeinenErfolgschreiben.
+limits:UTF8Bytegrenzeninklusive/exklusive,leere/ungültigeNachrichtenkeinReceipt,
+AusgabeüberLimitFailedstattTrunkierung,alteHistoryidentisch. KeineBibliotheksregel-
+änderungohnezusätzlichenRegressionsred. ErstCLI-Red, dannGreen, DBzählungunabhängig
+prüfen. ShutdownmussgesicherteUnknownbelegungzulassenstattfalsch0zusichern.

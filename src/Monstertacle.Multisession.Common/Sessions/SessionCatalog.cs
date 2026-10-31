@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using Monstertacle.Multisession.Contracts;
 
 namespace Monstertacle.Multisession.Sessions;
@@ -7,41 +6,40 @@ namespace Monstertacle.Multisession.Sessions;
 public sealed class SessionCatalog : ISessions
 {
     private readonly ISessionStore _store;
-    private readonly FrozenDictionary<string, ProviderRegistration> _registrations;
-    private readonly FrozenDictionary<string, AgentProfile> _profiles;
+    private readonly TimeProvider _clock;
+    private readonly ProviderCatalog _configuration;
 
     /// <summary>Composes session catalog dependencies without selecting a vendor by name.</summary>
-    public SessionCatalog(ISessionStore store, IReadOnlyList<ProviderRegistration> registrations, IReadOnlyList<AgentProfile> profiles)
+    public SessionCatalog(ISessionStore store, IReadOnlyList<ProviderRegistration> registrations, IReadOnlyList<AgentProfile> profiles, TimeProvider? clock = null)
     {
         ArgumentNullException.ThrowIfNull(store);
         ArgumentNullException.ThrowIfNull(registrations);
         ArgumentNullException.ThrowIfNull(profiles);
         _store = store;
-        _registrations = registrations.ToFrozenDictionary(item => item.ProviderId, StringComparer.Ordinal);
-        _profiles = profiles.ToFrozenDictionary(item => item.AgentProfileId, StringComparer.Ordinal);
+        _clock = clock ?? TimeProvider.System;
+        _configuration = new(registrations, profiles);
     }
 
     /// <inheritdoc />
     public async ValueTask<SessionSnapshot> CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
     {
-        if (!_profiles.TryGetValue(agentProfileId, out AgentProfile? profile))
-        {
-            throw new SessionOperationException(new PublicError(ErrorCode.NotFound));
-        }
-
-        if (!_registrations.TryGetValue(profile.ProviderId, out ProviderRegistration? registration))
-        {
-            throw new SessionOperationException(new PublicError(ErrorCode.InvalidConfiguration));
-        }
+        AgentProfile profile = _configuration.GetProfile(agentProfileId);
+        ProviderRegistration registration = _configuration.GetProvider(profile.ProviderId);
         ValidateExecution(profile.ExecutionKind, registration.Provider.Capabilities, context);
         Guid sessionId = Guid.NewGuid();
         ProviderSessionContext providerContext = new(sessionId, profile.ModelId, profile.ExecutionKind, context, profile.Settings.Values);
-        SessionSnapshot session = new(sessionId, registration.ProviderId, profile.AgentProfileId, providerContext, null);
+        DateTimeOffset createdUtc = _clock.GetUtcNow().ToUniversalTime();
+        SessionSnapshot session = new(sessionId, registration.ProviderId, profile.AgentProfileId, providerContext, null)
+        {
+            CreatedUtc = createdUtc,
+            UpdatedUtc = createdUtc,
+            SettingsRevision = profile.Settings.Revision,
+        };
         await _store.CreateSessionAsync(session, cancellationToken);
         ProviderBinding binding;
         try
         {
-            binding = await registration.Provider.OpenAsync(providerContext, cancellationToken);
+            binding = await registration.Provider.OpenAsync(providerContext, cancellationToken).AsTask().WaitAsync(cancellationToken);
         }
         catch (Exception failure)
         {
@@ -56,29 +54,28 @@ public sealed class SessionCatalog : ISessions
 
         try
         {
-            await _store.CommitSessionBindingAsync(sessionId, binding, cancellationToken);
+            return await _store.CommitSessionBindingAsync(sessionId, binding, cancellationToken);
         }
         catch (Exception)
         {
             throw await BlockUncertainOpeningAsync(sessionId, ErrorCode.StorageUnavailable);
         }
-        return session with { Binding = binding, Lifecycle = SessionLifecycle.Open };
     }
     /// <inheritdoc />
     public ValueTask<SessionSnapshot?> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken)
         => _store.GetSessionAsync(sessionId, cancellationToken);
     /// <inheritdoc />
     public ValueTask<Page<SessionSnapshot>> ListSessionsAsync(int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionQueries(_store).ListSessionsAsync(pageSize, cursor, cancellationToken);
     /// <inheritdoc />
     public ValueTask<Page<HistoryEntry>> ReadHistoryAsync(Guid sessionId, int pageSize, string? cursor, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionQueries(_store).ReadHistoryAsync(sessionId, pageSize, cursor, cancellationToken);
     /// <inheritdoc />
     public ValueTask CloseSessionAsync(Guid sessionId, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionClosure(_store, _clock).CloseAsync(sessionId, cancellationToken);
     /// <inheritdoc />
     public ValueTask DeleteSessionAsync(Guid sessionId, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => new SessionDeletion(_store, _clock).DeleteAsync(sessionId, cancellationToken);
 
     private async ValueTask<SessionOperationException> BlockUncertainOpeningAsync(Guid sessionId, ErrorCode code)
     {

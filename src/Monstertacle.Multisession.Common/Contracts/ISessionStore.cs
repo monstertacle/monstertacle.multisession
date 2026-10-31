@@ -1,16 +1,18 @@
 namespace Monstertacle.Multisession.Contracts;
 
 /// <summary>Atomic domain writes; provider I/O never occurs inside these transactions.</summary>
-public interface ISessionStore : ISessionQueryStore
+public interface ISessionStore : ISessionQueryStore, IStoreBootstrap, IRequestCancellationStore, ISessionClosureStore, ISessionRetentionStore, ISessionStatisticsStore, IAsyncDisposable
 {
     /// <summary>Persists local session identity before an external open attempt.</summary>
     ValueTask CreateSessionAsync(SessionSnapshot session, CancellationToken cancellationToken);
     /// <summary>Persists established native identity without replacing the local session.</summary>
-    ValueTask CommitSessionBindingAsync(Guid sessionId, ProviderBinding binding, CancellationToken cancellationToken);
+    ValueTask<SessionSnapshot> CommitSessionBindingAsync(Guid sessionId, ProviderBinding binding, CancellationToken cancellationToken);
     /// <summary>Blocks further execution after an uncertain native open without deleting local identity.</summary>
     ValueTask MarkSessionBlockedAsync(Guid sessionId, SessionBlockReason reason, CancellationToken cancellationToken);
+    /// <summary>Commits checked configuration/native availability and its sanitized cause, preserving other restrictions and recovery priority.</summary>
+    ValueTask CommitConfigurationAvailabilityAsync(Guid sessionId, bool available, CancellationToken cancellationToken, ErrorCode? failure = null);
     /// <summary>Commits input, sequence and queue capacity atomically.</summary>
-    ValueTask<RequestReceipt> CommitAcceptanceAsync(SubmitRequest request, int maxQueuedRequests, CancellationToken cancellationToken);
+    ValueTask<RequestReceipt> CommitAcceptanceAsync(RequestAcceptance acceptance, int maxQueuedRequests, CancellationToken cancellationToken);
     /// <summary>Reserves an eligible FIFO head, respecting session, workspace and slot occupancy.</summary>
     ValueTask<ExecutionReservation?> TryReserveHeadAsync(int maxConcurrentRequests, CancellationToken cancellationToken);
     /// <summary>Persists acknowledged native identity before the adapter can continue.</summary>
@@ -20,5 +22,5 @@ public interface ISessionStore : ISessionQueryStore
     /// <summary>Records an uncertain result without releasing its reservation.</summary>
     ValueTask MarkUncertainAsync(Guid dispatchId, PublicError failure, CancellationToken cancellationToken);
     /// <summary>Applies a revision-bound resolution without changing failure into success.</summary>
-    ValueTask ResolveReservationAsync(RecoveryDecision decision, CancellationToken cancellationToken);
+    ValueTask ResolveRecoveryAsync(RecoveryDecision decision, ProviderBinding? confirmedBinding, CancellationToken cancellationToken);
 }

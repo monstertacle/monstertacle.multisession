@@ -13,6 +13,10 @@ public static class ProviderReplyPolicy
         {
             return Reject(reply, failure.Code);
         }
+        if (failure?.Code == ErrorCode.ExecutionFailed && !string.IsNullOrEmpty(reply.Output))
+        {
+            return Reject(reply, ErrorCode.ExecutionFailed);
+        }
 
         if (reply.Error?.Code == ErrorCode.OutputLimitExceeded)
         {

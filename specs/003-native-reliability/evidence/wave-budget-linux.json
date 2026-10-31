@@ -1,0 +1,130 @@
+{
+  "RecordedUtc": "2026-10-30T12:57:51.4040432+00:00",
+  "Run": {
+    "SourceHash": "8d25c9a067989110c00327af988fff8969c35fb601b8100d0e6f07a224f254e9",
+    "Platform": "linux",
+    "StartedUtc": "2026-10-30T12:53:51.7552223+00:00"
+  },
+  "QualityExitCode": 0,
+  "Tests": [
+    {
+      "Suite": "UnitTests",
+      "Total": 372,
+      "Passed": 372,
+      "Failed": 0,
+      "NotExecuted": 0
+    },
+    {
+      "Suite": "IntegrationTests",
+      "Total": 408,
+      "Passed": 408,
+      "Failed": 0,
+      "NotExecuted": 0
+    },
+    {
+      "Suite": "ContractTests",
+      "Total": 252,
+      "Passed": 252,
+      "Failed": 0,
+      "NotExecuted": 0
+    },
+    {
+      "Suite": "PlatformTests",
+      "Total": 54,
+      "Passed": 54,
+      "Failed": 0,
+      "NotExecuted": 0
+    }
+  ],
+  "ProductCoverage": {
+    "Platform": "linux",
+    "ThresholdPercent": 87.0,
+    "TotalLines": 3144,
+    "CoveredLines": 3074,
+    "Percent": 97.7735,
+    "Modules": [
+      "Monstertacle.Multisession.Common",
+      "Monstertacle.Multisession.Linux",
+      "Monstertacle.Multisession.Providers.Gemini",
+      "Monstertacle.Multisession.Providers.OpenAI",
+      "Monstertacle.Multisession.Storage.Sqlite"
+    ],
+    "Reports": 8,
+    "Passed": true
+  },
+  "Cover": {
+    "Version": "0.1.1",
+    "Passed": true,
+    "Complete": true,
+    "Summary": {
+      "files": 262,
+      "types": 277,
+      "members": 567,
+      "line": 95.5,
+      "branch": 82.7,
+      "coveredLines": 3876,
+      "coverableLines": 4055,
+      "coveredBranches": 2460,
+      "branches": 2974,
+      "diffLine": 95.6,
+      "diffBranch": 78.8,
+      "violations": 0,
+      "new": 0,
+      "worsened": 0,
+      "baselined": 0,
+      "stale": 0,
+      "tightenable": 0,
+      "unreported": 0,
+      "excluded": 0,
+      "skipped": 6,
+      "unmapped": 0,
+      "listed": 0,
+      "omitted": 0
+    },
+    "Violations": [],
+    "InputErrors": []
+  },
+  "Static": {
+    "Version": "0.1.0",
+    "Passed": true,
+    "Summary": {
+      "files": 489,
+      "types": 509,
+      "violations": 0,
+      "new": 0,
+      "worsened": 0,
+      "baselined": 0,
+      "stale": 0,
+      "parseErrors": 0,
+      "skipped": 0
+    },
+    "CompilationErrorCount": 5669,
+    "Limit": "selected types plus available measurable partial parts; platform references only"
+  },
+  "Artifacts": [
+    {
+      "Path": "/home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/quality/linux/e4894c96169f4c92a77edbb2eefce608/run.json",
+      "Sha256": "ebb95cdcd77d8ae2f1443135f7f3c5f1a10ceb9f546ea0c1e469f611c41bf201"
+    },
+    {
+      "Path": "/home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/quality/linux/e4894c96169f4c92a77edbb2eefce608/coverage-summary.json",
+      "Sha256": "5722469a88f37d5aafd34487e29115f5362d9a997406d057f5e3fdc4a2150dbc"
+    },
+    {
+      "Path": "/home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/quality/linux/e4894c96169f4c92a77edbb2eefce608/codemetr-cover.json",
+      "Sha256": "1fb1ab62e22bda6511b16170f29143d329ebbe38a1af7a6a470c878bfca27c14"
+    },
+    {
+      "Path": "/home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/quality/linux/e4894c96169f4c92a77edbb2eefce608/dependency-audit.json",
+      "Sha256": "35b19b369eb48ab8db2c6bc1d5d11d03aefdcb1832005da6ab0617dbfffa8843"
+    },
+    {
+      "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/static-wave-budget.json",
+      "Sha256": "06e3c031a529dca7063338363e67f1b86f045450a41db013e19bea0f1be5feda"
+    },
+    {
+      "Path": "/home/user1/dev/.agenttemp/multisession-sharpqrs-inspection/quality-wave-budget.log",
+      "Sha256": "5dd211d4cb71b2da0578b19de9e313a2e1e73eb999c127b2c62db9dab4088083"
+    }
+  ]
+}

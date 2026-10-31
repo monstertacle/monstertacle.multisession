@@ -1,0 +1,5 @@
+{
+  "SourceHash": "d51bf9f9efd33341e34037a6a027cac887abb117111fa6afa2d56d66d6d37cbf",
+  "RequestedUtc": "2026-10-29T23:38:13Z",
+  "Purpose": "Native hour with kernel exit barrier and isolated independent I/O test cases"
+}

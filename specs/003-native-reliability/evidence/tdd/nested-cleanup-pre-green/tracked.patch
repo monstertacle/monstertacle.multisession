@@ -1,0 +1,736 @@
+diff --git a/examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj b/examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj
+index cabef2b..227d987 100644
+--- a/examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj
++++ b/examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj
+@@ -7,6 +7,8 @@
+     <IsPackable>false</IsPackable>
+   </PropertyGroup>
+   <ItemGroup>
++    <InternalsVisibleTo Include="Monstertacle.Multisession.UnitTests" />
++    <InternalsVisibleTo Include="Monstertacle.Multisession.PlatformTests" />
+     <Compile Include="../../tests/Monstertacle.Multisession.IntegrationTests/Fixtures/ConsumerOwnedProvider.cs" Link="Consumer/ConsumerOwnedProvider.cs" />
+     <Compile Include="../../tests/Monstertacle.Multisession.IntegrationTests/Fixtures/AdmissionProvider.cs" Link="Consumer/AdmissionProvider.cs" />
+     <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/ThirdContractProvider.cs" Link="Consumer/ThirdContractProvider.cs" />
+diff --git a/examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs b/examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs
+index 1e8d465..41a73a8 100644
+--- a/examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs
++++ b/examples/Monstertacle.Multisession.ValidationHost/ProbeHost.cs
+@@ -18,8 +18,22 @@ internal sealed class ProbeHost(ISessionStore store, SessionRuntime runtime, Run
+         IReadOnlyList<AgentProfile> profiles = configuredProfiles ?? providers.Select(item => new AgentProfile(item.ProviderId, item.ProviderId, "model-" + item.ProviderId,
+             kind, new("frozen", new Dictionary<string, string>()))).ToArray();
+         SessionRuntime runtime = new(store, state.Lease, providers, profiles);
++        return await StartPreparedAsync(store, runtime, options);
++    }
++
++    internal static async Task<ProbeHost> StartPreparedAsync(ISessionStore store, SessionRuntime runtime, RuntimeOptions options)
++    {
+         try { await runtime.StartAsync(options, CancellationToken.None); return new(store, runtime, options); }
+-        catch { await runtime.DisposeAsync(); await store.DisposeAsync(); throw; }
++        catch (Exception primary)
++        {
++            ValidationProbeException failure = ValidationProbeException.FromException(primary);
++            try { await runtime.DisposeAsync(); }
++            catch (Exception cleanup) { failure = failure.WithCleanup(cleanup); }
++            try { await store.DisposeAsync(); }
++            catch (Exception cleanup) { failure = failure.WithCleanup(cleanup); }
++            if (failure.CleanupFailures.Count != 0) { throw failure; }
++            throw;
++        }
+     }
+     internal ValueTask<SessionSnapshot> CreateAsync(string profile, string? workspace = null, string? directory = null)
+         => Runtime.Sessions.CreateSessionAsync(profile, new(directory, workspace), CancellationToken.None);
+diff --git a/examples/Monstertacle.Multisession.ValidationHost/Program.cs b/examples/Monstertacle.Multisession.ValidationHost/Program.cs
+index 8ec6782..803b518 100644
+--- a/examples/Monstertacle.Multisession.ValidationHost/Program.cs
++++ b/examples/Monstertacle.Multisession.ValidationHost/Program.cs
+@@ -8,6 +8,7 @@ internal static class Program
+         string? mode = args.Length == 0 ? null : args[0];
+         return mode switch
+         {
++            StoreSchedulerProbe.Argument when args.Length == 2 => await StoreSchedulerProbe.RunAsync(args[1]),
+             CrashProtocol.WorkerArgument => await CrashWorker.RunAsync(args),
+             CrashProtocol.NativeWorkerArgument => await CrashWorker.RunAsync(args, native: true),
+             DiskFullProtocol.WorkerArgument => await DiskFullWorker.RunAsync(args),
+diff --git a/examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs b/examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs
+index 7c6375e..7917033 100644
+--- a/examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs
++++ b/examples/Monstertacle.Multisession.ValidationHost/ScenarioRunner.cs
+@@ -1,6 +1,5 @@
+ using System.Collections.Frozen;
+ using System.Text.Json;
+-using Monstertacle.Multisession.Contracts;
+ 
+ namespace Monstertacle.Multisession.ValidationHost;
+ 
+@@ -44,12 +43,23 @@ internal static class ScenarioRunner
+         }
+         try
+         {
+-            await using ValidationRunState state = await ValidationStateRoot.CreateRunAsync(options.StateRoot, CancellationToken.None);
++            ValidationRunState state = await ValidationStateRoot.CreateRunAsync(options.StateRoot, CancellationToken.None);
++            return await ExecuteOwnedAsync(options.Scenario, state, execute);
++        }
++        catch (Exception failure) { return ValidationReport.FromException(options.Scenario, failure); }
++    }
++
++    internal static async Task<ValidationReport> ExecuteOwnedAsync(string scenario, ValidationRunState state, Func<ValidationRunState, Task> execute)
++    {
++        ValidationReport report;
++        try
++        {
+             await execute(state);
+-            return ValidationReport.Pass(options.Scenario, state.RunId);
++            report = ValidationReport.Pass(scenario, state.RunId);
+         }
+-        catch (ValidationProbeException failure) { return ValidationReport.Fail(options.Scenario, failure.Code); }
+-        catch (SessionOperationException failure) { return ValidationReport.Fail(options.Scenario, failure.Failure.Code.ToString()); }
+-        catch (Exception) { return ValidationReport.Fail(options.Scenario, "ScenarioExecutionFailed"); }
++        catch (Exception failure) { report = ValidationReport.FromException(scenario, failure) with { RunId = state.RunId }; }
++        try { await state.DisposeAsync(); }
++        catch (Exception cleanup) { report = report.WithCleanup(cleanup); }
++        return report;
+     }
+ }
+diff --git a/examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs b/examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs
+index 69e4759..d0d38d8 100644
+--- a/examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs
++++ b/examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs
+@@ -1,8 +1,21 @@
++using Monstertacle.Multisession.Contracts;
++
+ namespace Monstertacle.Multisession.ValidationHost;
+ 
+-internal sealed class ValidationProbeException(string code) : Exception("Validation probe did not pass.")
++internal sealed class ValidationProbeException(string code, ValidationFailure? failure = null,
++    IReadOnlyList<ValidationFailure>? cleanupFailures = null) : Exception("Validation probe did not pass.")
+ {
+     internal string Code { get; } = code;
++    internal ValidationFailure? Failure { get; } = failure;
++    internal IReadOnlyList<ValidationFailure> CleanupFailures { get; } = cleanupFailures ?? [];
++
++    internal static ValidationProbeException FromException(Exception failure) => failure as ValidationProbeException
++        ?? new(failure is SessionOperationException operation ? operation.Failure.Code.ToString() : "ScenarioExecutionFailed",
++            ValidationFailure.FromException(failure));
++
++    internal ValidationProbeException WithCleanup(Exception cleanup) => new(Code, Failure,
++        [.. CleanupFailures, ValidationFailure.FromException(cleanup),
++            .. (cleanup as ValidationProbeException)?.CleanupFailures ?? []]);
+ }
+ 
+ internal static class ValidationCheck
+diff --git a/examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs b/examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs
+index b2f079b..df588f2 100644
+--- a/examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs
++++ b/examples/Monstertacle.Multisession.ValidationHost/ValidationReport.cs
+@@ -1,5 +1,7 @@
+ using System.Runtime.InteropServices;
++using System.Text.Json.Serialization;
+ using Microsoft.Data.Sqlite;
++using Monstertacle.Multisession.Contracts;
+ 
+ namespace Monstertacle.Multisession.ValidationHost;
+ 
+@@ -7,11 +9,28 @@ internal sealed record ValidationReport(string Scenario, string Status, string R
+ {
+     public int ProcessId { get; } = Environment.ProcessId;
+     public Guid? RunId { get; init; }
++    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
++    public ValidationFailure? Failure { get; init; }
++    public IReadOnlyList<ValidationFailure> CleanupFailures { get; init; } = [];
+     public string? OperatingSystem { get; init; }
+     public string? RuntimeVersion { get; init; }
+     public string? SqliteVersion { get; init; }
+     public int ExitCode => Status switch { "PASS" => 0, "FAIL" => 2, _ => 3 };
+     internal static ValidationReport Fail(string scenario, string reason) => new(scenario, "FAIL", reason);
++    internal static ValidationReport FromException(string scenario, Exception failure)
++        => failure is ValidationProbeException probe
++            ? Fail(scenario, probe.Code) with { Failure = probe.Failure, CleanupFailures = probe.CleanupFailures }
++            : Fail(scenario, failure is SessionOperationException operation ? operation.Failure.Code.ToString() : "ScenarioExecutionFailed")
++                with
++            { Failure = ValidationFailure.FromException(failure) };
++
++    internal ValidationReport WithCleanup(Exception cleanup) => this with
++    {
++        Status = "FAIL",
++        Reason = Status == "PASS" ? "ScenarioCleanupFailed" : Reason,
++        CleanupFailures = [.. CleanupFailures, ValidationFailure.FromException(cleanup),
++            .. (cleanup as ValidationProbeException)?.CleanupFailures ?? []],
++    };
+     internal static ValidationReport NotRun(string scenario, string reason) => new(scenario, "NOT RUN", reason);
+     internal static ValidationReport Pass(string scenario, Guid runId) => new(scenario, "PASS", "Completed")
+     {
+diff --git a/examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs b/examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs
+index 6223d76..6eda0e8 100644
+--- a/examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs
++++ b/examples/Monstertacle.Multisession.ValidationHost/WaveProbeFlow.cs
+@@ -15,7 +15,25 @@ internal static class WaveProbeFlow
+         }
+         ProbeProvider a = new("probe-alpha", trace, SendAsync);
+         ProbeProvider b = new("probe-beta", trace, SendAsync);
+-        await using ProbeHost host = await ProbeHost.StartAsync(state, [new("alpha", "probe-alpha", 1, a), new("beta", "probe-beta", 1, b)]);
++        ProbeHost host = await ProbeHost.StartAsync(state, [new("alpha", "probe-alpha", 1, a), new("beta", "probe-beta", 1, b)]);
++        await ExecuteOwnedAsync(host, trace, barrier, scenario);
++    }
++
++    internal static async Task ExecuteOwnedAsync(ProbeHost host, ProbeTrace trace, ProbeBarrier barrier, string scenario)
++    {
++        try { await ExecuteWorkloadAsync(host, trace, barrier, scenario); }
++        catch (Exception primary)
++        {
++            try { await host.DisposeAsync(); }
++            catch (Exception cleanup) { throw ValidationProbeException.FromException(primary).WithCleanup(cleanup); }
++            throw;
++        }
++        try { await host.DisposeAsync(); }
++        catch (Exception cleanup) { throw new ValidationProbeException("ScenarioCleanupFailed", cleanupFailures: [ValidationFailure.FromException(cleanup)]); }
++    }
++
++    private static async Task ExecuteWorkloadAsync(ProbeHost host, ProbeTrace trace, ProbeBarrier barrier, string scenario)
++    {
+         List<SessionSnapshot> sessions = [];
+         for (int index = 0; index < 10; index++) { sessions.Add(await host.CreateAsync(index % 2 == 0 ? "alpha" : "beta")); }
+         List<AcceptedProbeRequest> accepted = [];
+@@ -39,7 +57,7 @@ internal static class WaveProbeFlow
+                 }
+             }
+         }
+-        catch (SessionOperationException failure) { throw new ValidationProbeException("WaveAdmission_" + failure.Failure.Code); }
++        catch (SessionOperationException failure) { throw new ValidationProbeException("WaveAdmission_" + failure.Failure.Code, ValidationFailure.FromException(failure)); }
+         finally { barrier.Release.TrySetResult(); }
+         foreach (AcceptedProbeRequest item in accepted)
+         {
+diff --git a/src/Monstertacle.Multisession.Common/Contracts/AdmissionCancellationException.cs b/src/Monstertacle.Multisession.Common/Contracts/AdmissionCancellationException.cs
+index 17049ad..f891fc3 100644
+--- a/src/Monstertacle.Multisession.Common/Contracts/AdmissionCancellationException.cs
++++ b/src/Monstertacle.Multisession.Common/Contracts/AdmissionCancellationException.cs
+@@ -8,4 +8,6 @@ public sealed class AdmissionCancellationException : OperationCanceledException
+         : base(failure.Code.ToString(), null, cancellationToken) => Failure = failure;
+     /// <summary>Gets local acceptance status and candidate identity, when already generated.</summary>
+     public PublicError Failure { get; }
++    /// <summary>Gets optional safe operational diagnostics without changing cancellation or acceptance certainty.</summary>
++    public FailureDetails? Details { get; init; }
+ }
+diff --git a/src/Monstertacle.Multisession.Common/Contracts/SessionOperationException.cs b/src/Monstertacle.Multisession.Common/Contracts/SessionOperationException.cs
+index 5a4830c..9bfdaa8 100644
+--- a/src/Monstertacle.Multisession.Common/Contracts/SessionOperationException.cs
++++ b/src/Monstertacle.Multisession.Common/Contracts/SessionOperationException.cs
+@@ -12,4 +12,6 @@ public sealed class SessionOperationException : InvalidOperationException
+ 
+     /// <summary>Gets the category, local identities and separately recorded execution evidence.</summary>
+     public PublicError Failure { get; }
++    /// <summary>Gets optional safe operational diagnostics, separate from the durable error value.</summary>
++    public FailureDetails? Details { get; init; }
+ }
+diff --git a/src/Monstertacle.Multisession.Common/Requests/RequestAdmission.cs b/src/Monstertacle.Multisession.Common/Requests/RequestAdmission.cs
+index 5cb6857..951bd23 100644
+--- a/src/Monstertacle.Multisession.Common/Requests/RequestAdmission.cs
++++ b/src/Monstertacle.Multisession.Common/Requests/RequestAdmission.cs
+@@ -28,6 +28,7 @@ public sealed class RequestAdmission : IRequests
+         Guid? candidateId = null;
+         bool committing = false;
+         Task<RequestReceipt>? pending = null;
++        FailureStage stage = FailureStage.AdmissionLookup;
+         try
+         {
+             execution.Token.ThrowIfCancellationRequested();
+@@ -35,6 +36,7 @@ public sealed class RequestAdmission : IRequests
+             if (RequestSubmissionRules.Validate(request, session, _options) is { } failure) { throw new SessionOperationException(failure); }
+             candidateId = Guid.NewGuid();
+             committing = true;
++            stage = FailureStage.AdmissionCommit;
+             ValueTask<RequestReceipt> operation = _store.CommitAcceptanceAsync(new(candidateId.Value, request), _options.MaxQueuedRequests, execution.Token);
+             if (operation.IsCompletedSuccessfully) { return ValidateReceipt(operation.Result, candidateId.Value); }
+             pending = operation.AsTask();
+@@ -45,20 +47,21 @@ public sealed class RequestAdmission : IRequests
+             if (pending is { IsCompletedSuccessfully: true }) { return ValidateReceipt(pending.Result, candidateId!.Value); }
+             AdmissionStatus status = !committing || failure is AdmissionCancellationException { Failure.AdmissionStatus: AdmissionStatus.NotAccepted }
+                 ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown;
++            FailureDetails details = (failure as AdmissionCancellationException)?.Details ?? new(stage);
+             if (cancellationToken.IsCancellationRequested)
+             {
+-                throw new AdmissionCancellationException(Error(ErrorCode.Cancelled, request, candidateId, status), cancellationToken);
++                throw new AdmissionCancellationException(Error(ErrorCode.Cancelled, request, candidateId, status), cancellationToken) { Details = details };
+             }
+-            throw new SessionOperationException(Error(deadline.IsCancellationRequested ? ErrorCode.AdmissionTimedOut : ErrorCode.StorageUnavailable, request, candidateId, status));
++            throw new SessionOperationException(Error(deadline.IsCancellationRequested ? ErrorCode.AdmissionTimedOut : ErrorCode.StorageUnavailable, request, candidateId, status)) { Details = details };
+         }
+         catch (SessionOperationException failure)
+         {
+             AdmissionStatus status = !committing || failure.Failure.AdmissionStatus == AdmissionStatus.NotAccepted ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown;
+-            throw new SessionOperationException(Error(failure.Failure.Code, request, candidateId, status));
++            throw new SessionOperationException(Error(failure.Failure.Code, request, candidateId, status)) { Details = failure.Details ?? new(stage) };
+         }
+         catch (Exception)
+         {
+-            throw new SessionOperationException(Error(ErrorCode.StorageUnavailable, request, candidateId, committing ? AdmissionStatus.Unknown : AdmissionStatus.NotAccepted));
++            throw new SessionOperationException(Error(ErrorCode.StorageUnavailable, request, candidateId, committing ? AdmissionStatus.Unknown : AdmissionStatus.NotAccepted)) { Details = new(stage) };
+         }
+     }
+ 
+diff --git a/src/Monstertacle.Multisession.Common/RuntimeLifecycle.cs b/src/Monstertacle.Multisession.Common/RuntimeLifecycle.cs
+index 4b91a68..8e63ed5 100644
+--- a/src/Monstertacle.Multisession.Common/RuntimeLifecycle.cs
++++ b/src/Monstertacle.Multisession.Common/RuntimeLifecycle.cs
+@@ -80,7 +80,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
+             _state = RuntimeState.Faulted;
+             if (prepared) { await CleanupAsync(); }
+             cancellationToken.ThrowIfCancellationRequested();
+-            if (startupFailure is SessionOperationException known) { throw new SessionOperationException(known.Failure); }
++            if (startupFailure is SessionOperationException known) { throw new SessionOperationException(known.Failure) { Details = known.Details }; }
+             throw Error(ErrorCode.InvalidConfiguration);
+         }
+         finally { _shutdown.Startup!.TrySetResult(); }
+diff --git a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteStoreFactory.cs b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteStoreFactory.cs
+index 01fb5f6..3f01bba 100644
+--- a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteStoreFactory.cs
++++ b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteStoreFactory.cs
+@@ -25,16 +25,22 @@ public static class SqliteStoreFactory
+         {
+             throw new SessionOperationException(new(ErrorCode.InvalidConfiguration));
+         }
++        FailureStage stage = FailureStage.StorePreparation;
+         try
+         {
+             await lease.PrepareFileAsync(SqliteConnectionPolicy.DatabaseFileName, mode, cancellationToken);
+             string path = Path.Combine(lease.StateDirectory, SqliteConnectionPolicy.DatabaseFileName);
+-            if (mode == StateFileMode.OpenExisting) { await SqliteStorePreflight.ValidateAsync(path, lease, trustScopeId, cancellationToken); }
++            if (mode == StateFileMode.OpenExisting)
++            {
++                stage = FailureStage.StorePreflight;
++                await SqliteStorePreflight.ValidateAsync(path, lease, trustScopeId, cancellationToken);
++            }
++            stage = FailureStage.StoreOpen;
+             return await Task.Run(() => OpenValidated(path, lease, trustScopeId, options, mode, cancellationToken), cancellationToken);
+         }
+         catch (OperationCanceledException) { throw; }
+-        catch (SessionOperationException failure) { throw new SessionOperationException(failure.Failure); }
+-        catch (Exception) { throw new SessionOperationException(new(ErrorCode.StorageUnavailable)); }
++        catch (SessionOperationException failure) { throw new SessionOperationException(failure.Failure) { Details = failure.Details ?? new(stage) }; }
++        catch (Exception failure) { throw StorageFailurePolicy.Normalize(failure, true, false, cancellationToken, stage); }
+     }
+ 
+     private static SqliteSessionStore OpenValidated(string path, IStateDirectoryLease lease, Guid trustScopeId, RuntimeOptions options, StateFileMode mode, CancellationToken cancellationToken)
+diff --git a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteTransactions.cs b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteTransactions.cs
+index a871511..0248a7c 100644
+--- a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteTransactions.cs
++++ b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteTransactions.cs
+@@ -1,4 +1,5 @@
+ using Microsoft.Data.Sqlite;
++using Monstertacle.Multisession.Contracts;
+ 
+ namespace Monstertacle.Multisession.Storage.Sqlite;
+ 
+@@ -26,7 +27,8 @@ internal static class SqliteTransactions
+                 try { transaction.Rollback(); noWrite = true; }
+                 catch (Exception) { noWrite = false; }
+             }
+-            throw StorageFailurePolicy.Normalize(failure, noWrite, admission, token);
++            throw StorageFailurePolicy.Normalize(failure, noWrite, admission, token,
++                committing ? FailureStage.StoreCommit : FailureStage.StoreTransaction);
+         }
+         finally { transaction?.Dispose(); }
+     }
+diff --git a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWork.cs b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWork.cs
+index da0cd19..3beed2e 100644
+--- a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWork.cs
++++ b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWork.cs
+@@ -44,7 +44,7 @@ internal sealed class SqliteWork<T> : ISqliteWork
+     {
+         if (Interlocked.CompareExchange(ref _state, _finished, _waiting) == _waiting)
+         {
+-            _completion.TrySetException(StorageFailurePolicy.Normalize(new OperationCanceledException(_token), true, _admission, _token));
++            _completion.TrySetException(StorageFailurePolicy.Normalize(new OperationCanceledException(_token), true, _admission, _token, FailureStage.StoreQueue));
+         }
+     }
+ 
+diff --git a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWorkQueue.cs b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWorkQueue.cs
+index 2af6c11..0cd53b3 100644
+--- a/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWorkQueue.cs
++++ b/src/Monstertacle.Multisession.Storage.Sqlite/SqliteWorkQueue.cs
+@@ -1,4 +1,4 @@
+-using System.Threading.Channels;
++using System.Collections.Concurrent;
+ using Microsoft.Data.Sqlite;
+ using Monstertacle.Multisession.Contracts;
+ 
+@@ -7,43 +7,42 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
+ // One logical worker owns every operation on the connection, including final disposal.
+ internal sealed class SqliteWorkQueue : IAsyncDisposable
+ {
+-    private readonly Channel<ISqliteWork> _work;
++    private readonly BlockingCollection<ISqliteWork> _work;
++    private readonly object _gate = new();
+     private readonly Task _worker;
+     private int _closed;
+ 
+     internal SqliteWorkQueue(SqliteConnection connection, int capacity, IStateDirectoryLease lease)
+     {
+-        _work = Channel.CreateBounded<ISqliteWork>(new BoundedChannelOptions(capacity)
+-        {
+-            SingleReader = true,
+-            SingleWriter = false,
+-            FullMode = BoundedChannelFullMode.Wait,
+-            AllowSynchronousContinuations = false,
+-        });
+-        _worker = Task.Run(async () =>
++        _work = new(capacity);
++        // SQLite is synchronous; its single owner must not occupy or wait for a shared host worker.
++        _worker = Task.Factory.StartNew(() =>
+         {
+             try
+             {
+-                await foreach (ISqliteWork item in _work.Reader.ReadAllAsync())
++                foreach (ISqliteWork item in _work.GetConsumingEnumerable())
+                 {
+                     item.Run(connection, Volatile.Read(ref _closed) == 0 && lease.IsHeld);
+                 }
+             }
+             finally
+             {
+-                Volatile.Write(ref _closed, 1);
+-                _work.Writer.TryComplete();
+-                while (_work.Reader.TryRead(out ISqliteWork? pending)) { pending.Run(connection, false); }
+-                connection.Dispose();
++                Close();
++                while (_work.TryTake(out ISqliteWork? pending)) { pending.Run(connection, false); }
++                try { connection.Dispose(); }
++                finally { _work.Dispose(); }
+             }
+-        });
++        }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+     }
+ 
+     internal Task<T> ExecuteAsync<T>(Func<SqliteConnection, T> action, CancellationToken cancellationToken, bool admission = false)
+     {
+         SqliteWork<T> item = new(action, admission, cancellationToken);
+-        if (Volatile.Read(ref _closed) != 0) { item.Reject(ErrorCode.StorageUnavailable); }
+-        else if (!_work.Writer.TryWrite(item)) { item.Reject(ErrorCode.LocalCapacityExceeded); }
++        lock (_gate)
++        {
++            if (_closed != 0) { item.Reject(ErrorCode.StorageUnavailable); }
++            else if (!_work.TryAdd(item)) { item.Reject(ErrorCode.LocalCapacityExceeded); }
++        }
+         return item.Completion;
+     }
+ 
+@@ -52,8 +51,17 @@ internal sealed class SqliteWorkQueue : IAsyncDisposable
+ 
+     public ValueTask DisposeAsync()
+     {
+-        Interlocked.Exchange(ref _closed, 1);
+-        _work.Writer.TryComplete();
++        Close();
+         return new(_worker);
+     }
++
++    private void Close()
++    {
++        lock (_gate)
++        {
++            if (_closed != 0) { return; }
++            Volatile.Write(ref _closed, 1);
++            _work.CompleteAdding();
++        }
++    }
+ }
+diff --git a/src/Monstertacle.Multisession.Storage.Sqlite/StorageFailurePolicy.cs b/src/Monstertacle.Multisession.Storage.Sqlite/StorageFailurePolicy.cs
+index 1a6f0de..bac004f 100644
+--- a/src/Monstertacle.Multisession.Storage.Sqlite/StorageFailurePolicy.cs
++++ b/src/Monstertacle.Multisession.Storage.Sqlite/StorageFailurePolicy.cs
+@@ -1,3 +1,4 @@
++using Microsoft.Data.Sqlite;
+ using Monstertacle.Multisession.Contracts;
+ 
+ namespace Monstertacle.Multisession.Storage.Sqlite;
+@@ -8,11 +9,12 @@ internal static class StorageFailurePolicy
+         => new(new PublicError(code, noWrite ? ExecutionCertainty.NotStarted : ExecutionCertainty.Unknown,
+             AdmissionStatus: admission ? (noWrite ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown) : null));
+ 
+-    internal static Exception Normalize(Exception failure, bool noWrite, bool admission, CancellationToken token)
++    internal static Exception Normalize(Exception failure, bool noWrite, bool admission, CancellationToken token,
++        FailureStage stage = FailureStage.StoreExecution)
+     {
+         if (failure is OperationCanceledException && noWrite)
+         {
+-            return admission ? new AdmissionCancellationException(new(ErrorCode.Cancelled, AdmissionStatus: AdmissionStatus.NotAccepted), token)
++            return admission ? new AdmissionCancellationException(new(ErrorCode.Cancelled, AdmissionStatus: AdmissionStatus.NotAccepted), token) { Details = new(stage) }
+                 : new OperationCanceledException(token);
+         }
+         PublicError error = failure is SessionOperationException known ? known.Failure : new(ErrorCode.StorageUnavailable);
+@@ -20,6 +22,14 @@ internal static class StorageFailurePolicy
+         {
+             Certainty = noWrite ? ExecutionCertainty.NotStarted : ExecutionCertainty.Unknown,
+             AdmissionStatus = admission ? (noWrite ? AdmissionStatus.NotAccepted : AdmissionStatus.Unknown) : null,
+-        });
++        })
++        {
++            Details = (failure as SessionOperationException)?.Details ?? failure switch
++            {
++                SqliteException sqlite => new(stage, sqlite.SqliteErrorCode, sqlite.SqliteExtendedErrorCode),
++                IOException or UnauthorizedAccessException => new(stage, PlatformCode: failure.HResult & ushort.MaxValue),
++                _ => new(stage),
++            },
++        };
+     }
+ }
+diff --git a/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs b/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs
+index 0d9d240..abd5069 100644
+--- a/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs
++++ b/tests/Monstertacle.Multisession.IntegrationTests/AcceptanceFailureTests.cs
+@@ -1,4 +1,5 @@
+ using Monstertacle.Multisession.Contracts;
++using Monstertacle.Multisession.Cqrs;
+ using Monstertacle.Multisession.IntegrationTests.Fixtures;
+ using Monstertacle.Multisession.Requests;
+ using Xunit;
+@@ -8,6 +9,24 @@ namespace Monstertacle.Multisession.IntegrationTests;
+ /// <summary>Injects real native SQL failures inside our fixture, without product fault-injection hooks.</summary>
+ public sealed class AcceptanceFailureTests
+ {
++    /// <summary>The actual typed runtime path preserves native error evidence without a second admission or write.</summary>
++    [Fact]
++    public async Task TypedRuntimePreservesNativeFailureDetails()
++    {
++        await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
++        SessionSnapshot session = await fixture.CreateSessionAsync();
++        await fixture.Store.DisposeAsync();
++        await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(fixture.Directory,
++            [new("connection-I", "fixture-adapter", 7, fixture.Provider)]);
++        StoreProbe.Execute(fixture.Directory.DatabasePath, "CREATE TRIGGER FailTypedAdmission AFTER UPDATE OF NextSequence ON Sessions BEGIN SELECT RAISE(FAIL,'private-typed-marker'); END;");
++        SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() =>
++            host.Runtime.Commands.DispatchAsync(new SubmitRequestCommand(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false))));
++        Assert.Equal(new FailureDetails(FailureStage.StoreTransaction, 19, 1811), failure.Details);
++        Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
++        Assert.DoesNotContain("private-", failure.ToString(), StringComparison.Ordinal);
++        Assert.Equal(0L, StoreProbe.Scalar(fixture.Directory.DatabasePath, "SELECT count(*) FROM Requests"));
++    }
++
+     /// <summary>A write followed by a trigger failure must roll back input and sequence together.</summary>
+     [Fact]
+     public async Task RollsBackPartialWritesBeforeReportingKnownNonAcceptance()
+@@ -23,6 +42,7 @@ public sealed class AcceptanceFailureTests
+             admission.SubmitAsync(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
+         Assert.Equal(AdmissionStatus.NotAccepted, failure.Failure.AdmissionStatus);
++        Assert.Equal(new FailureDetails(FailureStage.StoreTransaction, 19, 1811), failure.Details);
+         Assert.DoesNotContain("private-sql-marker", failure.ToString(), StringComparison.Ordinal);
+         Assert.DoesNotContain("private-input-marker", failure.ToString(), StringComparison.Ordinal);
+         Assert.Null(failure.InnerException);
+@@ -49,6 +69,7 @@ public sealed class AcceptanceFailureTests
+             admission.SubmitAsync(new(session.SessionId, "private-input-marker", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
+         Assert.Equal(AdmissionStatus.Unknown, failure.Failure.AdmissionStatus);
++        Assert.Equal(new FailureDetails(FailureStage.StoreCommit, 19, 787), failure.Details);
+         Assert.Equal(ExecutionCertainty.Unknown, failure.Failure.Certainty);
+         Assert.Equal(session.SessionId, failure.Failure.SessionId);
+         Assert.NotNull(failure.Failure.RequestId);
+diff --git a/tests/Monstertacle.Multisession.PlatformTests/Monstertacle.Multisession.PlatformTests.csproj b/tests/Monstertacle.Multisession.PlatformTests/Monstertacle.Multisession.PlatformTests.csproj
+index 9c2a33b..cc9790e 100644
+--- a/tests/Monstertacle.Multisession.PlatformTests/Monstertacle.Multisession.PlatformTests.csproj
++++ b/tests/Monstertacle.Multisession.PlatformTests/Monstertacle.Multisession.PlatformTests.csproj
+@@ -6,8 +6,7 @@
+   </PropertyGroup>
+   <ItemGroup>
+     <Compile Include="../Monstertacle.Multisession.IntegrationTests/Fixtures/ValidationHostBuild.cs" Link="Fixtures/ValidationHostBuild.cs" />
+-    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/OwnershipProtocol.cs" Link="Fixtures/OwnershipProtocol.cs" />
+-    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/ProcessExitWait.cs" Link="Fixtures/ProcessExitWait.cs" />
++    <ProjectReference Include="../../examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" />
+     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
+     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
+   </ItemGroup>
+diff --git a/tests/Monstertacle.Multisession.PlatformTests/packages.lock.json b/tests/Monstertacle.Multisession.PlatformTests/packages.lock.json
+index efe28cd..2efdaf2 100644
+--- a/tests/Monstertacle.Multisession.PlatformTests/packages.lock.json
++++ b/tests/Monstertacle.Multisession.PlatformTests/packages.lock.json
+@@ -146,6 +146,18 @@
+           "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+         }
+       },
++      "monstertacle.multisession.providers.gemini": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
++      "monstertacle.multisession.providers.openai": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
+       "monstertacle.multisession.storage.sqlite": {
+         "type": "Project",
+         "dependencies": {
+@@ -153,6 +165,16 @@
+           "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+         }
+       },
++      "monstertacle.multisession.validationhost": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Linux": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Providers.Gemini": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Providers.OpenAI": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.1, )"
++        }
++      },
+       "Microsoft.Data.Sqlite": {
+         "type": "CentralTransitive",
+         "requested": "[10.0.14, )",
+@@ -319,6 +341,18 @@
+           "Monstertacle.SharpQrs": "[0.2.0-alpha.1, )"
+         }
+       },
++      "monstertacle.multisession.providers.gemini": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
++      "monstertacle.multisession.providers.openai": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
+       "monstertacle.multisession.storage.sqlite": {
+         "type": "Project",
+         "dependencies": {
+@@ -326,6 +360,16 @@
+           "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+         }
+       },
++      "monstertacle.multisession.validationhost": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Providers.Gemini": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Providers.OpenAI": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Windows": "[0.2.0-alpha.1, )"
++        }
++      },
+       "monstertacle.multisession.windows": {
+         "type": "Project",
+         "dependencies": {
+diff --git a/tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj b/tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj
+index 760baa5..6ae13ba 100644
+--- a/tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj
++++ b/tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj
+@@ -4,8 +4,7 @@
+   </PropertyGroup>
+   <ItemGroup>
+     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" PrivateAssets="all" />
+-    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/SoakSchedule.cs" Link="Fixtures/SoakSchedule.cs" />
+-    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/ValidationProbeException.cs" Link="Fixtures/ValidationProbeException.cs" />
++    <ProjectReference Include="../../examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" />
+     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
+   </ItemGroup>
+ </Project>
+diff --git a/tests/Monstertacle.Multisession.UnitTests/packages.lock.json b/tests/Monstertacle.Multisession.UnitTests/packages.lock.json
+index 765ba71..60013e5 100644
+--- a/tests/Monstertacle.Multisession.UnitTests/packages.lock.json
++++ b/tests/Monstertacle.Multisession.UnitTests/packages.lock.json
+@@ -46,6 +46,14 @@
+         "resolved": "18.11.0",
+         "contentHash": "MhN9wpvL1Es4hfIYslrsVgIsUdDFxuOBTbAl9mGIMvFo8PP5CLf4DrGdNrfwWSyn0lqi6sssm+I/qkkLL3MU+g=="
+       },
++      "Microsoft.Data.Sqlite.Core": {
++        "type": "Transitive",
++        "resolved": "10.0.14",
++        "contentHash": "1p9rO3Q2X/L/9YrYog3vaDzi8u+WZfJCOkDYoHqmofqYP0DLPLPyZcS2Rnh/79JXAodgbs1AgsaNwLpIvC3Xew==",
++        "dependencies": {
++          "SQLitePCLRaw.core": "2.1.13"
++        }
++      },
+       "Microsoft.Extensions.DependencyInjection.Abstractions": {
+         "type": "Transitive",
+         "resolved": "10.0.14",
+@@ -64,6 +72,33 @@
+           "Microsoft.TestPlatform.ObjectModel": "18.11.0"
+         }
+       },
++      "SQLitePCLRaw.bundle_e_sqlite3": {
++        "type": "Transitive",
++        "resolved": "2.1.13",
++        "contentHash": "NlDixlC7uHmo+ojXRgkNvN0tQtVGpLDZ3x2OpgNj+G07VHh5cXSszFDrAiC4BpUiPwkcaeuQkMV9WQ123xVtmQ==",
++        "dependencies": {
++          "SQLitePCLRaw.lib.e_sqlite3": "2.1.13",
++          "SQLitePCLRaw.provider.e_sqlite3": "2.1.13"
++        }
++      },
++      "SQLitePCLRaw.core": {
++        "type": "Transitive",
++        "resolved": "2.1.13",
++        "contentHash": "2joofoinuHBFs0nMX3nKuXgxpXryRkCOdM2Ua6HBqQLLy6IW+5f28ZI+HAvMyF8vG7XfNz/lwfBfE6V4juru8Q=="
++      },
++      "SQLitePCLRaw.lib.e_sqlite3": {
++        "type": "Transitive",
++        "resolved": "2.1.13",
++        "contentHash": "D2UAuiGxFYBqeRXjjjGgvJ5UQifzn6wefmSqeKU7XcNGKLbJRP6X7kcPZ6opOBJGdCIlgbSxTvDpBbLvsN594A=="
++      },
++      "SQLitePCLRaw.provider.e_sqlite3": {
++        "type": "Transitive",
++        "resolved": "2.1.13",
++        "contentHash": "ZU60dSqoSNRe49KcQDUmOVgdRtjITOssVXFtiISs+zJXDI4D2Sndwpn2NOtzDQNPu0ZAvpoLPQ+GLKv6iEZn8Q==",
++        "dependencies": {
++          "SQLitePCLRaw.core": "2.1.13"
++        }
++      },
+       "xunit.abstractions": {
+         "type": "Transitive",
+         "resolved": "2.0.3",
+@@ -111,6 +146,52 @@
+           "Monstertacle.SharpQrs": "[0.2.0-alpha.1, )"
+         }
+       },
++      "monstertacle.multisession.linux": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
++      "monstertacle.multisession.providers.gemini": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
++      "monstertacle.multisession.providers.openai": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
++      "monstertacle.multisession.storage.sqlite": {
++        "type": "Project",
++        "dependencies": {
++          "Microsoft.Data.Sqlite": "[10.0.14, )",
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
++        }
++      },
++      "monstertacle.multisession.validationhost": {
++        "type": "Project",
++        "dependencies": {
++          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Linux": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Providers.Gemini": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Providers.OpenAI": "[0.2.0-alpha.1, )",
++          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.1, )"
++        }
++      },
++      "Microsoft.Data.Sqlite": {
++        "type": "CentralTransitive",
++        "requested": "[10.0.14, )",
++        "resolved": "10.0.14",
++        "contentHash": "muyroan6rKrf0omZL8UF7Kw5uOGp/yBg1L/XWvkFN3WhKaNtK2IWqRZw93nIwVqjhTVDO0l4CEGhHIh+mb+sKg==",
++        "dependencies": {
++          "Microsoft.Data.Sqlite.Core": "10.0.14",
++          "SQLitePCLRaw.bundle_e_sqlite3": "2.1.13",
++          "SQLitePCLRaw.core": "2.1.13"
++        }
++      },
+       "Microsoft.Extensions.Logging.Abstractions": {
+         "type": "CentralTransitive",
+         "requested": "[10.0.14, )",

@@ -1,0 +1,27 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/src/Monstertacle.Multisession.Common/bin/Debug/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/bin/Debug/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.25]     Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause [FAIL]
+[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause [24 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: FailureDetails { Stage = AdmissionCommit, NativeCode = , ExtendedNativeCode = , PlatformCode =  }
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.IdentifiesCommitTimeoutWithoutInventingNativeCause() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/AdmissionDiagnosticTests.cs:line 55
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails [4 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: FailureDetails { Stage = StoreTransaction, NativeCode = 19, ExtendedNativeCode = 1811, PlatformCode =  }
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.AdmissionDiagnosticTests.PreservesStoreFailureDetails() in /home/user1/dev/github.com/monstertacle/monstertacle.multisession/tests/Monstertacle.Multisession.UnitTests/AdmissionDiagnosticTests.cs:line 27
+--- End of stack trace from previous location ---
+Results File: /home/user1/dev/github.com/monstertacle/monstertacle.multisession/artifacts/tdd/native-reliability/review-delta-red/exception-details-red.trx
+
+Failed!  - Failed:     2, Passed:     1, Skipped:     0, Total:     3, Duration: 74 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

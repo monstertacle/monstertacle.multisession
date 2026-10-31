@@ -1,0 +1,43 @@
+# T065/T093 native Journalsicherheit und Windows-Tokenowner
+
+Ausgangf7915dc, nativeFehler40928760771:5/6Plattformfällegrün; amaktivenSQLitejournal
+scheitertdiezusätzlicheUser-SID-Ownergleichheit, tatsächlicherOwneristBuiltinAdministrators.
+NormativerVertragR-07(research.md): WindowsACLsfürdieausführendeIdentität, Linux0700/0600.
+Microsoft beschreibtdenDefaultowner neuerObjekte ausdrücklichalsTokenOwner(UseroderGruppe),
+nichtzwingendalsTokenUser. WindowsIdentity.Owner liestgenaudiesenWert. Daheristder
+literalUser-OwnertestfürSQLiteerzeugteDateienstärkeralsdergeforderteWindowsvertrag.
+PrivateDACLnurUser-SIDFullControl, keinefremdenACEs, Link-/Typprüfung bleibenPflicht.
+Rootdirectory bleibt explizitUser-owned. KeinbeliebigerGruppenowner wirdzugelassen.
+
+Primärbelege:
+https://learn.microsoft.com/en-us/windows/win32/secauthz/owner-of-a-new-object
+https://learn.microsoft.com/en-us/dotnet/api/system.security.principal.windowsidentity.owner
+KeineÄnderunganWindowsrichtlinien/Prozesstoken, keinReparierenexistierenderACL/Owner.
+
+BestandsprüfungWindowsPrivateSecurity126092b19815bb20fce068e8f6caf26e8ff7d4160dbe6e39a50608c01c840021,
+NativeFileAssertions950abacf3321addb4e522fe76967a5bf7d885271f673065e9644187bd7304b5e:
+bisherDateiowner immerUser verlangt. SqliteStorePreflight validiertDBüberLease, Original-
+journal aber nicht: eskopiertdiesesdirektinprivateneueProbedatei. Das kannfehlende
+NativeACL-/Symlinkprüfung verdecken. VorErweiterungentschieden: deterministische
+NativeACL-/Tokenownerguards stattUrteils-/Rollenrunde. Testassertion anOSvertragbinden,
+zusätzlichwirklichüberPrepareFileAsync dasnativeOriginaljournalnachKillunverändert
+validieren. NegativfallmachtursprünglichesJournalöffentlichlesbar, FactorymussvorCopy/
+RecoverymitStorageUnavailableabbrechen, DB/Journalbytegleicherhalten, keinePrüfkopien.
+ZuersttatsächlicheRedfälleausführen; dannWindowsdateiennurUseroderaktuellenTokenOwner
+beiunverändertstrikterUser-DACL zulassenundOriginaljournalvorCopyüberLeasesichern.
+Linuxstandardjournalbleibt0600/UID; Windows-/Linuxmatrix erneut ausführen.
+GemessenePreflightquelle2026-10-29T18:30:00Z SHA256
+c3e7f5e3a5343d1e863c808b445166d43eba0cf132d81d5ddaf5fa36a3564736.
+Linux-Rednative-journal-security-red.log: öffentlichesOriginaljournal wurdeohneAusnahme
+zurückgerollt, erwarteteStorageUnavailablefehlte;2bisherigeProzessfällegrün.
+
+Windows-Portredzu391e5e9 in40932597035 vorProduktanpassung:6/7Plattformfällegrün;
+gültigesOriginaljournalwirdinWindowsPrivateSecurity.Require mitStorageUnavailable
+abgelehnt. ÖffentlicheACL wirdbereitskorrektabgewiesen. NeueOwnerentscheidung eng:
+DateiownerUseroderaktuellertatsächlicherTokenOwner, letzterernurwennBuiltinAdministrators.
+KeinebeliebigeGruppe; AdministratorenhabenbereitsOS-PrivilegzurEigentumsübernahme
+(MicrosoftTake-ownership-Dokumentation), R-07 behauptetkeineAdmin-Sandbox.
+https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects
+Directoryowner weiterhinUser; DACLweiterexakteineUser-FullControl-ACE, keinefremdeACE,
+keineReparatur. Quellen-/RedbelegausdervorigenAnalyseweitergültig, Produktdateibisjetzt
+unverändert. DanachnativeMatrixerneutlaufenlassen, keineVollabnahmevorGreen.

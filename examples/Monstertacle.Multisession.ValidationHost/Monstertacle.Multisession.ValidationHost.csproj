@@ -1,20 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Monstertacle.Multisession.UnitTests" />
+    <InternalsVisibleTo Include="Monstertacle.Multisession.PlatformTests" />
+    <Compile Include="../../tests/Monstertacle.Multisession.IntegrationTests/Fixtures/ConsumerOwnedProvider.cs" Link="Consumer/ConsumerOwnedProvider.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.IntegrationTests/Fixtures/AdmissionProvider.cs" Link="Consumer/AdmissionProvider.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/ThirdContractProvider.cs" Link="Consumer/ThirdContractProvider.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/NativeWireFixture.cs" Link="Consumer/NativeWireFixture.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/NativeWireReply.cs" Link="Consumer/NativeWireReply.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/ScriptedHttpHandler.cs" Link="Consumer/ScriptedHttpHandler.cs" />
+    <Compile Include="../../tests/Monstertacle.Multisession.ContractTests/Fixtures/FixtureCredentials.cs" Link="Consumer/FixtureCredentials.cs" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
-    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj" />
-    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj" />
+    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Conversations/Monstertacle.Multisession.Providers.Conversations.csproj" />
+    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Interactions/Monstertacle.Multisession.Providers.Interactions.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+    <Using Include="Monstertacle.Multisession.Windows.WindowsStateDirectoryLease" Alias="NativeLease" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Windows/Monstertacle.Multisession.Windows.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <Using Include="Monstertacle.Multisession.Linux.LinuxStateDirectoryLease" Alias="NativeLease" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Linux/Monstertacle.Multisession.Linux.csproj" />
   </ItemGroup>
 </Project>

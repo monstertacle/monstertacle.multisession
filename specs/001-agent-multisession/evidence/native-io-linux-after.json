@@ -1,0 +1,10 @@
+{
+  "MeasuredUtc": "2026-10-29T23:38:13.1928827+00:00",
+  "Tests": 405,
+  "Passed": 405,
+  "Failed": 0,
+  "MaximumConcurrentCases": 1,
+  "MaximumConcurrentClasses": 1,
+  "TrxSha256": "026e919f5f5ef0c3b7a4bbd9ddc94cdc9783d8e1c805b8f344166f90ce56523a",
+  "Method": "Sweep actual UTC start/end intervals; ends before starts at equal ticks. Measures independent test execution, not tasks or product concurrency inside a case."
+}

@@ -1,0 +1,55 @@
+  Determining projects to restore...
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/Monstertacle.Multisession.Providers.Conversations.csproj (in 257 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj (in 257 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/Monstertacle.Multisession.AgentFramework.csproj (in 257 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/Monstertacle.Multisession.Linux.csproj (in 256 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj (in 257 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/Monstertacle.Multisession.Providers.Interactions.csproj (in 257 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj (in 257 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Windows/Monstertacle.Multisession.Windows.csproj (in 257 ms).
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj (in 44 ms).
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Providers.Conversations -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/bin/Release/net10.0/Monstertacle.Multisession.Providers.Conversations.dll
+  Monstertacle.Multisession.Providers.Interactions -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/bin/Release/net10.0/Monstertacle.Multisession.Providers.Interactions.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.28]     Monstertacle.Multisession.UnitTests.FrameworkCancellationTests.PreCancelledInvocationNeverRunsAgent [FAIL]
+[xUnit.net 00:00:01.26]     Monstertacle.Multisession.UnitTests.EvidenceDeadlineTests.NoncooperativeValidationCannotExceedRoundDeadline(previous: False) [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.FrameworkCancellationTests.PreCancelledInvocationNeverRunsAgent [29 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Values are equal
+Expected: Not False
+Actual:       False
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.FrameworkCancellationTests.PreCancelledInvocationNeverRunsAgent() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/FrameworkCancellationTests.cs:line 46
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.EvidenceDeadlineTests.NoncooperativeValidationCannotExceedRoundDeadline(previous: False) [1 s]
+  Error Message:
+   Assert.ThrowsAny() Failure: Exception type was not compatible
+Expected: typeof(System.OperationCanceledException)
+Actual:   typeof(System.TimeoutException)
+---- System.TimeoutException : The operation has timed out.
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceDeadlineTests.NoncooperativeValidationCannotExceedRoundDeadline(Boolean previous) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceDeadlineTests.cs:line 27
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+
+[xUnit.net 00:00:02.27]     Monstertacle.Multisession.UnitTests.EvidenceDeadlineTests.NoncooperativeValidationCannotExceedRoundDeadline(previous: True) [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.EvidenceDeadlineTests.NoncooperativeValidationCannotExceedRoundDeadline(previous: True) [1 s]
+  Error Message:
+   Assert.ThrowsAny() Failure: Exception type was not compatible
+Expected: typeof(System.OperationCanceledException)
+Actual:   typeof(System.TimeoutException)
+---- System.TimeoutException : The operation has timed out.
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceDeadlineTests.NoncooperativeValidationCannotExceedRoundDeadline(Boolean previous) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceDeadlineTests.cs:line 27
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+
+
+Failed!  - Failed:     3, Passed:     0, Skipped:     0, Total:     3, Duration: 2 s - Monstertacle.Multisession.UnitTests.dll (net10.0)

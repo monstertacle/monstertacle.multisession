@@ -1,0 +1,50 @@
+diff --git a/specs/003-native-reliability/architecture-decision.md b/specs/003-native-reliability/architecture-decision.md
+index 115b1ce..209cc19 100644
+--- a/specs/003-native-reliability/architecture-decision.md
++++ b/specs/003-native-reliability/architecture-decision.md
+@@ -40,3 +40,15 @@ not provider-name dispatch. No executor interface, runner framework, reverse
+ SharpClaw dependency or policy copy was added. Root checked source and tests;
+ the two agent reports reviewed the frozen candidate and decision delta, not this
+ final implementation. Native Windows and complete coverage acceptance remain open.
++
++Native CI implementation finding: run41041065004 completed 1066 Windows tests,
++then the unchanged inventory guard rejected Monstertacle.Multisession.Linux.
++UnitTests has an actual Host assembly reference but only net10.0, so it brings
++the Host's Linux target into Windows coverage even when its cases are platform
++neutral. The earlier PlatformTests matching-target decision is insufficient for
++the complete coverage inventory. Use the existing PlatformTests multi-target
++pattern for UnitTests too, and select the matching framework for both suites in
++Invoke-Quality. Preserve the strict native inventory, exclusions and threshold.
++Keep both target graphs in the lock file. The observed native CI failure is the
++behavioral Red; archive it before changing project/runner wiring, then rerun
++native suites and native Windows CI. No product runtime or new helper is needed.
+diff --git a/specs/003-native-reliability/evidence/validation.md b/specs/003-native-reliability/evidence/validation.md
+index f71b6d7..5bba24e 100644
+--- a/specs/003-native-reliability/evidence/validation.md
++++ b/specs/003-native-reliability/evidence/validation.md
+@@ -65,10 +65,12 @@ all five actual-owner tests and the full native suites passed.
+ 
+ ## Required next evidence
+ 
+-T009: resolve coverage scope explicitly and use an explicit comparison base for
+-the final Cover diff check. Clean CI checkouts currently have no uncommitted diff;
+-their full product coverage does not prove coverage of the PR diff. A green CI
+-must not erase the local unmeasured-host finding. Run locked restore/build/format, full
++T009: resolve coverage scope explicitly. The existing Cover configuration already
++uses fixed diff base `4494f9a0749c76975418682113f19f7839340f54`; the earlier concern
++that clean CI would silently check an empty diff was incorrect. PR3 Linux CI
++41041065004 reproduced all eight unmeasured-host violations after passing all
++1060 tests and the product coverage threshold. A later green must not erase this
++finding. Run locked restore/build/format, full
+ static check, native suites, coverage, audit and package proof for one final
+ SourceHash. T010: run native Windows CI and repeat failing scenario families;
+ retain recurrence evidence and use safe stage/native codes to investigate before
+diff --git a/specs/003-native-reliability/tasks.md b/specs/003-native-reliability/tasks.md
+index 2011fcf..6a4cf7b 100644
+--- a/specs/003-native-reliability/tasks.md
++++ b/specs/003-native-reliability/tasks.md
+@@ -11,3 +11,4 @@ Created: 2026-10-30T06:20:36Z
+ - [ ] T009 Run full static metrics, native quality/Cover and package consumption.
+ - [ ] T010 Repeat native Windows scenarios and inspect safe diagnostics for any recurrence.
+ - [ ] T011 Commit/push reviewable work, bind native CI evidence, disposition all findings.
++- [ ] T012 Correct UnitTests host target selection after observed Windows foreign-assembly coverage failure; preserve inventory strictness and rerun native CI.

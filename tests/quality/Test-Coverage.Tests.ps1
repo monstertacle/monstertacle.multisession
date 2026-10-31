@@ -9,6 +9,7 @@ $scopePath = Join-Path $repository 'tests/coverage-scope.json'
 $scope = Get-Content $scopePath -Raw | ConvertFrom-Json
 $modules = @($scope.commonAssemblies) + $scope.platformAssemblies.windows
 $allModules = @($scope.commonAssemblies) + $scope.platformAssemblies.windows + $scope.platformAssemblies.linux
+$validationModules = if ($scope.PSObject.Properties.Name -contains 'validationAssemblies') { @($scope.validationAssemblies) } else { @() }
 $base = Join-Path ([IO.Path]::GetTempPath()) ('multisession-coverage-tests-' + [Guid]::NewGuid().ToString('N'))
 $null = New-Item $base -ItemType Directory
 $failures = 0
@@ -22,6 +23,9 @@ function New-Case([string]$Name) {
         $null = New-Item $directory -ItemType Directory -Force
         [IO.File]::WriteAllText((Join-Path $directory "$module.csproj"), '<Project />')
     }
+    $hostDirectory = Join-Path $root 'examples/Monstertacle.Multisession.ValidationHost'
+    $null = New-Item $hostDirectory -ItemType Directory -Force
+    [IO.File]::WriteAllText((Join-Path $hostDirectory 'Monstertacle.Multisession.ValidationHost.csproj'), '<Project />')
     return @{ Root = $root; Reports = $reports }
 }
 
@@ -35,6 +39,7 @@ function New-Report([hashtable]$Case, [int]$Covered = 9, [int]$Offset = 0, [int]
         $file = Join-Path $Case.Root "src/$module/Example.cs"
         $report["$module.dll"] = @{ $file = @{ 'Fixture.Type' = @{ 'System.Void Fixture.Type::Run()' = @{ Lines = $lines; Branches = @() } } } }
     }
+    foreach ($module in $validationModules) { $report["$module.dll"] = @{} }
     return $report
 }
 
@@ -59,7 +64,7 @@ function Assert-Gate([string]$Name, [hashtable]$Case, [int]$Expected, [int]$Expe
             return
         }
         $summary = ($output -join "`n") | ConvertFrom-Json
-        if ($summary.TotalLines -ne $ExpectedLines -or $summary.CoveredLines -ne 45) {
+        if ($summary.TotalLines -ne $ExpectedLines -or $summary.CoveredLines -ne (9 * $modules.Count)) {
             Write-Output "FAIL $Name`: duplicate/union counts are incorrect."
             $script:failures++
             return
@@ -95,7 +100,7 @@ Assert-Gate 'empty report directory fails' $case 1
 
 $case = New-Case 'zero-lines'
 $report = @{}
-foreach ($module in $modules) { $report["$module.dll"] = @{} }
+foreach ($module in @($modules) + @($validationModules)) { $report["$module.dll"] = @{} }
 Write-Report $case $report
 Assert-Gate 'zero measured lines fail' $case 1
 
@@ -122,14 +127,14 @@ Write-Report $case $report
 $subdirectory = Join-Path $case.Reports 'second-suite'
 $null = New-Item $subdirectory -ItemType Directory
 [IO.File]::WriteAllText((Join-Path $subdirectory 'coverage.json'), ($report | ConvertTo-Json -Depth 12))
-Assert-Gate 'duplicate reports count source lines only once' $case 0 50
+Assert-Gate 'duplicate reports count source lines only once' $case 0 (10 * $modules.Count)
 
 $case = New-Case 'complementary-reports'
 Write-Report $case (New-Report $case 5)
 $subdirectory = Join-Path $case.Reports 'second-suite'
 $null = New-Item $subdirectory -ItemType Directory
 [IO.File]::WriteAllText((Join-Path $subdirectory 'coverage.json'), ((New-Report $case 4 5) | ConvertTo-Json -Depth 12))
-Assert-Gate 'complementary suites merge line hits rather than percentages' $case 0 50
+Assert-Gate 'complementary suites merge line hits rather than percentages' $case 0 (10 * $modules.Count)
 
 $case = New-Case 'invalid-hits'
 $report = New-Report $case
@@ -138,6 +143,41 @@ $file = @($report[$firstModule].Keys)[0]
 $report[$firstModule][$file]['Fixture.Type']['System.Void Fixture.Type::Run()'].Lines['1'] = -1
 Write-Report $case $report
 Assert-Gate 'negative hit counts fail' $case 1
+
+$case = New-Case 'declared-validation-assembly'
+$case.ScopePath = Join-Path $case.Root 'scope.json'
+$caseScope = Get-Content $scopePath -Raw | ConvertFrom-Json -AsHashtable
+$caseScope.validationAssemblies = @('Monstertacle.Multisession.ValidationHost')
+$caseScope | ConvertTo-Json -Depth 8 | Set-Content $case.ScopePath
+$report = New-Report $case
+$report['Monstertacle.Multisession.ValidationHost.dll'] = @{}
+Write-Report $case $report
+Assert-Gate 'declared co-collected validation assembly preserves product denominator' $case 0 (10 * $modules.Count)
+
+$case = New-Case 'missing-declared-validation-assembly'
+$case.ScopePath = Join-Path $case.Root 'scope.json'
+$caseScope | ConvertTo-Json -Depth 8 | Set-Content $case.ScopePath
+$report = New-Report $case
+$report.Remove('Monstertacle.Multisession.ValidationHost.dll')
+Write-Report $case $report
+Assert-Gate 'missing declared validation report fails' $case 1
+
+$case = New-Case 'product-threshold-independent-of-host'
+$report = New-Report $case -Covered 86 -Total 100
+$hostLines = @{}
+foreach ($line in 1..100) { $hostLines["$line"] = 1 }
+$hostFile = Join-Path $case.Root 'examples/Monstertacle.Multisession.ValidationHost/Example.cs'
+$report['Monstertacle.Multisession.ValidationHost.dll'] = @{ $hostFile = @{ 'Fixture.Host' = @{
+    'System.Void Fixture.Host::Run()' = @{ Lines = $hostLines; Branches = @() }
+} } }
+Write-Report $case $report
+Assert-Gate 'fully covered host cannot rescue below-threshold products' $case 1
+
+$case = New-Case 'foreign-platform-assembly'
+$report = New-Report $case
+$report["$($scope.platformAssemblies.linux).dll"] = @{}
+Write-Report $case $report
+Assert-Gate 'foreign platform remains rejected' $case 1
 
 # Only remove this process's unique, synthetic fixture tree.
 [IO.Directory]::Delete($base, $true)

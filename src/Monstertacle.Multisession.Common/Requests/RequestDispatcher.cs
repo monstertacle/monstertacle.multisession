@@ -29,12 +29,12 @@ public sealed class RequestDispatcher
     }
 
     /// <summary>Processes one new reservation. False means no eligible dispatch; true confirms a persisted local result, including a confirmed failure.</summary>
-    public async ValueTask<bool> TryDispatchAsync(CancellationToken cancellationToken)
+    public async ValueTask<bool> TryDispatchAsync(CancellationToken cancellationToken, Guid expectedRequestId = default)
     {
         ExecutionReservation? reservation;
         try
         {
-            reservation = await _scheduler.TryReserveAsync(cancellationToken);
+            reservation = await _scheduler.TryReserveAsync(cancellationToken, expectedRequestId);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -149,8 +149,8 @@ public sealed class RequestDispatcher
 
     private async ValueTask<bool> CancelBeforeSendAsync(ExecutionReservation reservation, DispatchDiagnostics trace, CancellationToken cancellationToken)
     {
-        RequestSnapshot? request;
-        try { request = await _store.GetRequestAsync(reservation.RequestId, cancellationToken).AsTask().WaitAsync(cancellationToken); }
+        bool requested;
+        try { requested = await new DispatchCancellationWatch(_store, reservation.RequestId).IsRequestedBeforeSendAsync(cancellationToken); }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             PublicError cancelled = new(ErrorCode.Cancelled, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);
@@ -158,7 +158,7 @@ public sealed class RequestDispatcher
             throw new SessionOperationException(cancelled);
         }
         catch (Exception) { throw Failure(reservation, ErrorCode.StorageUnavailable, ExecutionCertainty.Unknown); }
-        if (request is not { State: RequestState.Running, CancellationRequestedUtc: not null }) { return false; }
+        if (!requested) { return false; }
         PublicError error = new(ErrorCode.Cancelled, ExecutionCertainty.NotStarted, reservation.SessionId, reservation.RequestId);
         await CommitAsync(reservation, new(RequestState.Cancelled, ExecutionCertainty.NotStarted, string.Empty, false, null, error), trace);
         return true;

@@ -21,14 +21,14 @@ public sealed class DispatchConcurrencyTests
         List<SessionSnapshot> sessions = [];
         for (int i = 0; i < 10; i++)
         {
-            sessions.Add(await host.Catalog.CreateSessionAsync(i % 2 == 0 ? "one" : "two", new(Path.GetTempPath(), null), CancellationToken.None));
+            sessions.Add(await host.Catalog.CreateSessionAsync(Guid.NewGuid(), i % 2 == 0 ? "one" : "two", new(Path.GetTempPath(), null), CancellationToken.None));
         }
         List<(RequestReceipt Receipt, Guid SessionId, string Input)> accepted = [];
         for (int i = 0; i < 100; i++)
         {
             SessionSnapshot session = sessions[i % sessions.Count];
             string input = $"request-{i}";
-            RequestReceipt receipt = await host.Admission.SubmitAsync(new(session.SessionId, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            RequestReceipt receipt = await host.Admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
             accepted.Add((receipt, session.SessionId, input));
             clock.Advance(TimeSpan.FromTicks(1));
         }
@@ -71,12 +71,12 @@ public sealed class DispatchConcurrencyTests
         List<SessionSnapshot> sessions = [];
         for (int i = 0; i < 10; i++)
         {
-            sessions.Add(await host.Catalog.CreateSessionAsync(i % 2 == 0 ? "one" : "two", new(Path.GetTempPath(), null), CancellationToken.None));
+            sessions.Add(await host.Catalog.CreateSessionAsync(Guid.NewGuid(), i % 2 == 0 ? "one" : "two", new(Path.GetTempPath(), null), CancellationToken.None));
         }
-        await host.Admission.SubmitAsync(new(sessions[0].SessionId, "running-one", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        await host.Admission.SubmitAsync(Guid.NewGuid(), new(sessions[0].SessionId, "running-one", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         Task<bool> left = host.Dispatcher.TryDispatchAsync(CancellationToken.None).AsTask();
         await first.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        await host.Admission.SubmitAsync(new(sessions[1].SessionId, "running-two", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        await host.Admission.SubmitAsync(Guid.NewGuid(), new(sessions[1].SessionId, "running-two", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         Task<bool> right = host.Dispatcher.TryDispatchAsync(CancellationToken.None).AsTask();
         await second.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
         TaskCompletionSource start = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -85,7 +85,7 @@ public sealed class DispatchConcurrencyTests
             await start.Task;
             try
             {
-                await host.Admission.SubmitAsync(new(session.SessionId, "new queued input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+                await host.Admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "new queued input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
                 return true;
             }
             catch (SessionOperationException failure) when (failure.Failure.Code == ErrorCode.QueueFull) { return false; }

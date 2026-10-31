@@ -6,10 +6,13 @@ Common referenziert Monstertacle.SharpQrs 0.2.0-alpha.1 transitiv. Nach dem norm
 ```csharp
 using Monstertacle.Multisession.Cqrs;
 
+// Die Kennungen vor dem Aufruf im Host-Auftrag persistieren.
+Guid sessionId = Guid.NewGuid();
+Guid requestId = Guid.NewGuid();
 var session = await runtime.Commands.DispatchAsync(
-    new CreateSessionCommand("configured-profile", new(null, null)), cancellationToken);
+    new CreateSessionCommand(sessionId, "configured-profile", new(null, null)), cancellationToken);
 var receipt = await runtime.Commands.DispatchAsync(new SubmitRequestCommand(
-    new(session.SessionId, "input", TimeSpan.FromSeconds(30), null, false)), cancellationToken);
+    requestId, new(session.SessionId, "input", TimeSpan.FromSeconds(30), null, false)), cancellationToken);
 var lookup = await runtime.Queries.DispatchAsync(
     new GetRequestQuery(receipt.RequestId), cancellationToken);
 var snapshot = lookup.Value; // null, falls der Datensatz nicht existiert

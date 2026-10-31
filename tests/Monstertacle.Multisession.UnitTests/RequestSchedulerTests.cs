@@ -14,7 +14,7 @@ public sealed class RequestSchedulerTests
         SessionSnapshot session = SchedulingData.Session();
         await store.CreateSessionAsync(session, CancellationToken.None);
         RequestAdmission admission = new(store, RuntimeOptionsTests.ValidOptions());
-        return await admission.SubmitAsync(new(session.SessionId, "unchanged input", TimeSpan.FromSeconds(10), writeKey, writeKey is not null), CancellationToken.None);
+        return await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "unchanged input", TimeSpan.FromSeconds(10), writeKey, writeKey is not null), CancellationToken.None);
     }
 
     /// <summary>The returned dispatch already owns its slot and exposes Running/InProgress.</summary>

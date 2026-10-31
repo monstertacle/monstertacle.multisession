@@ -37,7 +37,7 @@ public sealed class LifecyclePersistenceTests(ITestOutputHelper output)
         RequestSnapshot cancelled;
         await using (SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, [new("connection-I", "fixture-adapter", 7, provider)]))
         {
-            RequestReceipt receipt = await host.Runtime.Requests.SubmitAsync(new(session.SessionId, "held input", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+            RequestReceipt receipt = await host.Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "held input", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
             await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
             try
             {

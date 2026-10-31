@@ -27,7 +27,7 @@ public sealed class SessionCapabilityTests
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(async () =>
         {
             SessionCatalog catalog = new(store, registrations, profiles);
-            await catalog.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+            await catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
         });
 
         Assert.Equal(Enum.IsDefined(requested) ? ErrorCode.UnsupportedProviderAction : ErrorCode.InvalidConfiguration, failure.Failure.Code);
@@ -55,7 +55,7 @@ public sealed class SessionCapabilityTests
         SessionCatalog catalog = new(new InMemorySessionStore(), registrations, profiles);
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(path, "workspace"), CancellationToken.None).AsTask());
+            () => catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(path, "workspace"), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.InvalidConfiguration, failure.Failure.Code);
         Assert.Equal(0, opens);
@@ -75,7 +75,7 @@ public sealed class SessionCapabilityTests
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(async () =>
         {
             SessionCatalog catalog = new(new InMemorySessionStore(), registrations, profiles);
-            await catalog.CreateSessionAsync(requestedProfile, new(null, null), CancellationToken.None);
+            await catalog.CreateSessionAsync(Guid.NewGuid(), requestedProfile, new(null, null), CancellationToken.None);
         });
 
         Assert.Equal(expected, failure.Failure.Code);
@@ -96,7 +96,7 @@ public sealed class SessionCapabilityTests
         SessionCatalog catalog = new(new InMemorySessionStore(), registrations, profiles);
 
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(
-            () => catalog.CreateSessionAsync("profile", new(path, null), CancellationToken.None).AsTask());
+            () => catalog.CreateSessionAsync(Guid.NewGuid(), "profile", new(path, null), CancellationToken.None).AsTask());
 
         Assert.Equal(ErrorCode.InvalidConfiguration, failure.Failure.Code);
         Assert.Equal(0, opens);

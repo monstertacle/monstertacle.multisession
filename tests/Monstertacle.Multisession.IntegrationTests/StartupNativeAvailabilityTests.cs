@@ -20,7 +20,7 @@ public sealed class StartupNativeAvailabilityTests
         SessionSnapshot affected = await seed.CreateSessionAsync();
         SessionCatalog catalog = new(seed.Store, [new("independent", "fixture-adapter", 7, seed.Provider)],
             [new("other", "independent", "opaque-model", ExecutionKind.ModelResponse, new("settings", new Dictionary<string, string>()))]);
-        SessionSnapshot other = await catalog.CreateSessionAsync("other", new(null, null), CancellationToken.None);
+        SessionSnapshot other = await catalog.CreateSessionAsync(Guid.NewGuid(), "other", new(null, null), CancellationToken.None);
         RequestReceipt held = await seed.Store.CommitAcceptanceAsync(new(Guid.NewGuid(), new(affected.SessionId, "preserved", TimeSpan.FromSeconds(10), null, false)), 100, CancellationToken.None);
         RequestReceipt flowing = await seed.Store.CommitAcceptanceAsync(new(Guid.NewGuid(), new(other.SessionId, "independent", TimeSpan.FromSeconds(10), null, false)), 100, CancellationToken.None);
         await seed.Store.DisposeAsync();

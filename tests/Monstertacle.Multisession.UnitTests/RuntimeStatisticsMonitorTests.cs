@@ -34,7 +34,7 @@ public sealed class RuntimeStatisticsMonitorTests
         while (fail ? diagnostics.FailureCount == 0 : metrics.Read().Count == 0) { await Task.Delay(10, deadline.Token); }
         if (fail) { Assert.Empty(metrics.Read()); }
         else { Assert.Equal(5, metrics.Read()["multisession.requests.queued"]); }
-        RequestReceipt receipt = await runtime.Requests.SubmitAsync(new(scenario.Session.SessionId, "SECRET-INPUT", TimeSpan.FromSeconds(5), null, false), deadline.Token);
+        RequestReceipt receipt = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(scenario.Session.SessionId, "SECRET-INPUT", TimeSpan.FromSeconds(5), null, false), deadline.Token);
         Assert.NotEqual(Guid.Empty, receipt.RequestId);
         await runtime.StopAsync(TimeSpan.FromSeconds(5), deadline.Token);
         Assert.Empty(metrics.Read());

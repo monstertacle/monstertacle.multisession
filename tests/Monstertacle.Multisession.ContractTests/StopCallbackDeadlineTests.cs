@@ -39,7 +39,7 @@ public sealed class StopCallbackDeadlineTests
         await using TestStateDirectoryLease lease = new(Options().StateDirectory);
         SessionRuntime runtime = Runtime(store, provider, lease);
         await runtime.StartAsync(Options(), CancellationToken.None);
-        await runtime.Requests.SubmitAsync(new(session.SessionId, "input", TimeSpan.FromSeconds(30), null, false), CancellationToken.None);
+        await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "input", TimeSpan.FromSeconds(30), null, false), CancellationToken.None);
         await registered.Task.WaitAsync(TimeSpan.FromSeconds(5));
         Task stopping = Task.Run(async () => await runtime.StopAsync(TimeSpan.FromMilliseconds(100), CancellationToken.None));
         try

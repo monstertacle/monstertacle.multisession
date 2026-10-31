@@ -16,7 +16,7 @@ public sealed class RetentionTests
         await using PersistedDispatchFixture fixture = await PersistedDispatchFixture.CreateAsync();
         SessionSnapshot independent = await fixture.Host.CreateSessionAsync();
         ISessionStore store = fixture.Host.Store;
-        RequestReceipt otherReceipt = await new RequestAdmission(store, fixture.Host.Options).SubmitAsync(new(independent.SessionId,
+        RequestReceipt otherReceipt = await new RequestAdmission(store, fixture.Host.Options).SubmitAsync(Guid.NewGuid(), new(independent.SessionId,
             "independent preserved input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         ExecutionReservation otherReservation = (await store.TryReserveHeadAsync(4, CancellationToken.None))!;
         Assert.Equal(otherReceipt.RequestId, otherReservation.RequestId);

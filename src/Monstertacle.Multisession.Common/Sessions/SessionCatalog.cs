@@ -21,12 +21,13 @@ public sealed class SessionCatalog : ISessions
     }
 
     /// <inheritdoc />
-    public async ValueTask<SessionSnapshot> CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
+    public async ValueTask<SessionSnapshot> CreateSessionAsync(Guid sessionId, string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)
     {
+        if (sessionId == Guid.Empty) { throw new SessionOperationException(new(ErrorCode.InvalidInput)); }
         AgentProfile profile = _configuration.GetProfile(agentProfileId);
         ProviderRegistration registration = _configuration.GetProvider(profile.ProviderId);
         ValidateExecution(profile.ExecutionKind, registration.Provider.Capabilities, context);
-        Guid sessionId = Guid.NewGuid();
+
         ProviderSessionContext providerContext = new(sessionId, profile.ModelId, profile.ExecutionKind, context, profile.Settings.Values);
         DateTimeOffset createdUtc = _clock.GetUtcNow().ToUniversalTime();
         SessionSnapshot session = new(sessionId, registration.ProviderId, profile.AgentProfileId, providerContext, null)

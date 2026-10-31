@@ -18,7 +18,7 @@ public sealed class CqrsMutationTests
             [new("registered-adapter", "test-adapter", 1, provider)],
             [new("profile", "registered-adapter", "model", ExecutionKind.ModelResponse, new("fixed", new Dictionary<string, string>()))]);
         await runtime.StartAsync(Options(), CancellationToken.None);
-        SessionSnapshot created = await runtime.Commands.DispatchAsync(new CreateSessionCommand("profile", new(null, null)));
+        SessionSnapshot created = await runtime.Commands.DispatchAsync(new CreateSessionCommand(Guid.NewGuid(), "profile", new(null, null)));
         Assert.Equal(created, await runtime.Sessions.GetSessionAsync(created.SessionId, CancellationToken.None));
         await runtime.Commands.DispatchAsync(new CloseSessionCommand(created.SessionId));
         Assert.Equal(SessionLifecycle.Closed, (await runtime.Sessions.GetSessionAsync(created.SessionId, CancellationToken.None))?.Lifecycle);

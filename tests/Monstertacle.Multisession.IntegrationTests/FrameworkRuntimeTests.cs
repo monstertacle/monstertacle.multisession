@@ -34,8 +34,8 @@ public sealed class FrameworkRuntimeTests
             ISessionStore store = await SqliteStoreFactory.CreateNewAsync(lease, directory.TrustScopeId, directory.Options, default);
             await using SessionRuntime runtime = new(store, lease, [Registration(Provider(firstAgent))], [Profile()]);
             await runtime.StartAsync(directory.Options, default);
-            sessionId = (await runtime.Sessions.CreateSessionAsync("agent", new(null, null), default)).SessionId;
-            RequestReceipt request = await runtime.Requests.SubmitAsync(new(sessionId, "first", TimeSpan.FromSeconds(5), null, false), default);
+            sessionId = (await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "agent", new(null, null), default)).SessionId;
+            RequestReceipt request = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(sessionId, "first", TimeSpan.FromSeconds(5), null, false), default);
             Assert.Equal("turn-1", (await EndAsync(runtime, request.RequestId)).Result?.Output);
         }
         FrameworkTestAgent secondAgent = new();
@@ -43,7 +43,7 @@ public sealed class FrameworkRuntimeTests
         ISessionStore reopened = await SqliteStoreFactory.OpenExistingAsync(reopenedLease, directory.TrustScopeId, directory.Options, default);
         await using SessionRuntime restarted = new(reopened, reopenedLease, [Registration(Provider(secondAgent))], [Profile()]);
         await restarted.StartAsync(directory.Options, default);
-        RequestReceipt follow = await restarted.Requests.SubmitAsync(new(sessionId, "second", TimeSpan.FromSeconds(5), null, false), default);
+        RequestReceipt follow = await restarted.Requests.SubmitAsync(Guid.NewGuid(), new(sessionId, "second", TimeSpan.FromSeconds(5), null, false), default);
         Assert.Equal("turn-2", (await EndAsync(restarted, follow.RequestId)).Result?.Output);
         Assert.Equal("second", Assert.Single(secondAgent.Inputs));
         Assert.Equal(0, secondAgent.Creates);
@@ -62,8 +62,8 @@ public sealed class FrameworkRuntimeTests
             ISessionStore store = await SqliteStoreFactory.CreateNewAsync(lease, directory.TrustScopeId, directory.Options, default);
             await using SessionRuntime runtime = new(store, lease, [Registration(Provider(agent))], [Profile()]);
             await runtime.StartAsync(directory.Options, default);
-            sessionId = (await runtime.Sessions.CreateSessionAsync("agent", new(null, null), default)).SessionId;
-            requestId = (await runtime.Requests.SubmitAsync(new(sessionId, "effect", TimeSpan.FromSeconds(5), "workspace", true), default)).RequestId;
+            sessionId = (await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "agent", new(null, null), default)).SessionId;
+            requestId = (await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(sessionId, "effect", TimeSpan.FromSeconds(5), "workspace", true), default)).RequestId;
             Assert.Equal(ExecutionCertainty.Unknown, (await EndAsync(runtime, requestId)).Certainty);
         }
         await using RetainedTestLease reopenedLease = new(directory);
@@ -71,7 +71,7 @@ public sealed class FrameworkRuntimeTests
         await using SessionRuntime restarted = new(reopened, reopenedLease, [Registration(Provider(agent))], [Profile()]);
         await restarted.StartAsync(directory.Options, default);
         Assert.Equal(ExecutionCertainty.Unknown, (await restarted.Requests.GetRequestAsync(requestId, default))?.Certainty);
-        await Assert.ThrowsAsync<SessionOperationException>(() => restarted.Requests.SubmitAsync(new(sessionId, "replacement", TimeSpan.FromSeconds(5), "workspace", true), default).AsTask());
+        await Assert.ThrowsAsync<SessionOperationException>(() => restarted.Requests.SubmitAsync(Guid.NewGuid(), new(sessionId, "replacement", TimeSpan.FromSeconds(5), "workspace", true), default).AsTask());
         Assert.Single(agent.Inputs);
         Assert.Equal(1, (await reopened.GetRuntimeStatisticsAsync(default)).OccupiedReservations);
     }

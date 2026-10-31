@@ -7,6 +7,12 @@ internal sealed class DispatchCancellationWatch(ISessionQueryStore store, Guid r
 {
     internal bool HasFailed { get; private set; }
 
+    internal async ValueTask<bool> IsRequestedBeforeSendAsync(CancellationToken cancellationToken)
+    {
+        RequestSnapshot? request = await store.GetRequestAsync(requestId, cancellationToken).AsTask().WaitAsync(cancellationToken);
+        return request is { State: RequestState.Running, CancellationRequestedUtc: not null };
+    }
+
     internal async Task RunAsync(CancellationTokenSource execution, CancellationToken stopToken)
     {
         using CancellationTokenSource lifetime = CancellationTokenSource.CreateLinkedTokenSource(execution.Token, stopToken);

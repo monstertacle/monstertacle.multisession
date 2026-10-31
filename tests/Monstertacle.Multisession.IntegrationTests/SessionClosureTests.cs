@@ -17,7 +17,7 @@ public sealed class SessionClosureTests
         await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot original = await fixture.CreateSessionAsync();
         RequestReceipt? receipt = queued ? await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(
-            new(original.SessionId, "original input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None) : null;
+            Guid.NewGuid(), new(original.SessionId, "original input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None) : null;
         await fixture.Catalog.CloseSessionAsync(original.SessionId, CancellationToken.None);
         SessionSnapshot closed = (await fixture.Store.GetSessionAsync(original.SessionId, CancellationToken.None))!;
         Assert.Equal(SessionLifecycle.Closed, closed.Lifecycle);
@@ -30,7 +30,7 @@ public sealed class SessionClosureTests
         Assert.Equal(durable, StoreProbe.Scalar(fixture.Directory.DatabasePath, "SELECT SnapshotJson FROM Sessions"));
         Assert.Equal(closed.ClosedUtc, (await fixture.Store.GetSessionAsync(original.SessionId, CancellationToken.None))?.ClosedUtc);
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(
-            new(original.SessionId, "too late", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+            Guid.NewGuid(), new(original.SessionId, "too late", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.SessionClosed, failure.Failure.Code);
         Assert.Null(await fixture.Store.TryReserveHeadAsync(4, CancellationToken.None));
         if (receipt is not null)
@@ -100,7 +100,7 @@ public sealed class SessionClosureTests
         await using AdmissionStoreFixture fixture = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await fixture.CreateSessionAsync();
         RequestReceipt receipt = await new RequestAdmission(fixture.Store, fixture.Options).SubmitAsync(
-            new(session.SessionId, "queued", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            Guid.NewGuid(), new(session.SessionId, "queued", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         StoreProbe.Execute(fixture.Directory.DatabasePath, "CREATE TRIGGER FailClose AFTER UPDATE OF Lifecycle ON Sessions BEGIN SELECT RAISE(FAIL,'private-close-marker'); END;");
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => fixture.Catalog.CloseSessionAsync(session.SessionId, CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);

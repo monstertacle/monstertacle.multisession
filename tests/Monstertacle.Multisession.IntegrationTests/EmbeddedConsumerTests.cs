@@ -23,8 +23,8 @@ public sealed class EmbeddedConsumerTests
         await using SessionRuntime runtime = new(store, lease, [new("consumer", "consumer-owned", 1, provider)],
             [new("profile", "consumer", "opaque-consumer-model", ExecutionKind.ModelResponse, new("frozen", new Dictionary<string, string>()))]);
         await runtime.StartAsync(options, CancellationToken.None);
-        SessionSnapshot a = await runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
-        SessionSnapshot b = await runtime.Sessions.CreateSessionAsync("profile", new(null, null), CancellationToken.None);
+        SessionSnapshot a = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
+        SessionSnapshot b = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), CancellationToken.None);
         RequestReceipt firstA = await SubmitAsync(runtime, a.SessionId, "  first-a α🙂\r\n");
         RequestReceipt firstB = await SubmitAsync(runtime, b.SessionId, "first-b");
         try
@@ -65,7 +65,7 @@ public sealed class EmbeddedConsumerTests
         Assert.Equal(0, (await reopened.GetRuntimeStatisticsAsync(CancellationToken.None)).OccupiedReservations);
     }
     private static ValueTask<RequestReceipt> SubmitAsync(SessionRuntime runtime, Guid session, string input)
-        => runtime.Requests.SubmitAsync(new(session, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        => runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
     private static async Task<RequestSnapshot> EndAsync(SessionRuntime runtime, Guid request)
     {
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(5));

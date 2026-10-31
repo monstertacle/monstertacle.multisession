@@ -61,8 +61,8 @@ public sealed class DispatchCallbackTests
             return new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, "output-" + call.Input, true, binding with { ContinuationState = "next-head" }, null);
         };
         RequestAdmission admission = new(fixture.Store, fixture.Options);
-        await admission.SubmitAsync(new(session.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
-        await admission.SubmitAsync(new(session.SessionId, "second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+        await admission.SubmitAsync(Guid.NewGuid(), new(session.SessionId, "second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
         RequestDispatcher dispatcher = new(fixture.Store, [new("connection-I", "fixture-adapter", 7, fixture.Provider)], fixture.Options);
         Assert.True(await dispatcher.TryDispatchAsync(CancellationToken.None));
         Assert.True(await dispatcher.TryDispatchAsync(CancellationToken.None));

@@ -6,6 +6,8 @@ public sealed record RuntimeOptions
     /// <summary>Gets the explicit absolute private state directory.</summary>
     public required string StateDirectory { get; init; }
 
+    /// <summary>Gets the persisted dispatch authority mode.</summary>
+    public RuntimeDispatchMode DispatchMode { get; init; }
     /// <summary>Gets the concurrent dispatch capacity, including uncertain reservations.</summary>
     public int MaxConcurrentRequests { get; init; } = RuntimeDefaults.MaxConcurrentRequests;
     /// <summary>Gets the durable queued-request capacity.</summary>
@@ -35,7 +37,7 @@ public sealed record RuntimeOptions
             return new PublicError(ErrorCode.InvalidConfiguration);
         }
 
-        if (MaxConcurrentRequests <= 0 || MaxQueuedRequests <= 0
+        if (!Enum.IsDefined(DispatchMode) || MaxConcurrentRequests <= 0 || MaxQueuedRequests <= 0
             || MaxInputBytes <= 0 || MaxOutputBytes <= 0 || DbWorkQueueCapacity <= 0
             || !ExecutionDeadline.IsValid(AdmissionTimeout) || !ExecutionDeadline.IsValid(RequestTimeout)
             || !ExecutionDeadline.IsValid(ShutdownTimeout) || !ExecutionDeadline.IsValid(DbBusyTimeout)

@@ -20,7 +20,7 @@ public sealed class CqrsRuntimeTests
         await using SessionRuntime runtime = Runtime(store, new(), new(Options().StateDirectory));
         await runtime.StartAsync(Options(), CancellationToken.None);
         RequestReceipt receipt = await runtime.Commands.DispatchAsync(new SubmitRequestCommand(
-            new(session.SessionId, "typed input", TimeSpan.FromSeconds(10), null, false)));
+            Guid.NewGuid(), new(session.SessionId, "typed input", TimeSpan.FromSeconds(10), null, false)));
         Assert.Equal(receipt.RequestId, (await runtime.Requests.GetRequestAsync(receipt.RequestId, CancellationToken.None))?.RequestId);
         Assert.Equal(receipt.RequestId, Assert.Single((await runtime.Queries.DispatchAsync(new ListRequestsQuery(session.SessionId, 10))).Items).RequestId);
         Assert.Equal(session.SessionId, (await runtime.Queries.DispatchAsync(new GetSessionQuery(session.SessionId))).Value?.SessionId);

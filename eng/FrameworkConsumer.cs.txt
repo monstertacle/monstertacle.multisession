@@ -19,10 +19,10 @@ internal static class Program
         await using SessionRuntime runtime = new(store, lease, [new("framework", "fixture-framework-v1", 1, provider)],
             [new("agent", "framework", "host-selected", ExecutionKind.AgentTask, new("v1", new Dictionary<string, string>()))]);
         await runtime.StartAsync(options, token);
-        SessionSnapshot session = await runtime.Sessions.CreateSessionAsync("agent", new(null, null), token);
+        SessionSnapshot session = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid() ,"agent", new(null, null), token);
         for (int turn = 1; turn <= 2; turn++)
         {
-            RequestReceipt receipt = await runtime.Requests.SubmitAsync(new(session.SessionId, $"input-{turn}", TimeSpan.FromSeconds(10), null, false), token);
+            RequestReceipt receipt = await runtime.Requests.SubmitAsync(Guid.NewGuid() ,new(session.SessionId, $"input-{turn}", TimeSpan.FromSeconds(10), null, false), token);
             RequestSnapshot snapshot;
             do
             {

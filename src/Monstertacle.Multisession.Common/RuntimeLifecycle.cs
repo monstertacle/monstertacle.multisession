@@ -71,7 +71,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
                 _stop = new();
                 _signal = new(0, options.MaxConcurrentRequests);
                 _state = RuntimeState.Running;
-                _workers = Enumerable.Range(0, options.MaxConcurrentRequests).Select(_ => Task.Run(WorkAsync)).ToArray();
+                _workers = options.DispatchMode == RuntimeDispatchMode.Automatic ? Enumerable.Range(0, options.MaxConcurrentRequests).Select(_ => Task.Run(WorkAsync)).ToArray() : [];
                 _completion = Task.WhenAll(_workers);
             }
         }
@@ -130,7 +130,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         {
             await host.Store.StopAcceptanceAsync(token).AsTask().WaitAsync(token);
             StopWorkers();
-            await _shutdown.CancelQueuedAsync(token);
+            if (Components.Options.DispatchMode == RuntimeDispatchMode.Automatic) { await _shutdown.CancelQueuedAsync(token); }
         }
         catch (Exception) { failure = Error(ErrorCode.StorageUnavailable); }
         try

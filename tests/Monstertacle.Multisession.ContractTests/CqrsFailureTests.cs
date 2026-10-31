@@ -18,9 +18,9 @@ public sealed class CqrsFailureTests
         using CancellationTokenSource cancelled = new();
         cancelled.Cancel();
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => runtime.Commands.DispatchAsync(
-            new CreateSessionCommand("missing", new(null, null)), cancelled.Token));
+            new CreateSessionCommand(Guid.NewGuid(), "missing", new(null, null)), cancelled.Token));
         SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => runtime.Commands.DispatchAsync(
-            new CreateSessionCommand("missing", new(null, null))));
+            new CreateSessionCommand(Guid.NewGuid(), "missing", new(null, null))));
         Assert.Equal(ErrorCode.NotFound, failure.Failure.Code);
     }
 

@@ -26,7 +26,7 @@ public sealed class BootstrapOptionsTests
         await using AdmissionStoreFixture seed = await AdmissionStoreFixture.CreateAsync();
         SessionSnapshot session = await seed.CreateSessionAsync();
         RequestReceipt receipt = await new RequestAdmission(seed.Store, seed.Options).SubmitAsync(
-            new(session.SessionId, "preserved", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
+            Guid.NewGuid(), new(session.SessionId, "preserved", TimeSpan.FromMinutes(1), null, false), CancellationToken.None);
         await seed.Store.DisposeAsync();
         await using RetainedTestLease lease = new(seed.Directory);
         await using ISessionStore store = await SqliteStoreFactory.OpenExistingAsync(lease, seed.Directory.TrustScopeId, seed.Options, CancellationToken.None);

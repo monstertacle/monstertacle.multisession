@@ -42,9 +42,9 @@ public sealed class ParallelSessionsTests
         List<(SessionSnapshot Session, RequestReceipt First, RequestReceipt Second)> sessions = [];
         for (int i = 0; i < 10; i++)
         {
-            SessionSnapshot session = await runtime.Sessions.CreateSessionAsync(i % 2 == 0 ? "left" : "right", new(directory, null), CancellationToken.None);
-            RequestReceipt a = await runtime.Requests.SubmitAsync(new(session.SessionId, $"{i}-first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
-            RequestReceipt b = await runtime.Requests.SubmitAsync(new(session.SessionId, $"{i}-second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            SessionSnapshot session = await runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), i % 2 == 0 ? "left" : "right", new(directory, null), CancellationToken.None);
+            RequestReceipt a = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, $"{i}-first", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+            RequestReceipt b = await runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, $"{i}-second", TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
             sessions.Add((session, a, b));
         }
         await Task.WhenAll(firstEntered.Task, secondEntered.Task).WaitAsync(TimeSpan.FromSeconds(5));
@@ -86,7 +86,7 @@ public sealed class ParallelSessionsTests
         await runtime.StartAsync(new() { StateDirectory = directory, Retention = new(true, null) }, CancellationToken.None);
         await Assert.ThrowsAsync<SessionOperationException>(() => runtime.StartAsync(new() { StateDirectory = directory, Retention = new(true, null) }, CancellationToken.None).AsTask());
         await runtime.StopAsync(TimeSpan.FromSeconds(10), CancellationToken.None);
-        await Assert.ThrowsAsync<SessionOperationException>(() => runtime.Requests.SubmitAsync(new(Guid.NewGuid(), "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
+        await Assert.ThrowsAsync<SessionOperationException>(() => runtime.Requests.SubmitAsync(Guid.NewGuid(), new(Guid.NewGuid(), "input", TimeSpan.FromSeconds(10), null, false), CancellationToken.None).AsTask());
         Assert.True(lease.IsDisposed);
     }
 }

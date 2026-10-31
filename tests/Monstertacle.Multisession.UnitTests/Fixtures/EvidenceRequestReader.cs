@@ -12,7 +12,7 @@ internal sealed class EvidenceRequestReader : IRequests
         Reads++;
         return ValueTask.FromResult(ReadOverride is null ? Items.GetValueOrDefault(requestId) : ReadOverride(requestId));
     }
-    public ValueTask<RequestReceipt> SubmitAsync(SubmitRequest request, CancellationToken cancellationToken)
+    public ValueTask<RequestReceipt> SubmitAsync(Guid requestId, SubmitRequest request, CancellationToken cancellationToken)
     {
         Submissions++;
         throw new InvalidOperationException("Workflow must never submit");

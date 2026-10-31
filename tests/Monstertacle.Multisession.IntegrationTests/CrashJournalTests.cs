@@ -21,7 +21,7 @@ public sealed class CrashJournalTests
         await using PrivateStoreDirectory directory = new();
         await (await SqliteStoreFactory.CreateNewAsync(directory, directory.TrustScopeId, directory.Options, CancellationToken.None)).DisposeAsync();
         object? storeId = StoreProbe.Scalar(directory.DatabasePath, "SELECT StoreId FROM Metadata");
-        if (unsupported) { StoreProbe.Execute(directory.DatabasePath, "UPDATE Metadata SET SchemaVersion=2"); }
+        if (unsupported) { StoreProbe.Execute(directory.DatabasePath, "UPDATE Metadata SET SchemaVersion=3"); }
         await using CrashHarness child = await CrashHarness.StartAsync(directory, CrashProtocol.JournalPoint);
         Assert.NotNull(child.Signal);
         Assert.Equal(TimeSpan.Zero, child.Signal.Utc.Offset);

@@ -1,0 +1,81 @@
+{
+  "status": "local Linux increment qualified; feature incomplete",
+  "sourceHash": "404dd52176822e72ab227c1ed38db83d396d5e1fdd7f1da598d1b43ac2da3e23",
+  "qualityExitCode": 0,
+  "staticExitCode": 0,
+  "staticSummary": {
+    "files": 522,
+    "types": 542,
+    "violations": 0,
+    "new": 0,
+    "worsened": 0,
+    "baselined": 0,
+    "stale": 0,
+    "parseErrors": 0,
+    "skipped": 0
+  },
+  "staticReportSha256": "98c3134f98d465cc8d60a75b89ca69551dd0ebc237f96e49b785b68a0d8ef833",
+  "coverComplete": true,
+  "coverPassed": true,
+  "coverSummary": {
+    "files": 281,
+    "types": 296,
+    "members": 594,
+    "line": 95.9,
+    "branch": 83.6,
+    "coveredLines": 4119,
+    "coverableLines": 4294,
+    "coveredBranches": 2674,
+    "branches": 3196,
+    "diffLine": 96.8,
+    "diffBranch": 86.2,
+    "violations": 0,
+    "new": 0,
+    "worsened": 0,
+    "baselined": 0,
+    "stale": 0,
+    "tightenable": 0,
+    "unreported": 0,
+    "excluded": 0,
+    "skipped": 6,
+    "unmapped": 0,
+    "listed": 0,
+    "omitted": 0
+  },
+  "coverReportSha256": "5e6280e1de227277482285e752ea5f94440b0623c9a80e2fa07b119f98c7ec84",
+  "suites": [
+    {
+      "suite": "UnitTests",
+      "passed": 402,
+      "skipped": 0,
+      "total": 402
+    },
+    {
+      "suite": "ContractTests",
+      "passed": 252,
+      "skipped": 0,
+      "total": 252
+    },
+    {
+      "suite": "IntegrationTests",
+      "passed": 418,
+      "skipped": 0,
+      "total": 418
+    },
+    {
+      "suite": "PlatformTests",
+      "passed": 68,
+      "skipped": 0,
+      "total": 68
+    }
+  ],
+  "passedTotal": null,
+  "pending": [
+    "typed outcomes and native observations",
+    "exact recovered-submission fingerprint",
+    "actual prior-package reader refusal",
+    "native Windows qualification for this increment",
+    "local alpha.3 producer/consumer proof",
+    "actual SharpClaw runtime migration"
+  ]
+}

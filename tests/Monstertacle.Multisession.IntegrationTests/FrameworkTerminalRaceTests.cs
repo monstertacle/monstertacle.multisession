@@ -28,9 +28,9 @@ public sealed class FrameworkTerminalRaceTests
         {
             await store.StartAsync(lease, default);
             SessionCatalog sessions = new(store, providers, profiles);
-            sessionId = (await sessions.CreateSessionAsync("profile", new(null, null), default)).SessionId;
+            sessionId = (await sessions.CreateSessionAsync(Guid.NewGuid(), "profile", new(null, null), default)).SessionId;
             RequestAdmission admission = new(store, directory.Options);
-            requestId = (await admission.SubmitAsync(new(sessionId, "effect", TimeSpan.FromSeconds(5), null, false), default)).RequestId;
+            requestId = (await admission.SubmitAsync(Guid.NewGuid(), new(sessionId, "effect", TimeSpan.FromSeconds(5), null, false), default)).RequestId;
             RequestDispatcher dispatcher = new(store, providers, directory.Options);
             Assert.True(await dispatcher.TryDispatchAsync(cancellation.Token));
             Assert.Equal(ExecutionCertainty.ConfirmedEnded, (await store.GetRequestAsync(requestId, default))?.Certainty);

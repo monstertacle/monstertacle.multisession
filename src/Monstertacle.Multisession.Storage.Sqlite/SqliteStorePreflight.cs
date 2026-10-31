@@ -14,7 +14,7 @@ internal static class SqliteStorePreflight
     private const byte _rollbackFormatVersion = 1;
     private const string _journalSuffix = "-journal";
 
-    internal static async Task ValidateAsync(string path, IStateDirectoryLease lease, Guid trustScopeId, CancellationToken cancellationToken)
+    internal static async Task ValidateAsync(string path, IStateDirectoryLease lease, Guid trustScopeId, RuntimeDispatchMode dispatchMode, CancellationToken cancellationToken)
     {
         byte[] header = new byte[_headerLength];
         await using (FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, _headerLength, FileOptions.Asynchronous))
@@ -30,14 +30,14 @@ internal static class SqliteStorePreflight
         }
         if (!File.Exists(path + _journalSuffix))
         {
-            await Task.Run(() => ValidateDatabase(path, SqliteOpenMode.ReadOnly, trustScopeId), cancellationToken);
+            await Task.Run(() => ValidateDatabase(path, SqliteOpenMode.ReadOnly, trustScopeId, dispatchMode), cancellationToken);
             return;
         }
         await lease.PrepareFileAsync(Path.GetFileName(path) + _journalSuffix, StateFileMode.OpenExisting, cancellationToken);
-        await ValidateJournalCopyAsync(path, lease, trustScopeId, cancellationToken);
+        await ValidateJournalCopyAsync(path, lease, trustScopeId, dispatchMode, cancellationToken);
     }
 
-    private static async Task ValidateJournalCopyAsync(string path, IStateDirectoryLease lease, Guid trustScopeId, CancellationToken cancellationToken)
+    private static async Task ValidateJournalCopyAsync(string path, IStateDirectoryLease lease, Guid trustScopeId, RuntimeDispatchMode dispatchMode, CancellationToken cancellationToken)
     {
         string name = ".format-check-" + Guid.NewGuid().ToString("N") + ".db";
         string copy = Path.Combine(lease.StateDirectory, name);
@@ -51,7 +51,7 @@ internal static class SqliteStorePreflight
             await lease.PrepareFileAsync(name + _journalSuffix, StateFileMode.CreateNew, cancellationToken);
             copiedJournal = true;
             await CopyAsync(path + _journalSuffix, copy + _journalSuffix, cancellationToken);
-            await Task.Run(() => ValidateDatabase(copy, SqliteOpenMode.ReadWrite, trustScopeId), cancellationToken);
+            await Task.Run(() => ValidateDatabase(copy, SqliteOpenMode.ReadWrite, trustScopeId, dispatchMode), cancellationToken);
         }
         finally
         {
@@ -67,12 +67,12 @@ internal static class SqliteStorePreflight
         await input.CopyToAsync(output, cancellationToken);
     }
 
-    private static void ValidateDatabase(string path, SqliteOpenMode mode, Guid trustScopeId)
+    private static void ValidateDatabase(string path, SqliteOpenMode mode, Guid trustScopeId, RuntimeDispatchMode dispatchMode)
     {
         try
         {
             using SqliteConnection connection = SqliteConnectionPolicy.Open(path, mode);
-            SqliteSchema.Validate(connection, trustScopeId);
+            SqliteSchema.Validate(connection, trustScopeId, dispatchMode);
         }
         catch (Exception failure) when (failure is SqliteException or InvalidCastException or FormatException)
         {

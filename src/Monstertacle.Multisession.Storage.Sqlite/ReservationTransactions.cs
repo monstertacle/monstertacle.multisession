@@ -6,7 +6,7 @@ namespace Monstertacle.Multisession.Storage.Sqlite;
 
 internal static class ReservationTransactions
 {
-    internal static ExecutionReservation? Reserve(SqliteConnection connection, SqliteStoreState state, int maximumConcurrent, CancellationToken token)
+    internal static ExecutionReservation? Reserve(SqliteConnection connection, SqliteStoreState state, int maximumConcurrent, Guid? expectedRequestId, CancellationToken token)
     {
         if (!state.CanDispatch) { return null; }
         return SqliteTransactions.Run<ExecutionReservation?>(connection, transaction =>
@@ -16,7 +16,7 @@ internal static class ReservationTransactions
             QueuedRequest[] queued = rows.Select(row => new QueuedRequest(row.Request.RequestId, row.Request.SessionId, row.Request.Sequence,
                 row.Request.AcceptedUtc, row.Submission.WriteIntent ? row.Submission.WorkspaceKey : null)).ToArray();
             QueuedRequest? head = ReservationPolicy.SelectHead(queued, active, rows.Select(row => row.Session).DistinctBy(session => session.SessionId).ToArray(), maximumConcurrent);
-            if (head is null) { return null; }
+            if (head is null || (expectedRequestId is { } expected && head.RequestId != expected)) { return null; }
             QueuedStoreRow selected = rows.Single(row => row.Request.RequestId == head.RequestId);
             return Insert(connection, state, transaction, head, selected);
         }, token);

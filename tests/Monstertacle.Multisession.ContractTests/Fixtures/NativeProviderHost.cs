@@ -42,14 +42,14 @@ internal sealed class NativeProviderHost : IAsyncDisposable
         foreach (string profile in _profiles)
         {
             SessionExecutionContext context = profile == "external" ? new(Path.GetTempPath(), "external-workspace") : new(null, null);
-            SessionSnapshot session = await Runtime.Sessions.CreateSessionAsync(profile, context, CancellationToken.None);
+            SessionSnapshot session = await Runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), profile, context, CancellationToken.None);
             List<string> inputs = [];
             List<RequestReceipt> receipts = [];
             for (int index = 0; index < 3; index++)
             {
                 string input = $"{profile}-new-input-{index}";
                 inputs.Add(input);
-                receipts.Add(await Runtime.Requests.SubmitAsync(new(session.SessionId, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None));
+                receipts.Add(await Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session.SessionId, input, TimeSpan.FromSeconds(10), null, false), CancellationToken.None));
             }
             runs.Add(new(session, inputs, receipts));
         }

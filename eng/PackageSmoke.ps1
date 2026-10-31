@@ -36,12 +36,12 @@ $project = @"
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Monstertacle.Multisession.$platformPackage.${platformPackage}StateDirectoryLease" Alias="NativeLease" />
-    <PackageReference Include="Monstertacle.Multisession.AgentFramework" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Conversations" Version="0.2.0-alpha.2" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Interactions" Version="0.2.0-alpha.2" />
+    <PackageReference Include="Monstertacle.Multisession.AgentFramework" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Conversations" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Interactions" Version="0.2.0-alpha.3" />
   </ItemGroup>
 </Project>
 "@

@@ -1,0 +1,17 @@
+# Source analysis and architecture disposition
+
+Baseline6127f2ec6bfcb279c6204c1de6e5e81b4a99bb3e. SDK10.0.403, C#14/.NET10; framework1.27.0 (MIT); release candidate0.2.0-alpha.3. Existing static/coverage pins and native target platforms remain.
+
+Joint source evidence and candidate are in SharpClaw feature004 at source516ed51, frozen spec655c276386d841b39a98312ec7faae35819fbbe97e26f6a09bc0197244b0f06e/research9e5bea18e000befdb3ee5aa9e76e562cefae251dbdb8c4709943ed38c7fc21. Separate contrary requirements and architecture pairs verified both repositories. Architecture advocate57seconds/28 calls; guard45seconds/10 shell calls. Both supported replacement on responsibility and certainty, not effort.
+
+Source: SessionCatalog generates identity before open; RequestAdmission generates a candidate before commit; RequestAcceptance already separates identity from SubmitRequest payload. Canonical IDs move to caller-provided public arguments/commands; storage remains authoritative and duplicate IDs reject. Public submission fingerprint permits exact recovered-request comparison without parsing or resending old input.
+
+RuntimeLifecycle launches workers unconditionally and CompleteStopAsync cancels queued work. Host-controlled mode must alter both startup and shutdown; query/recovery preparation remains, but targeted dispatch is explicit and queued work survives stop. ReservationTransactions must check expected eligible head atomically before writing. Immutable mode is stored in format2 metadata; existing header/schema preflight rejects historical/incompatible policy before work.
+
+FrameworkExecution currently reports a local dispatch ID as OperationAccepted and provides no invocation observer. Introduce InvocationPrepared plus NativeSessionObserved; external OperationAccepted remains actual external receipt only. Typed invocation context is ephemeral AgentRunOptions data. Store native identity as request-linked observation evidence, never replace ProviderBinding.SessionReference or advance confirmed continuation.
+
+Typed CLR outcome metadata is explicitly enabled per qualified registration and structurally validated before serialization. It carries state, certainty, complete output and continuation policy independently; generic exceptions stay Unknown and JSON/string lookalikes never select controls. Preserved complete output is not fabricated assistant text. Serialization failure retains already-established end/output but disables continuation. No new durable scheduler or generic service locator.
+
+Tests: canonical supplied IDs/duplicate/receipt-loss; host-controlled queued startup/stop/reopen; target-head/capacity/unknown refusal; typed native failures and malformed metadata; ordinary response behavior; awaited native observations and late refusal; actual old-package store refusal. New product fields remain in complete static/coverage inventory. Producer contracts and local package bytes are reviewed before host implementation. Live peer session is untouched.
+
+Implementation refinement: canonical request IDs are available even for pre-cancelled admission; errors preserve that identity while reporting NotAccepted. The old no-candidate assertion was updated accordingly. Dispatch cancellation status belongs to the existing dispatch-local cancellation observer; moving its read there reduces dispatcher coupling without a new utility layer. This is a behavior-preserving responsibility adjustment after the full 1140-test native Linux run passed. Decision: docs/adr/0006-host-directed-execution.md.

@@ -5,7 +5,8 @@ CREATE TABLE Metadata (
     BindingEncodingVersion INTEGER NOT NULL,
     StoreId TEXT NOT NULL,
     InstanceTrustScopeId TEXT NOT NULL,
-    CreatedUtc TEXT NOT NULL
+    CreatedUtc TEXT NOT NULL,
+    DispatchMode INTEGER NOT NULL CHECK (DispatchMode IN (0, 1))
 ) STRICT;
 CREATE TABLE Sessions (
     SessionId TEXT PRIMARY KEY NOT NULL,

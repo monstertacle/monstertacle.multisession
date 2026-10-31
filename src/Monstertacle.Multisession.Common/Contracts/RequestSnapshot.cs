@@ -15,6 +15,8 @@ public sealed record RequestSnapshot(
     ExecutionCertainty Certainty,
     ProviderReply? Result)
 {
+    /// <summary>Gets the canonical immutable submission fingerprint stored at acceptance.</summary>
+    public string SubmissionFingerprint { get; init; } = string.Empty;
     /// <summary>Gets the UTC instant at which the input was durably accepted.</summary>
     public DateTimeOffset AcceptedUtc { get; init; }
     /// <summary>Gets the actual dispatch time, absent while queued.</summary>

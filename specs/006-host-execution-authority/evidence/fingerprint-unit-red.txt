@@ -1,0 +1,95 @@
+  Determining projects to restore...
+  Restored /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/Monstertacle.Multisession.UnitTests.csproj (in 237 ms).
+  8 of 9 projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Providers.Interactions -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/bin/Release/net10.0/Monstertacle.Multisession.Providers.Interactions.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Providers.Conversations -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/bin/Release/net10.0/Monstertacle.Multisession.Providers.Conversations.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.23]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.IdenticalValueHasStableIdentity [FAIL]
+[xUnit.net 00:00:00.24]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.DifferentUnicodeRepresentationsRemainDifferent [FAIL]
+[xUnit.net 00:00:00.24]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "session") [FAIL]
+[xUnit.net 00:00:00.24]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "write") [FAIL]
+[xUnit.net 00:00:00.24]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "timeout") [FAIL]
+[xUnit.net 00:00:00.24]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "workspace") [FAIL]
+[xUnit.net 00:00:00.24]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "empty-workspace") [FAIL]
+[xUnit.net 00:00:00.24]     Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "input") [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.IdenticalValueHasStableIdentity [5 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 64
+Actual:   0
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.IdenticalValueHasStableIdentity() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 18
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.DifferentUnicodeRepresentationsRemainDifferent [2 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not ""
+Actual:       ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.DifferentUnicodeRepresentationsRemainDifferent() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 51
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "session") [< 1 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not ""
+Actual:       ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(String field) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 43
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "write") [< 1 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not ""
+Actual:       ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(String field) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 43
+   at InvokeStub_RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "timeout") [< 1 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not ""
+Actual:       ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(String field) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 43
+   at InvokeStub_RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "workspace") [< 1 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not ""
+Actual:       ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(String field) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 43
+   at InvokeStub_RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "empty-workspace") [< 1 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not ""
+Actual:       ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(String field) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 43
+   at InvokeStub_RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(field: "input") [< 1 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not ""
+Actual:       ""
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(String field) in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/RequestSubmissionFingerprintTests.cs:line 43
+   at InvokeStub_RequestSubmissionFingerprintTests.ChangedFieldCannotMatchOriginal(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Failed!  - Failed:     8, Passed:     0, Skipped:     0, Total:     8, Duration: 31 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

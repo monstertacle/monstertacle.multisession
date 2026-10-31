@@ -1,4 +1,5 @@
 using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.Requests;
 using Monstertacle.Multisession.Scheduling;
 using Monstertacle.Multisession.Sessions;
 
@@ -127,7 +128,7 @@ internal sealed class InMemorySessionStore : ControlledCompletionStore, ISession
             {
                 throw new SessionOperationException(new PublicError(ErrorCode.InvalidInput, SessionId: request.SessionId, RequestId: requestId, AdmissionStatus: AdmissionStatus.NotAccepted));
             }
-            State.Requests.Add(requestId, new RequestSnapshot(requestId, request.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null));
+            State.Requests.Add(requestId, new RequestSnapshot(requestId, request.SessionId, sequence, RequestState.Queued, ExecutionCertainty.NotStarted, null) { SubmissionFingerprint = RequestSubmissionFingerprint.Compute(request) });
             State.Submissions.Add(requestId, request);
             State.AcceptedUtc.Add(requestId, Clock.GetUtcNow());
             receipt = new RequestReceipt(requestId, sequence);

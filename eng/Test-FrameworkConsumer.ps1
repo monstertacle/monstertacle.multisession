@@ -14,7 +14,7 @@ if ($LASTEXITCODE -ne 0) { throw "Framework consumer locked restore failed: $pro
 if ($LASTEXITCODE -ne 0) { throw "Framework consumer build failed: $probe" }
 # Preserve the root rules, but measure this independent consumer in its own compilation context.
 $guard = Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'codemetr.json') -Raw | ConvertFrom-Json -AsHashtable
-$guard.context = @($source)
+$guard.context = @($probe)
 $guardPath = Join-Path $probe 'codemetr.json'
 $guard | ConvertTo-Json -Depth 8 | Set-Content $guardPath
 $source | & dotnet tool run codemetr-csharp -- check --files-from - --config $guardPath --format json > (Join-Path $probe 'metrics.json')

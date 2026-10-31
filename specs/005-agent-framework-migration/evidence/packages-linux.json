@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "platform": "Linux",
+  "completedUtc": "2026-10-31T15:10:17.3140865+01:00",
+  "packageHashes": [
+    {
+      "File": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.2.nupkg",
+      "Sha256": "99564971ec1b7ee906390cbbba3383f30caac297d290b08657a5a631755d7f49"
+    },
+    {
+      "File": "Monstertacle.Multisession.Common.0.2.0-alpha.2.nupkg",
+      "Sha256": "e88e58c8ef2661cf2d75b33b30de97e2e43c2b04edc27e8f810d99d4145272fa"
+    },
+    {
+      "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.2.nupkg",
+      "Sha256": "814e2b911ae5e0175a054b759ba192228a715384e1d42a08af8c3e81937785b4"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.2.nupkg",
+      "Sha256": "0fc3d58af8df6de0e000b7e4fc33792cfea84b1c44e49b347367aaa116cbddab"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.2.nupkg",
+      "Sha256": "5c677b938bcf05c1016f78f6ac1acd9b4eea966e011cbb9cf5d96eb1d73a5410"
+    },
+    {
+      "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.2.nupkg",
+      "Sha256": "f408b19a297257f0898300c6df61d7cf79b7df6aebeabeef49dea59c5aeafc60"
+    },
+    {
+      "File": "Monstertacle.Multisession.Windows.0.2.0-alpha.2.nupkg",
+      "Sha256": "fadaab4e8700d757563fb55951ef3e34bc49fc3cc4d417942dea2150f7cda1e6"
+    }
+  ],
+  "publicConsumer": {
+    "Status": "PASS",
+    "Sessions": 2,
+    "Requests": 5,
+    "ReopenedRequests": 5
+  },
+  "frameworkConsumer": "PASS: two confirmed turns using real package references, isolated locked restore and all three consumer types measured"
+}

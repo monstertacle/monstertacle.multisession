@@ -22,11 +22,11 @@
 ## US4: package migration
 
 - [x] T011 [US4] Rename protocol implementation types/packages to Conversations/Interactions and update references without changing persisted wire IDs in src/, tests/, examples/ and eng/.
-- [ ] T012 [US4] Add migration guide and package-only generic framework consumer in README.md, docs/ and eng/PackageSmoke.ps1.
+- [x] T012 [US4] Add migration guide and package-only generic framework consumer in README.md, docs/ and eng/PackageSmoke.ps1.
 
 ## Qualification and completion
 
-- [ ] T013 Run full static metrics, format, native quality/coverage and dependency audit; retain exact reports in specs/005-agent-framework-migration/evidence/.
+- [x] T013 Run full static metrics, format, native quality/coverage and dependency audit; retain exact reports in specs/005-agent-framework-migration/evidence/.
 - [ ] T014 Pack and consume artifacts; publish PR and wait for same-source Linux/Windows CI; resolve findings before merge.
 - [ ] T015 Record release status and every finding disposition in specs/005-agent-framework-migration/plan.md, merge when qualified and clean only merged migration branches.
 

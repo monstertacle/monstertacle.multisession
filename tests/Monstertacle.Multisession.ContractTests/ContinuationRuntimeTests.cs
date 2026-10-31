@@ -1,6 +1,6 @@
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ContractTests.Fixtures;
-using Monstertacle.Multisession.Providers.Gemini;
+using Monstertacle.Multisession.Providers.Interactions;
 using Monstertacle.Multisession.UnitTests.Fixtures;
 using Xunit;
 
@@ -17,7 +17,7 @@ public sealed class ContinuationRuntimeTests
         CompletionBarrier one = new(1);
         CompletionBarrier both = new(2);
         InMemorySessionStore store = new() { DispatchState = new() { Completed = () => { one.Record(); both.Record(); } } };
-        using GeminiSessionProvider provider = new(new() { CredentialReference = "reference" }, new FixtureCredentials(), wire.Handler);
+        using InteractionSessionProvider provider = new(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "reference" }, new FixtureCredentials(), wire.Handler);
         await using SessionRuntime runtime = new(store, new TestStateDirectoryLease(Path.GetTempPath()),
             [new("native", "gemini-interactions", 1, provider)],
             [new("profile", "native", "opaque-model", ExecutionKind.ModelResponse, new("revision", new Dictionary<string, string>()))]);

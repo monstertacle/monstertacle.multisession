@@ -1,0 +1,21 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Providers.Conversations -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/bin/Release/net10.0/Monstertacle.Multisession.Providers.Conversations.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.Providers.Interactions -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/bin/Release/net10.0/Monstertacle.Multisession.Providers.Interactions.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.30]     Monstertacle.Multisession.UnitTests.EvidenceObservationTests.ObservesPendingThenCompletedWithinBudget [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.EvidenceObservationTests.ObservesPendingThenCompletedWithinBudget [69 ms]
+  Error Message:
+   Assert.Single() Failure: The collection was empty
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceObservationTests.ObservesPendingThenCompletedWithinBudget() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceObservationTests.cs:line 32
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 83 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

@@ -105,16 +105,16 @@
           "Monstertacle.SharpQrs": "[0.2.0-alpha.1, )"
         }
       },
-      "monstertacle.multisession.providers.gemini": {
+      "monstertacle.multisession.providers.conversations": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
         }
       },
-      "monstertacle.multisession.providers.openai": {
+      "monstertacle.multisession.providers.interactions": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.1, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.2, )"
         }
       },
       "Microsoft.Extensions.Logging.Abstractions": {

@@ -1,8 +1,8 @@
 using System.Net;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ContractTests.Fixtures;
-using Monstertacle.Multisession.Providers.Gemini;
-using Monstertacle.Multisession.Providers.OpenAI;
+using Monstertacle.Multisession.Providers.Conversations;
+using Monstertacle.Multisession.Providers.Interactions;
 
 namespace Monstertacle.Multisession.ValidationHost;
 
@@ -18,9 +18,9 @@ internal static class NativeContextProbeFlow
         using ScriptedHttpHandler rejected = new((request, _) => Task.FromResult(request.RequestUri!.AbsolutePath == "/v1/conversations"
             ? ScriptedHttpHandler.Json("""{"object":"conversation","id":"conv_context_limit"}""")
             : ScriptedHttpHandler.Json("""{"error":{"code":"context_length_exceeded","message":"private context details"}}""", HttpStatusCode.BadRequest)));
-        using OpenAiSessionProvider conversation = new(new() { CredentialReference = "fixture-conversation" }, new FixtureCredentials(), conversations.Handler);
-        using GeminiSessionProvider interaction = new(new() { CredentialReference = "fixture-interaction" }, new FixtureCredentials(), interactions.Handler);
-        using OpenAiSessionProvider contextLimit = new(new() { CredentialReference = "fixture-limit" }, new FixtureCredentials(), rejected);
+        using ConversationSessionProvider conversation = new(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "fixture-conversation" }, new FixtureCredentials(), conversations.Handler);
+        using InteractionSessionProvider interaction = new(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "fixture-interaction" }, new FixtureCredentials(), interactions.Handler);
+        using ConversationSessionProvider contextLimit = new(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "fixture-limit" }, new FixtureCredentials(), rejected);
         await using ProbeHost host = await ProbeHost.StartAsync(state,
             [new("conversation", "openai-responses", 1, conversation), new("interaction", "gemini-interactions", 1, interaction), new("limit", "openai-responses", 1, contextLimit)]);
         SessionSnapshot a = await host.CreateAsync("conversation");

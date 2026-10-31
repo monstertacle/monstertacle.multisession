@@ -36,11 +36,12 @@ $project = @"
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Monstertacle.Multisession.$platformPackage.${platformPackage}StateDirectoryLease" Alias="NativeLease" />
-    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.1" />
-    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.1" />
-    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.1" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.OpenAI" Version="0.2.0-alpha.1" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Gemini" Version="0.2.0-alpha.1" />
+    <PackageReference Include="Monstertacle.Multisession.AgentFramework" Version="0.2.0-alpha.2" />
+    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.2" />
+    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.2" />
+    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.2" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Conversations" Version="0.2.0-alpha.2" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Interactions" Version="0.2.0-alpha.2" />
   </ItemGroup>
 </Project>
 "@
@@ -52,7 +53,7 @@ $config = @"
   <packageSources><clear /><add key="local" value="$escapedFeed" /><add key="nuget" value="https://api.nuget.org/v3/index.json" /></packageSources>
   <packageSourceMapping>
     <packageSource key="local"><package pattern="Monstertacle.Multisession.*" /></packageSource>
-    <packageSource key="nuget"><package pattern="Monstertacle.SharpQrs" /><package pattern="Microsoft.*" /><package pattern="System.*" /><package pattern="SQLitePCLRaw.*" /></packageSource>
+    <packageSource key="nuget"><package pattern="Monstertacle.SharpQrs" /><package pattern="Microsoft.*" /><package pattern="System.*" /><package pattern="SQLitePCLRaw.*" /><package pattern="OpenTelemetry.*" /><package pattern="Google.Protobuf" /></packageSource>
   </packageSourceMapping>
 </configuration>
 "@
@@ -74,6 +75,7 @@ try {
     Invoke-SmokeDotnet @((Join-Path $workspace "bin/Release/$framework/Consumer.dll"), (Join-Path $workspace 'state')) 'report.json'
     $report = Get-Content -Raw -LiteralPath (Join-Path $workspace 'report.json') | ConvertFrom-Json
     if ($report.Status -ne 'PASS' -or $report.Requests -ne 5 -or $report.ReopenedRequests -ne 5) { throw 'Incomplete public consumer proof.' }
+    & (Join-Path $PSScriptRoot Test-FrameworkConsumer.ps1) -Workspace $workspace -ProjectText $project -ConfigPath $configPath -Framework $framework
     $hashes = @((Get-ChildItem -LiteralPath $feed -Filter '*.nupkg' -File) + (Get-Item -LiteralPath $template, $consumerSource, $projectPath, $configPath) |
         ForEach-Object { [ordered]@{ File = $_.Name; Sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() } })
     [ordered]@{ Status = 'PASS'; Platform = $platformPackage; CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O'); Workspace = $workspace; Hashes = $hashes; Consumer = $report } |
@@ -87,5 +89,6 @@ try {
         $archivedName = if ($name -eq 'Program.cs') { 'Program.cs.txt' } else { $name }
         if (Test-Path -LiteralPath $file) { Copy-Item -LiteralPath $file -Destination (Join-Path $reports $archivedName) }
     }
+    if (Test-Path (Join-Path $workspace framework-evidence)) { Copy-Item (Join-Path $workspace framework-evidence) $reports -Recurse }
     Pop-Location
 }

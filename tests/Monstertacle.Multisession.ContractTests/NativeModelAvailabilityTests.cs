@@ -1,8 +1,8 @@
 using System.Net;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ContractTests.Fixtures;
-using Monstertacle.Multisession.Providers.Gemini;
-using Monstertacle.Multisession.Providers.OpenAI;
+using Monstertacle.Multisession.Providers.Conversations;
+using Monstertacle.Multisession.Providers.Interactions;
 using Xunit;
 
 namespace Monstertacle.Multisession.ContractTests;
@@ -11,8 +11,8 @@ namespace Monstertacle.Multisession.ContractTests;
 public sealed class NativeModelAvailabilityTests
 {
     private static IDisposable Provider(bool gemini, ScriptedHttpHandler handler, FixtureCredentials credentials)
-        => gemini ? new GeminiSessionProvider(new() { CredentialReference = "reference" }, credentials, handler)
-            : new OpenAiSessionProvider(new() { CredentialReference = "reference" }, credentials, handler);
+        => gemini ? new InteractionSessionProvider(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "reference" }, credentials, handler)
+            : new ConversationSessionProvider(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "reference" }, credentials, handler);
     private static ProviderSessionContext Context(string model)
         => new(Guid.NewGuid(), model, ExecutionKind.ModelResponse, new(null, null), new Dictionary<string, string>());
 

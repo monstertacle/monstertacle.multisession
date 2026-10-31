@@ -64,7 +64,7 @@ function Assert-Gate([string]$Name, [hashtable]$Case, [int]$Expected, [int]$Expe
             return
         }
         $summary = ($output -join "`n") | ConvertFrom-Json
-        if ($summary.TotalLines -ne $ExpectedLines -or $summary.CoveredLines -ne 45) {
+        if ($summary.TotalLines -ne $ExpectedLines -or $summary.CoveredLines -ne (9 * $modules.Count)) {
             Write-Output "FAIL $Name`: duplicate/union counts are incorrect."
             $script:failures++
             return
@@ -127,14 +127,14 @@ Write-Report $case $report
 $subdirectory = Join-Path $case.Reports 'second-suite'
 $null = New-Item $subdirectory -ItemType Directory
 [IO.File]::WriteAllText((Join-Path $subdirectory 'coverage.json'), ($report | ConvertTo-Json -Depth 12))
-Assert-Gate 'duplicate reports count source lines only once' $case 0 50
+Assert-Gate 'duplicate reports count source lines only once' $case 0 (10 * $modules.Count)
 
 $case = New-Case 'complementary-reports'
 Write-Report $case (New-Report $case 5)
 $subdirectory = Join-Path $case.Reports 'second-suite'
 $null = New-Item $subdirectory -ItemType Directory
 [IO.File]::WriteAllText((Join-Path $subdirectory 'coverage.json'), ((New-Report $case 4 5) | ConvertTo-Json -Depth 12))
-Assert-Gate 'complementary suites merge line hits rather than percentages' $case 0 50
+Assert-Gate 'complementary suites merge line hits rather than percentages' $case 0 (10 * $modules.Count)
 
 $case = New-Case 'invalid-hits'
 $report = New-Report $case
@@ -152,7 +152,7 @@ $caseScope | ConvertTo-Json -Depth 8 | Set-Content $case.ScopePath
 $report = New-Report $case
 $report['Monstertacle.Multisession.ValidationHost.dll'] = @{}
 Write-Report $case $report
-Assert-Gate 'declared co-collected validation assembly preserves product denominator' $case 0 50
+Assert-Gate 'declared co-collected validation assembly preserves product denominator' $case 0 (10 * $modules.Count)
 
 $case = New-Case 'missing-declared-validation-assembly'
 $case.ScopePath = Join-Path $case.Root 'scope.json'

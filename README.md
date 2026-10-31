@@ -1,22 +1,26 @@
+## Agent Framework migration
+
+New host integrations use the provider-neutral `Monstertacle.Multisession.AgentFramework` package with Microsoft Agent Framework 1.27.0. See [migration and evidence renewal](docs/agent-framework-migration.md) for session state, response qualification, bounded renewal and package/type changes. Durable CQRS, request identity and Unknown recovery remain authoritative.
+
 # Monstertacle.Multisession
 
 Providerneutrale C#/.NET-Bibliotheken zur Verwaltung paralleler Agent-Sitzungen.
 **In Entwicklung, keine Produktfreigabe.** SQLite-Persistenz, native Windows-/Linux-Leases,
-OpenAI-/Gemini-Adapter sowie Cancel, Stop und Recovery sind implementiert.
+Protokolladapter für Conversations/Responses und Interactions sowie Cancel, Stop und Recovery sind implementiert.
 Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
 der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Lokale Pakete 0.2.0-alpha.1
+## Lokale Pakete 0.2.0-alpha.2
 
-Sechs Bibliotheken werden lokal gepackt: `Common`, `Storage.Sqlite`, `Linux`,
-`Windows`, `Providers.OpenAI` und `Providers.Gemini`, jeweils mit dem Präfix
+Sieben Bibliotheken werden lokal gepackt: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
+`Windows`, `Providers.Conversations` und `Providers.Interactions`, jeweils mit dem Präfix
 `Monstertacle.Multisession.`. Testprojekte und ValidationHost sind keine Pakete.
 Es erfolgt keine Veröffentlichung. Die Produktlizenz ist vor einer Veröffentlichung
 gesondert festzulegen; hier wird keine Nutzungsfreigabe erfunden.
 
 ```powershell
 dotnet build Monstertacle.Multisession.slnx -c Release --no-restore
-dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.2.0-alpha.1
+dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.2.0-alpha.2
 pwsh -NoProfile -File eng/Test-PackageLayout.ps1
 ```
 
@@ -31,7 +35,7 @@ beschreiben Fristen, Reservierungen, Diagnose und sichere Wiederaufnahme.
 
 ## Entwicklungsumgebung und Prüfungen
 
-CQRS ist über `Monstertacle.SharpQrs` **0.2.0-alpha.1** eingebunden.
+CQRS ist über `Monstertacle.SharpQrs` **0.2.0-alpha.2** eingebunden.
 `SessionRuntime.Commands` und `SessionRuntime.Queries` bieten nach dem Start typisierte
 asynchrone Operationen. Die bisherigen Ports bleiben kompatibel und durchlaufen dieselben
 Dispatcher. [CQRS-Vertrag und Beispiele](docs/cqrs.md), [SpecKit-Feature](specs/002-sharpqrs-cqrs/spec.md).
@@ -79,7 +83,7 @@ Repository: <https://github.com/monstertacle/monstertacle.multisession>.
 Arbeitsstand und Abhängigkeiten: [Gesamtimplementierung](specs/001-agent-multisession/evidence/implementation-progress.md).
 T112–T115, Dispatcher und öffentliche Runtimekomposition sind umgesetzt; Nachweise und Grenzen
 stehen in [tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md) und den anderen Storynachweisen.
-Conversations/Responses und stabile Gemini-Interactions sind gegen lokale HTTP-Fixtures implementiert;
+Conversations/Responses und stabile Interactions sind gegen lokale HTTP-Fixtures implementiert;
 [Providervertrag und Grenzen](docs/providers.md). Öffentliche Adapterintegration, SQLite-Transaktionen,
 Crash-Recovery sowie Cancel, Stop und Close sind inzwischen mit echten lokalen Storetests umgesetzt;
 Nachweise und verbleibende Abnahmegrenzen stehen in

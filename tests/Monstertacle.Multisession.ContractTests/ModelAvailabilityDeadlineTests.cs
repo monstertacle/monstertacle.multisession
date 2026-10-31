@@ -1,7 +1,7 @@
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ContractTests.Fixtures;
-using Monstertacle.Multisession.Providers.Gemini;
-using Monstertacle.Multisession.Providers.OpenAI;
+using Monstertacle.Multisession.Providers.Conversations;
+using Monstertacle.Multisession.Providers.Interactions;
 using Xunit;
 
 namespace Monstertacle.Multisession.ContractTests;
@@ -23,8 +23,8 @@ public sealed class ModelAvailabilityDeadlineTests
         TaskCompletionSource<HttpResponseMessage> finish = new(TaskCreationOptions.RunContinuationsAsynchronously);
         using ScriptedHttpHandler handler = new((_, _) => { entered.TrySetResult(); return finish.Task; });
         using IDisposable native = gemini
-            ? new GeminiSessionProvider(new() { CredentialReference = "reference" }, new FixtureCredentials(), handler, clock)
-            : new OpenAiSessionProvider(new() { CredentialReference = "reference" }, new FixtureCredentials(), handler, clock);
+            ? new InteractionSessionProvider(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "reference" }, new FixtureCredentials(), handler, clock)
+            : new ConversationSessionProvider(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "reference" }, new FixtureCredentials(), handler, clock);
         ISessionAvailabilityProvider provider = Assert.IsAssignableFrom<ISessionAvailabilityProvider>(native);
         ProviderSessionContext context = new(Guid.NewGuid(), "selected", ExecutionKind.ModelResponse, new(null, null), new Dictionary<string, string>());
         Task checking = provider.ValidateAvailabilityAsync(context, caller.Token).AsTask();

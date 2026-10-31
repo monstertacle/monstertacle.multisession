@@ -4,6 +4,9 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../src/Monstertacle.Multisession.AgentFramework/Monstertacle.Multisession.AgentFramework.csproj" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/FrameworkTestAgent.cs" Link="Fixtures/FrameworkTestAgent.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/FrameworkTestSession.cs" Link="Fixtures/FrameworkTestSession.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/MetricGaugeCapture.cs" Link="Fixtures/MetricGaugeCapture.cs" />
     <ProjectReference Include="../../examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashProtocol.cs" Link="Fixtures/CrashProtocol.cs" />
@@ -12,7 +15,7 @@
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashStateDirectoryLease.cs" Link="Fixtures/CrashStateDirectoryLease.cs" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
-    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj" />
-    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj" />
+    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Conversations/Monstertacle.Multisession.Providers.Conversations.csproj" />
+    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Interactions/Monstertacle.Multisession.Providers.Interactions.csproj" />
   </ItemGroup>
 </Project>

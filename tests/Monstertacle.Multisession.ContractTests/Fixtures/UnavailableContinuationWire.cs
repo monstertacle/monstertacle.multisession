@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Xunit;
-using static Monstertacle.Multisession.ContractTests.Fixtures.GeminiFixtureData;
+using static Monstertacle.Multisession.ContractTests.Fixtures.InteractionFixtureData;
 
 namespace Monstertacle.Multisession.ContractTests.Fixtures;
 

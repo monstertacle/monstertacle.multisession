@@ -2,9 +2,10 @@
   "thresholdPercent": 87,
   "commonAssemblies": [
     "Monstertacle.Multisession.Common",
+    "Monstertacle.Multisession.AgentFramework",
     "Monstertacle.Multisession.Storage.Sqlite",
-    "Monstertacle.Multisession.Providers.OpenAI",
-    "Monstertacle.Multisession.Providers.Gemini"
+    "Monstertacle.Multisession.Providers.Conversations",
+    "Monstertacle.Multisession.Providers.Interactions"
   ],
   "platformAssemblies": {
     "windows": "Monstertacle.Multisession.Windows",

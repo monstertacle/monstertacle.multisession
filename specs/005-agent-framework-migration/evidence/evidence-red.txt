@@ -1,0 +1,69 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Providers.Gemini -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Gemini/bin/Release/net10.0/Monstertacle.Multisession.Providers.Gemini.dll
+  Monstertacle.Multisession.Providers.OpenAI -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.OpenAI/bin/Release/net10.0/Monstertacle.Multisession.Providers.OpenAI.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.UnitTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/bin/Release/net10.0/Monstertacle.Multisession.UnitTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.27]     Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.SourceAndRuleChangesInvalidateDifferentDependents [FAIL]
+[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.PendingRequestCoordinatesWithoutProgressOrResubmission [FAIL]
+[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.MissingAssociationNeverSubmitsReplacement [FAIL]
+[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.UnknownRetainsRequestAndDoesNotObserveLaterWork [FAIL]
+[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.AcceptsAssociatedResultsInDependencyOrder [FAIL]
+[xUnit.net 00:00:00.29]     Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.RejectsInvalidGraphs [FAIL]
+  Failed Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.SourceAndRuleChangesInvalidateDifferentDependents [8 ms]
+  Error Message:
+   Assert.NotEqual() Failure: Strings are equal
+Expected: Not "policy-1"
+Actual:       "policy-1"
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.SourceAndRuleChangesInvalidateDifferentDependents() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceWorkflowTests.cs:line 35
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.PendingRequestCoordinatesWithoutProgressOrResubmission [6 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 2
+Actual:   0
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.PendingRequestCoordinatesWithoutProgressOrResubmission() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceWorkflowTests.cs:line 92
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.MissingAssociationNeverSubmitsReplacement [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 4
+Actual:   0
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.MissingAssociationNeverSubmitsReplacement() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceWorkflowTests.cs:line 75
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.UnknownRetainsRequestAndDoesNotObserveLaterWork [3 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 3574d68d-aebc-4db4-9eee-193771a51719
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.UnknownRetainsRequestAndDoesNotObserveLaterWork() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceWorkflowTests.cs:line 106
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.AcceptsAssociatedResultsInDependencyOrder [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 4
+Actual:   0
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.AcceptsAssociatedResultsInDependencyOrder() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceWorkflowTests.cs:line 59
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.RejectsInvalidGraphs [1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(System.ArgumentException)
+  Stack Trace:
+     at Monstertacle.Multisession.UnitTests.EvidenceWorkflowTests.RejectsInvalidGraphs() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.UnitTests/EvidenceWorkflowTests.cs:line 46
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     6, Passed:     1, Skipped:     0, Total:     7, Duration: 47 ms - Monstertacle.Multisession.UnitTests.dll (net10.0)

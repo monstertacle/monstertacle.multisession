@@ -4,6 +4,7 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../src/Monstertacle.Multisession.AgentFramework/Monstertacle.Multisession.AgentFramework.csproj" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" PrivateAssets="all" />
     <ProjectReference Include="../../examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />

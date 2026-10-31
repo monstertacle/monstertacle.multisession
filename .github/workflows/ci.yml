@@ -39,7 +39,7 @@ jobs:
         run: |
           dotnet tool restore
           if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
-          dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.2.0-alpha.1
+          dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.2.0-alpha.2
           if ($LASTEXITCODE -ne 0) { throw 'Local package build failed.' }
           ./eng/PackageSmoke.ps1
       - name: Publish and validate native host outside the source tree

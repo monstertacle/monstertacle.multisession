@@ -1,6 +1,6 @@
 using Monstertacle.Multisession.Contracts;
-using Monstertacle.Multisession.Providers.Gemini;
-using Monstertacle.Multisession.Providers.OpenAI;
+using Monstertacle.Multisession.Providers.Conversations;
+using Monstertacle.Multisession.Providers.Interactions;
 using Monstertacle.Multisession.UnitTests.Fixtures;
 
 namespace Monstertacle.Multisession.ContractTests.Fixtures;
@@ -17,8 +17,8 @@ internal sealed class NativeProviderHost : IAsyncDisposable
         Conversations = new(true, _release.Task);
         Interactions = new(false, _release.Task);
         External = new(_release.Task);
-        OpenAiSessionProvider conversation = new(new() { CredentialReference = "conversation-reference" }, new FixtureCredentials(), Conversations.Handler);
-        GeminiSessionProvider interaction = new(new() { CredentialReference = "interaction-reference" }, new FixtureCredentials(), Interactions.Handler);
+        ConversationSessionProvider conversation = new(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "conversation-reference" }, new FixtureCredentials(), Conversations.Handler);
+        InteractionSessionProvider interaction = new(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "interaction-reference" }, new FixtureCredentials(), Interactions.Handler);
         _providers = [conversation, interaction];
         Store = new() { DispatchState = new() { Completed = _completion.Record } };
         Runtime = new(Store, new TestStateDirectoryLease(Path.GetTempPath()),

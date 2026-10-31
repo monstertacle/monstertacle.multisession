@@ -2,9 +2,9 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ContractTests.Fixtures;
-using Monstertacle.Multisession.Providers.OpenAI;
+using Monstertacle.Multisession.Providers.Conversations;
 using Xunit;
-using static Monstertacle.Multisession.ContractTests.Fixtures.OpenAiFixtureData;
+using static Monstertacle.Multisession.ContractTests.Fixtures.ConversationFixtureData;
 
 namespace Monstertacle.Multisession.ContractTests;
 
@@ -31,7 +31,7 @@ public sealed class NativeContextTests
             }
             return ScriptedHttpHandler.Json(response.ToJsonString());
         });
-        using OpenAiSessionProvider provider = new(new() { CredentialReference = "reference" }, new FixtureCredentials(), handler);
+        using ConversationSessionProvider provider = new(new() { Endpoint = new("https://fixture.example/v1/"), CredentialReference = "reference" }, new FixtureCredentials(), handler);
         ProviderReply first = await provider.SendAsync(Call("first new input"), Binding(), (item, token) => ValueTask.CompletedTask, CancellationToken.None);
         Assert.Equal(RequestState.Succeeded, first.Outcome);
         Assert.Equal("fixture output", first.Output);

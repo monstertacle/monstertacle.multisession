@@ -4,8 +4,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
-    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.OpenAI/Monstertacle.Multisession.Providers.OpenAI.csproj" />
-    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Gemini/Monstertacle.Multisession.Providers.Gemini.csproj" />
+    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Conversations/Monstertacle.Multisession.Providers.Conversations.csproj" />
+    <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Interactions/Monstertacle.Multisession.Providers.Interactions.csproj" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/InMemorySessionStore.cs" Link="Fixtures/InMemorySessionStore.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/TestStateDirectoryLease.cs" Link="Fixtures/TestStateDirectoryLease.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/DispatchClock.cs" Link="Fixtures/DispatchClock.cs" />

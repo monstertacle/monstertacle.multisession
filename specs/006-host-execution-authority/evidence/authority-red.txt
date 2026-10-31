@@ -1,0 +1,56 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Providers.Conversations -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/bin/Release/net10.0/Monstertacle.Multisession.Providers.Conversations.dll
+  Monstertacle.Multisession.Providers.Interactions -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/bin/Release/net10.0/Monstertacle.Multisession.Providers.Interactions.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.IntegrationTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/bin/Release/net10.0/Monstertacle.Multisession.IntegrationTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/bin/Release/net10.0/Monstertacle.Multisession.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.40]     Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.UsesCallerIdsAndRejectsDuplicateBeforeAnotherOpen [FAIL]
+[xUnit.net 00:00:00.42]     Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.StoreRejectsDispatchModeChangeBeforeStartup [FAIL]
+[xUnit.net 00:00:00.58]     Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ControlledRuntimeNeverDispatchesOrCancelsQueuedWorkAtStop [FAIL]
+[xUnit.net 00:00:00.62]     Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ExplicitDispatchCannotSubstituteAnotherQueuedHead [FAIL]
+  Failed Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.UsesCallerIdsAndRejectsDuplicateBeforeAnotherOpen [165 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: e82e282a-f399-4c86-9536-3d004ea274e8
+Actual:   809f2243-2060-4af8-8972-51e5101c6232
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.UsesCallerIdsAndRejectsDuplicateBeforeAnotherOpen() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 32
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.UsesCallerIdsAndRejectsDuplicateBeforeAnotherOpen() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 38
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.UsesCallerIdsAndRejectsDuplicateBeforeAnotherOpen() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 38
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.StoreRejectsDispatchModeChangeBeforeStartup [21 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Contracts.SessionOperationException)
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.StoreRejectsDispatchModeChangeBeforeStartup() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 90
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.StoreRejectsDispatchModeChangeBeforeStartup() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 90
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.StoreRejectsDispatchModeChangeBeforeStartup() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 90
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ControlledRuntimeNeverDispatchesOrCancelsQueuedWorkAtStop [157 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["held"]
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ControlledRuntimeNeverDispatchesOrCancelsQueuedWorkAtStop() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 54
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ControlledRuntimeNeverDispatchesOrCancelsQueuedWorkAtStop() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 55
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ControlledRuntimeNeverDispatchesOrCancelsQueuedWorkAtStop() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 60
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ExplicitDispatchCannotSubstituteAnotherQueuedHead [43 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ExplicitDispatchCannotSubstituteAnotherQueuedHead() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 76
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ExplicitDispatchCannotSubstituteAnotherQueuedHead() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 78
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.ExplicitDispatchCannotSubstituteAnotherQueuedHead() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 78
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     4, Passed:     0, Skipped:     0, Total:     4, Duration: 410 ms - Monstertacle.Multisession.IntegrationTests.dll (net10.0)

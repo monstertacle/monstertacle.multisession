@@ -1,0 +1,35 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Monstertacle.Multisession.Common -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Common/bin/Release/net10.0/Monstertacle.Multisession.Common.dll
+  Monstertacle.Multisession.Providers.Conversations -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Conversations/bin/Release/net10.0/Monstertacle.Multisession.Providers.Conversations.dll
+  Monstertacle.Multisession.AgentFramework -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.AgentFramework/bin/Release/net10.0/Monstertacle.Multisession.AgentFramework.dll
+  Monstertacle.Multisession.Linux -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Linux/bin/Release/net10.0/Monstertacle.Multisession.Linux.dll
+  Monstertacle.Multisession.Storage.Sqlite -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Storage.Sqlite/bin/Release/net10.0/Monstertacle.Multisession.Storage.Sqlite.dll
+  Monstertacle.Multisession.Providers.Interactions -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/src/Monstertacle.Multisession.Providers.Interactions/bin/Release/net10.0/Monstertacle.Multisession.Providers.Interactions.dll
+  Monstertacle.Multisession.ValidationHost -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/examples/Monstertacle.Multisession.ValidationHost/bin/Release/net10.0/Monstertacle.Multisession.ValidationHost.dll
+  Monstertacle.Multisession.IntegrationTests -> /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/bin/Release/net10.0/Monstertacle.Multisession.IntegrationTests.dll
+Test run for /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/bin/Release/net10.0/Monstertacle.Multisession.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.46]     Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.RequestIdentityIsExactAndDuplicateAdmissionDoesNotCreateAnotherRow [FAIL]
+[xUnit.net 00:00:00.50]     Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.EmptySessionIdentityDoesNotOpenAnAgent [FAIL]
+  Failed Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.RequestIdentityIsExactAndDuplicateAdmissionDoesNotCreateAnotherRow [231 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ab27bdda-4f62-4428-905a-c0de6272f14b
+Actual:   626c12cc-93fb-47c9-a962-e962cefb4792
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.RequestIdentityIsExactAndDuplicateAdmissionDoesNotCreateAnotherRow() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 103
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.RequestIdentityIsExactAndDuplicateAdmissionDoesNotCreateAnotherRow() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 105
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.RequestIdentityIsExactAndDuplicateAdmissionDoesNotCreateAnotherRow() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 105
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.EmptySessionIdentityDoesNotOpenAnAgent [33 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Contracts.SessionOperationException)
+  Stack Trace:
+     at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.EmptySessionIdentityDoesNotOpenAnAgent() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 115
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.EmptySessionIdentityDoesNotOpenAnAgent() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 116
+   at Monstertacle.Multisession.IntegrationTests.HostAuthorityTests.EmptySessionIdentityDoesNotOpenAnAgent() in /home/user1/dev/github.com/monstertacle/multisession-agent-framework-20261031/tests/Monstertacle.Multisession.IntegrationTests/HostAuthorityTests.cs:line 116
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     2, Passed:     0, Skipped:     0, Total:     2, Duration: 280 ms - Monstertacle.Multisession.IntegrationTests.dll (net10.0)

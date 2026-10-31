@@ -7,7 +7,7 @@
 - [x] T005 Implement qualified typed CLR outcomes and awaited invocation/native observations in AgentFramework/ and Common/Requests/.
 - [x] T006 Qualify restart, late/malformed result, capacity/continuation independence and actual prior-reader refusal in IntegrationTests/.
 - [x] T007 Run full static/native coverage/audit/package gates and bind artifacts under evidence/; produce source/hash-bound local alpha.3 packages.
-- [ ] T008 Consume alpha.3 in the isolated SharpClaw feature clone and record exact producer/source/package proof; preserve live work.
+- [x] T008 Consume alpha.3 in the isolated SharpClaw feature clone and record exact producer/source/package proof; preserve live work.
 
 Partial milestones: identity/dispatch semantic Reds and canonical ID implementation are complete; T002 still owns outcome/observation Reds, and T003 still owns exact recovered-submission fingerprints. T007 is not complete: local Linux evidence is in evidence/qualification.json; native Windows and package proof remain pending. No feature completion or live cutover is claimed.
 
@@ -22,3 +22,5 @@ Current ownership: explicit complete quiescent handoff accepted for SharpClaw se
 T005 progress (2026-10-31): typed outcomes, invocation context, preparation versus acceptance and request-linked native evidence implemented with observed semantic Reds (evidence/tdd.md) and contrary review r2 dispositions (evidence/review-r2/). T006 old-reader refusal is implemented in package smoke; restart/late result cases are in FrameworkEvidenceTests. T007 needs the final full gate, GitHub CI and alpha.3 feed binding.
 
 T007 (2026-10-31): GitHub run 41231219057 for 94011f7 passed Linux/Windows quality (97.9511/97.9318 percent) and both canonical consumers including actual prior-reader refusal; canonical alpha.3 packages bound in evidence/alpha3-feed.json. T008 (SharpClaw consumption) remains open and follows SharpClaw feature004.
+
+T008 (2026-10-31): SharpClaw branch feature/004-verified-work-control 745298b consumes the canonical alpha.3 packages of 94011f7 (hashes in evidence/alpha3-feed.json) through tests/MultisessionNuGet with locked restore, isolated cache and audit: caller GUIDs, host-controlled targeted dispatch, framework native-session evidence, typed known failure, duplicate refusal, queued-preserving stop and durable reopen passed. No live work was touched. Runtime migration of SharpClaw's execution boundary is SharpClaw feature005, not this SDK feature; T009 stays open as owned follow-up.

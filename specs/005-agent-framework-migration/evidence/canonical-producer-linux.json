@@ -1,0 +1,35 @@
+{
+  "Status": "PASS",
+  "ValidatedUtc": "2026-10-31T14:24:17.6613009+00:00",
+  "ProducerManifestSha256": "de7225cbe1d8ef7b443bd430c0efffe0fc32f4799fbbe2529dc2a4355c0e1bea",
+  "Hashes": [
+    {
+      "File": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.2.nupkg",
+      "Sha256": "84195a46092c0902babb297af2656318d027b9a85d193c1ab6ee230b9969df78"
+    },
+    {
+      "File": "Monstertacle.Multisession.Common.0.2.0-alpha.2.nupkg",
+      "Sha256": "c4971e8e42d9e4c0a8b23cdb7b6e90c5e877454fc6a07aef9356005d91d3857d"
+    },
+    {
+      "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.2.nupkg",
+      "Sha256": "fa30544ef455a2f81a4d1adfa016e57c363df595bde4e8402cc859a68ca87d2d"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.2.nupkg",
+      "Sha256": "0eaa73f2435b1081dff5d9447b4cb3bd3231d6c954374b015325000e90b18290"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.2.nupkg",
+      "Sha256": "868700919de21add07024af565668e688206dd83d8dc18b0555a6344eced9569"
+    },
+    {
+      "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.2.nupkg",
+      "Sha256": "68772e80274fbd5fc79f40bf604f1e7b8bf4e11a32653e28e21a9ef07c5ab967"
+    },
+    {
+      "File": "Monstertacle.Multisession.Windows.0.2.0-alpha.2.nupkg",
+      "Sha256": "c123230384d7aafc40ebc0eee56573c3aba512adba675b73e267d0ac0437fbe3"
+    }
+  ]
+}

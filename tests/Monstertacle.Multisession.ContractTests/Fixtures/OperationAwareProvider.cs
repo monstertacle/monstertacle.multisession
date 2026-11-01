@@ -6,14 +6,14 @@ namespace Monstertacle.Multisession.ContractTests.Fixtures;
 internal sealed class OperationAwareProvider : ISessionProvider, IExecutionRecoveryProvider
 {
     internal ControlledProvider Inner { get; init; } = new();
-    internal int LegacyReopenCalls { get; private set; }
+    internal int BindingReopenCalls { get; private set; }
     internal int RecoveryCalls { get; private set; }
     internal Func<ProviderBinding, string?, CancellationToken, ValueTask<ProviderBinding>>? Recovering { get; init; }
     public ProviderCapabilities Capabilities => Inner.Capabilities with { SupportsInspection = true, RequiresOperationAwareRecovery = true };
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken) => Inner.OpenAsync(context, cancellationToken);
     public ValueTask<ProviderBinding> ReopenAsync(ProviderSessionContext context, ProviderBinding binding, CancellationToken cancellationToken)
     {
-        LegacyReopenCalls++;
+        BindingReopenCalls++;
         return ValueTask.FromResult(binding);
     }
     public ValueTask<ProviderBinding> ReopenAfterExecutionAsync(ProviderSessionContext context, ProviderBinding knownBinding, string? operationReference, CancellationToken cancellationToken)

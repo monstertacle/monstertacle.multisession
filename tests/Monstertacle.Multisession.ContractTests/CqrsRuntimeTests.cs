@@ -7,12 +7,12 @@ using static Monstertacle.Multisession.ContractTests.Fixtures.RuntimeTestComposi
 
 namespace Monstertacle.Multisession.ContractTests;
 
-/// <summary>Typed access shares durable state and lifecycle with the legacy ports.</summary>
+/// <summary>Typed access shares durable state and lifecycle with the session, request and recovery ports.</summary>
 public sealed class CqrsRuntimeTests
 {
     /// <summary>Typed submission admits once and both interfaces observe the same request.</summary>
     [Fact]
-    public async Task TypedSubmissionAndLegacyReadsShareOneAdmission()
+    public async Task TypedSubmissionAndPortReadsShareOneAdmission()
     {
         InMemorySessionStore store = new();
         SessionSnapshot session = SchedulingData.Session();
@@ -29,7 +29,7 @@ public sealed class CqrsRuntimeTests
         await runtime.Commands.DispatchAsync(new CancelRequestCommand(receipt.RequestId));
     }
 
-    /// <summary>Missing entities produce a non-null envelope without changing legacy null semantics.</summary>
+    /// <summary>Missing entities produce a non-null envelope without changing the ports' null semantics.</summary>
     [Fact]
     public async Task MissingLookupsRemainExplicit()
     {

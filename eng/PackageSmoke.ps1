@@ -20,6 +20,8 @@ if ($IsWindows) {
 } else {
     $null = [IO.Directory]::CreateDirectory($workspace, [IO.UnixFileMode]::UserRead -bor [IO.UnixFileMode]::UserWrite -bor [IO.UnixFileMode]::UserExecute)
 }
+[xml]$properties = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
+$version = @($properties.Project.PropertyGroup.Version | Where-Object { $_ })[0]
 $framework = if ($IsWindows) { 'net10.0-windows' } else { 'net10.0' }
 $platformPackage = if ($IsWindows) { 'Windows' } else { 'Linux' }
 $template = Join-Path $root 'tests/Monstertacle.Multisession.IntegrationTests/Fixtures/PackageConsumer.cs.txt'
@@ -36,12 +38,12 @@ $project = @"
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Monstertacle.Multisession.$platformPackage.${platformPackage}StateDirectoryLease" Alias="NativeLease" />
-    <PackageReference Include="Monstertacle.Multisession.AgentFramework" Version="0.2.0-alpha.3" />
-    <PackageReference Include="Monstertacle.Multisession.Common" Version="0.2.0-alpha.3" />
-    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="0.2.0-alpha.3" />
-    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="0.2.0-alpha.3" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Conversations" Version="0.2.0-alpha.3" />
-    <PackageReference Include="Monstertacle.Multisession.Providers.Interactions" Version="0.2.0-alpha.3" />
+    <PackageReference Include="Monstertacle.Multisession.AgentFramework" Version="$version" />
+    <PackageReference Include="Monstertacle.Multisession.Common" Version="$version" />
+    <PackageReference Include="Monstertacle.Multisession.Storage.Sqlite" Version="$version" />
+    <PackageReference Include="Monstertacle.Multisession.$platformPackage" Version="$version" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Conversations" Version="$version" />
+    <PackageReference Include="Monstertacle.Multisession.Providers.Interactions" Version="$version" />
   </ItemGroup>
 </Project>
 "@

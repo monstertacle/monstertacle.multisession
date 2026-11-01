@@ -143,36 +143,36 @@
       "monstertacle.multisession.linux": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.providers.conversations": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.providers.interactions": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.validationhost": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Linux": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Providers.Conversations": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Providers.Interactions": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Linux": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Providers.Conversations": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Providers.Interactions": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.4, )"
         }
       },
       "Microsoft.Data.Sqlite": {
@@ -344,36 +344,36 @@
       "monstertacle.multisession.providers.conversations": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.providers.interactions": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.validationhost": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Providers.Conversations": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Providers.Interactions": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.3, )",
-          "Monstertacle.Multisession.Windows": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Providers.Conversations": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Providers.Interactions": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Storage.Sqlite": "[0.2.0-alpha.4, )",
+          "Monstertacle.Multisession.Windows": "[0.2.0-alpha.4, )"
         }
       },
       "monstertacle.multisession.windows": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.3, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.4, )"
         }
       },
       "Microsoft.Data.Sqlite": {

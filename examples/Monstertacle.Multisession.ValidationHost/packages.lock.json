@@ -52,26 +52,26 @@
       "monstertacle.multisession.linux": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "monstertacle.multisession.providers.conversations": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "monstertacle.multisession.providers.interactions": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "Microsoft.Data.Sqlite": {
@@ -166,26 +166,26 @@
       "monstertacle.multisession.providers.conversations": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "monstertacle.multisession.providers.interactions": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "monstertacle.multisession.storage.sqlite": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.14, )",
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "monstertacle.multisession.windows": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "Microsoft.Data.Sqlite": {

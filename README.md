@@ -1,6 +1,6 @@
-## Agent Framework migration
+## Agent Framework
 
-New host integrations use the provider-neutral `Monstertacle.Multisession.AgentFramework` package with Microsoft Agent Framework 1.27.0. See [migration and evidence renewal](docs/agent-framework-migration.md) for session state, response qualification, bounded renewal and package/type changes. Durable CQRS, request identity and Unknown recovery remain authoritative.
+Host integrations use the provider-neutral `Monstertacle.Multisession.AgentFramework` package with Microsoft Agent Framework 1.27.0. Durable CQRS, request identity and Unknown recovery remain authoritative. Only the current store format is read; stores of any other format are refused, never converted.
 
 # Monstertacle.Multisession
 
@@ -10,7 +10,7 @@ Protokolladapter für Conversations/Responses und Interactions sowie Cancel, Sto
 Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
 der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Lokale Pakete 0.2.0-alpha.4
+## Lokale Pakete 0.2.0-alpha.5
 
 Sieben Bibliotheken werden lokal gepackt: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
 `Windows`, `Providers.Conversations` und `Providers.Interactions`, jeweils mit dem Präfix

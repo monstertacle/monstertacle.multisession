@@ -29,3 +29,7 @@ Framework adapters record InvocationPrepared (durable intent for exactly this di
 Explicitly qualified registrations may return FrameworkExecutionOutcome as the exact CLR response representation to report success, known failure with captured output, not-started or Unknown independently of continuation. Invalid, unqualified or background-pending typed facts fail closed as Unknown; model text or JSON never selects them. A confirmed end whose continuation cannot be serialized keeps its state and output and blocks later turns. Generic post-invocation exceptions remain Unknown.
 
 Alternative rejected: interpreting response metadata dictionaries or text markers would let model output select control facts. Alternative rejected: replacing the binding's session reference with the observed native session would turn evidence into resume authority. The prior 0.2.0-alpha.2 package is rebuilt from its exact source commit and must refuse current stores in package qualification.
+
+## Amendment 2026-11-01 (owner decision: current version only)
+
+The statements above that format1 stores remain available to the matching old reader and that a prior-package refusal probe is a release requirement are superseded. The current release refuses every other store format fail-closed (covered by StoreFormatTests); old packages and readers are not built or exercised. Specification: specs/008-current-version-only.

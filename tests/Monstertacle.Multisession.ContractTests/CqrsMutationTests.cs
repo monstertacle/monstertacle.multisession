@@ -9,7 +9,7 @@ namespace Monstertacle.Multisession.ContractTests;
 /// <summary>Typed commands retain catalog and revision-bound recovery behavior.</summary>
 public sealed class CqrsMutationTests
 {
-    /// <summary>Create, close and delete use the same state observed by legacy readers.</summary>
+    /// <summary>Create, close and delete use the same state observed by the port readers.</summary>
     [Fact]
     public async Task CreatesClosesAndDeletesThroughTypedCommands()
     {

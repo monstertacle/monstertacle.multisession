@@ -57,9 +57,9 @@ public sealed class AdmissionDiagnosticTests
         Assert.Equal(AdmissionStatus.Unknown, failure.Failure.AdmissionStatus);
     }
 
-    /// <summary>Unchanged errors preserve their JSON shape and old persisted errors remain readable.</summary>
+    /// <summary>Errors without optional details keep their JSON shape.</summary>
     [Fact]
-    public void MissingOptionalDetailsRemainCompatible()
+    public void MissingOptionalDetailsKeepShape()
     {
         PublicError old = new(ErrorCode.StorageUnavailable);
         string encoded = JsonSerializer.Serialize(old);

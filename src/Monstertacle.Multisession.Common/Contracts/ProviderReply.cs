@@ -15,6 +15,6 @@ public sealed record ProviderReply(
     ProviderBinding? Binding,
     PublicError? Error)
 {
-    /// <summary>Gets explicit continuation evidence; false blocks later turns, null preserves existing policy, and true does not prove external termination.</summary>
+    /// <summary>Gets explicit continuation evidence; false blocks later turns, null leaves the binding policy unchanged, and true does not prove external termination.</summary>
     public bool? ContinuationAvailable { get; init; }
 }

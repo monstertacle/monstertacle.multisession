@@ -23,7 +23,7 @@ public sealed class OperationRecoveryTests
         OperationRecoveryScenario scenario = await OperationRecoveryScenario.CreateAsync(provider);
         await scenario.Service.ResolveRecoveryAsync(scenario.Decision(), CancellationToken.None);
         Assert.Equal(1, provider.RecoveryCalls);
-        Assert.Equal(0, provider.LegacyReopenCalls);
+        Assert.Equal(0, provider.BindingReopenCalls);
         Assert.Equal("verified-new-head", scenario.Store.FindSession(scenario.Case.SessionId)?.Binding?.ContinuationState);
         Assert.Empty(scenario.Store.Reservations);
         RequestSnapshot? request = await ((ISessionStore)scenario.Store).GetRequestAsync(scenario.Case.RequestId!.Value, CancellationToken.None);
@@ -52,7 +52,7 @@ public sealed class OperationRecoveryTests
         SessionOperationException error = await Assert.ThrowsAsync<SessionOperationException>(() => scenario.Service.ResolveRecoveryAsync(scenario.Decision(), CancellationToken.None).AsTask());
         Assert.Equal(ErrorCode.UnsupportedProviderAction, error.Failure.Code);
         Assert.Single(scenario.Store.Reservations);
-        Assert.Equal(0, provider.LegacyReopenCalls);
+        Assert.Equal(0, provider.BindingReopenCalls);
     }
 
     /// <summary>Failed or incompatible native evidence cannot release the reservation or change the confirmed binding.</summary>

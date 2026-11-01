@@ -133,6 +133,20 @@ Falls der Client Skills nicht automatisch erkennt, den Skill
 `.agents/skills/speckit-implement/SKILL.md` mit diesem Gesamtimplementierungsauftrag laden.
 Die projektlokalen Spec-Kit-Skripte verwenden PowerShell, auch unter Linux.
 
+Die mitgelieferte Spec-Kit-Erweiterung `git` (1.0.1) ist nur für den ausdrücklichen
+Aufruf installiert. Alle ihre Hooks sind in `.specify/extensions.yml` abgeschaltet:
+`$speckit-specify` legt keinen Branch an, und kein Befehl committet automatisch. Jedes
+Feature erhält genau einen Branch, angelegt von seinem Autor: entweder der eigene
+Arbeitsbranch aus Schritt 1 oder einmalig `$speckit-git-feature` (OpenCode:
+`/speckit.git.feature`) auf aktuellem `main`, das `feature/{number}-{slug}` mit der
+nächsten Specnummer erzeugt. `$speckit-git-validate` prüft den Branchnamen. Die
+Python-Kopie der Erweiterungsskripte ist wegen der Constitution nicht installiert.
+`specify extension update git` oder eine Neuinstallation schaltet die Hooks wieder ein,
+entfernt die Codex-Skills und stellt `scripts/python` wieder her. Dieser Diff ist vor
+der Nutzung zu prüfen und auf die freigegebene Konfiguration zurückzuführen;
+`scripts/Test-SpecKitConfiguration.ps1 -ForbidPython` prüft sie im Guard-CI und
+weist eine nicht geprüfte Erweiterungsversion zurück.
+
 ## Nachweise und Repositorygrenzen
 
 Arbeitsnachweise liegen unter [evidence](specs/001-agent-multisession/evidence/README.md).

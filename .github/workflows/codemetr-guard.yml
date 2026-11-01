@@ -16,6 +16,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Spec Kit git extension configuration (hooks disabled, no Python)
+        shell: pwsh
+        run: ./scripts/Test-SpecKitConfiguration.ps1 -ForbidPython
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json

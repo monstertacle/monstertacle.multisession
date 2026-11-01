@@ -10,17 +10,20 @@ Protokolladapter für Conversations/Responses und Interactions sowie Cancel, Sto
 Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
 der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Lokale Pakete 0.2.0-alpha.2
+## Lokale Pakete 0.2.0-alpha.4
 
 Sieben Bibliotheken werden lokal gepackt: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
 `Windows`, `Providers.Conversations` und `Providers.Interactions`, jeweils mit dem Präfix
 `Monstertacle.Multisession.`. Testprojekte und ValidationHost sind keine Pakete.
-Es erfolgt keine Veröffentlichung. Die Produktlizenz ist vor einer Veröffentlichung
-gesondert festzulegen; hier wird keine Nutzungsfreigabe erfunden.
+Es erfolgt keine Veröffentlichung. Die Bibliotheken stehen unter der MIT-Lizenz
+(SPDX `MIT`, Datei [LICENSE](LICENSE)); jedes Paket enthält den Lizenztext mit
+Copyrightvermerk. Abhängigkeiten werden nur als NuGet-Verweise geführt und behalten
+ihre eigenen Lizenzen; die Pakete enthalten keinen fremden Code. Dateien unter
+`.opencode/skills/codemetr-guard/` behalten ihre eigene Lizenzdatei.
 
 ```powershell
 dotnet build Monstertacle.Multisession.slnx -c Release --no-restore
-dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages -p:PackageVersion=0.2.0-alpha.2
+dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages
 pwsh -NoProfile -File eng/Test-PackageLayout.ps1
 ```
 

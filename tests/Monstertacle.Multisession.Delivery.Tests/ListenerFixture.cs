@@ -10,7 +10,7 @@ namespace Monstertacle.Multisession.Delivery.Tests;
 /// </summary>
 internal sealed class ListenerFixture
 {
-    private static readonly string Directory = Path.Combine(AppContext.BaseDirectory, "Fixtures", "CurrentListener");
+    private static readonly string _fixtureDirectory = Path.Combine(AppContext.BaseDirectory, "Fixtures", "CurrentListener");
     private readonly JsonElement _rows;
 
     private ListenerFixture(JsonElement rows) => _rows = rows;
@@ -62,7 +62,7 @@ internal sealed class ListenerFixture
 
     private static JsonElement Load(string file)
     {
-        using var document = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Directory, file)));
+        using var document = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(_fixtureDirectory, file)));
         return document.RootElement.Clone();
     }
 

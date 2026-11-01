@@ -9,8 +9,8 @@ namespace Monstertacle.Multisession.Delivery;
 /// </summary>
 internal static class PrivateState
 {
-    private const UnixFileMode OwnerFile = UnixFileMode.UserRead | UnixFileMode.UserWrite;
-    private const UnixFileMode OwnerDirectory = OwnerFile | UnixFileMode.UserExecute;
+    private const UnixFileMode _ownerFile = UnixFileMode.UserRead | UnixFileMode.UserWrite;
+    private const UnixFileMode _ownerDirectory = _ownerFile | UnixFileMode.UserExecute;
 
     public static void PrepareDirectory(string directory)
     {
@@ -37,8 +37,8 @@ internal static class PrivateState
             }
             return;
         }
-        Directory.CreateDirectory(directory, OwnerDirectory);
-        File.SetUnixFileMode(directory, OwnerDirectory);
+        Directory.CreateDirectory(directory, _ownerDirectory);
+        File.SetUnixFileMode(directory, _ownerDirectory);
     }
 
     /// <summary>Creates a missing database file owner-only before SQLite opens it; an empty file is a valid new database.</summary>
@@ -68,7 +68,7 @@ internal static class PrivateState
         var options = new FileStreamOptions { Mode = mode, Access = FileAccess.ReadWrite, Share = share };
         if (!OperatingSystem.IsWindows())
         {
-            options.UnixCreateMode = OwnerFile;
+            options.UnixCreateMode = _ownerFile;
         }
         return options;
     }

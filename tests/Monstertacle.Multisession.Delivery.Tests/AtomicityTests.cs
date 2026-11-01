@@ -6,7 +6,7 @@ namespace Monstertacle.Multisession.Delivery.Tests;
 /// <summary>A failing state change after the receipt insert rolls the receipt back with it (real SQLite transaction).</summary>
 public sealed class AtomicityTests : IDisposable
 {
-    private const string FailCheckpointUpdates = "CREATE TRIGGER refuse_update BEFORE UPDATE ON checkpoint BEGIN SELECT RAISE(ABORT, 'injected'); END";
+    private const string _failCheckpointUpdates = "CREATE TRIGGER refuse_update BEFORE UPDATE ON checkpoint BEGIN SELECT RAISE(ABORT, 'injected'); END";
     private readonly TestDirectory _directory = new();
 
     /// <summary>A failed resend transition leaves no receipt.</summary>
@@ -17,7 +17,7 @@ public sealed class AtomicityTests : IDisposable
         var expectation = await CheckpointScenario.UncertainAsync(checkpoint);
         var item = Guid.NewGuid();
         await new ResendAuthorizations(checkpoint).FindAsync(Guid.NewGuid(), CancellationToken.None);
-        RawDatabase.Execute(_directory.StatePath, FailCheckpointUpdates);
+        RawDatabase.Execute(_directory.StatePath, _failCheckpointUpdates);
 
         await Assert.ThrowsAsync<SqliteException>(() => new ResendAuthorizations(checkpoint).AuthorizeAsync(new ResendAuthorization(Guid.NewGuid(), expectation, item, "r"), CancellationToken.None));
 
@@ -32,7 +32,7 @@ public sealed class AtomicityTests : IDisposable
     {
         using var checkpoint = await CheckpointScenario.OpenAsync(_directory.StatePath);
         var expectation = await CheckpointScenario.PendingAsync(checkpoint);
-        RawDatabase.Execute(_directory.StatePath, FailCheckpointUpdates);
+        RawDatabase.Execute(_directory.StatePath, _failCheckpointUpdates);
 
         await Assert.ThrowsAsync<SqliteException>(() => new RouteMoves(checkpoint).MoveAsync(new RouteMove(Guid.NewGuid(), expectation, Guid.NewGuid(), "route-b", "m"), CancellationToken.None));
 

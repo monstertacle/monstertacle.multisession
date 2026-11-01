@@ -5,7 +5,7 @@ namespace Monstertacle.Multisession.Delivery;
 /// <summary>Journal of attempt grants (current table <c>preparation_rearms</c>); the checkpoint row does not change.</summary>
 internal sealed class AttemptJournal(DeliveryCheckpoint checkpoint) : GrantJournal<AttemptGrant>(checkpoint)
 {
-    private const string Scope = "configuration=$context AND route=$route AND cursor=$cursor AND pending_id=$item AND pending_digest=$digest";
+    private const string _scope = "configuration=$context AND route=$route AND cursor=$cursor AND pending_id=$item AND pending_digest=$digest";
 
     protected override string Table => "preparation_rearms";
 
@@ -23,7 +23,7 @@ internal sealed class AttemptJournal(DeliveryCheckpoint checkpoint) : GrantJourn
             {
                 return grants;
             }
-            using var query = ScopeQuery(null, "SELECT request_id, attempts, receipt FROM preparation_rearms WHERE " + Scope + " ORDER BY attempts", contextDigest, expected, itemId);
+            using var query = ScopeQuery(null, "SELECT request_id, attempts, receipt FROM preparation_rearms WHERE " + _scope + " ORDER BY attempts", contextDigest, expected, itemId);
             using var rows = await query.ExecuteReaderAsync(cancellationToken);
             while (await rows.ReadAsync(cancellationToken))
             {
@@ -51,7 +51,7 @@ internal sealed class AttemptJournal(DeliveryCheckpoint checkpoint) : GrantJourn
         {
             return;
         }
-        using var query = ScopeQuery(transaction, "SELECT COUNT(*) FROM preparation_rearms WHERE " + Scope + " AND attempts>=$attempts", request.ContextDigest, key.Expected, key.ItemId);
+        using var query = ScopeQuery(transaction, "SELECT COUNT(*) FROM preparation_rearms WHERE " + _scope + " AND attempts>=$attempts", request.ContextDigest, key.Expected, key.ItemId);
         query.Parameters.AddWithValue("$attempts", key.Expected.Attempts);
         if (await CountAsync(query, cancellationToken) != 0)
         {

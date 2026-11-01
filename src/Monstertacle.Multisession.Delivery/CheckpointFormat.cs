@@ -13,10 +13,10 @@ internal static class CheckpointFormat
     public const string AttemptJournal = "preparation_rearms(request_id TEXT PRIMARY KEY,configuration TEXT NOT NULL,route TEXT NOT NULL,cursor INTEGER NOT NULL,pending_id TEXT NOT NULL,pending_digest TEXT NOT NULL,attempts INTEGER NOT NULL,receipt TEXT NOT NULL)";
     public const string ResendJournal = "delivery_replays(request_id TEXT PRIMARY KEY,pending_id TEXT NOT NULL UNIQUE,receipt TEXT NOT NULL)";
     public const string RouteJournal = "delivery_rebinds(request_id TEXT PRIMARY KEY,old_route TEXT NOT NULL,new_route TEXT NOT NULL,cursor INTEGER NOT NULL,pending_id TEXT,receipt TEXT NOT NULL)";
-    private const string TableStatement = "CREATE TABLE ";
-    private const string Utf8Encoding = "UTF-8";
+    private const string _tableStatement = "CREATE TABLE ";
+    private const string _utf8Encoding = "UTF-8";
 
-    private static readonly Dictionary<string, string> Tables = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, string> _tables = new(StringComparer.Ordinal)
     {
         ["checkpoint"] = CheckpointTable,
         ["preparation_rearms"] = AttemptJournal,
@@ -24,7 +24,7 @@ internal static class CheckpointFormat
         ["delivery_rebinds"] = RouteJournal,
     };
 
-    private static readonly HashSet<string> ImplicitIndexes = new(StringComparer.Ordinal)
+    private static readonly HashSet<string> _implicitIndexes = new(StringComparer.Ordinal)
     {
         "sqlite_autoindex_preparation_rearms_1",
         "sqlite_autoindex_delivery_replays_1",
@@ -32,7 +32,7 @@ internal static class CheckpointFormat
         "sqlite_autoindex_delivery_rebinds_1",
     };
 
-    private static readonly Dictionary<string, DeliveryPhase> Phases = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, DeliveryPhase> _phases = new(StringComparer.Ordinal)
     {
         ["pending"] = DeliveryPhase.Pending,
         ["sending"] = DeliveryPhase.Sending,
@@ -43,10 +43,10 @@ internal static class CheckpointFormat
     /// <summary>The idempotent creation statement used for a table of the current format.</summary>
     public static string CreateIfMissing(string table) => "CREATE TABLE IF NOT EXISTS " + table;
 
-    public static string Text(DeliveryPhase phase) => Phases.Single(entry => entry.Value == phase).Key;
+    public static string Text(DeliveryPhase phase) => _phases.Single(entry => entry.Value == phase).Key;
 
     public static DeliveryPhase? Phase(string? text) =>
-        text is null ? null : Phases.TryGetValue(text, out var phase) ? phase : throw Corrupt();
+        text is null ? null : _phases.TryGetValue(text, out var phase) ? phase : throw Corrupt();
 
     public static DeliveryRefusalException Corrupt() => new(DeliveryRefusal.CheckpointCorrupt);
 
@@ -55,7 +55,7 @@ internal static class CheckpointFormat
     {
         using var encoding = connection.CreateCommand();
         encoding.CommandText = "PRAGMA encoding";
-        if (await encoding.ExecuteScalarAsync(cancellationToken) as string != Utf8Encoding)
+        if (await encoding.ExecuteScalarAsync(cancellationToken) as string != _utf8Encoding)
         {
             throw Corrupt();
         }
@@ -67,11 +67,11 @@ internal static class CheckpointFormat
         {
             var name = rows.GetString(1);
             var sql = rows.IsDBNull(2) ? null : rows.GetString(2);
-            if (rows.GetString(0) == "table" && Tables.TryGetValue(name, out var definition) && sql == TableStatement + definition)
+            if (rows.GetString(0) == "table" && _tables.TryGetValue(name, out var definition) && sql == _tableStatement + definition)
             {
                 checkpointFound |= name == "checkpoint";
             }
-            else if (!(rows.GetString(0) == "index" && sql is null && ImplicitIndexes.Contains(name)))
+            else if (!(rows.GetString(0) == "index" && sql is null && _implicitIndexes.Contains(name)))
             {
                 throw Corrupt();
             }

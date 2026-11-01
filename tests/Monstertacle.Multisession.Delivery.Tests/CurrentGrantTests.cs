@@ -5,9 +5,9 @@ namespace Monstertacle.Multisession.Delivery.Tests;
 /// <summary>Grant journals written by the current Listener keep governing idempotency, uniqueness and route custody.</summary>
 public sealed class CurrentGrantTests : IDisposable
 {
-    private static readonly Guid LostReplayRequest = Guid.Parse("c0000000-0000-4000-8000-000000000004");
-    private static readonly Guid FirstItem = Guid.Parse("11111111-1111-4111-8111-111111111111");
-    private static readonly Guid SecondItem = Guid.Parse("22222222-2222-4222-8222-222222222222");
+    private static readonly Guid _lostReplayRequest = Guid.Parse("c0000000-0000-4000-8000-000000000004");
+    private static readonly Guid _firstItem = Guid.Parse("11111111-1111-4111-8111-111111111111");
+    private static readonly Guid _secondItem = Guid.Parse("22222222-2222-4222-8222-222222222222");
     private readonly TestDirectory _directory = new();
 
     /// <summary>Listener consumed resend refuses a fresh request without change.</summary>
@@ -19,7 +19,7 @@ public sealed class CurrentGrantTests : IDisposable
         var expectation = (await checkpoint.ReadAsync(CancellationToken.None)).ToExpectation();
 
         await Refusals.Expect(DeliveryRefusal.AllowanceConsumed, () => new ResendAuthorizations(checkpoint)
-            .AuthorizeAsync(new ResendAuthorization(Guid.NewGuid(), expectation, FirstItem, Payloads.Receipt("fresh")), CancellationToken.None));
+            .AuthorizeAsync(new ResendAuthorization(Guid.NewGuid(), expectation, _firstItem, Payloads.Receipt("fresh")), CancellationToken.None));
 
         var state = await checkpoint.ReadAsync(CancellationToken.None);
         Assert.Equal((DeliveryPhase?)DeliveryPhase.Uncertain, state.Phase);
@@ -36,7 +36,7 @@ public sealed class CurrentGrantTests : IDisposable
         var expectation = (await checkpoint.ReadAsync(CancellationToken.None)).ToExpectation();
 
         var outcome = await new ResendAuthorizations(checkpoint)
-            .AuthorizeAsync(new ResendAuthorization(LostReplayRequest, expectation, FirstItem, Payloads.Receipt("new text")), CancellationToken.None);
+            .AuthorizeAsync(new ResendAuthorization(_lostReplayRequest, expectation, _firstItem, Payloads.Receipt("new text")), CancellationToken.None);
 
         Assert.False(outcome.Recorded);
         Assert.Equal(ListenerFixture.Output("uncertainReceipt"), outcome.Receipt);
@@ -52,7 +52,7 @@ public sealed class CurrentGrantTests : IDisposable
         var expectation = (await checkpoint.ReadAsync(CancellationToken.None)).ToExpectation();
 
         await Refusals.Expect(DeliveryRefusal.RequestConflict, () => new ResendAuthorizations(checkpoint)
-            .AuthorizeAsync(new ResendAuthorization(LostReplayRequest, expectation, Guid.NewGuid(), Payloads.Receipt("x")), CancellationToken.None));
+            .AuthorizeAsync(new ResendAuthorization(_lostReplayRequest, expectation, Guid.NewGuid(), Payloads.Receipt("x")), CancellationToken.None));
     }
 
     /// <summary>Listener checkpoint moves route and keeps bytes counters and every receipt.</summary>
@@ -65,7 +65,7 @@ public sealed class CurrentGrantTests : IDisposable
         using (var checkpoint = await DeliveryCheckpoint.OpenExistingAsync(Payloads.Options(_directory.StatePath, fixture.Channel), CancellationToken.None))
         {
             expectation = (await checkpoint.ReadAsync(CancellationToken.None)).ToExpectation();
-            var outcome = await new RouteMoves(checkpoint).MoveAsync(new RouteMove(request, expectation, SecondItem, "route-next", Payloads.Receipt("move")), CancellationToken.None);
+            var outcome = await new RouteMoves(checkpoint).MoveAsync(new RouteMove(request, expectation, _secondItem, "route-next", Payloads.Receipt("move")), CancellationToken.None);
             Assert.True(outcome.Recorded);
         }
 
@@ -89,7 +89,7 @@ public sealed class CurrentGrantTests : IDisposable
         var row = fixture.Row("delivery_rebinds", 0);
         var expected = new CheckpointExpectation(row.GetProperty("old_route").GetString()!, 1, "ignored-for-stored-request", DeliveryPhase.Pending, 1);
 
-        var outcome = await new RouteMoves(checkpoint).MoveAsync(new RouteMove(Guid.Parse("c0000000-0000-4000-8000-000000000003"), expected, SecondItem,
+        var outcome = await new RouteMoves(checkpoint).MoveAsync(new RouteMove(Guid.Parse("c0000000-0000-4000-8000-000000000003"), expected, _secondItem,
             row.GetProperty("new_route").GetString()!, Payloads.Receipt("other")), CancellationToken.None);
 
         Assert.False(outcome.Recorded);
@@ -108,11 +108,11 @@ public sealed class CurrentGrantTests : IDisposable
         var context = row.GetProperty("configuration").GetString()!;
         var grants = new AttemptGrants(checkpoint);
 
-        var outcome = await grants.RecordAsync(new AttemptGrant(id, expected, FirstItem, context, Payloads.Receipt("other")), CancellationToken.None);
+        var outcome = await grants.RecordAsync(new AttemptGrant(id, expected, _firstItem, context, Payloads.Receipt("other")), CancellationToken.None);
 
         Assert.False(outcome.Recorded);
         Assert.Equal(ListenerFixture.Output("preparationReceipt"), outcome.Receipt);
-        await Refusals.Expect(DeliveryRefusal.RequestConflict, () => grants.RecordAsync(new AttemptGrant(id, expected with { Attempts = 4 }, FirstItem, context, "x"), CancellationToken.None));
+        await Refusals.Expect(DeliveryRefusal.RequestConflict, () => grants.RecordAsync(new AttemptGrant(id, expected with { Attempts = 4 }, _firstItem, context, "x"), CancellationToken.None));
     }
 
     /// <inheritdoc />

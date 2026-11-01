@@ -5,13 +5,13 @@ namespace Monstertacle.Multisession.Delivery;
 /// <summary>Reads and validates the single checkpoint row, returning stored bytes exactly.</summary>
 internal static class CheckpointRow
 {
-    private const string Query = "SELECT cursor, typeof(cursor), CAST(pending AS BLOB), typeof(pending), phase, typeof(phase), attempts, typeof(attempts), receipt, typeof(receipt), route FROM checkpoint WHERE id=1";
+    private const string _query = "SELECT cursor, typeof(cursor), CAST(pending AS BLOB), typeof(pending), phase, typeof(phase), attempts, typeof(attempts), receipt, typeof(receipt), route FROM checkpoint WHERE id=1";
 
     public static async Task<CheckpointState> ReadAsync(SqliteConnection connection, SqliteTransaction? transaction, CancellationToken cancellationToken)
     {
         using var command = connection.CreateCommand();
         command.Transaction = transaction;
-        command.CommandText = Query;
+        command.CommandText = _query;
         using var row = await command.ExecuteReaderAsync(cancellationToken);
         if (!await row.ReadAsync(cancellationToken) || row.GetString(1) != "integer" || row.GetString(7) != "integer" ||
             !IsTextOrNull(row, 3) || !IsTextOrNull(row, 5) || !IsTextOrNull(row, 9))

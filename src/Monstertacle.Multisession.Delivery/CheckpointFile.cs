@@ -5,7 +5,7 @@ namespace Monstertacle.Multisession.Delivery;
 /// <summary>The exclusive lease on <c>&lt;state&gt;.lock</c> and the private SQLite connection it protects.</summary>
 internal sealed class CheckpointFile : IDisposable
 {
-    private const string LeaseSuffix = ".lock";
+    private const string _leaseSuffix = ".lock";
     private readonly FileStream _lease;
 
     private CheckpointFile(FileStream lease, SqliteConnection connection)
@@ -26,7 +26,7 @@ internal sealed class CheckpointFile : IDisposable
         {
             PrivateState.PrepareDirectory(Path.GetDirectoryName(options.StatePath)!);
         }
-        var lease = PrivateState.OpenLease(options.StatePath + LeaseSuffix);
+        var lease = PrivateState.OpenLease(options.StatePath + _leaseSuffix);
         SqliteConnection? connection = null;
         try
         {

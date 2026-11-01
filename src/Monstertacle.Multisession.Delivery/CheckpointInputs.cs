@@ -5,7 +5,7 @@ namespace Monstertacle.Multisession.Delivery;
 /// <summary>Validation of options and host inputs at the trust boundary; refusals happen before any change.</summary>
 internal static class CheckpointInputs
 {
-    private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+    private static readonly UTF8Encoding _strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
     public static void Validate(DeliveryCheckpointOptions options)
     {
@@ -45,7 +45,7 @@ internal static class CheckpointInputs
     {
         try
         {
-            return StrictUtf8.GetString(bytes);
+            return _strictUtf8.GetString(bytes);
         }
         catch (DecoderFallbackException)
         {

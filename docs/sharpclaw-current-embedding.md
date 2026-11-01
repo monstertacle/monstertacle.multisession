@@ -2,7 +2,7 @@
 
 The offline contract proof uses SharpClaw main
 `8ca48622050721686a41c06a63d2735182ff3544` (plugin ABI 3) and locally packed,
-unpublished Multisession `0.2.0-alpha.1` packages. The SDK has no SharpClaw
+unpublished Multisession `0.2.0-alpha.5` packages. The SDK has no SharpClaw
 assembly reference. See [the source analysis](../specs/004-current-sharpclaw-contract/analysis.md)
 and [measurement manifest](../specs/004-current-sharpclaw-contract/evidence/measurement.json).
 

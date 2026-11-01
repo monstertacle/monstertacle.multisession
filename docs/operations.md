@@ -104,8 +104,8 @@ Teil der offenen Abnahme T080; lokaler Konfigurationsabgleich beweist sie nicht.
 ConfirmEnded erfindet keinen Erfolg. CloseSession ist keine Bestätigung eines
 externen Endes. Ohne ausreichende Evidenz bleiben die Reservierungen bestehen.
 Die Bibliothek stellt keine automatische Formatmigration bereit: inkompatibles
-Schema/Binding wird vor ungeprüften Änderungen abgewiesen. Für spätere Formate
-ist ein eigener Migrations- und Rückkehrplan erforderlich.
+Schema/Binding wird vor ungeprüften Änderungen abgewiesen. Auch für spätere Formate
+gilt: ältere Speicher werden abgewiesen, nie konvertiert (nur die aktuelle Version).
 
 ## Datenhaltung und Rechte
 

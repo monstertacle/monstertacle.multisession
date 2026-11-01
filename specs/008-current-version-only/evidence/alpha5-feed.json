@@ -1,0 +1,40 @@
+{
+  "status": "alpha.5 canonical CI packages for b35dc7d (current version only, MIT); local feed only, not published",
+  "recordedUtc": "2026-11-01T12:35:32Z",
+  "sourceCommit": "b35dc7da62076d61864edaa58a5abeece5a49f07",
+  "githubRun": 41305730726,
+  "jobs": "quality linux/windows, canonical-consumer linux/windows, codemetr-guard 41305730730: success. The first Windows quality attempt failed in ContractTests.StopCallbackDeadlineTests (TimeoutException, timing test unchanged by this patch); the rerun of the failed job passed.",
+  "linuxProductCoveragePercent": 97.9511,
+  "windowsProductCoveragePercent": 97.9039,
+  "nuspecRepositoryCommit": "b35dc7da62076d61864edaa58a5abeece5a49f07",
+  "packages": [
+    {
+      "File": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.5.nupkg",
+      "Sha256": "e0f6ad501bdff86a3319e32c9d2d5243ecde2fb5c5388879412db1a27ad2ad72"
+    },
+    {
+      "File": "Monstertacle.Multisession.Common.0.2.0-alpha.5.nupkg",
+      "Sha256": "3ebfcd93e7bbd5499b2962d867789db177c4dde62a35b2980a5515d8e2604b5a"
+    },
+    {
+      "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.5.nupkg",
+      "Sha256": "9f3bf5318c3651dc6876d9a5099716d8383c28e2e05679822684b888e5986e50"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.5.nupkg",
+      "Sha256": "837fe7c8dfabd8e22c922039f4cbd39bb39ee99da47417a1ecc845c9c77973c3"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.5.nupkg",
+      "Sha256": "3463c4b4b50a471a51d80b153e79e4d6425073bc426ce838ef992a5bf415b9c8"
+    },
+    {
+      "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.5.nupkg",
+      "Sha256": "f2b6978c4ddfcb4529e29b76ee41ae8b6306bd5c45533182c52c668b1d17eb3a"
+    },
+    {
+      "File": "Monstertacle.Multisession.Windows.0.2.0-alpha.5.nupkg",
+      "Sha256": "c61bc78aa9069a1327d1c5160fecab7d62c630b4ce21771cd68b949fdb293d41"
+    }
+  ]
+}

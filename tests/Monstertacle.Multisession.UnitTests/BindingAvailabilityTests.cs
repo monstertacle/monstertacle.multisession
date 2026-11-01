@@ -47,7 +47,7 @@ public sealed class BindingAvailabilityTests
     [Theory]
     [InlineData(null)]
     [InlineData(true)]
-    public async Task KeepsLegacyAndExplicitlyAvailableContinuationsUsable(bool? available)
+    public async Task KeepsUnspecifiedAndExplicitlyAvailableContinuationsUsable(bool? available)
     {
         ControlledProvider provider = new()
         {
@@ -80,7 +80,7 @@ public sealed class BindingAvailabilityTests
         Assert.Equal(SessionBlockReason.RecoveryRequired, scenario.Store.FindSession(scenario.Session.SessionId)?.BlockReason);
     }
 
-    /// <summary>Legacy explicit expiry blocks its session without requiring the optional new flag.</summary>
+    /// <summary>Explicit expiry blocks its session without requiring the optional availability flag.</summary>
     [Fact]
     public async Task BlocksNativeExpiry()
     {

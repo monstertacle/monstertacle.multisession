@@ -64,6 +64,18 @@ public sealed class RequestStorageConsistencyTests
         await AssertRejectedWithoutMutationAsync(fixture);
     }
 
+
+    /// <summary>A stored timestamp with any offset other than UTC is not in the current format, even for the same instant.</summary>
+    [Fact]
+    public async Task RejectsNonUtcStoredTimestamp()
+    {
+        await using AdmissionStoreFixture fixture = await QueuedAsync();
+        JsonNode snapshot = ReadSnapshot(fixture);
+        DateTimeOffset accepted = snapshot["AcceptedUtc"]!.GetValue<DateTimeOffset>();
+        snapshot["AcceptedUtc"] = accepted.ToOffset(TimeSpan.FromHours(2)).ToString("O", System.Globalization.CultureInfo.InvariantCulture);
+        StoreProbe.Execute(fixture.Directory.DatabasePath, "UPDATE Requests SET SnapshotJson=$json", ("$json", snapshot.ToJsonString()));
+        await AssertRejectedWithoutMutationAsync(fixture);
+    }
     private static JsonNode ReadSnapshot(AdmissionStoreFixture fixture)
         => JsonNode.Parse((string)StoreProbe.Scalar(fixture.Directory.DatabasePath, "SELECT SnapshotJson FROM Requests")!)!;
 

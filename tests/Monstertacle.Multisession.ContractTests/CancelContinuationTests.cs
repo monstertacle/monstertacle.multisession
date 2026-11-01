@@ -71,7 +71,7 @@ public sealed class CancelContinuationTests
                 Assert.Equal("old-head", store.FindSession(session.SessionId)?.Binding?.ContinuationState);
             }
             Assert.Equal(mode == "missing" ? 0 : 1, aware.RecoveryCalls);
-            Assert.Equal(0, aware.LegacyReopenCalls);
+            Assert.Equal(0, aware.BindingReopenCalls);
         }
         finally { finish.TrySetResult(new(RequestState.Succeeded, ExecutionCertainty.ConfirmedEnded, "late", true, session.Binding, null)); }
     }

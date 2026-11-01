@@ -75,9 +75,11 @@ public sealed class StoreFormatTests
     /// <summary>Unknown format, schema, metadata and binding encoding are rejected without modifying the original.</summary>
     [Theory]
     [InlineData("PRAGMA user_version=0")]
+    [InlineData("PRAGMA user_version=1")]
     [InlineData("PRAGMA user_version=3")]
     [InlineData("PRAGMA application_id=0")]
     [InlineData("UPDATE Metadata SET SchemaVersion=0")]
+    [InlineData("UPDATE Metadata SET SchemaVersion=1")]
     [InlineData("UPDATE Metadata SET SchemaVersion=3")]
     [InlineData("UPDATE Metadata SET MigrationVersion=1")]
     [InlineData("UPDATE Metadata SET BindingEncodingVersion=2")]

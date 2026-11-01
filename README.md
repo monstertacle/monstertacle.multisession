@@ -10,7 +10,7 @@ Protokolladapter für Conversations/Responses und Interactions sowie Cancel, Sto
 Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
 der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Lokale Pakete 0.2.0-alpha.5
+## Lokale Pakete 0.2.0-alpha.6
 
 Acht Bibliotheken werden lokal gepackt: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
 `Windows`, `Providers.Conversations`, `Providers.Interactions` und `Delivery`, jeweils mit dem Präfix

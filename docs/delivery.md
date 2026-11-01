@@ -1,4 +1,4 @@
-# Delivery checkpoint (`Monstertacle.Multisession.Delivery`)
+# Delivery checkpoint (`Monstertacle.Multisession.DeliveryCheckpoints`)
 
 Durable custody of one delivery channel to a destination that is not idempotent. The package stores one opaque pending
 item, its phase and attempt counter in SQLite under an exclusive lease, and records three kinds of host-authorized grants

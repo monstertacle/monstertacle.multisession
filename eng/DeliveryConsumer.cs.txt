@@ -1,10 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Monstertacle.Multisession.Delivery;
+using Monstertacle.Multisession.DeliveryCheckpoints;
 
 // Independent host: an invoice webhook outbox with its own payloads, identities and operator policy.
-// It references only the packed Monstertacle.Multisession.Delivery package.
+// It references only the packed Monstertacle.Multisession.DeliveryCheckpoints package.
 var root = Path.GetFullPath(args[0]);
 var conformance = new InvoiceOutboxConformance(root);
 var cases = await conformance.RunAsync();

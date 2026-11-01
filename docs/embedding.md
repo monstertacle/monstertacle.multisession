@@ -12,7 +12,7 @@ Abhängigkeiten. Ein framework-dependent Publish benötigt auf dem Zielsystem
 Windows Server 2025 x64 und Ubuntu 24.04 LTS x64. Die vollständige Zielsystem-
 Abnahme ist noch offen; ein erfolgreicher Build ersetzt sie nicht.
 
-Die sieben lokalen Pakete tragen Version 0.2.0-alpha.5 und werden nicht veröffentlicht.
+Die acht lokalen Pakete tragen Version 0.2.0-alpha.6 und werden nicht veröffentlicht.
 Die Produktlizenz muss vor Veröffentlichung festgelegt werden. Mit einem lokalen
 Feed und nuget.org als separater Quelle referenziert der Host:
 
@@ -43,7 +43,7 @@ Pfad durch den tatsächlichen Paketordner ersetzen:
 ```
 
 Danach im Consumerprojekt etwa `dotnet add package
-Monstertacle.Multisession.Common --version 0.2.0-alpha.5` und entsprechend Storage sowie
+Monstertacle.Multisession.Common --version 0.2.0-alpha.6` und entsprechend Storage sowie
 das native Paket hinzufügen. Keine Projektverweise auf den Bibliotheksquellbaum
 sind erforderlich. Den direkten/transitiven Audit nicht deaktivieren.
 

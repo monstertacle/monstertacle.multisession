@@ -108,13 +108,13 @@
       "monstertacle.multisession.providers.conversations": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "monstertacle.multisession.providers.interactions": {
         "type": "Project",
         "dependencies": {
-          "Monstertacle.Multisession.Common": "[0.2.0-alpha.5, )"
+          "Monstertacle.Multisession.Common": "[0.2.0-alpha.6, )"
         }
       },
       "Microsoft.Extensions.Logging.Abstractions": {

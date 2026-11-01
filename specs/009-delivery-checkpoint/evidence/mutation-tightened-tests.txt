@@ -1,0 +1,23 @@
+mutant: lease suffix .lease
+TheLeaseIsAnOperatingSystemExclusiveLock [FAIL]
+OwnerOpenKeepsStateOwnerOnlyOnTheNativePlatform [FAIL]
+dll (net10.0)
+mutant: INSERT OR REPLACE
+AttemptCountersNeverOverflow [FAIL]
+OwnerOpenReturnsListenerPendingBytesAndCountersUnchanged [FAIL]
+IdentityMismatchOnListenerCheckpointIsRefusedAndReleasesTheLease [FAIL]
+ListenerPendingItemContinuesThroughSendingToAccepted [FAIL]
+UncertainListenerCheckpointStaysUncertainWithItsAttempts [FAIL]
+ListenerCheckpointMovesRouteAndKeepsBytesCountersAndEveryReceipt [FAIL]
+AMoveKeepsCustodyAndOnlyTheNewIdentityOpens [FAIL]
+AFreshRequestAfterTheResendWasLostIsRefusedEvenAfterRestart [FAIL]
+ExistingCheckpointIgnoresANewInitialPosition [FAIL]
+CrashAfterSendingBecomesUncertainOnlyForTheOwner [FAIL]
+UnsupportedFormatVersionIsRefused [FAIL]
+AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(consumer: "consumer-a", source: "other-source", route: "route-a") [FAIL]
+AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(consumer: "other-consumer", source: "source-a", route: "route-a") [FAIL]
+AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(consumer: "consumer-a", source: "source-a", route: "other-route") [FAIL]
+dll (net10.0)
+restored:
+dll (net10.0)
+Passed!  - Failed:     0, Passed:    94, Skipped:     0, Total:    94, Duration: 1 s - Mon

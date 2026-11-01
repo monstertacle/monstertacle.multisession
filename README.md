@@ -10,11 +10,12 @@ Protokolladapter für Conversations/Responses und Interactions sowie Cancel, Sto
 Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
 der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Lokale Pakete 0.2.0-alpha.5
+## Lokale Pakete 0.2.0-alpha.6
 
-Sieben Bibliotheken werden lokal gepackt: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
-`Windows`, `Providers.Conversations` und `Providers.Interactions`, jeweils mit dem Präfix
-`Monstertacle.Multisession.`. Testprojekte und ValidationHost sind keine Pakete.
+Acht Bibliotheken werden lokal gepackt: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
+`Windows`, `Providers.Conversations`, `Providers.Interactions` und `Delivery`, jeweils mit dem Präfix
+`Monstertacle.Multisession.`. `Delivery` ist unabhängig von den Sitzungspaketen: ein opaker dauerhafter
+Zustell-Checkpoint je Kanal mit typisierten atomaren Quittungs-/CAS-Primitiven, siehe [Zustell-Checkpoint](docs/delivery.md). Testprojekte und ValidationHost sind keine Pakete.
 Es erfolgt keine Veröffentlichung. Die Bibliotheken stehen unter der MIT-Lizenz
 (SPDX `MIT`, Datei [LICENSE](LICENSE)); jedes Paket enthält den Lizenztext mit
 Copyrightvermerk. Abhängigkeiten werden nur als NuGet-Verweise geführt und behalten

@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Monstertacle.Multisession.AgentFramework/Monstertacle.Multisession.AgentFramework.csproj" />
     <Project Path="src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
+    <Project Path="src/Monstertacle.Multisession.Delivery/Monstertacle.Multisession.Delivery.csproj" />
     <Project Path="src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />
     <Project Path="src/Monstertacle.Multisession.Windows/Monstertacle.Multisession.Windows.csproj" />
     <Project Path="src/Monstertacle.Multisession.Linux/Monstertacle.Multisession.Linux.csproj" />
@@ -13,6 +14,7 @@
     <Project Path="tests/Monstertacle.Multisession.ContractTests/Monstertacle.Multisession.ContractTests.csproj" />
     <Project Path="tests/Monstertacle.Multisession.IntegrationTests/Monstertacle.Multisession.IntegrationTests.csproj" />
     <Project Path="tests/Monstertacle.Multisession.PlatformTests/Monstertacle.Multisession.PlatformTests.csproj" />
+    <Project Path="tests/Monstertacle.Multisession.Delivery.Tests/Monstertacle.Multisession.Delivery.Tests.csproj" />
   </Folder>
   <Folder Name="/examples/">
     <Project Path="examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" />

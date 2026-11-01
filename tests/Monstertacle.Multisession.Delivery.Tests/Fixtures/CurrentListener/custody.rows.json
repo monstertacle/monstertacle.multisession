@@ -1,0 +1,79 @@
+{
+  "checkpoint": [
+    {
+      "id": 1,
+      "schema": 1,
+      "instance": "fixture-instance",
+      "project": "fixture-project",
+      "route": "08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33",
+      "cursor": 1,
+      "pending": "{\u0022version\u0022:1,\u0022cursor\u0022:2,\u0022eventId\u0022:\u002222222222-2222-4222-8222-222222222222\u0022,\u0022type\u0022:\u0022artifact.published\u0022,\u0022observedUtc\u0022:\u00222026-11-01T00:00:00\u002B00:00\u0022,\u0022artifact\u0022:{\u0022projectId\u0022:\u0022fixture-project\u0022,\u0022artifactId\u0022:\u0022fixture-artifact-2\u0022,\u0022sha256\u0022:\u0022abababababababababababababababababababababababababababababababab\u0022,\u0022bytes\u0022:42,\u0022artifactCreatedUtc\u0022:\u00222026-11-01T00:00:00\u002B00:00\u0022}}",
+      "phase": "pending",
+      "attempts": 1,
+      "receipt": "fixture-turn-3c8bbc94a0094d8e909aac002cae5560"
+    }
+  ],
+  "preparation_rearms": [
+    {
+      "request_id": "c0000000-0000-4000-8000-000000000001",
+      "configuration": "6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7",
+      "route": "c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e",
+      "cursor": 0,
+      "pending_id": "11111111-1111-4111-8111-111111111111",
+      "pending_digest": "ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82",
+      "attempts": 3,
+      "receipt": "{\u0022schema\u0022:1,\u0022requestId\u0022:\u0022c0000000-0000-4000-8000-000000000001\u0022,\u0022requestDigest\u0022:\u0022b636a55debd8911c7a50780de50aa7343846afa2d885162bbe13e80e9f0bf407\u0022,\u0022before\u0022:{\u0022schema\u0022:1,\u0022configurationDigest\u0022:\u00226e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\u0022,\u0022routeDigest\u0022:\u0022c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\u0022,\u0022cursor\u0022:0,\u0022pendingId\u0022:\u002211111111-1111-4111-8111-111111111111\u0022,\u0022pendingDigest\u0022:\u0022ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\u0022,\u0022phase\u0022:\u0022pending\u0022,\u0022attempts\u0022:3},\u0022grantedAttempts\u0022:3,\u0022createdUtc\u0022:\u00222026-11-01T12:42:36.9948771\u002B00:00\u0022}"
+    }
+  ],
+  "delivery_replays": [
+    {
+      "request_id": "c0000000-0000-4000-8000-000000000002",
+      "pending_id": "11111111-1111-4111-8111-111111111111",
+      "receipt": "{\u0022schema\u0022:1,\u0022requestId\u0022:\u0022c0000000-0000-4000-8000-000000000002\u0022,\u0022requestDigest\u0022:\u002203a7457d9db8e5eaeee92159f56f74b188deb90121d29bd9511bf06f439c8a2d\u0022,\u0022before\u0022:{\u0022schema\u0022:1,\u0022configurationDigest\u0022:\u00226e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\u0022,\u0022routeDigest\u0022:\u0022c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\u0022,\u0022cursor\u0022:0,\u0022pendingCursor\u0022:1,\u0022pendingId\u0022:\u002211111111-1111-4111-8111-111111111111\u0022,\u0022pendingDigest\u0022:\u0022ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\u0022,\u0022phase\u0022:\u0022uncertain\u0022,\u0022attempts\u0022:4},\u0022consumedSendAllowance\u0022:1,\u0022createdUtc\u0022:\u00222026-11-01T12:42:37.9548039\u002B00:00\u0022}"
+    }
+  ],
+  "delivery_rebinds": [
+    {
+      "request_id": "c0000000-0000-4000-8000-000000000003",
+      "old_route": "c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e",
+      "new_route": "08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33",
+      "cursor": 1,
+      "pending_id": "22222222-2222-4222-8222-222222222222",
+      "receipt": "{\u0022schema\u0022:1,\u0022requestId\u0022:\u0022c0000000-0000-4000-8000-000000000003\u0022,\u0022requestDigest\u0022:\u00226c9fa9d75199b1f81c73e1d74147ae11ce2b493e4d3aaf389f463f313bd196de\u0022,\u0022before\u0022:{\u0022schema\u0022:1,\u0022oldConfigurationDigest\u0022:\u00226e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\u0022,\u0022oldRouteDigest\u0022:\u0022c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\u0022,\u0022newConfigurationDigest\u0022:\u0022612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\u0022,\u0022newRouteDigest\u0022:\u002208e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\u0022,\u0022cursor\u0022:1,\u0022pendingId\u0022:\u002222222222-2222-4222-8222-222222222222\u0022,\u0022pendingDigest\u0022:\u0022d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\u0022,\u0022phase\u0022:\u0022pending\u0022,\u0022attempts\u0022:1},\u0022createdUtc\u0022:\u00222026-11-01T12:42:38.8246184\u002B00:00\u0022}"
+    }
+  ],
+  "schema": [
+    {
+      "name": "checkpoint",
+      "sql": "CREATE TABLE checkpoint(id INTEGER PRIMARY KEY CHECK(id=1),schema INTEGER NOT NULL,instance TEXT NOT NULL,project TEXT NOT NULL,route TEXT NOT NULL,cursor INTEGER NOT NULL,pending TEXT,phase TEXT,attempts INTEGER NOT NULL DEFAULT 0,receipt TEXT)"
+    },
+    {
+      "name": "delivery_rebinds",
+      "sql": "CREATE TABLE delivery_rebinds(request_id TEXT PRIMARY KEY,old_route TEXT NOT NULL,new_route TEXT NOT NULL,cursor INTEGER NOT NULL,pending_id TEXT,receipt TEXT NOT NULL)"
+    },
+    {
+      "name": "delivery_replays",
+      "sql": "CREATE TABLE delivery_replays(request_id TEXT PRIMARY KEY,pending_id TEXT NOT NULL UNIQUE,receipt TEXT NOT NULL)"
+    },
+    {
+      "name": "preparation_rearms",
+      "sql": "CREATE TABLE preparation_rearms(request_id TEXT PRIMARY KEY,configuration TEXT NOT NULL,route TEXT NOT NULL,cursor INTEGER NOT NULL,pending_id TEXT NOT NULL,pending_digest TEXT NOT NULL,attempts INTEGER NOT NULL,receipt TEXT NOT NULL)"
+    },
+    {
+      "name": "sqlite_autoindex_delivery_rebinds_1",
+      "sql": null
+    },
+    {
+      "name": "sqlite_autoindex_delivery_replays_1",
+      "sql": null
+    },
+    {
+      "name": "sqlite_autoindex_delivery_replays_2",
+      "sql": null
+    },
+    {
+      "name": "sqlite_autoindex_preparation_rearms_1",
+      "sql": null
+    }
+  ]
+}

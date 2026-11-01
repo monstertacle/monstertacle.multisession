@@ -1,0 +1,43 @@
+{
+  "checkpoint": [
+    {
+      "id": 1,
+      "schema": 1,
+      "instance": "fixture-instance",
+      "project": "fixture-project",
+      "route": "f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96",
+      "cursor": 0,
+      "pending": "{\u0022version\u0022:1,\u0022cursor\u0022:1,\u0022eventId\u0022:\u002211111111-1111-4111-8111-111111111111\u0022,\u0022type\u0022:\u0022artifact.published\u0022,\u0022observedUtc\u0022:\u00222026-11-01T00:00:00\u002B00:00\u0022,\u0022artifact\u0022:{\u0022projectId\u0022:\u0022fixture-project\u0022,\u0022artifactId\u0022:\u0022fixture-artifact-1\u0022,\u0022sha256\u0022:\u0022abababababababababababababababababababababababababababababababab\u0022,\u0022bytes\u0022:42,\u0022artifactCreatedUtc\u0022:\u00222026-11-01T00:00:00\u002B00:00\u0022}}",
+      "phase": "uncertain",
+      "attempts": 2,
+      "receipt": null
+    }
+  ],
+  "preparation_rearms": null,
+  "delivery_replays": [
+    {
+      "request_id": "c0000000-0000-4000-8000-000000000004",
+      "pending_id": "11111111-1111-4111-8111-111111111111",
+      "receipt": "{\u0022schema\u0022:1,\u0022requestId\u0022:\u0022c0000000-0000-4000-8000-000000000004\u0022,\u0022requestDigest\u0022:\u002234003fa3eb84b7d8fa5f8f6724eb3ccdde5b3e10d4c68bb6fe0da4e2b4fe7c7e\u0022,\u0022before\u0022:{\u0022schema\u0022:1,\u0022configurationDigest\u0022:\u00222080a60400ab06879776939910e534f4a9f81ea4f8f0e5a9cdd6cd26ebdb23d7\u0022,\u0022routeDigest\u0022:\u0022f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96\u0022,\u0022cursor\u0022:0,\u0022pendingCursor\u0022:1,\u0022pendingId\u0022:\u002211111111-1111-4111-8111-111111111111\u0022,\u0022pendingDigest\u0022:\u0022ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\u0022,\u0022phase\u0022:\u0022uncertain\u0022,\u0022attempts\u0022:1},\u0022consumedSendAllowance\u0022:1,\u0022createdUtc\u0022:\u00222026-11-01T12:42:40.2513044\u002B00:00\u0022}"
+    }
+  ],
+  "delivery_rebinds": null,
+  "schema": [
+    {
+      "name": "checkpoint",
+      "sql": "CREATE TABLE checkpoint(id INTEGER PRIMARY KEY CHECK(id=1),schema INTEGER NOT NULL,instance TEXT NOT NULL,project TEXT NOT NULL,route TEXT NOT NULL,cursor INTEGER NOT NULL,pending TEXT,phase TEXT,attempts INTEGER NOT NULL DEFAULT 0,receipt TEXT)"
+    },
+    {
+      "name": "delivery_replays",
+      "sql": "CREATE TABLE delivery_replays(request_id TEXT PRIMARY KEY,pending_id TEXT NOT NULL UNIQUE,receipt TEXT NOT NULL)"
+    },
+    {
+      "name": "sqlite_autoindex_delivery_replays_1",
+      "sql": null
+    },
+    {
+      "name": "sqlite_autoindex_delivery_replays_2",
+      "sql": null
+    }
+  ]
+}

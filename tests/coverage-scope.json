@@ -5,7 +5,8 @@
     "Monstertacle.Multisession.AgentFramework",
     "Monstertacle.Multisession.Storage.Sqlite",
     "Monstertacle.Multisession.Providers.Conversations",
-    "Monstertacle.Multisession.Providers.Interactions"
+    "Monstertacle.Multisession.Providers.Interactions",
+    "Monstertacle.Multisession.Delivery"
   ],
   "platformAssemblies": {
     "windows": "Monstertacle.Multisession.Windows",

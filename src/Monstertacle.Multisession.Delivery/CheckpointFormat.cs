@@ -43,8 +43,6 @@ internal static class CheckpointFormat
     /// <summary>The idempotent creation statement used for a table of the current format.</summary>
     public static string CreateIfMissing(string table) => "CREATE TABLE IF NOT EXISTS " + table;
 
-    public static string Text(DeliveryPhase phase) => _phases.Single(entry => entry.Value == phase).Key;
-
     public static DeliveryPhase? Phase(string? text) =>
         text is null ? null : _phases.TryGetValue(text, out var phase) ? phase : throw Corrupt();
 

@@ -135,7 +135,10 @@ foreach ($state in @('custody', 'uncertain')) {
     & $dotnet $harnessDll snapshot $target $dump
     if ($LASTEXITCODE -ne 0) { throw "Snapshot failed: $state" }
     foreach ($suffix in @('-wal', '-shm')) { if (Test-Path -LiteralPath "$target$suffix") { throw "Write-ahead log was not merged: $state" } }
-    $oracle.fixtures[$state] = [ordered]@{ database = "$state.db"; sha256 = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant(); rows = "$state.rows.json" }
+    $dumpHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+    # SQLite files are never source fixtures (.gitignore); only the dump and the hash stay.
+    Remove-Item -LiteralPath $target
+    $oracle.fixtures[$state] = [ordered]@{ database = "$state.db"; sha256 = $dumpHash; rows = "$state.rows.json" }
 }
 $oracle.outputs = [ordered]@{ preparationKey = $rearmKey; preparationReceipt = $rearmReceipt; deliveryKey = $replayKey; deliveryReceipt = $replayReceipt
     rebindKey = $rebindKey; rebindReceipt = $rebindReceipt; movedPreparationKey = $movedKey; uncertainKey = $lostKey; uncertainReceipt = $lostReceipt; uncertainSecondKey = $secondKey }

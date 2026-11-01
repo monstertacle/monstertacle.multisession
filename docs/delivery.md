@@ -31,9 +31,15 @@ await checkpoint.AcceptAsync(canonicalBytes, acknowledgement, ct);   // or MarkU
 
 `OpenExistingAsync` opens an existing checkpoint for inspection and grants without creating or recovering anything.
 Grants take a `CheckpointExpectation` (route, position, digest of the stored bytes, phase, attempts), a request id for
-idempotency, the host-attested item id and the host's canonical receipt text. A repeated request id returns the stored
-receipt unchanged; different values for the same id are a `RequestConflict`. Each grant journal keeps at most 1024 receipts
-and refuses when full. All refusals are `DeliveryRefusalException` with a typed `DeliveryRefusal` and change nothing.
+idempotency, the host-attested item id and the host's canonical receipt text. The host must derive the item id
+deterministically from its canonical item (for example the event id inside the payload), never per request: the single
+resend allowance binds that id. A repeated request id returns the stored receipt unchanged (`Recorded == false`) when the
+stored journal columns match (attempt grants: context, route, position, item, digest, attempts; resends: item; route
+moves: old and new route, position, item); otherwise it is a `RequestConflict`. The receipt text itself is not compared,
+so a host that needs exact request equality verifies the returned receipt, as current hosts do. Each grant journal keeps
+at most 1024 receipts and refuses when full. Refused transitions and grants are `DeliveryRefusalException` with a typed
+`DeliveryRefusal` and change nothing. A refused owner open may already have applied the private directory permissions,
+created the lock file and set WAL, as the current format's owner open always did.
 
 Guarantee: at most one automatic Sending per staged item and at most one authorized resend per item. Accepted only means
 the host reported a positive acknowledgement. There is no exactly-once delivery. Delivery uncertainty is independent of
@@ -45,7 +51,9 @@ The on-disk format is the current format of existing checkpoints and is retained
 `preparation_rearms`, `delivery_replays`, `delivery_rebinds`, their `CREATE TABLE` text, phase strings, `schema = 1` and
 the sibling lease file `<state>.lock`. Anything else is refused; there is no converter or alternate reader. The owner open
 keeps state owner-only: on Linux the directory is 0700 and the files 0600; on Windows the state directory gets a protected
-access rule for the current user only. Both platforms are tested in native CI.
+access rule for the current user only. The state directory must be dedicated to the checkpoint: the owner open
+replaces its permissions (Unix mode, Windows access list) exactly like the current format's owner open did on Linux.
+Both platforms run the behavior tests natively in CI (Linux and Windows quality jobs).
 
 ## Host integration
 

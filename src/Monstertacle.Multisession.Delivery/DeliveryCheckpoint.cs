@@ -53,13 +53,17 @@ public sealed class DeliveryCheckpoint : IDisposable
     }
 
     /// <summary>Stages the item at the next position when nothing is pending; attempts restart at zero.</summary>
-    /// <param name="position">Source position of the item; must be the stored position plus one.</param>
+    /// <param name="position">Source position of the item; must be the stored position plus one and at least 1.</param>
     /// <param name="payload">Canonical UTF-8 bytes produced by the host; never interpreted.</param>
     /// <param name="cancellationToken">Cancels before the change.</param>
     /// <returns>A task completing once the item is durably staged.</returns>
     /// <exception cref="DeliveryRefusalException"><see cref="DeliveryRefusal.TransitionConflict"/> or <see cref="DeliveryRefusal.InvalidInput"/>.</exception>
     public Task StageAsync(long position, ReadOnlyMemory<byte> payload, CancellationToken cancellationToken)
     {
+        if (position < 1)
+        {
+            throw new DeliveryRefusalException(DeliveryRefusal.InvalidInput);
+        }
         var text = CheckpointInputs.Payload(payload, Options.MaximumPayloadBytes);
         return ChangeAsync("UPDATE checkpoint SET pending=$payload,phase='pending',attempts=0 WHERE id=1 AND pending IS NULL AND cursor=$prior", command =>
         {

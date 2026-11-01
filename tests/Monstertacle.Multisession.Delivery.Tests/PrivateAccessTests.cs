@@ -41,6 +41,28 @@ public sealed class PrivateAccessTests : IDisposable
         }
     }
 
+    /// <summary>A missing state directory is created owner-only on the native platform.</summary>
+    [Fact]
+    public async Task AMissingStateDirectoryIsCreatedOwnerOnly()
+    {
+        var directory = Path.GetDirectoryName(_directory.StatePath)!;
+        Assert.False(Directory.Exists(directory));
+
+        using var checkpoint = await DeliveryCheckpoint.OpenAsync(Payloads.Options(_directory.StatePath), CancellationToken.None);
+
+        if (OperatingSystem.IsWindows())
+        {
+            var security = new DirectoryInfo(directory).GetAccessControl();
+            Assert.True(security.AreAccessRulesProtected);
+            var rule = Assert.Single(security.GetAccessRules(true, true, typeof(SecurityIdentifier)).Cast<FileSystemAccessRule>());
+            Assert.Equal(WindowsIdentity.GetCurrent().User, rule.IdentityReference);
+        }
+        else
+        {
+            Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute, File.GetUnixFileMode(directory));
+        }
+    }
+
     /// <summary>The lease is an operating system exclusive lock.</summary>
     [Fact]
     public async Task TheLeaseIsAnOperatingSystemExclusiveLock()

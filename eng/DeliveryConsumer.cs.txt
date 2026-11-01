@@ -20,6 +20,10 @@ internal sealed class InvoiceOutboxConformance(string root)
 
     private static string Route(string webhook) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(webhook)));
 
+    // The item identity is derived from the canonical payload, never generated per request, so the single resend
+    // allowance binds the item itself.
+    private static Guid ItemId(byte[] payload) => new(SHA256.HashData(payload).AsSpan(0, 16));
+
     private static byte[] Invoice(long position) => Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { invoice = "INV-" + position, amountCents = 1250 * position }));
 
     private static string OperatorReceipt(string action, CheckpointExpectation expected) =>
@@ -78,7 +82,7 @@ internal sealed class InvoiceOutboxConformance(string root)
         Record("uncertain-blocks-automatic-send", automatic == DeliveryRefusal.TransitionConflict, automatic);
         var expected = state.ToExpectation();
         var resends = new ResendAuthorizations(restarted);
-        var request = new ResendAuthorization(Guid.NewGuid(), expected, Guid.NewGuid(), OperatorReceipt("resend", expected));
+        var request = new ResendAuthorization(Guid.NewGuid(), expected, ItemId(Invoice(1)), OperatorReceipt("resend", expected));
         var first = await resends.AuthorizeAsync(request, CancellationToken.None);
         var repeated = await resends.AuthorizeAsync(request with { Receipt = "{}" }, CancellationToken.None);
         var sending = await restarted.ReadAsync(CancellationToken.None);
@@ -101,7 +105,7 @@ internal sealed class InvoiceOutboxConformance(string root)
                 await outbox.RecordPreparationFailureAsync(CancellationToken.None);
             }
             var expected = (await outbox.ReadAsync(CancellationToken.None)).ToExpectation();
-            var item = Guid.NewGuid();
+            var item = ItemId(Invoice(1));
             var grant = await new AttemptGrants(outbox).RecordAsync(new AttemptGrant(Guid.NewGuid(), expected, item, "policy-v1", OperatorReceipt("retry", expected)), CancellationToken.None);
             var stale = await RefusalAsync(() => new AttemptGrants(outbox).RecordAsync(new AttemptGrant(Guid.NewGuid(), expected with { Attempts = 9 }, item, "policy-v1", "{}"), CancellationToken.None));
             Record("attempt-grant-and-stale-key", grant.Recorded && stale == DeliveryRefusal.StaleExpectation, stale);

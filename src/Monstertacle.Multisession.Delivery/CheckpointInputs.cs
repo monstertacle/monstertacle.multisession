@@ -19,7 +19,7 @@ internal static class CheckpointInputs
         {
             throw new ArgumentException("Channel identifiers must be non-blank, bounded and free of control characters.", nameof(options));
         }
-        if (options.InitialPosition < 0 || options.MaximumPayloadBytes is < 1 or > DeliveryLimits.PayloadBytesLimit ||
+        if (options.InitialPosition is < 0 or long.MaxValue || options.MaximumPayloadBytes is < 1 or > DeliveryLimits.PayloadBytesLimit ||
             options.MaximumRetainedGrants is < 1 or > DeliveryLimits.RetainedGrants ||
             options.BusyTimeout < TimeSpan.FromSeconds(1) || options.BusyTimeout > DeliveryLimits.BusyTimeoutLimit)
         {

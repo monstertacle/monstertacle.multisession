@@ -11,7 +11,8 @@ public sealed record AttemptGrant(Guid RequestId, CheckpointExpectation Expected
 /// <summary>Host-authorized single resend of an item whose earlier send outcome is unknown.</summary>
 /// <param name="RequestId">Idempotency key of the authorization.</param>
 /// <param name="Expected">Exact expected checkpoint state; phase must be <see cref="DeliveryPhase.Uncertain"/>.</param>
-/// <param name="ItemId">Host-attested identity of the pending item; at most one authorization per item ever.</param>
+/// <param name="ItemId">Host-attested identity of the pending item; at most one authorization per item ever. Derive it
+/// deterministically from the canonical item, never per request.</param>
 /// <param name="Receipt">Canonical receipt text produced by the host; stored and returned unchanged.</param>
 public sealed record ResendAuthorization(Guid RequestId, CheckpointExpectation Expected, Guid ItemId, string Receipt);
 

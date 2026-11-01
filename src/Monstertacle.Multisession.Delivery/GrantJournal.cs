@@ -55,7 +55,6 @@ internal abstract class GrantJournal<TRequest>(DeliveryCheckpoint checkpoint)
             await RequireAllowedAsync(transaction, request, key, cancellationToken);
             await InsertAsync(transaction, request, key, cancellationToken);
             await ApplyAsync(transaction, request, key, state.Pending!, cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
             transaction.Commit();
             return new GrantOutcome(true, key.Receipt);
         });

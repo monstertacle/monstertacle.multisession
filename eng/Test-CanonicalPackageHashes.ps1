@@ -5,8 +5,8 @@ $ErrorActionPreference = 'Stop'
 $producer = Get-Content -Raw -LiteralPath $ProducerManifest | ConvertFrom-Json
 $packages = @($producer.Hashes | Where-Object { $_.File -is [string] -and $_.File.EndsWith('.nupkg', [StringComparison]::Ordinal) })
 $files = @(Get-ChildItem -LiteralPath $PackageDirectory -File -Filter '*.nupkg')
-# The release contains six existing libraries plus the framework integration.
-$expectedPackageCount = 7
+# The release contains six existing libraries, the framework integration and the delivery checkpoint.
+$expectedPackageCount = 8
 if ($producer.Status -cne 'PASS' -or $packages.Count -ne $expectedPackageCount -or $files.Count -ne $expectedPackageCount) { throw 'Incomplete or failed canonical package producer.' }
 $names = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 foreach ($entry in $packages) {

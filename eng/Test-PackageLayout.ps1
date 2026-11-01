@@ -13,10 +13,11 @@ $names = @(
     'Monstertacle.Multisession.Windows',
     'Monstertacle.Multisession.Storage.Sqlite',
     'Monstertacle.Multisession.Providers.Conversations',
-    'Monstertacle.Multisession.Providers.Interactions'
+    'Monstertacle.Multisession.Providers.Interactions',
+    'Monstertacle.Multisession.Delivery'
 )
 $packages = @(Get-ChildItem -LiteralPath $PackageDirectory -Filter '*.nupkg' -File)
-if ($packages.Count -ne $names.Count) { throw 'Expected exactly seven library packages.' }
+if ($packages.Count -ne $names.Count) { throw 'Expected exactly eight library packages.' }
 foreach ($name in $names) {
     $package = @($packages | Where-Object Name -EQ "$name.$version.nupkg")
     if ($package.Count -ne 1) { throw "Missing expected package: $name $version" }

@@ -42,6 +42,7 @@ jobs:
           dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages
           if ($LASTEXITCODE -ne 0) { throw 'Local package build failed.' }
           ./eng/PackageSmoke.ps1
+          ./eng/Test-DeliveryConsumer.ps1
       - name: Publish and validate native host outside the source tree
         shell: pwsh
         run: |
@@ -68,6 +69,7 @@ jobs:
             artifacts/packages/
             artifacts/package-smoke/
             artifacts/publish/
+            artifacts/delivery-consumer/
             artifacts/validation-scenarios/
           if-no-files-found: error
 
@@ -103,6 +105,7 @@ jobs:
           if ($manifests.Count -ne 1) { throw 'Expected exactly one successful package producer manifest.' }
           ./eng/Test-CanonicalPackageHashes.ps1 -ProducerManifest $manifests[0].FullName -PackageDirectory artifacts/canonical-input/packages > artifacts/canonical-package-source.json
           ./eng/PackageSmoke.ps1 -PackageDirectory artifacts/canonical-input/packages
+          ./eng/Test-DeliveryConsumer.ps1 -PackageDirectory artifacts/canonical-input/packages
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -110,4 +113,5 @@ jobs:
           path: |
             artifacts/canonical-package-source.json
             artifacts/package-smoke/
+            artifacts/delivery-consumer/
           if-no-files-found: error

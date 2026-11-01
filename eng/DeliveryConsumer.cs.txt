@@ -1,0 +1,117 @@
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Monstertacle.Multisession.Delivery;
+
+// Independent host: an invoice webhook outbox with its own payloads, identities and operator policy.
+// It references only the packed Monstertacle.Multisession.Delivery package.
+var root = Path.GetFullPath(args[0]);
+var conformance = new InvoiceOutboxConformance(root);
+var cases = await conformance.RunAsync();
+Console.WriteLine(JsonSerializer.Serialize(new { Status = cases.All(c => c.Passed) ? "PASS" : "FAIL", Cases = cases }));
+return cases.All(c => c.Passed) ? 0 : 1;
+
+internal sealed record ConformanceCase(string Name, bool Passed, string Observed);
+
+internal sealed class InvoiceOutboxConformance(string root)
+{
+    private const int OperatorRetryAllowance = 2;
+    private readonly List<ConformanceCase> _cases = [];
+
+    private static string Route(string webhook) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(webhook)));
+
+    private static byte[] Invoice(long position) => Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { invoice = "INV-" + position, amountCents = 1250 * position }));
+
+    private static string OperatorReceipt(string action, CheckpointExpectation expected) =>
+        JsonSerializer.Serialize(new { action, approvedBy = "operator-1", expected.Position, expected.PendingDigest, expected.Attempts });
+
+    private DeliveryCheckpointOptions Options(string name, string webhook) =>
+        new(Path.Combine(root, name, "outbox.db"), new DeliveryChannel("billing-worker-7", "invoice-ledger", Route(webhook))) { BusyTimeout = TimeSpan.FromSeconds(2) };
+
+    public async Task<IReadOnlyList<ConformanceCase>> RunAsync()
+    {
+        await AcceptedDeliveryAsync();
+        await CrashAndSingleResendAsync();
+        await RetryGrantAndRouteMoveAsync();
+        return _cases;
+    }
+
+    private void Record(string name, bool passed, object? observed) => _cases.Add(new ConformanceCase(name, passed, JsonSerializer.Serialize(observed)));
+
+    private static async Task<DeliveryRefusal?> RefusalAsync(Func<Task> action)
+    {
+        try
+        {
+            await action();
+            return null;
+        }
+        catch (DeliveryRefusalException refusal)
+        {
+            return refusal.Reason;
+        }
+    }
+
+    private async Task AcceptedDeliveryAsync()
+    {
+        using var outbox = await DeliveryCheckpoint.OpenAsync(Options("accepted", "https://hooks.example/a"), CancellationToken.None);
+        await outbox.StageAsync(1, Invoice(1), CancellationToken.None);
+        await outbox.MarkSendingAsync(CancellationToken.None);
+        await outbox.AcceptAsync(Invoice(1), "http-202-a1", CancellationToken.None);
+        var state = await outbox.ReadAsync(CancellationToken.None);
+        Record("accepted-advances-position", state is { Position: 1, Pending: null, Phase: DeliveryPhase.Accepted, Acknowledgement: "http-202-a1" }, new { state.Position, state.Phase });
+        var held = await RefusalAsync(() => DeliveryCheckpoint.OpenAsync(Options("accepted", "https://hooks.example/a"), CancellationToken.None));
+        Record("second-owner-refused", held == DeliveryRefusal.ExclusiveAccessUnavailable, held);
+    }
+
+    private async Task CrashAndSingleResendAsync()
+    {
+        var options = Options("uncertain", "https://hooks.example/b");
+        using (var outbox = await DeliveryCheckpoint.OpenAsync(options, CancellationToken.None))
+        {
+            await outbox.StageAsync(1, Invoice(1), CancellationToken.None);
+            await outbox.MarkSendingAsync(CancellationToken.None);
+        }
+        using var restarted = await DeliveryCheckpoint.OpenAsync(options, CancellationToken.None);
+        var state = await restarted.ReadAsync(CancellationToken.None);
+        Record("crash-in-sending-is-uncertain", state.Phase == DeliveryPhase.Uncertain, state.Phase);
+        var automatic = await RefusalAsync(() => restarted.MarkSendingAsync(CancellationToken.None));
+        Record("uncertain-blocks-automatic-send", automatic == DeliveryRefusal.TransitionConflict, automatic);
+        var expected = state.ToExpectation();
+        var resends = new ResendAuthorizations(restarted);
+        var request = new ResendAuthorization(Guid.NewGuid(), expected, Guid.NewGuid(), OperatorReceipt("resend", expected));
+        var first = await resends.AuthorizeAsync(request, CancellationToken.None);
+        var repeated = await resends.AuthorizeAsync(request with { Receipt = "{}" }, CancellationToken.None);
+        var sending = await restarted.ReadAsync(CancellationToken.None);
+        Record("resend-authorized-once-atomically", first.Recorded && !repeated.Recorded && repeated.Receipt == request.Receipt && sending.Phase == DeliveryPhase.Sending, new { first.Recorded, sending.Phase });
+        await restarted.MarkUncertainAsync(CancellationToken.None);
+        var again = (await restarted.ReadAsync(CancellationToken.None)).ToExpectation();
+        var consumed = await RefusalAsync(() => resends.AuthorizeAsync(request with { RequestId = Guid.NewGuid(), Expected = again }, CancellationToken.None));
+        Record("second-resend-refused", consumed == DeliveryRefusal.AllowanceConsumed, consumed);
+    }
+
+    private async Task RetryGrantAndRouteMoveAsync()
+    {
+        var before = Options("moved", "https://hooks.example/c");
+        var after = Options("moved", "https://hooks.example/d");
+        using (var outbox = await DeliveryCheckpoint.OpenAsync(before, CancellationToken.None))
+        {
+            await outbox.StageAsync(1, Invoice(1), CancellationToken.None);
+            for (var failure = 0; failure < OperatorRetryAllowance; failure++)
+            {
+                await outbox.RecordPreparationFailureAsync(CancellationToken.None);
+            }
+            var expected = (await outbox.ReadAsync(CancellationToken.None)).ToExpectation();
+            var item = Guid.NewGuid();
+            var grant = await new AttemptGrants(outbox).RecordAsync(new AttemptGrant(Guid.NewGuid(), expected, item, "policy-v1", OperatorReceipt("retry", expected)), CancellationToken.None);
+            var stale = await RefusalAsync(() => new AttemptGrants(outbox).RecordAsync(new AttemptGrant(Guid.NewGuid(), expected with { Attempts = 9 }, item, "policy-v1", "{}"), CancellationToken.None));
+            Record("attempt-grant-and-stale-key", grant.Recorded && stale == DeliveryRefusal.StaleExpectation, stale);
+            var move = await new RouteMoves(outbox).MoveAsync(new RouteMove(Guid.NewGuid(), expected, item, after.Channel.RouteId, OperatorReceipt("move", expected)), CancellationToken.None);
+            Record("route-move-recorded", move.Recorded, move.Recorded);
+        }
+        var oldRoute = await RefusalAsync(() => DeliveryCheckpoint.OpenExistingAsync(before, CancellationToken.None));
+        using var moved = await DeliveryCheckpoint.OpenExistingAsync(after, CancellationToken.None);
+        var state = await moved.ReadAsync(CancellationToken.None);
+        Record("moved-custody-intact", oldRoute == DeliveryRefusal.IdentityMismatch && state.Attempts == OperatorRetryAllowance &&
+            state.Pending!.Payload.Span.SequenceEqual(Invoice(1)), new { oldRoute, state.Attempts });
+    }
+}

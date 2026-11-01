@@ -1,6 +1,6 @@
 # Feature: Opaque delivery checkpoint and atomic grant primitives
 
-Status: implementation in progress (no release, no host activation)
+Status: package qualified as 0.2.0-alpha.6 (main 06bbbcc); host integration and activation open (F-009-1)
 Owner: delivery package implementer (work `monstertacle-delivery-implementation-20261101`); host integration stays with the product actor.
 
 ## Authority and scope

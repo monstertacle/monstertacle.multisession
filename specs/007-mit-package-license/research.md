@@ -16,3 +16,7 @@
 
 Decision: SPDX expression rather than a license file reference (NuGet shows it directly), with LICENSE packed as an additional file
 so every copy carries the notice. Open questions: none.
+
+Transitive packages keep their own licenses (for example SQLitePCLRaw, Apache-2.0); the README makes no all-MIT claim, it states
+that dependencies are NuGet references with their own licenses. Planned tests: license-aware layout check (Red on alpha.3), full
+native quality, package smoke with prior-reader refusal and both canonical consumers in CI, SharpClaw locked consumption.

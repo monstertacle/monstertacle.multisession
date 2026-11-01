@@ -38,7 +38,7 @@ beschreiben Fristen, Reservierungen, Diagnose und sichere Wiederaufnahme.
 
 ## Entwicklungsumgebung und Prüfungen
 
-CQRS ist über `Monstertacle.SharpQrs` **0.2.0-alpha.2** eingebunden.
+CQRS ist über `Monstertacle.SharpQrs` **0.2.0-alpha.1** eingebunden.
 `SessionRuntime.Commands` und `SessionRuntime.Queries` bieten nach dem Start typisierte
 asynchrone Operationen. Die bisherigen Ports bleiben kompatibel und durchlaufen dieselben
 Dispatcher. [CQRS-Vertrag und Beispiele](docs/cqrs.md), [SpecKit-Feature](specs/002-sharpqrs-cqrs/spec.md).

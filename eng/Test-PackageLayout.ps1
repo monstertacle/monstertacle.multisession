@@ -4,6 +4,8 @@ $ErrorActionPreference = 'Stop'
 [xml]$properties = Get-Content -LiteralPath (Join-Path (Split-Path $PSScriptRoot -Parent) 'Directory.Build.props') -Raw
 $version = @($properties.Project.PropertyGroup.Version | Where-Object { $_ })[0]
 if ([string]::IsNullOrWhiteSpace($version)) { throw 'Directory.Build.props declares no package version.' }
+$license = [IO.File]::ReadAllText((Join-Path (Split-Path $PSScriptRoot -Parent) 'LICENSE')).Replace("`r`n", "`n")
+if (-not $license.StartsWith('MIT License')) { throw 'The repository LICENSE is not the MIT license.' }
 $names = @(
     'Monstertacle.Multisession.Common',
     'Monstertacle.Multisession.AgentFramework',
@@ -36,7 +38,7 @@ foreach ($name in $names) {
         if ($null -eq $notice) { throw "Missing packaged LICENSE: $name" }
         $reader = [System.IO.StreamReader]::new($notice.Open())
         try { $text = $reader.ReadToEnd() } finally { $reader.Dispose() }
-        if (-not $text.StartsWith('MIT License') -or -not $text.Contains($metadata.copyright)) { throw "Packaged LICENSE is not the MIT notice: $name" }
+        if ($text.Replace("`r`n", "`n") -cne $license) { throw "Packaged LICENSE differs from the repository MIT notice: $name" }
         $assemblies = @($zip.Entries | Where-Object FullName -Like 'lib/*/*.dll')
         if ($assemblies.Count -ne 1 -or $assemblies[0].Name -ne "$name.dll") { throw "Unexpected assembly contents: $name" }
         foreach ($dependency in $metadata.dependencies.group.dependency) {

@@ -1,6 +1,6 @@
 # Plan: MIT license for the packages
 
-Status: in_progress
+Status: done
 Owner: integration maintainer
 
 ## Technical context

@@ -50,6 +50,6 @@ no package identity reissued, delivery scripts consistent, earlier follow-up ite
 
 | Item | Disposition |
 | --- | --- |
-| I1 (challenger, P1): five lock files still pinned `[0.2.0-alpha.5, )` for project references; locked restore must fail | Confirmed at source (`git grep`); root's local locked restore had been a cached no-op. Fixed by one unlocked restore: only the 68 version lines in the same five files as the previous bump changed; forced locked restore then passed. Final head must be green in native CI |
+| I1 (challenger, P1): five lock files still pinned `[0.2.0-alpha.5, )` for project references; locked restore must fail | Stale ranges confirmed at source (`git grep`). The predicted failure did not occur: CI quality for `c8e116b` (run 41309101517) passed `restore --locked-mode --force` on Linux and Windows. Regenerated anyway to match the previous bump (`b35dc7d`) by one unlocked restore: only the 68 version lines in the same five files as the previous bump changed; forced locked restore then passed. Final head must be green in native CI |
 | I2 / defender P3: handoff still lists alpha.4 bytes | Addendum with alpha.6 hashes from the final green head (`handoff.md`, `package-handoff.json`) |
 | Defender P2: integrated head needs its own CI | Required before merge; recorded in `handoff.md` |

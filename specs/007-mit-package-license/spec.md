@@ -1,6 +1,6 @@
 # Feature: MIT license for the Monstertacle.Multisession packages
 
-Status: in_progress
+Status: done
 Owner: integration maintainer
 
 ## Decision

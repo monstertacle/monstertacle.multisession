@@ -23,8 +23,20 @@ $dotnet = [IO.Path]::GetFullPath((Get-Item -LiteralPath $dotnet).ResolvedTarget 
 
 $work = Join-Path ([IO.Path]::GetFullPath($TempRoot)) ('delivery-fixture-' + [Guid]::NewGuid().ToString('N').Substring(0, 12))
 $null = [IO.Directory]::CreateDirectory($work, [IO.UnixFileMode]'UserRead, UserWrite, UserExecute')
+# Fixture-only programs are templates (like eng/*.cs.txt): built in the private work directory, never part of the
+# product solution or its coverage. Codemetr still measures their sources explicitly.
+$source = Join-Path $work 'harness-source'
+$null = New-Item -Path $source -ItemType Directory
+foreach ($template in Get-ChildItem -LiteralPath $PSScriptRoot -Filter '*.txt' -File) {
+    Copy-Item -LiteralPath $template.FullName -Destination (Join-Path $source $template.BaseName)
+}
+$sources = @(Get-ChildItem -LiteralPath $source -Filter '*.cs' -File | ForEach-Object FullName)
+Push-Location (Join-Path $PSScriptRoot '../../..')
+try { $sources | & $dotnet tool run codemetr-csharp -- check --files-from - --format json > (Join-Path $work 'codemetr.json') }
+finally { Pop-Location }
+if ($LASTEXITCODE -ne 0) { throw 'Fixture harness Codemetr check failed.' }
 $harness = Join-Path $work 'harness'
-& $dotnet build (Join-Path $PSScriptRoot 'FixtureHarness.csproj') -c Release -o $harness --nologo -v quiet | Out-Null
+& $dotnet build (Join-Path $source 'FixtureHarness.csproj') -c Release -o $harness --nologo -v quiet | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Fixture harness build failed.' }
 $harnessDll = Join-Path $harness 'FixtureHarness.dll'
 

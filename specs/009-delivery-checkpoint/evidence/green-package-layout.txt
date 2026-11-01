@@ -1,0 +1,3 @@
+PASS Monstertacle.Multisession.Providers.Conversations 0.2.0-alpha.4 metadata, MIT license, dependencies and contents
+PASS Monstertacle.Multisession.Providers.Interactions 0.2.0-alpha.4 metadata, MIT license, dependencies and contents
+PASS Monstertacle.Multisession.Delivery 0.2.0-alpha.4 metadata, MIT license, dependencies and contents

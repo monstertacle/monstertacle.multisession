@@ -1,0 +1,1087 @@
+Test run for tests/Monstertacle.Multisession.Delivery.Tests/bin/Release/net10.0/Monstertacle.Multisession.Delivery.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.14)
+[xUnit.net 00:00:00.07]   Discovering: Monstertacle.Multisession.Delivery.Tests
+[xUnit.net 00:00:00.13]   Discovered:  Monstertacle.Multisession.Delivery.Tests
+[xUnit.net 00:00:00.16]   Starting:    Monstertacle.Multisession.Delivery.Tests
+[xUnit.net 00:00:00.22]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.22]       Stack Trace:
+[xUnit.net 00:00:00.22]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.22]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.22]         tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs(42,0): at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.GrantsForOneItemNeedStrictlyIncreasingAttemptsAndAreListedInOrder()
+[xUnit.net 00:00:00.22]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.23]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.23]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.23]       Stack Trace:
+[xUnit.net 00:00:00.23]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.23]         tests/Monstertacle.Multisession.Delivery.Tests/BoundsTests.cs(20,0): at Monstertacle.Multisession.Delivery.Tests.BoundsTests.PayloadsMustBeNonEmptyStrictUtf8WithoutNulAndWithinTheBound()
+[xUnit.net 00:00:00.23]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.23]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.23]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.23]       Stack Trace:
+[xUnit.net 00:00:00.23]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.23]         tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs(31,0): at Monstertacle.Multisession.Delivery.Tests.TransitionTests.SendingOnlyFollowsPendingAndCountsTheAttempt()
+[xUnit.net 00:00:00.23]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.23]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.23]       Stack Trace:
+[xUnit.net 00:00:00.23]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.23]         tests/Monstertacle.Multisession.Delivery.Tests/CancellationTests.cs(49,0): at Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledGrantsRecordNothing()
+[xUnit.net 00:00:00.23]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.23]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.23]       Stack Trace:
+[xUnit.net 00:00:00.23]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.23]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.23]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(85,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field)
+[xUnit.net 00:00:00.23]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.GrantsForOneItemNeedStrictlyIncreasingAttemptsAndAreListedInOrder [7 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.GrantsForOneItemNeedStrictlyIncreasingAttemptsAndAreListedInOrder() in tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs:line 42
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.TransitionTests.SendingOnlyFollowsPendingAndCountsTheAttempt [8 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.TransitionTests.SendingOnlyFollowsPendingAndCountsTheAttempt() in tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs:line 31
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(field: "attempts") [6 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field) in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 85
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledGrantsRecordNothing [7 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledGrantsRecordNothing() in tests/Monstertacle.Multisession.Delivery.Tests/CancellationTests.cs:line 49
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.BoundsTests.PayloadsMustBeNonEmptyStrictUtf8WithoutNulAndWithinTheBound [9 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.BoundsTests.PayloadsMustBeNonEmptyStrictUtf8WithoutNulAndWithinTheBound() in tests/Monstertacle.Multisession.Delivery.Tests/BoundsTests.cs:line 20
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(85,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field)
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(85,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field)
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(85,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field)
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs(76,0): at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.AFullJournalRefusesAtTheConfiguredCapacity()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.25]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/BoundsTests.cs(38,0): at Monstertacle.Multisession.Delivery.Tests.BoundsTests.AcknowledgementsMustBeNonBlankAndBounded()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(67,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.OnlyAnUncertainItemWithAnAttemptIsEligible()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(field: "position") [< 1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field) in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 85
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(field: "route") [< 1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field) in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 85
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(field: "digest") [< 1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AStaleExpectationRecordsNothing(String field) in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 85
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.AFullJournalRefusesAtTheConfiguredCapacity [1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.AFullJournalRefusesAtTheConfiguredCapacity() in tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs:line 76
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.BoundsTests.AcknowledgementsMustBeNonBlankAndBounded [2 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.BoundsTests.AcknowledgementsMustBeNonBlankAndBounded() in tests/Monstertacle.Multisession.Delivery.Tests/BoundsTests.cs:line 38
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.OnlyAnUncertainItemWithAnAttemptIsEligible [2 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.OnlyAnUncertainItemWithAnAttemptIsEligible() in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 67
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs(25,0): at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.AGrantIsRecordedWithoutChangingTheCheckpointRow()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/BoundsTests.cs(53,0): at Monstertacle.Multisession.Delivery.Tests.BoundsTests.GrantInputsMustBeBounded()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(50,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AFreshRequestAfterTheResendWasLostIsRefusedEvenAfterRestart()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Assert.ThrowsAny() Failure: No exception was thrown
+[xUnit.net 00:00:00.25]       Expected: typeof(System.OperationCanceledException)
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CancellationTests.cs(17,0): at Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledOpenCreatesNothing()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs(64,0): at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.OnlyAPendingItemIsEligible()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Assert.ThrowsAny() Failure: No exception was thrown
+[xUnit.net 00:00:00.25]       Expected: typeof(System.OperationCanceledException)
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CancellationTests.cs(31,0): at Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledTransitionsLeaveTheCheckpointUnchanged()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.AGrantIsRecordedWithoutChangingTheCheckpointRow [1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.AGrantIsRecordedWithoutChangingTheCheckpointRow() in tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs:line 25
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.BoundsTests.GrantInputsMustBeBounded [1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.BoundsTests.GrantInputsMustBeBounded() in tests/Monstertacle.Multisession.Delivery.Tests/BoundsTests.cs:line 53
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AFreshRequestAfterTheResendWasLostIsRefusedEvenAfterRestart [1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AFreshRequestAfterTheResendWasLostIsRefusedEvenAfterRestart() in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 50
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledOpenCreatesNothing [4 ms]
+  Error Message:
+   Assert.ThrowsAny() Failure: No exception was thrown
+Expected: typeof(System.OperationCanceledException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledOpenCreatesNothing() in tests/Monstertacle.Multisession.Delivery.Tests/CancellationTests.cs:line 17
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.OnlyAPendingItemIsEligible [1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.AttemptGrantTests.OnlyAPendingItemIsEligible() in tests/Monstertacle.Multisession.Delivery.Tests/AttemptGrantTests.cs:line 64
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledTransitionsLeaveTheCheckpointUnchanged [1 ms]
+  Error Message:
+   Assert.ThrowsAny() Failure: No exception was thrown
+Expected: typeof(System.OperationCanceledException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CancellationTests.CanceledTransitionsLeaveTheCheckpointUnchanged() in tests/Monstertacle.Multisession.Delivery.Tests/CancellationTests.cs:line 31
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.25]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.25]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(106,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AFullJournalRefusesWithoutEvictionAtTheDefaultCapacity()
+[xUnit.net 00:00:00.25]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/AtomicityTests.cs(17,0): at Monstertacle.Multisession.Delivery.Tests.AtomicityTests.AFailedResendTransitionLeavesNoReceipt()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(31,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.RepeatingTheRequestReturnsTheStoredReceiptWithoutASecondSend()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/AtomicityTests.cs(34,0): at Monstertacle.Multisession.Delivery.Tests.AtomicityTests.AFailedRouteChangeLeavesNoReceipt()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+  Passed Monstertacle.Multisession.Delivery.Tests.TransitionTests.ANoPendingStateHasNoExpectation [8 ms]
+  Passed Monstertacle.Multisession.Delivery.Tests.PrivateAccessTests.TheLeaseIsAnOperatingSystemExclusiveLock [1 ms]
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AFullJournalRefusesWithoutEvictionAtTheDefaultCapacity [4 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AFullJournalRefusesWithoutEvictionAtTheDefaultCapacity() in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 106
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.AtomicityTests.AFailedResendTransitionLeavesNoReceipt [2 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.AtomicityTests.AFailedResendTransitionLeavesNoReceipt() in tests/Monstertacle.Multisession.Delivery.Tests/AtomicityTests.cs:line 17
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.RepeatingTheRequestReturnsTheStoredReceiptWithoutASecondSend [1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.RepeatingTheRequestReturnsTheStoredReceiptWithoutASecondSend() in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 31
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.AtomicityTests.AFailedRouteChangeLeavesNoReceipt [< 1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.AtomicityTests.AFailedRouteChangeLeavesNoReceipt() in tests/Monstertacle.Multisession.Delivery.Tests/AtomicityTests.cs:line 34
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Assert.True() Failure
+[xUnit.net 00:00:00.26]       Expected: True
+[xUnit.net 00:00:00.26]       Actual:   False
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs(66,0): at Monstertacle.Multisession.Delivery.Tests.TransitionTests.UncertainOnlyFollowsSendingAndStopsAutomaticSending()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/PrivateAccessTests.cs(58,0): at Monstertacle.Multisession.Delivery.Tests.PrivateAccessTests.AWriterOutsideTheLeaseIsReportedAsBusyWithoutChange()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs(16,0): at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AuthorizationRecordsTheReceiptAndMovesUncertainToSendingTogether()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs(111,0): at Monstertacle.Multisession.Delivery.Tests.TransitionTests.AttemptCountersNeverOverflow()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.TransitionTests.UncertainOnlyFollowsSendingAndStopsAutomaticSending [2 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.TransitionTests.UncertainOnlyFollowsSendingAndStopsAutomaticSending() in tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs:line 66
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.PrivateAccessTests.AWriterOutsideTheLeaseIsReportedAsBusyWithoutChange [3 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.PrivateAccessTests.AWriterOutsideTheLeaseIsReportedAsBusyWithoutChange() in tests/Monstertacle.Multisession.Delivery.Tests/PrivateAccessTests.cs:line 58
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET phase=NULL, pending='{}'") [5 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET attempts=-1") [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AuthorizationRecordsTheReceiptAndMovesUncertainToSendingTogether [2 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.ResendAuthorizationTests.AuthorizationRecordsTheReceiptAndMovesUncertainToSendingTogether() in tests/Monstertacle.Multisession.Delivery.Tests/ResendAuthorizationTests.cs:line 16
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.TransitionTests.AttemptCountersNeverOverflow [2 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.TransitionTests.AttemptCountersNeverOverflow() in tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs:line 111
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET phase='pending', pending=CAS"···) [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.26]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(61,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption)
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.26]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs(79,0): at Monstertacle.Multisession.Delivery.Tests.TransitionTests.AcceptRequiresSendingAndByteIdenticalPayload()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.AMoveKeepsCustodyAndOnlyTheNewIdentityOpens()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET phase='delivered', pending='"···) [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET phase='pending', pending=X'C"···) [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET attempts=2147483648") [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET phase='pending', pending=NUL"···) [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(corruption: "UPDATE checkpoint SET phase='accepted', pending='{"···) [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.InconsistentStoredValuesAreRefusedOnRead(String corruption) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 61
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.TransitionTests.AcceptRequiresSendingAndByteIdenticalPayload [1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.TransitionTests.AcceptRequiresSendingAndByteIdenticalPayload() in tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs:line 79
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.AMoveKeepsCustodyAndOnlyTheNewIdentityOpens [2 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.AMoveKeepsCustodyAndOnlyTheNewIdentityOpens() in tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs:line 18
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs(69,0): at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.AFullJournalRefusesTheMove()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Assert.True() Failure
+[xUnit.net 00:00:00.26]       Expected: True
+[xUnit.net 00:00:00.26]       Actual:   False
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs(49,0): at Monstertacle.Multisession.Delivery.Tests.TransitionTests.PreparationFailuresCountOnlyWhilePending()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.26]       Stack Trace:
+[xUnit.net 00:00:00.26]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(23,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.26]         tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs(40,0): at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.OnlyANeverSentPendingItemMoves()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs(15,0): at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs(54,0): at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.ARepeatedRequestWithOtherValuesConflicts()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.TransitionTests.StageRequiresTheNextPositionAndAnEmptySlot()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.27]       Expected: UserExecute | UserWrite | UserRead
+[xUnit.net 00:00:00.27]       Actual:   OtherExecute | OtherRead | GroupExecute | GroupRead | UserExecute | UserWrite | UserRead
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/PrivateAccessTests.cs(38,0): at Monstertacle.Multisession.Delivery.Tests.PrivateAccessTests.OwnerOpenKeepsStateOwnerOnlyOnTheNativePlatform()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(72,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.SecondOpenWhileTheLeaseIsHeldIsRefusedUntilReleased()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       System.NullReferenceException : Object reference not set to an instance of an object.
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs(100,0): at Monstertacle.Multisession.Delivery.Tests.TransitionTests.NextStageKeepsTheLastAcknowledgementLikeTheCurrentListener()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.AFullJournalRefusesTheMove [< 1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.AFullJournalRefusesTheMove() in tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs:line 69
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.TransitionTests.PreparationFailuresCountOnlyWhilePending [3 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.TransitionTests.PreparationFailuresCountOnlyWhilePending() in tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs:line 49
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.OnlyANeverSentPendingItemMoves [< 1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.UncertainAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 23
+   at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.OnlyANeverSentPendingItemMoves() in tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs:line 40
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.ARepeatedRequestWithOtherValuesConflicts [1 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CheckpointScenario.PendingAsync(DeliveryCheckpoint checkpoint) in tests/Monstertacle.Multisession.Delivery.Tests/CheckpointScenario.cs:line 15
+   at Monstertacle.Multisession.Delivery.Tests.RouteMoveTests.ARepeatedRequestWithOtherValuesConflicts() in tests/Monstertacle.Multisession.Delivery.Tests/RouteMoveTests.cs:line 54
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.TransitionTests.StageRequiresTheNextPositionAndAnEmptySlot [1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.TransitionTests.StageRequiresTheNextPositionAndAnEmptySlot() in tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs:line 18
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.PrivateAccessTests.OwnerOpenKeepsStateOwnerOnlyOnTheNativePlatform [8 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: UserExecute | UserWrite | UserRead
+Actual:   OtherExecute | OtherRead | GroupExecute | GroupRead | UserExecute | UserWrite | UserRead
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.PrivateAccessTests.OwnerOpenKeepsStateOwnerOnlyOnTheNativePlatform() in tests/Monstertacle.Multisession.Delivery.Tests/PrivateAccessTests.cs:line 38
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.SecondOpenWhileTheLeaseIsHeldIsRefusedUntilReleased [1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.OpenTests.SecondOpenWhileTheLeaseIsHeldIsRefusedUntilReleased() in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 72
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.TransitionTests.NextStageKeepsTheLastAcknowledgementLikeTheCurrentListener [1 ms]
+  Error Message:
+   System.NullReferenceException : Object reference not set to an instance of an object.
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.TransitionTests.NextStageKeepsTheLastAcknowledgementLikeTheCurrentListener() in tests/Monstertacle.Multisession.Delivery.Tests/TransitionTests.cs:line 100
+--- End of stack trace from previous location ---
+  Passed Monstertacle.Multisession.Delivery.Tests.OpenTests.ExistingCheckpointIgnoresANewInitialPosition [3 ms]
+[xUnit.net 00:00:00.27]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.27]       Expected: Sending
+[xUnit.net 00:00:00.27]       Actual:   null
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(57,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.CrashAfterSendingBecomesUncertainOnlyForTheOwner()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(106,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.UnsupportedFormatVersionIsRefused()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(40,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.InspectionOpenRefusesAMissingCheckpointAndCreatesNothing()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(94,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(String consumer, String source, String route)
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(94,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(String consumer, String source, String route)
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(94,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(String consumer, String source, String route)
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.27]       Expected: CheckpointState { Position = 41, Pending = , Phase = , Attempts = 0, Acknowledgement = , RouteId = route-a }
+[xUnit.net 00:00:00.27]       Actual:   CheckpointState { Position = 0, Pending = , Phase = , Attempts = 0, Acknowledgement = , RouteId =  }
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(19,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.OwnerOpenCreatesAnEmptyCheckpointAtTheInitialPosition()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(System.ArgumentException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs(126,0): at Monstertacle.Multisession.Delivery.Tests.OpenTests.InvalidOptionsAreRejectedBeforeAnyFileIsCreated()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(31,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnotherCheckpointStructureIsRefused(String ddl)
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.CrashAfterSendingBecomesUncertainOnlyForTheOwner [3 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Sending
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.OpenTests.CrashAfterSendingBecomesUncertainOnlyForTheOwner() in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 57
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.UnsupportedFormatVersionIsRefused [1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.OpenTests.UnsupportedFormatVersionIsRefused() in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 106
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.InspectionOpenRefusesAMissingCheckpointAndCreatesNothing [1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.OpenTests.InspectionOpenRefusesAMissingCheckpointAndCreatesNothing() in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 40
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(consumer: "consumer-a", source: "other-source", route: "route-a") [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(String consumer, String source, String route) in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 94
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(consumer: "other-consumer", source: "source-a", route: "route-a") [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(String consumer, String source, String route) in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 94
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(consumer: "consumer-a", source: "source-a", route: "other-route") [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.OpenTests.AnotherIdentityIsRefusedWithoutChangingTheCheckpoint(String consumer, String source, String route) in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 94
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.OwnerOpenCreatesAnEmptyCheckpointAtTheInitialPosition [4 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: CheckpointState { Position = 41, Pending = , Phase = , Attempts = 0, Acknowledgement = , RouteId = route-a }
+Actual:   CheckpointState { Position = 0, Pending = , Phase = , Attempts = 0, Acknowledgement = , RouteId =  }
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.OpenTests.OwnerOpenCreatesAnEmptyCheckpointAtTheInitialPosition() in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 19
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.OpenTests.InvalidOptionsAreRejectedBeforeAnyFileIsCreated [1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(System.ArgumentException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.OpenTests.InvalidOptionsAreRejectedBeforeAnyFileIsCreated() in tests/Monstertacle.Multisession.Delivery.Tests/OpenTests.cs:line 126
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnotherCheckpointStructureIsRefused(ddl: "CREATE TABLE checkpoint(id INTEGER PRIMARY KEY CHE"···) [26 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnotherCheckpointStructureIsRefused(String ddl) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 31
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(31,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnotherCheckpointStructureIsRefused(String ddl)
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(89,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.UnknownSchemaObjectsAreRefusedAtOpen()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(41,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnExistingFileWithoutCheckpointRowIsRefused()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+[xUnit.net 00:00:00.27]            at Microsoft.Data.Sqlite.SqliteConnection.Open()
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(12,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs(18,0): at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(77,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AGrantJournalWithAnotherStructureIsRefusedAtOpen()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.27]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.27]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.27]       Stack Trace:
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.27]         tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs(17,0): at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.ANonDatabaseFileIsRefusedAsCorruptAndTheLeaseIsReleased()
+[xUnit.net 00:00:00.27]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.28]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.28]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs(36,0): at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerResendRequestRepeatedReturnsItsStoredReceiptWithoutTransition()
+[xUnit.net 00:00:00.28]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.28]       System.NullReferenceException : Object reference not set to an instance of an object.
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(38,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.PendingDigestEqualsTheDigestTheListenerRecorded()
+[xUnit.net 00:00:00.28]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.30]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.30]       Expected: 1
+[xUnit.net 00:00:00.30]       Actual:   0
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(19,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.OwnerOpenReturnsListenerPendingBytesAndCountersUnchanged()
+[xUnit.net 00:00:00.30]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnotherCheckpointStructureIsRefused(ddl: "CREATE TABLE checkpoint(id INTEGER PRIMARY KEY,sch"···) [8 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnotherCheckpointStructureIsRefused(String ddl) in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 31
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.UnknownSchemaObjectsAreRefusedAtOpen [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.UnknownSchemaObjectsAreRefusedAtOpen() in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 89
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnExistingFileWithoutCheckpointRowIsRefused [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AnExistingFileWithoutCheckpointRowIsRefused() in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 41
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AGrantJournalWithAnotherStructureIsRefusedAtOpen [< 1 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteConnectionInternal..ctor(SqliteConnectionStringBuilder connectionOptions, SqliteConnectionPool pool)
+   at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
+   at Microsoft.Data.Sqlite.SqliteConnection.Open()
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Open(String path) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 12
+   at Monstertacle.Multisession.Delivery.Tests.RawDatabase.Execute(String path, String sql) in tests/Monstertacle.Multisession.Delivery.Tests/RawDatabase.cs:line 18
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.AGrantJournalWithAnotherStructureIsRefusedAtOpen() in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 77
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CorruptionTests.ANonDatabaseFileIsRefusedAsCorruptAndTheLeaseIsReleased [3 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.CorruptionTests.ANonDatabaseFileIsRefusedAsCorruptAndTheLeaseIsReleased() in tests/Monstertacle.Multisession.Delivery.Tests/CorruptionTests.cs:line 17
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerResendRequestRepeatedReturnsItsStoredReceiptWithoutTransition [81 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerResendRequestRepeatedReturnsItsStoredReceiptWithoutTransition() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs:line 36
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.PendingDigestEqualsTheDigestTheListenerRecorded [50 ms]
+  Error Message:
+   System.NullReferenceException : Object reference not set to an instance of an object.
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.PendingDigestEqualsTheDigestTheListenerRecorded() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 38
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.OwnerOpenReturnsListenerPendingBytesAndCountersUnchanged [19 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 1
+Actual:   0
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.OwnerOpenReturnsListenerPendingBytesAndCountersUnchanged() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 19
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.30]       Assert.False() Failure
+[xUnit.net 00:00:00.30]       Expected: False
+[xUnit.net 00:00:00.30]       Actual:   True
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs(95,0): at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerRouteMoveRepeatedAfterTheMoveAnswersFromItsReceipt()
+[xUnit.net 00:00:00.30]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.32]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.32]       Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+[xUnit.net 00:00:00.32]       Stack Trace:
+[xUnit.net 00:00:00.32]         tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs(10,0): at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action)
+[xUnit.net 00:00:00.32]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(96,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.IdentityMismatchOnListenerCheckpointIsRefusedAndReleasesTheLease()
+[xUnit.net 00:00:00.32]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.32]       Assert.False() Failure
+[xUnit.net 00:00:00.32]       Expected: False
+[xUnit.net 00:00:00.32]       Actual:   True
+[xUnit.net 00:00:00.32]       Stack Trace:
+[xUnit.net 00:00:00.32]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs(113,0): at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerAttemptGrantRequestRepeatedReturnsItsReceiptAndAnotherAttemptCountConflicts()
+[xUnit.net 00:00:00.32]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.33]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.33]       Stack Trace:
+[xUnit.net 00:00:00.33]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.33]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs(19,0): at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerConsumedResendRefusesAFreshRequestWithoutChange()
+[xUnit.net 00:00:00.33]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.34]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.34]       Expected: Tuple (2, null, Accepted, 0, "accepted-after-extraction")
+[xUnit.net 00:00:00.34]       Actual:   Tuple (0, null, null, 0, null)
+[xUnit.net 00:00:00.34]       Stack Trace:
+[xUnit.net 00:00:00.34]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(113,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.ListenerPendingItemContinuesThroughSendingToAccepted()
+[xUnit.net 00:00:00.34]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.34]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.34]       Stack Trace:
+[xUnit.net 00:00:00.34]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.34]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs(52,0): at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerResendRequestIdWithAnotherItemConflicts()
+[xUnit.net 00:00:00.34]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.35]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.35]       Expected: Uncertain
+[xUnit.net 00:00:00.35]       Actual:   null
+[xUnit.net 00:00:00.35]       Stack Trace:
+[xUnit.net 00:00:00.35]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(50,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.UncertainListenerCheckpointStaysUncertainWithItsAttempts()
+[xUnit.net 00:00:00.35]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.36]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.36]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs(67,0): at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerCheckpointMovesRouteAndKeepsBytesCountersAndEveryReceipt()
+[xUnit.net 00:00:00.36]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.37]       Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+[xUnit.net 00:00:00.37]       Stack Trace:
+[xUnit.net 00:00:00.37]         src/Monstertacle.Multisession.Delivery/CheckpointState.cs(16,0): at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation()
+[xUnit.net 00:00:00.37]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(127,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.NewCheckpointUsesTheListenerSchemaText()
+[xUnit.net 00:00:00.37]         --- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerRouteMoveRepeatedAfterTheMoveAnswersFromItsReceipt [25 ms]
+  Error Message:
+   Assert.False() Failure
+Expected: False
+Actual:   True
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerRouteMoveRepeatedAfterTheMoveAnswersFromItsReceipt() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs:line 95
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.IdentityMismatchOnListenerCheckpointIsRefusedAndReleasesTheLease [17 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Monstertacle.Multisession.Delivery.DeliveryRefusalException)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.Refusals.Expect(DeliveryRefusal reason, Func`1 action) in tests/Monstertacle.Multisession.Delivery.Tests/Refusals.cs:line 10
+   at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.IdentityMismatchOnListenerCheckpointIsRefusedAndReleasesTheLease() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 96
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerAttemptGrantRequestRepeatedReturnsItsReceiptAndAnotherAttemptCountConflicts [16 ms]
+  Error Message:
+   Assert.False() Failure
+Expected: False
+Actual:   True
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerAttemptGrantRequestRepeatedReturnsItsReceiptAndAnotherAttemptCountConflicts() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs:line 113
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerConsumedResendRefusesAFreshRequestWithoutChange [11 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerConsumedResendRefusesAFreshRequestWithoutChange() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs:line 19
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.ListenerPendingItemContinuesThroughSendingToAccepted [23 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Tuple (2, null, Accepted, 0, "accepted-after-extraction")
+Actual:   Tuple (0, null, null, 0, null)
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.ListenerPendingItemContinuesThroughSendingToAccepted() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 113
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerResendRequestIdWithAnotherItemConflicts [12 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerResendRequestIdWithAnotherItemConflicts() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs:line 52
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.UncertainListenerCheckpointStaysUncertainWithItsAttempts [11 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Uncertain
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.UncertainListenerCheckpointStaysUncertainWithItsAttempts() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 50
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerCheckpointMovesRouteAndKeepsBytesCountersAndEveryReceipt [12 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CurrentGrantTests.ListenerCheckpointMovesRouteAndKeepsBytesCountersAndEveryReceipt() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentGrantTests.cs:line 67
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.NewCheckpointUsesTheListenerSchemaText [15 ms]
+  Error Message:
+   Monstertacle.Multisession.Delivery.DeliveryRefusalException : Delivery checkpoint operation refused: NotEligible
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.CheckpointState.ToExpectation() in src/Monstertacle.Multisession.Delivery/CheckpointState.cs:line 16
+   at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.NewCheckpointUsesTheListenerSchemaText() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 127
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.38]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.38]       Expected: "{"schema":1,"requestId":"c0000000-0000-40"···
+[xUnit.net 00:00:00.38]       Actual:   null
+[xUnit.net 00:00:00.38]       Stack Trace:
+[xUnit.net 00:00:00.38]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(66,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.StoredListenerReceiptsAreReturnedByteForByte()
+[xUnit.net 00:00:00.38]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.40]       Assert.Single() Failure: The collection was empty
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs(84,0): at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.AttemptGrantHistoryOfTheListenerIsListed()
+[xUnit.net 00:00:00.40]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.40]   Finished:    Monstertacle.Multisession.Delivery.Tests
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.StoredListenerReceiptsAreReturnedByteForByte [15 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+Expected: "{"schema":1,"requestId":"c0000000-0000-40"···
+Actual:   null
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.StoredListenerReceiptsAreReturnedByteForByte() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 66
+--- End of stack trace from previous location ---
+  Failed Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.AttemptGrantHistoryOfTheListenerIsListed [14 ms]
+  Error Message:
+   Assert.Single() Failure: The collection was empty
+  Stack Trace:
+     at Monstertacle.Multisession.Delivery.Tests.CurrentFormatTests.AttemptGrantHistoryOfTheListenerIsListed() in tests/Monstertacle.Multisession.Delivery.Tests/CurrentFormatTests.cs:line 84
+--- End of stack trace from previous location ---
+
+Total tests: 74
+     Passed: 3
+     Failed: 71
+ Total time: 0.7679 Seconds

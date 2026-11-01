@@ -51,7 +51,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Spec Kit configuration behavior tests failed.' }
 
     # A new directory per invocation prevents old reports from contributing to this run.
-    foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests', 'Delivery.Tests')) {
+    foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests', 'DeliveryCheckpoints.Tests')) {
         $project = "tests/Monstertacle.Multisession.$suite/Monstertacle.Multisession.$suite.csproj"
         $arguments = @('test', $project, '-c', 'Release', '--no-build', '--no-restore',
             '--settings', 'tests/coverage.runsettings', '--collect', 'XPlat Code Coverage',
@@ -84,7 +84,7 @@ try {
     $coverConfig | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $nativeConfig -Encoding utf8
     $coverArguments = @('tool', 'run', 'codemetr-csharp-cover', '--', 'check', '--format', 'json',
         '--config', $nativeConfig, '--output', (Join-Path $runDirectory 'codemetr-cover.json'))
-    foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests', 'Delivery.Tests')) {
+    foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests', 'DeliveryCheckpoints.Tests')) {
         $suiteDirectory = Join-Path $runDirectory $suite
         $reports = @(Get-ChildItem -LiteralPath $suiteDirectory -Recurse -Filter 'coverage.cobertura.xml' -File |
             Group-Object { (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash })

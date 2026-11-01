@@ -6,6 +6,9 @@ $version = @($properties.Project.PropertyGroup.Version | Where-Object { $_ })[0]
 if ([string]::IsNullOrWhiteSpace($version)) { throw 'Directory.Build.props declares no package version.' }
 $license = [IO.File]::ReadAllText((Join-Path (Split-Path $PSScriptRoot -Parent) 'LICENSE')).Replace("`r`n", "`n")
 if (-not $license.StartsWith('MIT License')) { throw 'The repository LICENSE is not the MIT license.' }
+# The package README is the consumer document, never the repository README with its development workflow.
+$packageReadme = [IO.File]::ReadAllText((Join-Path (Split-Path $PSScriptRoot -Parent) 'docs/package-readme.md')).Replace("`r`n", "`n")
+if (-not $packageReadme.Contains($version)) { throw "docs/package-readme.md does not name version $version." }
 $names = @(
     'Monstertacle.Multisession.Common',
     'Monstertacle.Multisession.AgentFramework',
@@ -14,7 +17,7 @@ $names = @(
     'Monstertacle.Multisession.Storage.Sqlite',
     'Monstertacle.Multisession.Providers.Conversations',
     'Monstertacle.Multisession.Providers.Interactions',
-    'Monstertacle.Multisession.Delivery'
+    'Monstertacle.Multisession.DeliveryCheckpoints'
 )
 $packages = @(Get-ChildItem -LiteralPath $PackageDirectory -Filter '*.nupkg' -File)
 if ($packages.Count -ne $names.Count) { throw 'Expected exactly eight library packages.' }
@@ -30,6 +33,9 @@ foreach ($name in $names) {
         $metadata = $specification.package.metadata
         if ($metadata.id -ne $name -or $metadata.version -ne $version) { throw "Wrong identity/version: $name" }
         if ($metadata.readme -ne 'README.md' -or $null -eq $zip.GetEntry('README.md')) { throw "Missing packaged README: $name" }
+        $readmeReader = [System.IO.StreamReader]::new($zip.GetEntry('README.md').Open())
+        try { $packedReadme = $readmeReader.ReadToEnd().Replace("`r`n", "`n") } finally { $readmeReader.Dispose() }
+        if ($packedReadme -cne $packageReadme) { throw "Packaged README is not docs/package-readme.md: $name" }
         if ([string]::IsNullOrWhiteSpace($metadata.authors) -or [string]::IsNullOrWhiteSpace($metadata.description)) { throw "Missing metadata: $name" }
         if ($metadata.repository.url -ne 'https://github.com/monstertacle/monstertacle.multisession' -or $metadata.repository.type -ne 'git') { throw "Wrong repository metadata: $name" }
         # MIT as an SPDX expression, with the copyright notice the license requires shipped beside every copy.

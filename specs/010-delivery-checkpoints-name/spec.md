@@ -1,6 +1,6 @@
 # Feature: Precise package name for the delivery checkpoint and a consumer package README
 
-Status: in_progress
+Status: done
 Created: 2026-11-01T17:09:37Z
 Owner: implementation agent (SharpClaw host integration writer)
 Origin: owner task "find a more precise name than Delivery" (2026-11-01T16:19:35Z); consumer-neutral audit of the shipped 0.2.0-alpha.6

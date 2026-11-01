@@ -1,258 +1,258 @@
 # Native Provider Contract v1
 
-**Datum**: 2026-10-27 | **Basis**: [research.md](../research.md), [public-api.md](public-api.md)
+**Date**: 2026-10-27 | **Basis**: [research.md](../research.md), [public-api.md](public-api.md)
 
-**Erneute Designprüfung**: Constitution v1.6.0 verlangt vor jeder Adapterimplementierung
-die passenden ausführbaren fehlschlagenden HTTP-/Sitzungsvertragstests aus TDD-05.
-Native Providergrenze und unveränderter Funktionsumfang bleiben bestehen. Live-Zugänge
-sind für den ersten Red-Nachweis nicht erforderlich und ersetzen ihn nicht.
+**Renewed design review**: Constitution v1.6.0 requires, before every adapter implementation,
+the matching executable failing HTTP/session contract tests from TDD-05.
+The native provider boundary and the unchanged functional scope remain in place. Live accesses
+are not required for the first Red evidence and do not replace it.
 
-## 1. Gemeinsame Schnittstelle
+## 1. Shared Interface
 
-`ISessionProvider` ist ein schmaler .NET-Vertrag für vom Host bereitgestellte Adapter.
-Vertragstypen liegen in Common. Keine CLI-, HTTP-, SDK- oder Herstellerklassen im Kern.
+`ISessionProvider` is a narrow .NET contract for adapters provided by the host.
+Contract types reside in Common. No CLI, HTTP, SDK or vendor classes in the core.
 
-| Operation | Semantik |
+| Operation | Semantics |
 | --- | --- |
-| OpenAsync | Native Sitzung eröffnen, falls separat möglich; andernfalls explizites noch ungebundenes Binding zurückgeben |
-| ReopenAsync | Persistierten nativen Bezug prüfen und wiederverwenden; niemals still neu eröffnen oder Historie replayen |
-| SendAsync | Nur neue Eingabe plus unveränderliche Profileinstellungen und letzten bestätigten Binding-Stand übergeben |
-| InspectAsync | Bekannte externe Operationskennung lesen; keine erneute Ausführung und kein eigener Agent-Schritt |
-| CancelAsync | Native Abbruchanforderung, soweit unterstützt; Bestätigung und tatsächlichen Endzustand unterscheiden |
+| OpenAsync | Open a native session if separately possible; otherwise return an explicit not-yet-bound binding |
+| ReopenAsync | Check and reuse the persisted native reference; never silently reopen or replay history |
+| SendAsync | Hand over only new input plus immutable profile settings and the last confirmed binding state |
+| InspectAsync | Read a known external operation identifier; no re-execution and no agent step of its own |
+| CancelAsync | Native cancellation request, where supported; distinguish confirmation and actual final state |
 
-SendAsync meldet eine erhaltene externe Operationskennung vor dem weiteren Polling an
-einen begrenzten Awaitable-Persistenzcallback. Dessen erfolgreicher Abschluss bestätigt,
-dass die Kennung gespeichert wurde. Kann sie nicht gespeichert werden, darf Erfolg nicht
-ausgegeben werden; der Kern erhält Unknown und hält die Reservierung.
+SendAsync reports a received external operation identifier, before further polling, to
+a bounded awaitable persistence callback. Its successful completion confirms
+that the identifier was stored. If it cannot be stored, success MUST NOT be
+reported; the core receives Unknown and holds the reservation.
 
-ProviderReply enthält endgültige Ausgabe, Ergebnis-/Fehlerkategorie, bestätigte Gewissheit
-und optional aktualisierte versionierte Binding-Daten. Der Kern sichert Ergebnis und
-Fortsetzungsstand gemeinsam. Provider dürfen keine Datenbank des Kerns direkt verändern.
+ProviderReply contains the final output, result/error category, confirmed certainty
+and optionally updated versioned binding data. The core saves result and
+continuation state together. Providers MUST NOT modify any database of the core directly.
 
-Provider müssen kooperative Cancellation und endliche Netzwerkfristen beachten.
-Ein nicht kooperativer Adapter ist eine Vertragsverletzung, keine implizit vorhandene
-Sicherheits-Sandbox. Der Kern darf nach lokalem Deadline-Ende Unknown melden und muss
-weitere Dispatches in Sitzung/Workspace verhindern, statt einen Callback als beendet auszugeben.
-Der Adapter prüft vor Übergabe nur lokal bekannte Vertrags-/Konfigurationsfehler.
-Erst beim Hersteller erkennbare Funktionsgrenzen sind zugeordnete Providerfehler,
-keine Aufforderung zur vollständigen Feature-Erkundung oder zum Nachbau einer Ersatzfunktion.
+Providers must observe cooperative cancellation and finite network deadlines.
+A non-cooperative adapter is a contract violation, not an implicitly existing
+security sandbox. After the local deadline end, the core may report Unknown and must
+prevent further dispatches in the session/workspace instead of reporting a callback as ended.
+Before handover, the adapter checks only locally known contract/configuration errors.
+Functional limits that are only detectable at the vendor are attributed provider errors,
+not a request for complete feature exploration or for rebuilding a substitute function.
 
-Übersteigt eine Ausgabe das konfigurierte Größenlimit, darf der Adapter keine gekürzte
-Antwort als vollständigen Erfolg melden. Er liefert OutputLimitExceeded mit leerem
-Output und OutputComplete=false. Ein dadurch abgebrochener Empfang ist kein Beweis,
-dass externe Arbeit beendet ist; Gewissheit und Reservierung folgen dem Recovery-Vertrag.
+If an output exceeds the configured size limit, the adapter MUST NOT report a truncated
+response as a complete success. It returns OutputLimitExceeded with empty
+Output and OutputComplete=false. A reception aborted as a result is no proof
+that external work has ended; certainty and reservation follow the recovery contract.
 
-## 2. Identität und Einstellungen
+## 2. Identity and Settings
 
-- Lokale SessionId bleibt immer stabil.
-- Native SessionReference darf zunächst fehlen, sofern noch nie gesendet wurde.
-- Native OperationId bezeichnet genau einen externen Aufruf, nicht die Sitzung.
-- ContinuationState darf nach bestätigtem Abschluss fortgeschrieben werden; dies ist
-  kein Provider-/Modellwechsel und kein Austausch der lokalen Sitzungsidentität.
-- Agent-Profil, Modell und kontextrelevante Einstellungen sind beim Erstellen eingefroren.
-  Credentials werden über eine Referenz frisch aus dem Host bezogen, nicht im Snapshot gespeichert.
-- Ein geändertes Fortsetzungsformat benötigt eine explizite Vertrags-/Speichermigration;
-  unlesbare ältere/neue Bindings führen zum Fehler statt zu einem leeren Neustart.
-  In der ersten Lieferung werden solche Migrationen nicht automatisch vorgenommen:
-  Nur die bekannte Formatversion wird geöffnet, andere werden ohne Änderung abgewiesen.
+- The local SessionId always remains stable.
+- The native SessionReference may initially be missing, as long as nothing has ever been sent.
+- A native OperationId denotes exactly one external call, not the session.
+- ContinuationState may be advanced after a confirmed completion; this is
+  not a provider/model change and not a replacement of the local session identity.
+- Agent profile, model and context-relevant settings are frozen at creation.
+  Credentials are obtained fresh from the host via a reference, not stored in the snapshot.
+- A changed continuation format requires an explicit contract/storage migration;
+  unreadable older/newer bindings lead to an error instead of an empty restart.
+  In the first delivery, such migrations are not performed automatically:
+  only the known format version is opened, others are rejected without modification.
 
-## 3. OpenAI-Referenzadapter
+## 3. OpenAI Reference Adapter
 
-**Protokoll**: HTTPS JSON, OpenAI REST `/v1`, Basis `https://api.openai.com/v1`.
-Bearer-Credentials ausschließlich über den Host. Konfigurierbare Basis-URI muss denselben
-Conversations/Responses-Vertrag anbieten; Chat-Completions-Kompatibilität reicht nicht aus.
+**Protocol**: HTTPS JSON, OpenAI REST `/v1`, base `https://api.openai.com/v1`.
+Bearer credentials exclusively via the host. A configurable base URI must offer the same
+Conversations/Responses contract; chat completions compatibility is not sufficient.
 
-| Ablauf | Konkreter Vertrag |
+| Flow | Concrete contract |
 | --- | --- |
-| Open | `POST /conversations`, Conversation-ID sichern |
-| Reopen | `GET /conversations/{conversation_id}`; fehlender Bezug ist ProviderSessionExpired |
-| Send | `POST /responses` mit model, conversation, ausschließlich neuer input, background=true und store=true |
+| Open | `POST /conversations`, save conversation ID |
+| Reopen | `GET /conversations/{conversation_id}`; a missing reference is ProviderSessionExpired |
+| Send | `POST /responses` with model, conversation, exclusively new input, background=true and store=true |
 | Inspect | `GET /responses/{response_id}` |
-| Cancel | `POST /responses/{response_id}/cancel`, anschließend Endzustand prüfen |
+| Cancel | `POST /responses/{response_id}/cancel`, then check the final state |
 
-Die gewählte Conversation-ID wird nicht durch eine Response-ID ersetzt.
-`previous_response_id` wird NICHT gleichzeitig mit conversation verwendet.
-Queued/in_progress bedeutet laufend; completed ist nur ohne erforderliche clientseitige
-Aktion ein erfolgreicher Abschluss. Failed, incomplete und cancelled sind gesonderte Ergebnisse.
-Gültige Antwort ohne Text beziehungsweise mit clientseitigem Funktionsaufruf wird nicht
-als erfundene Textantwort oder Anlass für eine eigene Werkzeugschleife behandelt.
+The chosen conversation ID is not replaced by a response ID.
+`previous_response_id` is NOT used simultaneously with conversation.
+Queued/in_progress means running; completed is a successful completion only without required client-side
+action. Failed, incomplete and cancelled are separate results.
+A valid response without text or with a client-side function call is not
+treated as an invented text response or as an occasion for a tool loop of its own.
 
-API-Versionierung folgt dem REST-Vertrag `/v1`; der konkrete Request-/Responseumfang
-und dokumentierte Felder werden über eingecheckte Vertragsfixtures eingefroren.
-Modelle sind explizite Hostkonfiguration, keine hart codierte Modellliste.
+API versioning follows the REST contract `/v1`; the concrete request/response scope
+and documented fields are frozen via checked-in contract fixtures.
+Models are explicit host configuration, not a hard-coded model list.
 
-Conversation-Speicherung hebt weder Modellkontextgrenzen noch eventuelle Lebensdauergrenzen
-anderer Providerressourcen auf. Die Bibliothek ruft keinen eigenen Compaction-Ablauf auf.
-Providerseitig schon konfigurierte automatische Kontextfunktionen bleiben providerseitig.
+Conversation storage lifts neither model context limits nor any lifetime limits
+of other provider resources. The library does not invoke a compaction flow of its own.
+Automatic context functions already configured on the provider side remain on the provider side.
 
-## 4. Gemini-Referenzadapter
+## 4. Gemini Reference Adapter
 
-**Protokoll**: HTTPS JSON, stabile Interactions API `/v1`, Basis
-`https://generativelanguage.googleapis.com/v1`; Host liefert `x-goog-api-key`.
-Keine Vermischung mit alten `/v1beta`-/Api-Revision-Beispielen.
+**Protocol**: HTTPS JSON, stable Interactions API `/v1`, base
+`https://generativelanguage.googleapis.com/v1`; the host supplies `x-goog-api-key`.
+No mixing with old `/v1beta`/API revision examples.
 
-| Ablauf | Konkreter Vertrag |
+| Flow | Concrete contract |
 | --- | --- |
-| Open | Nur lokale Bindung vorbereiten; die erste Nachricht erzeugt die native Interaktion |
-| Erster Send | `POST /interactions` mit model, neuer input, background=true und store=true |
-| Weiterer Send | Gleicher Pfad, zusätzlich previous_interaction_id des letzten bestätigten Abschlusses |
-| Reopen / Inspect | `GET /interactions/{interaction_id}`; gespeicherten Kopf prüfen |
-| Cancel | `POST /interactions/{interaction_id}/cancel`; spätere Statusbestätigung abwarten |
+| Open | Only prepare the local binding; the first message creates the native interaction |
+| First send | `POST /interactions` with model, new input, background=true and store=true |
+| Further send | Same path, additionally previous_interaction_id of the last confirmed completion |
+| Reopen / Inspect | `GET /interactions/{interaction_id}`; check the stored head |
+| Cancel | `POST /interactions/{interaction_id}/cancel`; await later status confirmation |
 
-Erste bestätigte native Interaktion und jeweiliger Chain-Head werden getrennt gespeichert.
-Eine Interaktion im Zustand in_progress darf nicht als bestätigter Fortsetzungskopf
-verwendet werden. Nach Crash mit ungewissem neuem Kopf kein stilles Branching vom alten Kopf.
+The first confirmed native interaction and the respective chain head are stored separately.
+An interaction in the in_progress state MUST NOT be used as a confirmed continuation head.
+After a crash with an uncertain new head, no silent branching from the old head.
 
-Die native Kette enthält Geschichte, übernimmt aber nicht automatisch system_instruction,
-tools oder generation_config aus dem letzten Aufruf. Nur bereits zulässige unveränderliche
-Profileinstellungen werden erneut übergeben; die Bibliothek erstellt keine Tools oder
-Featurekonfigurationen selbst. Unbekannte vom Host gewünschte Einstellungen werden
-adapterbezogen geprüft, nicht mit einer zentralen herstellerübergreifenden Featurematrix.
+The native chain contains history but does not automatically adopt system_instruction,
+tools or generation_config from the last call. Only already permissible immutable
+profile settings are handed over again; the library does not itself create tools or
+feature configurations. Unknown settings requested by the host are checked
+per adapter, not with a central cross-vendor feature matrix.
 
-completed ohne erforderliche Clientaktion ist Erfolg. in_progress bleibt laufend;
-requires_action ist UnsupportedProviderAction. Failed, incomplete und cancelled bleiben
-unterscheidbar. Ein Cancel-POST ist keine dokumentationsübergreifende Idempotenzgarantie.
-Retention kann je Tier/Einstellung variieren; abgelaufene Interaktionen werden nicht lokal nachgebaut.
+completed without required client action is success. in_progress remains running;
+requires_action is UnsupportedProviderAction. Failed, incomplete and cancelled remain
+distinguishable. A cancel POST is not a documentation-wide idempotency guarantee.
+Retention may vary per tier/setting; expired interactions are not rebuilt locally.
 
-## 5. Ungewisser Ausgang
+## 5. Uncertain Outcome
 
-Vor jedem externen Send persistiert der Kern DispatchId und Reservierung. Ein Timeout
-zwischen Übergabe und empfangener OperationId bleibt Unknown. Der Adapter darf nicht
-wegen eines Netzwerkfehlers automatisch noch einmal senden.
+Before every external send, the core persists DispatchId and reservation. A timeout
+between handover and received OperationId remains Unknown. The adapter MUST NOT
+automatically send again because of a network error.
 
-Ist OperationId bekannt, kann ausdrücklich angefordertes Inspect den nativen Endzustand
-feststellen. Dies verändert die lokale Anfrage oder Reservierung noch nicht still;
-die Recovery-Schnittstelle entscheidet über sichere Freigabe und gültigen Fortsetzungsstand.
-Kein vorhandener Diagnose-Logeintrag ersetzt ein gesichertes Ergebnis oder Binding.
+If the OperationId is known, an explicitly requested Inspect can determine the native final state.
+This does not yet silently change the local request or reservation;
+the recovery interface decides on safe release and the valid continuation state.
+No existing diagnostic log entry replaces a saved result or binding.
 
-Lesende Statusabfragen dürfen bei temporären Fehlern innerhalb der endlichen Frist
-wiederholt werden. Authentifizierungsfehler, Kontextgrenzen und nicht unterstützte
-Aktionen werden nicht durch Wiederholung oder automatische Modell-/Providerwechsel kaschiert.
+Reading status queries may be repeated on temporary errors within the finite deadline.
+Authentication errors, context limits and unsupported
+actions are not concealed by repetition or automatic model/provider switches.
 
-## 6. Erweiterung und Kompatibilitätsprobe
+## 6. Extension and Compatibility Probe
 
-Weitere kompatible Endpunkte werden ausschließlich durch Konfiguration eingebunden.
-Ein anderer nativer Vertrag erhält eine weitere Implementierung von ISessionProvider.
-Der Host registriert sie ausdrücklich. Es gibt kein Ableiten von Verhalten aus
-Provider-Namen, keine beliebige Assembly-Datei im Request und keinen offenen Pluginloader.
+Further compatible endpoints are integrated exclusively through configuration.
+A different native contract receives a further implementation of ISessionProvider.
+The host registers it explicitly. There is no deriving of behavior from
+provider names, no arbitrary assembly file in the request and no open plugin loader.
 
-Jeder Adapter muss denselben Satz Tests bestehen: Eröffnung/lazy binding, Folgeanfrage,
-unveränderte Zuordnung, aktualisierter bestätigter Kopf, falscher/fehlender Bezug,
-Fehler-/Timeout-/Cancel-Zustände, Retentionfehler und fehlender eigener Feature-Nachbau.
-Eine dritte kontrollierte Testimplementierung weist die Erweiterbarkeit nach, ohne
-den Kern oder eine konsumierende Anwendung herstellerspezifisch umzuschreiben.
+Every adapter must pass the same set of tests: opening/lazy binding, follow-up request,
+unchanged assignment, updated confirmed head, wrong/missing reference,
+error/timeout/cancel states, retention errors and absence of own feature rebuilding.
+A third controlled test implementation demonstrates extensibility without
+rewriting the core or a consuming application in a vendor-specific way.
 
-Live-Abnahme nutzt mindestens zwei reale Hersteller mit je einer Eröffnung, erster
-Nachricht und Folgeanfrage auf allen zugesicherten Zielsystemen. Eine Fake-Probe belegt
-den Verwaltungsvertrag, nicht den tatsächlichen Herstellerbetrieb.
+Live acceptance uses at least two real vendors with one opening, first
+message and follow-up request each on all guaranteed target systems. A fake probe proves
+the management contract, not the actual vendor operation.
 
-## 7. Nicht enthalten
+## 7. Not Included
 
-Eigene Tokenlimits, Kontextverdichtung, Werkzeugausführung, Agent-Schleifen, multimodale
-Konvertierung, Modellkatalogsynchronisation, dynamische Agent-Delegation, uneingeschränkte
-CLI-Fernsteuerung und automatische Wiederholung von Send-Operationen.
-Remotezugang für Endnutzer oder Betriebssystemdienste sind ebenfalls keine Providerfunktion.
+Own token limits, context compaction, tool execution, agent loops, multimodal
+conversion, model catalog synchronization, dynamic agent delegation, unrestricted
+CLI remote control and automatic retry of send operations.
+Remote access for end users or operating system services are likewise not a provider function.
 
-## 8. Generische Agent-Backend-Grenze — verbindliche Konkretisierung
+## 8. Generic Agent Backend Boundary — Binding Concretization
 
-`ISessionProvider` bezeichnet einen registrierten Ausführungsadapter, nicht zwingend
-eine Hersteller-HTTP-API. CLI-, SDK- und Modelladapter nutzen dieselbe Sitzungsgrenze.
-Keine Auswahl über Produktnamen im Kern und keine Source-/Assembly-Abhängigkeit zum Zielhost.
+`ISessionProvider` denotes a registered execution adapter, not necessarily
+a vendor HTTP API. CLI, SDK and model adapters use the same session boundary.
+No selection via product names in the core and no source/assembly dependency on the target host.
 
-- `ProviderCapabilities` benennt Unterstützung für Agentaufträge, Modellantworten,
-  native Inspektion und nativen Abbruch sowie einen erforderlichen Workspace explizit.
-  Ein `AgentProfile` legt `ExecutionKind` (`AgentTask` oder `ModelResponse`) fest.
-  Nicht unterstützte Anforderungen werden vor Übergabe abgewiesen; eine Modellantwort
-  darf einen verlangten Agentauftrag nicht erfüllen. Kein eigener Toolloop als Ersatz.
-- `SessionExecutionContext` trägt den optionalen absoluten `WorkspaceDirectory` und
-  den vom Host gelieferten kanonischen WorkspaceKey. Snapshot und Zuordnung werden
-  mit der Sitzung gespeichert. Ein erforderlicher Workspace muss vor Start validiert
-  werden. Der Schlüssel bleibt separat für Schreibserialisierung maßgeblich.
-- `ProviderCall` enthält lokale Session-/Request-/Dispatchkennungen, ModelId,
-  ExecutionKind, Ausführungskontext, neue Eingabe, Limits und unveränderliche zulässige
-  Profileinstellungen. `ProviderBinding` trägt AdapterId, Formatversion, optionale
-  stabile `SessionReference` und getrennten bestätigten `ContinuationState`.
-- Open/Reopen nutzen einen `ProviderSessionContext`, ohne Dummy-Anfrage oder Dummy-Prompt.
-  Lazy-Open ohne native ID ist nur vor erster möglicher Übergabe zulässig.
-- Send erhält einen awaitable Beobachtungscallback. `ProviderObservation` unterscheidet
-  `SessionEstablished`, `OperationAccepted` und inhaltsfreien `Progress`.
-  Neue native ID/Operations-ID muss der Kern dauerhaft sichern und den Callback
-  bestätigen, bevor der Adapter fortfährt. Callbackfehler bedeutet keine bestätigte
-  erfolgreiche Ausführung. Bereits gebundene native Identität darf nicht wechseln.
-- Nur `ProviderReply` mit explizitem finalem Outcome und ExecutionCertainty bestätigt
-  den lokalen Abschluss. Ein Progress-/Tool-Zwischenschritt, eine Operations-ID oder
-  ein Prozess-Exitcode allein ist kein Erfolg. ConfirmedEnded und Unknown bleiben
-  verschieden; Cancel-Anforderung und belegter Abschluss ebenfalls.
-- Inspect/Cancel bei fehlender Fähigkeit liefern ein typisiertes Unsupported-Ergebnis,
-  keinen stillen No-op. Die Entscheidung zur Reservierungsfreigabe bleibt im Kern.
+- `ProviderCapabilities` explicitly names support for agent jobs, model responses,
+  native inspection and native cancellation as well as a required workspace.
+  An `AgentProfile` defines `ExecutionKind` (`AgentTask` or `ModelResponse`).
+  Unsupported requirements are rejected before handover; a model response
+  MUST NOT fulfill a requested agent job. No tool loop of its own as a substitute.
+- `SessionExecutionContext` carries the optional absolute `WorkspaceDirectory` and
+  the canonical WorkspaceKey supplied by the host. Snapshot and assignment are stored
+  with the session. A required workspace must be validated before start.
+  The key remains separately authoritative for write serialization.
+- `ProviderCall` contains local session/request/dispatch identifiers, ModelId,
+  ExecutionKind, execution context, new input, limits and immutable permissible
+  profile settings. `ProviderBinding` carries AdapterId, format version, optional
+  stable `SessionReference` and a separate confirmed `ContinuationState`.
+- Open/Reopen use a `ProviderSessionContext`, without a dummy request or dummy prompt.
+  Lazy open without a native ID is permissible only before the first possible handover.
+- Send receives an awaitable observation callback. `ProviderObservation` distinguishes
+  `SessionEstablished`, `OperationAccepted` and content-free `Progress`.
+  The core must durably save a new native ID/operation ID and confirm the callback
+  before the adapter continues. A callback error does not mean a confirmed
+  successful execution. An already bound native identity MUST NOT change.
+- Only a `ProviderReply` with an explicit final Outcome and ExecutionCertainty confirms
+  the local completion. A progress/tool intermediate step, an operation ID or
+  a process exit code alone is not success. ConfirmedEnded and Unknown remain
+  different; so do a cancel request and a proven completion.
+- Inspect/Cancel without the capability return a typed Unsupported result,
+  not a silent no-op. The decision on reservation release remains in the core.
 
-**Zielhostabbildung**: hostseitiger RunContext → Session-/Aufrufkontext; beobachtete
-native Session-ID → bestätigter SessionEstablished-Callback; TerminalSuccess plus
-Exitcode → finaler Reply; CancellationToken → kooperative Adaptercancellation.
-Workspace/Modell/Backend bleiben an denselben Sitzungs-Snapshot gebunden. Der Host
-verantwortet weiterhin seine Tools, Anmeldungen und Prozessausführung. Diese Abbildung
-ist ein überprüfbarer Entwurf, noch kein bestandener Konsum- oder Migrationsnachweis.
+**Target host mapping**: host-side RunContext → session/call context; observed
+native session ID → confirmed SessionEstablished callback; TerminalSuccess plus
+exit code → final reply; CancellationToken → cooperative adapter cancellation.
+Workspace/model/backend remain bound to the same session snapshot. The host
+remains responsible for its tools, sign-ins and process execution. This mapping
+is a verifiable design, not yet a passed consumption or migration proof.
 
-**Verbindliche Referenz**: OpenCode **1.19.0**, ausdrücklich vom Projektverantwortlichen
-beibehalten. Kein Update und keine Übernahme neuerer CLI-/V2-API-Verträge.
-OpenCode bleibt ein optionales externes Backend, keine Pflichtlaufzeit (FR-022).
-Eine Referenzfixture darf dessen Session-/Abschlussvertrag modellieren, jedoch keine
-echte OpenCode-Ausführung oder echte Providerabnahme vortäuschen.
+**Binding reference**: OpenCode **1.19.0**, explicitly retained by the project owner.
+No update and no adoption of newer CLI/V2 API contracts.
+OpenCode remains an optional external backend, not a mandatory runtime (FR-022).
+A reference fixture may model its session/completion contract but MUST NOT feign
+real OpenCode execution or real provider acceptance.
 
-**Zusätzliche Vertragsfälle vor Green (T010/T035/T089)**: Workspace/ExecutionKind und
-unveränderte Modellkennung an ein hosteigenes Backend übergeben; opaque `ses_…` über
-zwei Aufträge fortführen; ID vor weiterem externen Fortschritt speichern; Identitätswechsel
-abweisen; Exit 0 ohne terminalen Erfolg und Tool-Zwischenschritt nicht als Erfolg werten;
-Callbackfehler und Cancel ohne Endbeleg behalten Unknown; nicht unterstützte Fähigkeiten
-vor Übergabe ablehnen. Diese Fälle ergänzen, ersetzen aber nicht die zwei nativen
-Herstellerverträge, Persistenz-/Prozessproben oder den tatsächlichen Paketkonsum.
+**Additional contract cases before Green (T010/T035/T089)**: hand over workspace/ExecutionKind and
+an unchanged model identifier to a host-owned backend; continue an opaque `ses_…` across
+two jobs; save the ID before further external progress; reject an identity change;
+do not count exit 0 without terminal success or a tool intermediate step as success;
+callback errors and cancel without end evidence keep Unknown; reject unsupported capabilities
+before handover. These cases supplement, but do not replace, the two native
+vendor contracts, persistence/process probes or the actual package consumption.
 
-## 9. Operationsgebundene Wiederaufnahme nach Unknown
+## 9. Operation-Bound Resumption after Unknown
 
-Ein Adapter, dessen ungewisse Ausführung einen nativen Fortsetzungskopf ändern kann,
-setzt `ProviderCapabilities.RequiresOperationAwareRecovery=true` und implementiert
-`IExecutionRecoveryProvider.ReopenAfterExecutionAsync`. Der Port erhält den gespeicherten
-bekannten Bindingbezug und die optionale persistierte Operationskennung. Er liest native
-Belege und liefert ausschließlich einen bestätigten kompatiblen Fortsetzungsstand.
-Er eröffnet und sendet keine Arbeit. Ein noch lesbarer alter Kopf allein genügt nicht.
-Fehlt ein für diese Prüfung nötiger Bezug, bleibt UnsupportedProviderAction/Unknown;
-fehlender Port ist kein Anlass zum Rückfall auf gewöhnliches Reopen.
+An adapter whose uncertain execution can change a native continuation head
+sets `ProviderCapabilities.RequiresOperationAwareRecovery=true` and implements
+`IExecutionRecoveryProvider.ReopenAfterExecutionAsync`. The port receives the stored
+known binding reference and the optional persisted operation identifier. It reads native
+evidence and returns exclusively a confirmed compatible continuation state.
+It opens and sends no work. A still readable old head alone is not sufficient.
+If a reference needed for this check is missing, UnsupportedProviderAction/Unknown remains;
+a missing port is no reason to fall back to ordinary reopen.
 
-Bei stabilen nativen Conversation-IDs bleibt gewöhnliches Reopen zulässig. Die Auswahl
-ist capability-/interfacegebunden, ohne Herstellernamen im Kern. Bestätigtes Ende und
-Fortsetzungsstand werden erst mit der ausdrücklichen revisionierten Recoveryentscheidung
-veröffentlicht; Inspect allein ändert nichts. Die historische Anfrage wird nicht nachträglich
-Succeeded. Close/Closing erfordert keine Wiederöffnung zur Fortsetzung.
+With stable native conversation IDs, ordinary reopen remains permissible. The selection
+is capability/interface-bound, without vendor names in the core. Confirmed end and
+continuation state are only published with the explicit revisioned recovery decision;
+Inspect alone changes nothing. The historical request does not retroactively become
+Succeeded. Close/Closing requires no reopening for continuation.
 
-## 10. Ende und Fortsetzungsverfügbarkeit
+## 10. End and Continuation Availability
 
-`ProviderReply.ContinuationAvailable` ist eine optionale Aussage des Adapters. `false`
-benennt einen bekannten Fortsetzungsblocker, `null` überlässt unveränderte Legacy-/Fehlerpolicy,
-`true` ist kein Beweis für ein externes Ende. Common interpretiert keine herstellerspezifischen
-ContinuationState-Strings. Nach sicherem Abschluss werden Ergebnis/History/Binding,
-ProviderUnavailable-Sperre und sichere Slotfreigabe gemeinsam gespeichert. Native Expiry
-blockiert auch Legacy-Produzenten ohne dieses optionale Feld.
+`ProviderReply.ContinuationAvailable` is an optional statement by the adapter. `false`
+names a known continuation blocker, `null` defers to the unchanged legacy/error policy,
+`true` is no proof of an external end. Common does not interpret vendor-specific
+ContinuationState strings. After a safe completion, result/history/binding,
+ProviderUnavailable lock and safe slot release are stored together. Native expiry
+also blocks legacy producers without this optional field.
 
-Bei Unknown hat RecoveryRequired samt gehaltener Reservierung Vorrang. Ein negatives
-Fortsetzungssignal darf fehlende Endgewissheit nicht ersetzen. Umgekehrt bleibt ein nativer
-completed-Head auch bei lokaler OutputLimitExceeded nutzbar; allein ein lokaler Textfehler
-rechtfertigt keinen Rückfall auf einen veralteten Kopf. Der erste sicher fehlgeschlagene
-Interaktionsaufruf ohne completed-Head kann seinen bekannten Root bewahren, aber keine
-neue Wurzel oder weitere Annahme stillschweigend erlauben.
+With Unknown, RecoveryRequired including the held reservation takes precedence. A negative
+continuation signal MUST NOT replace missing end certainty. Conversely, a native
+completed head remains usable even with a local OutputLimitExceeded; a local text error alone
+does not justify falling back to an outdated head. The first safely failed
+interaction call without a completed head can preserve its known root, but MUST NOT silently permit a
+new root or further admission.
 
-## Optionale lesende Zugangsprüfung vor Wiederaufnahme
+## Optional Read-Only Access Check Before Resumption
 
-`ISessionAvailabilityProvider.ValidateAvailabilityAsync` ist eine zusätzliche generische
-Facette; sie ändert keinen bestehenden Reopen-/Lazyvertrag. Native Adapter lesen den
-gewählten Modell-Metadateneintrag über ihren bereits konfigurierten Endpoint und aktuellen
-Hostcredentialresolver. Grundlage sind [OpenAI Model retrieve](https://developers.openai.com/api/reference/resources/models/methods/retrieve)
-und der stabile GET `v1/models/{modelsId}` in [Geminis offizieller v1-Discovery](https://generativelanguage.googleapis.com/$discovery/rest?version=v1).
-Es wird kein Prompt gesendet und kein vollständiger Katalog aufgebaut. Eine fehlende
-Modellressource ist ProviderUnavailable; Auth bleibt AuthenticationFailed, statt als
-abgelaufene native Sitzungsidentität zu erscheinen. ModelId und Binding bleiben gefroren.
+`ISessionAvailabilityProvider.ValidateAvailabilityAsync` is an additional generic
+facet; it does not change any existing reopen/lazy contract. Native adapters read the
+chosen model metadata entry via their already configured endpoint and current
+host credential resolver. The basis is [OpenAI Model retrieve](https://developers.openai.com/api/reference/resources/models/methods/retrieve)
+and the stable GET `v1/models/{modelsId}` in [Gemini's official v1 discovery](https://generativelanguage.googleapis.com/$discovery/rest?version=v1).
+No prompt is sent and no complete catalog is built. A missing
+model resource is ProviderUnavailable; auth remains AuthenticationFailed instead of appearing as an
+expired native session identity. ModelId and binding remain frozen.
 
-Dritte Adapter können diese Facette ausdrücklich implementieren oder dieselbe eigene
-Zugangsprüfung bereits in Reopen erfüllen. Der Kern leitet Fähigkeiten aus dem Vertrag
-ab, nicht aus Hersteller-/Modellnamen. RecoveryRequired und andere native Sperren werden
-nicht durch einen erfolgreichen Metadatenread aufgehoben. Aliasmetadata belegen keine
-Modellsubstitution durch die Bibliothek. Die reale Konten-/Backendabnahme bleibt T105.
+Third-party adapters can implement this facet explicitly or already fulfill the same access check of their own
+in Reopen. The core derives capabilities from the contract,
+not from vendor/model names. RecoveryRequired and other native locks are
+not lifted by a successful metadata read. Alias metadata do not prove
+model substitution by the library. The real account/backend acceptance remains T105.

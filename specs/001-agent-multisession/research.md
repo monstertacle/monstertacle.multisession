@@ -1,422 +1,422 @@
-# Research: Agent-Multisession
+# Research: Agent Multisession
 
-**Datum**: 2026-10-27 | **Basis**: [spec.md](spec.md)
+**Date**: 2026-10-27 | **Basis**: [spec.md](spec.md)
 
-Die folgenden Entscheidungen lösen die technischen Auswahlfragen der Phase 0.
-Es wurden offizielle Dokumentation, Release-Metadaten und Paketmetadaten gelesen.
-In der ursprünglichen Recherche keine Pakete installiert, Builds oder Produkt-/Herstellertests ausgeführt, Zugangsdaten
-gelesen oder kostenpflichtigen Provider-Aufrufe getätigt. Dokumentation ist kein Laufzeitnachweis.
+The following decisions resolve the technical selection questions of Phase 0.
+Official documentation, release metadata and package metadata were read.
+In the original research, no packages were installed, no builds or product/vendor tests were executed, no credentials
+were read and no paid provider calls were made. Documentation is not runtime evidence.
 
-## R-01 — Laufzeit und Plattformmatrix
+## R-01 — Runtime and Platform Matrix
 
-**Decision**: C# 14, .NET 10 LTS, `net10.0`; SDK 10.0.403 exakt in der
-`global.json` mit `rollForward: disable` und ohne Prereleases festhalten.
-Erste Abnahmematrix: Windows 11 25H2 x64, Windows Server 2025 x64 und Ubuntu 24.04 LTS x64.
-Arm64, andere Distributionen, Netzwerkdateisysteme und AOT sind keine Freigabezusicherung.
+**Decision**: C# 14, .NET 10 LTS, `net10.0`; pin SDK 10.0.403 exactly in the
+`global.json` with `rollForward: disable` and without prereleases.
+First acceptance matrix: Windows 11 25H2 x64, Windows Server 2025 x64 and Ubuntu 24.04 LTS x64.
+Arm64, other distributions, network file systems and AOT are not a release guarantee.
 
-**Rationale**: Unterstützte gemeinsame Laufzeit; die abgefragten offiziellen
-Release-Metadaten nennen SDK 10.0.403 und Runtime 10.0.14, veröffentlicht am 2026-10-25.
-Eine konkrete Matrix begrenzt die Portabilitätsabnahme, ohne Windows mit Windows Server
-oder alle Linux-Systeme mit einem einzigen Linux-Test gleichzusetzen.
+**Rationale**: Supported shared runtime; the queried official
+release metadata name SDK 10.0.403 and runtime 10.0.14, published on 2026-10-25.
+A concrete matrix limits the portability acceptance without equating Windows with Windows Server
+or all Linux systems with a single Linux test.
 
-**Alternatives considered**: .NET 8 mit kürzerer verbleibender Supportperspektive;
-ungepinnter SDK-Rollforward; zusätzliche Ziel-Frameworks ohne aktuellen Bedarf.
+**Alternatives considered**: .NET 8 with a shorter remaining support horizon;
+unpinned SDK roll-forward; additional target frameworks without current need.
 
-**Genehmigte Nacharbeit (2026-10-27)**: Statt des ursprünglich geplanten 10.0.403
-ausdrücklich das lokal vorhandene 10.0.402 verwenden. `dotnet --info` bestätigt
-10.0.402 und 10.0.303, nicht 10.0.403. `global.json` pinnt jetzt 10.0.402;
-keine SDK-Installation oder implizites Roll-forward wurde vorgenommen.
+**Approved rework (2026-10-27)**: Instead of the originally planned 10.0.403,
+explicitly use the locally available 10.0.402. `dotnet --info` confirms
+10.0.402 and 10.0.303, not 10.0.403. `global.json` now pins 10.0.402;
+no SDK installation or implicit roll-forward was performed.
 
-**Genehmigte Aktualisierung (2026-10-28)**: SDK 10.0.402 ist nicht mehr installiert;
-vorhanden sind jetzt 10.0.303 und 10.0.403. Der Projektverantwortliche hat
-„10.0.403 nutzen“ ausdrücklich bestätigt. Der Pin wird ohne Roll-forward auf
-10.0.403 aktualisiert; keine Installation und keine Änderung von OpenCode 1.19.0.
-Frühere 10.0.402-Prüfergebnisse bleiben als historische Nachweise unverändert.
+**Approved update (2026-10-28)**: SDK 10.0.402 is no longer installed;
+now available are 10.0.303 and 10.0.403. The project owner has
+explicitly confirmed „10.0.403 nutzen“ ("use 10.0.403"). The pin is updated to
+10.0.403 without roll-forward; no installation and no change to OpenCode 1.19.0.
+Earlier 10.0.402 check results remain unchanged as historical evidence.
 
-Quellen: [.NET-10-Release-Metadaten](https://builds.dotnet.microsoft.com/dotnet/release-metadata/10.0/releases.json),
-[SDK-Auswahl](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json),
-[Windows-Unterstützung](https://learn.microsoft.com/en-us/dotnet/core/install/windows),
-[Ubuntu-Unterstützung](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install).
+Sources: [.NET 10 release metadata](https://builds.dotnet.microsoft.com/dotnet/release-metadata/10.0/releases.json),
+[SDK selection](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json),
+[Windows support](https://learn.microsoft.com/en-us/dotnet/core/install/windows),
+[Ubuntu support](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install).
 
-## R-02 — Paketgrenzen und KISS
+## R-02 — Package Boundaries and KISS
 
-**Decision**: Sechs Bibliotheken mit echten Verantwortlichkeiten:
+**Decision**: Six libraries with real responsibilities:
 
-- `Monstertacle.Multisession.Common`: öffentliche Verträge, Sitzungskatalog, dauerhafte
-  Annahmeregeln, Dispatch-Zulassung, FIFO, Recovery und strukturierte Diagnosen.
-- `Monstertacle.Multisession.Storage.Sqlite`: transaktionaler lokaler Zustand.
-- `Monstertacle.Multisession.Windows`: Vorbereitung/Prüfung privater Zustandsverzeichnisse,
-  Windows-ACLs und exklusiver Speicherbesitz; Ziel `net10.0-windows`.
-- `Monstertacle.Multisession.Linux`: entsprechender Vertrag mit Unix-Rechten und
-  Linux-Pfad-/Besitzprüfung; Ziel `net10.0`, expliziter Linux-Laufzeitguard.
-- `Monstertacle.Multisession.Providers.OpenAI`: native Conversations/Responses-Anbindung.
-- `Monstertacle.Multisession.Providers.Gemini`: native Interactions-Anbindung.
+- `Monstertacle.Multisession.Common`: public contracts, session catalog, durable
+  admission rules, dispatch admission, FIFO, recovery and structured diagnostics.
+- `Monstertacle.Multisession.Storage.Sqlite`: transactional local state.
+- `Monstertacle.Multisession.Windows`: preparation/verification of private state directories,
+  Windows ACLs and exclusive storage ownership; target `net10.0-windows`.
+- `Monstertacle.Multisession.Linux`: corresponding contract with Unix permissions and
+  Linux path/ownership checks; target `net10.0`, explicit Linux runtime guard.
+- `Monstertacle.Multisession.Providers.OpenAI`: native Conversations/Responses connection.
+- `Monstertacle.Multisession.Providers.Gemini`: native Interactions connection.
 
-Alle konkreten Bibliotheken hängen von Common ab, niemals umgekehrt. Common und
-Storage erzwingen keinen Windows-, Linux-, Provider-, Hosting-, SSH- oder UI-Stack.
-Keine zusätzlichen Abstractions-/Hosting-Pakete, kein dynamischer Assemblyloader und
-kein eigener Agent-Framework-Unterbau. Facetten für Sitzungen, Anfragen und Recovery
-vermeiden eine überladene öffentliche Klasse und unbegründete Universalabstraktionen.
+All concrete libraries depend on Common, never the reverse. Common and
+Storage enforce no Windows, Linux, provider, hosting, SSH or UI stack.
+No additional abstractions/hosting packages, no dynamic assembly loader and
+no agent framework foundation of its own. Facets for sessions, requests and recovery
+avoid an overloaded public class and unjustified universal abstractions.
 
-**Rationale**: Gemeinsame Fachlogik ist unabhängig testbar. Plattformpakete enthalten
-konkrete Sicherheits-/Besitzaufgaben, nicht duplizierte Sitzungslogik oder leere Marker.
-SQLite und Provider können mit eigenen Fremdabhängigkeiten getrennt konsumiert werden.
+**Rationale**: Shared domain logic is independently testable. Platform packages contain
+concrete security/ownership tasks, not duplicated session logic or empty markers.
+SQLite and providers can be consumed separately with their own third-party dependencies.
 
-**Alternatives considered**: Eine einzige Bibliothek mit sämtlichen nativen Abhängigkeiten;
-duplizierte Windows-/Linux-Kerne; je Domänenbegriff ein eigenes Paket; fertiger Dienst statt Bibliothek.
+**Alternatives considered**: A single library with all native dependencies;
+duplicated Windows/Linux cores; a separate package per domain term; a finished service instead of a library.
 
-## R-03 — Native Provider-Sitzungen statt eigener Sitzungsfeatures
+## R-03 — Native Provider Sessions Instead of Own Session Features
 
-**Decision**: Zwei unterschiedliche Referenzverträge über BCL-`HttpClient`:
+**Decision**: Two different reference contracts via BCL `HttpClient`:
 
-| Vertrag | Eröffnung und Fortsetzung | Eigene Zuständigkeit |
+| Contract | Opening and continuation | Own responsibility |
 | --- | --- | --- |
-| OpenAI `/v1/conversations` + `/v1/responses` | Conversation-ID erstellen; jede neue Nachricht an dieselbe Conversation senden | Conversation-ID und getrennte Response-ID sichern |
-| Gemini Interactions `/v1/interactions` | Erste Nachricht eröffnet Interaktion; Folgeanfragen referenzieren letzte bestätigte `previous_interaction_id` | Lokale SessionId, erster nativer Bezug und wechselnden Fortsetzungskopf unterscheiden |
+| OpenAI `/v1/conversations` + `/v1/responses` | Create conversation ID; send each new message to the same conversation | Save conversation ID and separate response ID |
+| Gemini Interactions `/v1/interactions` | First message opens interaction; follow-up requests reference the last confirmed `previous_interaction_id` | Distinguish local SessionId, first native reference and changing continuation head |
 
-Für Google erfolgt die native Bindung erst mit der ersten Nachricht. Eine lokal eröffnete
-Sitzung mit leerem Binding ist daher zulässig, solange noch keine Anfrage versendet wurde.
-Ein fehlender Bezug nach möglicherweise erfolgter Übergabe ist dagegen ungewiss und blockiert.
+For Google, the native binding only takes place with the first message. A locally opened
+session with an empty binding is therefore permissible as long as no request has been sent yet.
+A missing reference after a possibly completed handover, by contrast, is uncertain and blocks.
 
-Nur neue Nachrichten und explizite kontextrelevante Einstellungen übergeben; keine lokal
-rekonstruierte Unterhaltung, Tokenzählung, Zusammenfassung oder Werkzeugschleife.
-Bei Google müssen unter anderem system instructions und generation settings je Aufruf
-erneut übermittelt werden; dies ist Konfiguration und kein Transcript-Replay.
+Hand over only new messages and explicit context-relevant settings; no locally
+reconstructed conversation, token counting, summary or tool loop.
+For Google, among other things, system instructions and generation settings must be
+transmitted again per call; this is configuration and not transcript replay.
 
-**Rationale**: Die APIs besitzen native gespeicherte Zustände und unterscheidbare Operationen.
-Die aktuelle offizielle Google-Dokumentation bezeichnet Interactions als GA seit Juni 2026;
-implementiert wird die stabile `/v1`-Referenz, nicht eine Mischung älterer Beta-Beispiele.
+**Rationale**: The APIs have native stored states and distinguishable operations.
+The current official Google documentation designates Interactions as GA since June 2026;
+the stable `/v1` reference is implemented, not a mix of older beta examples.
 
-**Alternatives considered**: Stateless Chat-Completions-/Messages-Protokolle mit lokalem
-Replay oder eigener Agent-Schleife verletzen die Umfangsentscheidung. Separate CLI-Runtimes
-wären als spätere Adapter möglich, benötigen aber zusätzliche Prozess-, Versions- und
-Plattformverträge und sind für diese erste Lieferung nicht erforderlich.
+**Alternatives considered**: Stateless chat completions/messages protocols with local
+replay or an agent loop of its own violate the scope decision. Separate CLI runtimes
+would be possible as later adapters but require additional process, version and
+platform contracts and are not required for this first delivery.
 
-Quellen: [OpenAI Conversation state](https://developers.openai.com/api/docs/guides/conversation-state),
+Sources: [OpenAI Conversation state](https://developers.openai.com/api/docs/guides/conversation-state),
 [Create conversation](https://developers.openai.com/api/reference/resources/conversations/methods/create),
 [Gemini Interactions overview](https://ai.google.dev/gemini-api/docs/interactions-overview),
 [Gemini `/v1` reference](https://ai.google.dev/api/interactions-api-v1).
 
-## R-04 — Erfolg, Abbruch und ungewisse Übergabe
+## R-04 — Success, Cancellation and Uncertain Handover
 
-**Decision**: Background-Operationen mit `store:true`, native Operationskennungen früh
-sichern und deren Zustand abfragen. Nur bestätigtes `completed` ohne erforderliche
-clientseitige Aktion ist Erfolg. `requires_action`, `incomplete` und reine HTTP-2xx-Antworten
-sind kein erfolgreicher Abschluss einer verwalteten Anfrage.
+**Decision**: Background operations with `store:true`; save native operation identifiers early
+and query their state. Only a confirmed `completed` without required
+client-side action is success. `requires_action`, `incomplete` and mere HTTP 2xx responses
+are not a successful completion of a managed request.
 
-OpenAI: Response über `GET /responses/{id}` prüfen; Background-Abbruch über
-`POST /responses/{id}/cancel`. Google: `GET /interactions/{id}` beziehungsweise
-`POST /interactions/{id}/cancel`; eine bestätigte Abbruchanforderung ist noch kein Endzustand.
-Die Bibliothek konfiguriert selbst keine Provider-Werkzeuge. Clientseitig angeforderte
-Werkzeugaktionen werden als UnsupportedProviderAction gemeldet und nicht ausgeführt.
+OpenAI: check response via `GET /responses/{id}`; background cancellation via
+`POST /responses/{id}/cancel`. Google: `GET /interactions/{id}` or
+`POST /interactions/{id}/cancel`; a confirmed cancellation request is not yet a final state.
+The library itself configures no provider tools. Client-side requested
+tool actions are reported as UnsupportedProviderAction and not executed.
 
-Lokaler Timeout oder Verbindungsabbruch ist kein Beendigungsbeweis. Bekannte Operations-ID
-erlaubt reines Nachlesen, keinen erneuten Send. Fehlt sie trotz möglicher Annahme, bleibt
-die Anfrage Unknown. Nach Host-Neustart erfolgt keine automatische Fortsetzung eines
-unterbrochenen Auftrags; die Recovery-Schnittstelle kann seinen Zustand ausdrücklich prüfen.
+Local timeout or connection abort is no proof of termination. A known operation ID
+permits pure re-reading, no renewed send. If it is missing despite possible acceptance, the
+request remains Unknown. After a host restart, there is no automatic continuation of an
+interrupted job; the recovery interface can explicitly check its state.
 
-**Rationale**: Lokaler Commit und Herstelleraufruf bilden keine gemeinsame Transaktion.
-Konservative Reservierungen vermeiden doppelte externe Effekte.
+**Rationale**: Local commit and vendor call do not form a shared transaction.
+Conservative reservations avoid duplicate external effects.
 
-**Alternatives considered**: Automatische POST-Retries, Ersatzhersteller, Erfolg aus
-Prozess-/HTTP-Status ableiten, clientseitige Tools als Providerfunktion nachbauen.
+**Alternatives considered**: Automatic POST retries, substitute vendors, deriving success from
+process/HTTP status, rebuilding client-side tools as a provider function.
 
-Quellen: [OpenAI Background](https://developers.openai.com/api/docs/guides/background),
+Sources: [OpenAI Background](https://developers.openai.com/api/docs/guides/background),
 [OpenAI Function calling](https://developers.openai.com/api/docs/guides/function-calling),
 [Gemini Background](https://ai.google.dev/gemini-api/docs/background-execution).
 
-## R-05 — Grenzen nativer Speicherung und kompatibler Zugänge
+## R-05 — Limits of Native Storage and Compatible Accesses
 
-**Decision**: Endpunkt, API-Vertragsversion, Modell, hostseitige Credentials und HttpClient
-sind adapterbezogen konfigurierbar. Kompatibilität bedeutet den tatsächlich benötigten
-Sitzungsvertrag, nicht nur ähnliche Chat-Nachrichten. OpenAI-kompatible Chat Completions
-allein erfüllen den Conversations/Responses-Vertrag nicht.
+**Decision**: Endpoint, API contract version, model, host-side credentials and HttpClient
+are configurable per adapter. Compatibility means the actually required
+session contract, not just similar chat messages. OpenAI-compatible chat completions
+alone do not fulfill the Conversations/Responses contract.
 
-OpenAI Conversation-Objekte unterliegen laut Dokumentation nicht der gewöhnlichen
-30-Tage-Response-TTL. Google dokumentiert Interactions-Aufbewahrung von einem Tag im
-Free-Tier und bis 55 Tagen im Paid-Tier, mit konfigurierbaren Paid-Fristen.
-Diese Providerregeln sind keine lokale Garantie und kein unbegrenztes Modellkontextfenster.
-Abgelaufene oder gelöschte native Zustände blockieren Fortsetzung; keine neue Sitzung
-unter alter Identität und kein Replay aus lokalem Verlauf.
+According to the documentation, OpenAI conversation objects are not subject to the ordinary
+30-day response TTL. Google documents Interactions retention of one day in the
+free tier and up to 55 days in the paid tier, with configurable paid periods.
+These provider rules are not a local guarantee and not an unlimited model context window.
+Expired or deleted native states block continuation; no new session
+under the old identity and no replay from local history.
 
-**Rationale**: Der Nutzer will Sitzungen verwalten, nicht deren Funktionen nachbilden.
-Lokale Persistenz erhält Nachweise und Warteschlangen, ersetzt aber verlorenen Providerzustand nicht.
+**Rationale**: The user wants to manage sessions, not replicate their functions.
+Local persistence retains evidence and queues but does not replace lost provider state.
 
-**Alternatives considered**: Beliebige OpenAI-kompatible Endpunkte zusichern; alle
-Herstellerfeatures katalogisieren; fehlenden nativen Zustand aus Chatverlauf rekonstruieren.
+**Alternatives considered**: Guaranteeing arbitrary OpenAI-compatible endpoints; cataloging all
+vendor features; reconstructing missing native state from chat history.
 
-Quellen: dieselben offiziellen Sitzungs- und Retention-Dokumentationen wie R-03/R-04.
+Sources: the same official session and retention documentation as R-03/R-04.
 
-## R-06 — Dauerhafte FIFO und Persistenz
+## R-06 — Durable FIFO and Persistence
 
-**Decision**: `Microsoft.Data.Sqlite` 10.0.14; lokaler Store, ein aktiver Besitzer,
-kurze serialisierte Transaktionen; `journal_mode=DELETE`, `synchronous=EXTRA`, Foreign Keys
-aktiv, keine Shared Cache-Verwendung. Eine eigene begrenzte Datenbank-Arbeitswarteschlange
-isoliert die synchron arbeitenden SQLite-Aufrufe vom Aufrufer und erlaubt keine unbegrenzte
-Task-Erzeugung. Keine SQL-Transaktion bleibt über einen Provider-Aufruf offen.
+**Decision**: `Microsoft.Data.Sqlite` 10.0.14; local store, one active owner,
+short serialized transactions; `journal_mode=DELETE`, `synchronous=EXTRA`, foreign keys
+enabled, no shared cache use. A dedicated bounded database work queue
+isolates the synchronously working SQLite calls from the caller and permits no unbounded
+task creation. No SQL transaction remains open across a provider call.
 
-Annahme mit monotoner Sitzungssequenz und Queue-Kapazität transaktional committen.
-Dispatch mit Reservierung vor externem Aufruf persistieren. Ergebnis, Fortsetzungsstand
-und sichere Freigabe gemeinsam committen. Channels dienen nur als begrenzte Wecksignale;
-die Datenbank bleibt maßgeblich, auch bei einem verlorenen Wecksignal nach Commit.
+Commit admission transactionally with monotonic session sequence and queue capacity.
+Persist dispatch with reservation before the external call. Commit result, continuation state
+and safe release together. Channels serve only as bounded wake-up signals;
+the database remains authoritative, even with a wake-up signal lost after commit.
 
-**Rationale**: Ziel sind zunächst zehn Sitzungen, kein verteilter Broker. Ein serialisierter
-Store macht WAL-/Checkpoint-Komplexität unnötig. Auch Async-Methoden von Microsoft.Data.Sqlite
-führen laut Dokumentation synchron aus. DELETE/EXTRA ist eine bewusste Alternative zu WAL/FULL;
-Haltbarkeit hängt zusätzlich vom tatsächlichen Dateisystem und Datenträger ab.
-Der Busy-Timeout wird explizit auf eine Sekunde begrenzt; der längere Standardwert darf
-die lokale Abbruchbeobachtung und endliche Abschaltfrist nicht verdeckt überschreiten.
+**Rationale**: The initial target is ten sessions, not a distributed broker. A serialized
+store makes WAL/checkpoint complexity unnecessary. According to the documentation, even the async methods of Microsoft.Data.Sqlite
+execute synchronously. DELETE/EXTRA is a deliberate alternative to WAL/FULL;
+durability additionally depends on the actual file system and storage medium.
+The busy timeout is explicitly limited to one second; the longer default value MUST NOT
+covertly exceed the local cancellation observation and the finite shutdown deadline.
 
-**Alternatives considered**: In-Memory-Queue verliert angenommene Arbeit; mehrere JSON-Dateien
-bilden keine gemeinsame Transaktion; PostgreSQL/Broker erzwingen einen Dienst; WAL/FULL
-ist bei später nachgewiesenem Parallel-Lesebedarf eine gesonderte Änderung.
+**Alternatives considered**: An in-memory queue loses accepted work; multiple JSON files
+do not form a shared transaction; PostgreSQL/broker force a service; WAL/FULL
+is a separate change if a parallel read need is demonstrated later.
 
-Quellen: [Transactions](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/transactions),
+Sources: [Transactions](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/transactions),
 [SQLite Async limitations](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/async),
 [Database errors](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/database-errors),
 [SQLite synchronous](https://sqlite.org/pragma.html#pragma_synchronous),
 [Channels](https://learn.microsoft.com/en-us/dotnet/core/extensions/channels).
 
-## R-07 — Speicherbesitz, Rechte und Vertrauensbereich
+## R-07 — Storage Ownership, Permissions and Trust Domain
 
-**Decision**: Host gibt absolutes privates Zustandsverzeichnis vor. Windows prüft/restringiert
-ACLs für die ausführende Identität; Linux Verzeichnisse 0700 und Dateien 0600.
-Ein während der Laufzeit offenes exklusives Lockfile verhindert einen zweiten kooperierenden
-Besitzer. Pfadaliase, Links, UNC-/Netzwerkpfade und bestehende fremde Ablagen werden ausdrücklich
-geprüft beziehungsweise abgewiesen; keine Sperre wird allein anhand einer PID-Datei gelöscht.
+**Decision**: Host specifies an absolute private state directory. Windows checks/restricts
+ACLs for the executing identity; Linux directories 0700 and files 0600.
+An exclusive lock file kept open during runtime prevents a second cooperating
+owner. Path aliases, links, UNC/network paths and existing foreign stores are explicitly
+checked or rejected; no lock is deleted solely on the basis of a PID file.
 
-Ein Vertrauensbereich je Instanz. Keine eigene Authentifizierung, Mandantenverwaltung,
-DPAPI-Schlüsselablage oder Sandbox. Geheimnisse kommen bei Bedarf aus einem Host-Resolver.
-Provider-Endpunkte werden aus vertrauenswürdiger Host-Konfiguration übernommen, nicht aus
-Modelltexten; Authentifizierungsheader werden nicht an andere Hosts weitergeleitet.
+One trust domain per instance. No authentication of its own, tenant management,
+DPAPI key storage or sandbox. Secrets come from a host resolver when needed.
+Provider endpoints are taken from trusted host configuration, not from
+model texts; authentication headers are not forwarded to other hosts.
 
-**Rationale**: Echte Plattformaufgabe ohne Betriebssystemabhängigkeit im Kern. Lokale Rechte
-schützen nicht vor beliebigem Code desselben Benutzers oder einem bösartigen Provider-Plugin.
-Die tatsächliche Lock-Semantik ist auf beiden Plattformen durch separate Prozessproben zu belegen.
+**Rationale**: A real platform task without operating system dependency in the core. Local permissions
+do not protect against arbitrary code of the same user or a malicious provider plugin.
+The actual lock semantics are to be demonstrated on both platforms by separate process probes.
 
-**Alternatives considered**: DI-Singleton als vermeintliche Prozesssperre; systemd als
-Bibliotheksvoraussetzung; voreilige eigene Verschlüsselungs-/Credential-Infrastruktur.
+**Alternatives considered**: DI singleton as a supposed process lock; systemd as a
+library prerequisite; premature encryption/credential infrastructure of its own.
 
-Quellen: [FileStream.Lock](https://learn.microsoft.com/en-us/dotnet/api/system.io.filestream.lock),
+Sources: [FileStream.Lock](https://learn.microsoft.com/en-us/dotnet/api/system.io.filestream.lock),
 [UnixFileMode](https://learn.microsoft.com/en-us/dotnet/api/system.io.unixfilemode),
 [DirectorySecurity](https://learn.microsoft.com/en-us/dotnet/api/system.security.accesscontrol.directorysecurity).
 
-## R-08 — Versionierte Abhängigkeiten und Tests
+## R-08 — Versioned Dependencies and Tests
 
-**Decision**: Zentrale spätere Paketversionierung mit Lockfiles und gesperrtem Restore.
-Die folgenden konkreten Paketversionen und Lizenzangaben wurden über offizielle NuGet-
-Index-/Nuspec-Metadaten gelesen; Einführung und transitive Prüfung erfolgen erst bei Umsetzung.
+**Decision**: Central later package versioning with lock files and locked restore.
+The following concrete package versions and license information were read from official NuGet
+index/nuspec metadata; introduction and transitive checking only take place during implementation.
 
-| Paket | Version | Lizenz | Verwendung |
+| Package | Version | License | Use |
 | --- | --- | --- | --- |
-| Microsoft.Data.Sqlite | 10.0.14 | MIT | ausschließlich Storage.Sqlite |
-| Microsoft.Extensions.Logging.Abstractions | 10.0.14 | MIT | strukturierte Kern-Diagnosen ohne Host-Vorgabe |
-| Microsoft.NET.Test.Sdk | 18.11.0 | MIT | Testentwicklung |
-| xunit | 2.9.3 | Apache-2.0 | Testentwicklung |
-| xunit.runner.visualstudio | 3.1.5 | Apache-2.0 | VSTest-Ausführung |
+| Microsoft.Data.Sqlite | 10.0.14 | MIT | exclusively Storage.Sqlite |
+| Microsoft.Extensions.Logging.Abstractions | 10.0.14 | MIT | structured core diagnostics without host requirement |
+| Microsoft.NET.Test.Sdk | 18.11.0 | MIT | test development |
+| xunit | 2.9.3 | Apache-2.0 | test development |
+| xunit.runner.visualstudio | 3.1.5 | Apache-2.0 | VSTest execution |
 
-Provider verwenden HttpClient/System.Text.Json aus .NET 10; keine zusätzlichen Hersteller-SDKs
-oder automatischen Retry-Middleware-Pakete. Test-Agents und kontrollierte HttpMessageHandler
-ersetzen Live-Zugänge in deterministischen Tests. Reale Provider- und Plattformabnahme bleiben
-separate Gates; fehlende Zugangsdaten bedeuten NOT RUN, niemals PASS.
+Providers use HttpClient/System.Text.Json from .NET 10; no additional vendor SDKs
+or automatic retry middleware packages. Test agents and controlled HttpMessageHandlers
+replace live accesses in deterministic tests. Real provider and platform acceptance remain
+separate gates; missing credentials mean NOT RUN, never PASS.
 
-**Rationale**: Kleinere Abhängigkeitsfläche, kein eigener Agent-Loop, dieselben Verträge
-für Test- und reale Adapter. Kompatibilität der gesamten Test-Paketkombination wird nicht
-aus der bloßen Existenz ihrer NuGet-Metadaten abgeleitet.
+**Rationale**: Smaller dependency surface, no agent loop of its own, the same contracts
+for test and real adapters. Compatibility of the entire test package combination is not
+derived from the mere existence of their NuGet metadata.
 
-**Alternatives considered**: Floating-Versionen; zweites Testframework; komplettes
-Agent-Framework nur für zwei schmale native HTTP-Verträge.
+**Alternatives considered**: Floating versions; a second test framework; a complete
+agent framework only for two narrow native HTTP contracts.
 
-Quellen: offizielle Flatcontainer-Nuspecs unter
-`https://api.nuget.org/v3-flatcontainer/<paket>/<version>/<paket>.nuspec` für die obigen Pakete.
-Vor Freigabe zusätzlich tatsächliche native SQLite-Version, transitive Lizenzen und
-Vulnerabilities prüfen; kein Audit-/Sicherheitsnachweis ist bereits erbracht.
+Sources: official flat container nuspecs under
+`https://api.nuget.org/v3-flatcontainer/<paket>/<version>/<paket>.nuspec` for the packages above.
+Before release, additionally check the actual native SQLite version, transitive licenses and
+vulnerabilities; no audit/security evidence has been provided yet.
 
-## R-09 — Genehmigter offizieller Codemetr-CLI-Guard
+## R-09 — Approved Official Codemetr CLI Guard
 
-**Decision**: Der Projektverantwortliche hat den offiziellen CLI-Guard
-`Codemetr.CSharp.Tool` 0.1.0 mit Standardgrenzwerten ohne Debt-Baseline ausdrücklich
-genehmigt. Constitution v1.6.0 benennt diesen Prüfer statt einer unbestätigten
-Marketplace-Erweiterungsidentität. Das Tool ist lokal gepinnt und wiederhergestellt.
-Der Guard aus `codemetr/skills`, Commit `b3d1f948e536fe18903ed9e4fcad5962ec0e0a88`,
-Plugin 0.2.0, ist als OpenCode-Projektadaption `codemetr-guard` mit MIT-Lizenz eingebunden.
-Skill und Tool haben unabhängige Versionen; ein Skill ist keine automatische Durchsetzung.
+**Decision**: The project owner has explicitly approved the official CLI guard
+`Codemetr.CSharp.Tool` 0.1.0 with default thresholds without a debt baseline.
+Constitution v1.6.0 names this checker instead of an unconfirmed
+marketplace extension identity. The tool is pinned locally and restored.
+The guard from `codemetr/skills`, commit `b3d1f948e536fe18903ed9e4fcad5962ec0e0a88`,
+plugin 0.2.0, is integrated as the OpenCode project adaptation `codemetr-guard` with MIT license.
+Skill and tool have independent versions; a skill is not automatic enforcement.
 
-Für Q-01 sind Genehmigung und Setup in `evidence/codemetr-approval.md` dokumentiert.
-Die tatsächliche Prüfung jeder geänderten eigenen Klasse einschließlich Tests/Host mit
-Quellstandbezug und erneuter Prüfung nach Refactoring bleibt vor Codefreigabe zwingend.
-Full-Check: `dotnet tool run codemetr-csharp -- check --format json` vom Projektroot;
-CI unter Windows/Linux, Exit 1/2 und leere Messung blockieren. Keine Produktprüfung behauptet.
+For Q-01, approval and setup are documented in `evidence/codemetr-approval.md`.
+The actual check of every changed own class including tests/host with
+source revision reference and re-check after refactoring remains mandatory before code release.
+Full check: `dotnet tool run codemetr-csharp -- check --format json` from the project root;
+CI on Windows/Linux, exit 1/2 and an empty measurement block. No product check is claimed.
 
-Genehmigte CLI-Defaults, explizit in `codemetr.json` festgehalten:
-Typzeilen ≤600, Konstruktorparameter ≤6, öffentliche Methoden ≤10, Instanzfelder ≤8,
-Member-Komplexität ≤25, Maintainability Index ≥15, Kopplung ≤40, Vererbungstiefe ≤3,
-Memberparameter ≤7 und Verschachtelung ≤4. Benannte Klassen dürfen nach diesen Defaults
-unter anderem nicht auf Manager, Helper oder Processor enden.
+Approved CLI defaults, explicitly recorded in `codemetr.json`:
+type lines ≤600, constructor parameters ≤6, public methods ≤10, instance fields ≤8,
+member complexity ≤25, maintainability index ≥15, coupling ≤40, inheritance depth ≤3,
+member parameters ≤7 and nesting ≤4. Under these defaults, named classes MUST NOT,
+among other things, end in Manager, Helper or Processor.
 
-Das Paket dokumentiert analyze/check/baseline und maschinenlesbare Berichte. Syntax und
-vollständige Messabdeckung sind am gepinnten Paket zu prüfen; aktueller Repository-main
-belegt nicht dieselbe veröffentlichte Version. Partialtypen und unaufgelöste externe
-Referenzen sind explizite Messgrenzen. Kein Debt-Baseline-Import, um neue Befunde grün zu machen.
+The package documents analyze/check/baseline and machine-readable reports. Syntax and
+complete measurement coverage are to be verified on the pinned package; the current repository main
+does not prove the same published version. Partial types and unresolved external
+references are explicit measurement limits. No debt baseline import to turn new findings green.
 
-**Rationale**: Metriken unterstützen Review, ersetzen aber weder Tests noch einen
-identifizierten Pflichtprüfer. Unverifizierte Werkzeuge dürfen nicht als bestanden gelten.
+**Rationale**: Metrics support review but replace neither tests nor an
+identified mandatory checker. Unverified tools MUST NOT count as passed.
 
-**Alternatives considered**: CLI ohne Zustimmung als Marketplace-Erweiterung ausgeben;
-beliebige IDE-Metriken verwenden; reine Zahlenprüfung als SOLID-/Verhaltensnachweis behandeln.
+**Alternatives considered**: Passing off the CLI as a marketplace extension without consent;
+using arbitrary IDE metrics; treating a pure numbers check as SOLID/behavior evidence.
 
-Quellen: [NuGet 0.0.1](https://www.nuget.org/packages/Codemetr.CSharp.Tool/0.0.1),
-[Publisher-Quellen](https://github.com/codemetr/Codemetr.CSharp),
-[Skills-Marketplace](https://github.com/codemetr/skills).
+Sources: [NuGet 0.0.1](https://www.nuget.org/packages/Codemetr.CSharp.Tool/0.0.1),
+[Publisher sources](https://github.com/codemetr/Codemetr.CSharp),
+[Skills marketplace](https://github.com/codemetr/skills).
 
-Nacharbeit: [NuGet 0.1.0](https://www.nuget.org/packages/Codemetr.CSharp.Tool/0.1.0),
-[gepinntes Guard-Skill](https://github.com/codemetr/skills/blob/b3d1f948e536fe18903ed9e4fcad5962ec0e0a88/plugins/codemetr-csharp/skills/guard/SKILL.md).
-`dotnet tool restore` und `--help` erfolgreich ausgeführt. Der Root-Check liefert bei
-derzeit null C#-Dateien Exit 0; das ist nur ein Setupnachweis, keine Codefreigabe.
+Rework: [NuGet 0.1.0](https://www.nuget.org/packages/Codemetr.CSharp.Tool/0.1.0),
+[pinned guard skill](https://github.com/codemetr/skills/blob/b3d1f948e536fe18903ed9e4fcad5962ec0e0a88/plugins/codemetr-csharp/skills/guard/SKILL.md).
+`dotnet tool restore` and `--help` executed successfully. With currently zero C# files,
+the root check returns exit 0; this is only setup evidence, not a code release.
 
-## R-10 — Bewusste Abnahmegrenzen
+## R-10 — Deliberate Acceptance Limits
 
-**Decision**: Designentscheidungen sind getroffen; keine technische Auswahlfrage bleibt
-als unaufgelöster Platzhalter stehen. Nicht ausgeführte Nachweise werden als Gates geführt:
-Q-01 Codemetr-Freigabe, Q-02 reproduzierbarer Restore/Build/Audit, Q-03 plattformübergreifende
-FIFO-/Crash-/Lock-/Rechteproben, Q-04 reale native Sitzungen beider Hersteller,
-Q-05 NuGet-Konsum ohne Source-Referenzen. Das unbekannte Ratifikationsdatum der Constitution
-bleibt ein manuell zu bestätigendes Governance-TODO und wird nicht erfunden.
+**Decision**: Design decisions have been made; no technical selection question remains
+as an unresolved placeholder. Evidence not yet produced is tracked as gates:
+Q-01 Codemetr release, Q-02 reproducible restore/build/audit, Q-03 cross-platform
+FIFO/crash/lock/permission probes, Q-04 real native sessions of both vendors,
+Q-05 NuGet consumption without source references. The unknown ratification date of the constitution
+remains a governance TODO to be confirmed manually and is not invented.
 
-**Rationale**: Ein Plan darf zukünftige Prüfarbeit festlegen, aber keinen grünen Build,
-Live-Zugang oder eine freigegebene Governance-Baseline behaupten.
+**Rationale**: A plan may define future verification work but MUST NOT claim a green build,
+live access or an approved governance baseline.
 
-**Alternatives considered**: Entwurfsprüfung mit Produktfreigabe gleichsetzen;
-fehlende Live-Zugänge über Fake-Ergebnisse verbergen.
+**Alternatives considered**: Equating design review with product release;
+hiding missing live accesses behind fake results.
 
-## R-11 — Langfristiger konsumierender Zielhost
+## R-11 — Long-Term Consuming Target Host
 
-**Decision**: SharpClaw soll die Bibliothek langfristig im eigenen Prozess als
-NuGet-Abhängigkeit nutzen. Diese explizite Produktanforderung wird über die vorhandene
-öffentliche Host-/Providergrenze und einen isolierten Konsumnachweis berücksichtigt.
-Es entsteht weder eine umgekehrte Bibliotheksabhängigkeit noch ein obligatorischer
-zusätzlicher Multisession-Service. Keine erneute Übernahme temporärer Rechercheunterlagen.
+**Decision**: SharpClaw is to use the library in the long term in its own process as a
+NuGet dependency. This explicit product requirement is taken into account via the existing
+public host/provider boundary and an isolated consumption proof.
+Neither a reverse library dependency nor a mandatory
+additional multisession service is created. No renewed adoption of temporary research material.
 
-**Rationale**: Der gewünschte produktive Konsument soll keine Bibliotheksinternas
-oder Quellcodekopien benötigen. Er kann eigene Provideradapter registrieren und
-Lebenszyklus sowie Konfiguration weiter selbst verantworten. FR-027 und SC-011
-prüfen diese Voraussetzung ohne vorschnelle Eingriffe in die konsumierende Anwendung.
+**Rationale**: The intended productive consumer is not to require library internals
+or source code copies. It can register its own provider adapters and
+continue to be responsible for lifecycle and configuration itself. FR-027 and SC-011
+check this prerequisite without premature intervention in the consuming application.
 
-**Alternatives considered**: Anwendungsspezifischer Fork, direkte Source-Referenzen,
-Zwang zu einem separaten Service oder sofortige vollständige Bestandsmigration.
-Die tatsächliche Integration und Übernahme bestehender Sitzungen sind ein eigenes
-späteres Vorhaben; es wird kein Kompatibilitätsnachweis aus Dokumentation allein abgeleitet.
+**Alternatives considered**: Application-specific fork, direct source references,
+forcing a separate service or immediate complete migration of existing state.
+The actual integration and adoption of existing sessions are a separate
+later project; no compatibility evidence is derived from documentation alone.
 
-## R-12 — Erneute Planung mit verbindlichem TDD
+## R-12 — Renewed Planning with Mandatory TDD
 
-**Decision**: Constitution v1.6.0 ist die verbindliche Grundlage. Bestehende
-Anforderungen einschließlich FR-027 werden testgetrieben umgesetzt: ausführbaren
-Verhaltenstest zuerst fachlich rot beobachten, minimale Implementierung bis Green,
-danach Refactoring mit grünen Regressionstests und erneuter Codemetr-Prüfung.
-Der Plan ordnet TDD-01–TDD-07 den Anforderungen und Erfolgskriterien zu.
+**Decision**: Constitution v1.6.0 is the binding basis. Existing
+requirements including FR-027 are implemented test-driven: first observe an executable
+behavior test as functionally red, minimal implementation until Green,
+then refactoring with green regression tests and a renewed Codemetr check.
+The plan maps TDD-01–TDD-07 to the requirements and success criteria.
 
-**Rationale**: Dies ist eine ausdrückliche Nutzer-/Governance-Entscheidung, keine neue
-Technikoption. Die vorhandenen Provider-Fakes, kontrollierten HTTP-Verträge und echten
-temporären SQLite-/Prozessproben ermöglichen Red ohne produktive Credentials.
-Ein nicht kompilierender Test, eine fehlende Bibliothek oder ein fehlender API-Key
-ist kein fachlicher Red-Nachweis. Echte Hersteller-, Paket- und Zielplattformabnahme
-bleiben zusätzliche Nachweise nach deterministischem Green.
+**Rationale**: This is an explicit user/governance decision, not a new
+technology option. The existing provider fakes, controlled HTTP contracts and real
+temporary SQLite/process probes enable Red without production credentials.
+A non-compiling test, a missing library or a missing API key
+is not functional Red evidence. Real vendor, package and target platform acceptance
+remain additional evidence after deterministic Green.
 
-**Alternatives considered**: Tests erst nach kompletter Implementierung; nur ein grüner
-CI-Lauf am Ende; Live-Providerfehler als scheinbarer Red-Ersatz; künstlich rote Tests
-für rein verhaltenserhaltende Refactorings. Diese Alternativen erfüllen die Vorgabe nicht.
+**Alternatives considered**: Tests only after complete implementation; only one green
+CI run at the end; live provider errors as an apparent Red substitute; artificially red tests
+for purely behavior-preserving refactorings. These alternatives do not fulfill the requirement.
 
-Q-06 hält Testkennung, Befehl, Quellstand/Hash, beobachteten Red-Grund und anschließendes
-Green fest. Die vorangegangenen Technikentscheidungen bleiben nach erneuter Bewertung
-geeignet; ein weiterer Anbieter-/Frameworkvergleich ist durch TDD nicht nötig.
-Die Quelle dieser Entscheidung ist die aktualisierte Projekt-Constitution und der
-ausdrückliche Nutzerauftrag. In diesem erneuten Planungslauf wurden keine Testquellen,
-Produktivdateien oder künstlichen Red-/Green-Protokolle erzeugt und keine Tests ausgeführt.
+Q-06 records test identifier, command, source revision/hash, observed Red reason and subsequent
+Green. After re-evaluation, the preceding technical decisions remain
+suitable; a further vendor/framework comparison is not necessary due to TDD.
+The source of this decision is the updated project constitution and the
+explicit user instruction. In this renewed planning run, no test sources,
+production files or artificial Red/Green records were created and no tests were executed.
 
-## R-13 — Nachgeholter Abgleich mit dem aktuellen Zielkonsumenten
+## R-13 — Retroactive Reconciliation with the Current Target Consumer
 
-**Quellstand**: SharpClaw `origin/main`, Commit
-`71d3cbe731ff5f94a113aaf82584daad8eccbedd`, am 2026-10-27 per Fast-forward
-aktualisiert. Sauberer Arbeitsbaum vor und nach dem Update. Nur versionierte Quellen,
-Dokumentation und Tests gelesen; keine Instanzdaten, Anmeldungen oder Sitzungslogs.
-Keine SharpClaw-Quellen geändert und keine SharpClaw-Tests oder Agenten ausgeführt.
+**Source revision**: SharpClaw `origin/main`, commit
+`71d3cbe731ff5f94a113aaf82584daad8eccbedd`, updated by fast-forward on 2026-10-27.
+Clean working tree before and after the update. Only versioned sources,
+documentation and tests read; no instance data, sign-ins or session logs.
+No SharpClaw sources changed and no SharpClaw tests or agents executed.
 
-**Befunde**:
+**Findings**:
 
-- Der Host konsumiert `IAgentBackend.ExecuteAsync(RunContext, prompt, observe,
-  cancellationToken)`. CLI-Protokolle implementieren `ICliProtocol` und werden über
-  `CliBackend` mit einem gemeinsamen Prozessrunner ausgeführt; SDK-Backends können
-  unmittelbar `IAgentBackend` implementieren. Der aktuelle Pluginvertrag ist Version 3.
-- Die Registry wählt registrierte Backends über technische IDs und Polymorphie;
-  unbekannte/doppelte IDs werden abgewiesen. Gebündelt sind Codex, Grok und Claude.
-  Im geprüften C#-Quellstand wurde kein eigener Gemini-/OpenAI-REST-Adapter gefunden.
-  Codex ist ein Agent-CLI-Protokoll, nicht gleichbedeutend mit der Responses-Modell-API.
-- Das externe OpenCode-Protokollplugin übergibt das konfigurierte `provider/model`
-  unverändert und verwendet für Fortsetzung die gespeicherte opaque `ses_…`-Kennung.
-  Es kennt keine OpenAI-/Gemini-Verzweigung. Der Quellstand pinnt ausdrücklich OpenCode
-  **1.19.0**; das ist kein Nachweis für Kompatibilität mit der aktuellen OpenCode-V2-API.
-- Sitzungen binden Backend, Workspace, Modell und native ID. Der Host speichert
-  Attempted vor Ausführung, beobachtete native IDs vor weiterer Nutzung und verweigert
-  einen unerwarteten Identitätswechsel. Abschluss erfordert terminales Erfolgssignal
-  zusätzlich zu Exitcode 0; Tool-Zwischenschritte sind kein Abschluss.
-- Die vorhandenen OpenCode-Tests beschreiben identische Session bei Folgeauftrag,
-  Ablehnung falscher Version, fehlender/wechselnder ID und falscher Erfolgssignale.
-  Diese Tests wurden gelesen, nicht ausgeführt. Der vorhandene RunHost nutzt
-  Linux-/systemd-Prozessmechanismen; er ist keine Windows-Abnahme der neuen Bibliothek.
+- The host consumes `IAgentBackend.ExecuteAsync(RunContext, prompt, observe,
+  cancellationToken)`. CLI protocols implement `ICliProtocol` and are executed via
+  `CliBackend` with a shared process runner; SDK backends can
+  implement `IAgentBackend` directly. The current plugin contract is version 3.
+- The registry selects registered backends via technical IDs and polymorphism;
+  unknown/duplicate IDs are rejected. Bundled are Codex, Grok and Claude.
+  No dedicated Gemini/OpenAI REST adapter was found in the examined C# source revision.
+  Codex is an agent CLI protocol, not equivalent to the Responses model API.
+- The external OpenCode protocol plugin passes the configured `provider/model`
+  unchanged and uses the stored opaque `ses_…` identifier for continuation.
+  It knows no OpenAI/Gemini branching. The source revision explicitly pins OpenCode
+  **1.19.0**; this is no evidence of compatibility with the current OpenCode V2 API.
+- Sessions bind backend, workspace, model and native ID. The host stores
+  Attempted before execution, observed native IDs before further use and refuses
+  an unexpected identity change. Completion requires a terminal success signal
+  in addition to exit code 0; intermediate tool steps are not completion.
+- The existing OpenCode tests describe an identical session for a follow-up job,
+  rejection of a wrong version, a missing/changing ID and false success signals.
+  These tests were read, not executed. The existing RunHost uses
+  Linux/systemd process mechanisms; it is not a Windows acceptance of the new library.
 
-**Auswirkung auf den bisherigen Entwurf**: FR-027 verlangt einen echten
-Einbettungsfähigkeitsnachweis. Ein beliebiger Testadapter plus zwei Modell-REST-Adapter
-belegen nicht, dass der Ausführungs-, Ereignis-, Workspace- und Fortsetzungsvertrag
-eines vorhandenen Agent-Backends darstellbar ist. Reine Modellanfrage und Agentauftrag
-dürfen nicht gleichgesetzt werden; die Bibliothek darf die fehlende Werkzeug-/Agent-
-Laufzeit gemäß Umfangsvorgabe auch nicht selbst nachbauen.
+**Impact on the previous design**: FR-027 requires real
+embeddability evidence. An arbitrary test adapter plus two model REST adapters
+do not prove that the execution, event, workspace and continuation contract
+of an existing agent backend can be represented. A plain model request and an agent job
+MUST NOT be equated; according to the scope requirement, the library also MUST NOT itself rebuild the missing tool/agent
+runtime.
 
-**Offene Entwurfsprüfung vor fachlicher Implementierung**: Die generische Adaptergrenze
-muss Agent-Backends neben Modellzugängen tatsächlich darstellen können, insbesondere
-Workspace, stabile native ID, Abschluss-/Fehlersignal, Abbruch und ungewisse Übergabe.
-Den bestehenden ISessionProvider-/ProviderReply-Entwurf dagegen abgleichen und passende
-Vertragsfälle vor Green ergänzen. Direkte OpenAI-/Gemini-Anbindungen sind damit keine
-bereits bestätigte Integrationslösung für den Zielhost. Die Wahl einer zwingenden
-OpenCode-Laufzeit würde zudem FR-022 ändern und wird hier nicht still vorgenommen.
+**Open design review before functional implementation**: The generic adapter boundary
+must actually be able to represent agent backends alongside model accesses, in particular
+workspace, stable native ID, completion/error signal, cancellation and uncertain handover.
+Reconcile the existing ISessionProvider/ProviderReply design against this and add suitable
+contract cases before Green. Direct OpenAI/Gemini connections are thus not an
+already confirmed integration solution for the target host. Choosing a mandatory
+OpenCode runtime would moreover change FR-022 and is not done silently here.
 
-Die Abhängigkeitsrichtung bleibt Zielhost → Bibliothek. Keine Quellcodekopien,
-projektübergreifenden Source-Referenzen, Bestandsmigration oder Änderungen laufender
-nativer Sitzungen. Die bisherige Aussage vollständiger Implementierungsbereitschaft
-ist bis zu diesem Vertragsabgleich ausdrücklich eingeschränkt.
+The dependency direction remains target host → library. No source code copies,
+cross-project source references, migration of existing state or changes to running
+native sessions. The previous statement of complete implementation readiness
+is explicitly restricted until this contract reconciliation.
 
-## R-14 — Generischer Vertrag statt Gleichsetzung von Agent und Modell
+## R-14 — Generic Contract Instead of Equating Agent and Model
 
-**Decision**: `ISessionProvider` bleibt eine transportneutrale Adaptergrenze. Ergänzt
-werden explizite Fähigkeiten und ExecutionKind, eingefrorener Workspace-Kontext,
-awaitable Session-/Operationsbeobachtungen und ein bestätigter terminaler Reply.
-Konkrete Abbildung und zuerst zu schreibende Vertragsfälle stehen in
-provider-contract.md §8 und public-api.md §9. HTTP-Endpointkonfiguration bleibt beim
-HTTP-Adapter; sie ist kein Pflichtfeld hosteigener CLI-/SDK-Backends.
+**Decision**: `ISessionProvider` remains a transport-neutral adapter boundary. Added
+are explicit capabilities and ExecutionKind, frozen workspace context,
+awaitable session/operation observations and a confirmed terminal reply.
+Concrete mapping and contract cases to be written first are in
+provider-contract.md §8 and public-api.md §9. HTTP endpoint configuration remains with the
+HTTP adapter; it is not a mandatory field of host-owned CLI/SDK backends.
 
-Der Projektverantwortliche hat **OpenCode 1.19.0 ausdrücklich beibehalten**.
-Diese konkrete Referenz ersetzt für den Referenzadapter jede unbestätigte Annahme
-neuerer V2-Verträge. OpenCode bleibt optional, da FR-022 keine Pflichtlaufzeit erlaubt.
-Die bereits geplanten nativen Modelladapter sind explizit Modellzugänge, kein Ersatz
-für einen zugesicherten Agentauftrag. Eigene Tools/Compaction bleiben ausgeschlossen.
+The project owner has **explicitly retained OpenCode 1.19.0**.
+For the reference adapter, this concrete reference replaces any unconfirmed assumption
+about newer V2 contracts. OpenCode remains optional, since FR-022 permits no mandatory runtime.
+The already planned native model adapters are explicitly model accesses, not a substitute
+for a guaranteed agent job. Own tools/compaction remain excluded.
 
-**Rationale**: Eine generische Registrierungsgrenze kann sowohl bestehende Agent-
-Backends als auch Modellprotokolle aufnehmen, ohne im Kern Produktnamen zu prüfen
-oder eine Agent-Laufzeit nachzubauen. Stabile native Identität und wechselnde
-Fortsetzung bleiben getrennt; Beobachtungscallbacks bewahren die Persistenzgrenze.
+**Rationale**: A generic registration boundary can accommodate both existing agent
+backends and model protocols without checking product names in the core
+or rebuilding an agent runtime. Stable native identity and changing
+continuation remain separate; observation callbacks preserve the persistence boundary.
 
-**Alternatives**: OpenCode als einzige Pflichtlaufzeit (verletzt FR-022); Modellantwort
-als Agentabschluss behandeln (verletzt Constitution II); Sourceabhängigkeit zum
-Zielhost (verletzt FR-027). Tatsächliche Tests/Konsumabnahmen bleiben ausdrücklich offen.
+**Alternatives**: OpenCode as the only mandatory runtime (violates FR-022); treating a model response
+as agent completion (violates Constitution II); source dependency on the
+target host (violates FR-027). Actual tests/consumption acceptances explicitly remain open.
 
-## R-15 — Erneuter Abgleich nach Änderungen im Zielhost (2026-10-28)
+## R-15 — Renewed Reconciliation after Changes in the Target Host (2026-10-28)
 
-Aktueller geladener SharpClaw-Stand: `7854a122218382156789d520b0a00f2060b1f8f3`.
-Der Vergleich seit R-13 bestätigt unveränderte Backend-/Session-/Pluginverträge und
-weiterhin OpenCode 1.19.0. Neu sind insbesondere explizite Fleet-Recovery,
-aufgabenspezifische Beobachtung, deklarierte Ausgabepfade und hashgebundene unveränderliche
-Kontextquellen. Diese Funktionen bleiben Hostverantwortung, keine neue Multisession-
-Abhängigkeit oder Lizenz zum Nachbau einer Agent-Laufzeit. Vorbereitete Eingaben werden
-unverändert angenommen, nicht durch erneutes Lesen mutierbarer Kontextdateien ersetzt.
-Commit, Dateihashes, Deep-Dive-Befunde, Regressionsrisiken und nächster begrenzter
-Testplan sind in `evidence/architecture/2026-10-28-sharpclaw-refresh-request-admission.md`
-vor Umsetzung dokumentiert. Quellanalyse ist keine neue Binär-/Live-/Migrationsabnahme.
+Current loaded SharpClaw revision: `7854a122218382156789d520b0a00f2060b1f8f3`.
+The comparison since R-13 confirms unchanged backend/session/plugin contracts and
+still OpenCode 1.19.0. New are in particular explicit fleet recovery,
+task-specific observation, declared output paths and hash-bound immutable
+context sources. These functions remain host responsibility, not a new multisession
+dependency or license to rebuild an agent runtime. Prepared inputs are
+accepted unchanged, not replaced by re-reading mutable context files.
+Commit, file hashes, deep-dive findings, regression risks and the next bounded
+test plan are documented in `evidence/architecture/2026-10-28-sharpclaw-refresh-request-admission.md`
+before implementation. Source analysis is not a new binary/live/migration acceptance.

@@ -1,283 +1,283 @@
-# Data Model: Agent-Multisession
+# Data Model: Agent Multisession
 
-**Datum**: 2026-10-27 | **Basis**: [spec.md](spec.md)
+**Date**: 2026-10-27 | **Basis**: [spec.md](spec.md)
 
-**Erneute Designprüfung**: Constitution v2.0.0; konkretisierte Dispatch-/Recovery-/
-Annahme-/Pagingprojektionen gemäß [contracts/orchestration-details.md](contracts/orchestration-details.md).
-Ihre Validierung und Zustandsübergänge werden in TDD-01/TDD-03/TDD-04 zuerst durch
-fachlich fehlschlagende Tests erfasst; Persistenzverhalten folgt erst danach.
+**Renewed design review**: Constitution v2.0.0; concretized dispatch/recovery/
+admission/paging projections according to [contracts/orchestration-details.md](contracts/orchestration-details.md).
+Their validation and state transitions are first captured in TDD-01/TDD-03/TDD-04 by
+functionally failing tests; persistence behavior follows only afterwards.
 
-## Verantwortungsgrenze
+## Responsibility Boundary
 
-Gespeichert werden Verwaltung, Zuordnung und beobachtete Ein-/Ausgaben von Sitzungen.
-Der lokale Verlauf ist ein Nachweis, keine Aufforderung, Provider-Kontext selbst nachzubauen.
-Werkzeuge, Agent-Schleifen, Zusammenfassungen und Modell-Kontextbudgets sind kein eigenes Datenmodell.
+What is stored is the management, assignment and observed inputs/outputs of sessions.
+The local history is evidence, not a request to rebuild provider context oneself.
+Tools, agent loops, summaries and model context budgets are not a data model of their own.
 
-Ein Zustandsspeicher gehört genau einem Vertrauensbereich und genau einer aktiven
-Manager-Instanz. Ein zweiter Besitzer desselben Speichers wird abgewiesen. Getrennte
-Instanzen verwenden getrennte Speicher. Globale veränderliche Register sind unzulässig.
+A state store belongs to exactly one trust domain and exactly one active
+manager instance. A second owner of the same store is rejected. Separate
+instances use separate stores. Global mutable registries are impermissible.
 
-## Entitäten
+## Entities
 
-### ProviderRegistration und AgentProfile
+### ProviderRegistration and AgentProfile
 
-| Feld | Bedeutung und Prüfung |
+| Field | Meaning and validation |
 | --- | --- |
-| ProviderId | Nicht leere, ordinal verglichene technische ID; je Instanz eindeutig |
-| AdapterId / ContractVersion | Ausdrücklich registrierte Implementierung und Vertragsversion |
-| Adapterinstanz / Capabilities | Explizit registrierte Ausführung und typisierte Fähigkeiten; keine Auswahl über Produktnamen |
-| Endpoint (nur HTTP-Adapteroption) | Absolute freigegebene HTTPS-Adresse; HTTP nur explizit für lokale Tests; kein Pflichtfeld generischer Backends |
-| CredentialReference | Referenz auf hostseitigen Resolver; kein Geheimnis im Sitzungszustand |
-| AgentProfileId | Eindeutige benannte Agent-Konfiguration |
-| ModelId | Vom Host gewählte opaque Modell-/Deploymentkennung; keine erfundene Modellliste |
-| ExecutionKind | Explizit AgentTask oder ModelResponse; muss von Adapterfähigkeiten unterstützt sein |
-| SettingsRevision | Unveränderlicher Snapshot kontextrelevanter Einstellungen ohne Zugangsdaten |
+| ProviderId | Non-empty, ordinally compared technical ID; unique per instance |
+| AdapterId / ContractVersion | Explicitly registered implementation and contract version |
+| Adapter instance / Capabilities | Explicitly registered execution and typed capabilities; no selection via product names |
+| Endpoint (HTTP adapter option only) | Absolute approved HTTPS address; HTTP only explicitly for local tests; not a mandatory field of generic backends |
+| CredentialReference | Reference to a host-side resolver; no secret in the session state |
+| AgentProfileId | Unique named agent configuration |
+| ModelId | Opaque model/deployment identifier chosen by the host; no invented model list |
+| ExecutionKind | Explicitly AgentTask or ModelResponse; must be supported by the adapter capabilities |
+| SettingsRevision | Immutable snapshot of context-relevant settings without credentials |
 
-Provider-Registrierungen sind normale vom Host zusammengestellte Objekte, kein eigener
-DLL-Download-, Discovery- oder Plugin-Marktplatz. Gleiche IDs mit verschiedener Bedeutung
-sind ein Konfigurationsfehler. Geheimnisse werden nur beim tatsächlichen Aufruf aufgelöst.
+Provider registrations are normal objects assembled by the host, not a DLL download,
+discovery or plugin marketplace of its own. Identical IDs with different meanings
+are a configuration error. Secrets are only resolved at the actual call.
 
 ### Session
 
-| Feld | Bedeutung und Prüfung |
+| Field | Meaning and validation |
 | --- | --- |
-| SessionId | Lokal erzeugte UUID; unveränderliche öffentliche Identität |
-| ProviderId / AgentProfileId / ModelId | Bei Erstellung festgehaltene Zuordnung |
-| SettingsSnapshot / SettingsRevision | Für Wiederaufnahme erforderliche zulässige Einstellungen |
-| ExecutionContext | Eingefrorener optionaler absoluter WorkspaceDirectory und kanonischer WorkspaceKey; gemäß Adapterfähigkeiten prüfen |
-| ProviderBinding | Versionierter providerdefinierter Sitzungsbezug, siehe unten |
-| BindingRevision | Ab 0 monoton erhöhter bestätigter Fortsetzungsstand; kein Ersatz für opaque native Kennungen |
+| SessionId | Locally generated UUID; immutable public identity |
+| ProviderId / AgentProfileId / ModelId | Assignment recorded at creation |
+| SettingsSnapshot / SettingsRevision | Permissible settings required for resumption |
+| ExecutionContext | Frozen optional absolute WorkspaceDirectory and canonical WorkspaceKey; validate according to adapter capabilities |
+| ProviderBinding | Versioned provider-defined session reference, see below |
+| BindingRevision | Confirmed continuation state increased monotonically from 0; no substitute for opaque native identifiers |
 | Lifecycle | Opening, Open, Closing, Closed |
 | BlockReason | None, RecoveryRequired, ProviderUnavailable, StorageFailure |
-| NextSequence | Monotone nächste Annahmenummer innerhalb der Sitzung |
-| CreatedUtc / UpdatedUtc | Eindeutige UTC-Zeitpunkte |
-| ClosedUtc | Nur für Closed gesetzt |
+| NextSequence | Monotonic next acceptance number within the session |
+| CreatedUtc / UpdatedUtc | Unambiguous UTC points in time |
+| ClosedUtc | Set only for Closed |
 
-Lifecycle und Blockierung sind getrennt: Eine offene Sitzung kann durch ungewisse Arbeit
-blockiert sein, ohne als geschlossen oder erfolgreich wiederhergestellt zu gelten.
-Ein anderer Provider oder ein anderes Modell erfordert eine neue Sitzung.
+Lifecycle and blocking are separate: an open session can be blocked by uncertain work
+without counting as closed or successfully recovered.
+A different provider or a different model requires a new session.
 
-**ProviderBinding** enthält einen optional erst bei der ersten Übergabe bekannten nativen
-Sitzungsbezug und einen separaten, versionierten Fortsetzungsstand. Ein unveränderlicher
-Sitzungsbezug ist nicht dasselbe wie ein sich nach jeder Antwort ändernder Fortsetzungstoken.
-Nur der Adapter interpretiert diese Daten. Keine Zugangsdaten, ausführbaren Typnamen oder
-beliebige vom Modell gelieferte Deserialisierungsanweisungen speichern.
+**ProviderBinding** contains a native session reference that is optionally known only at the
+first handover and a separate, versioned continuation state. An immutable
+session reference is not the same as a continuation token that changes after every response.
+Only the adapter interprets this data. Do not store credentials, executable type names or
+arbitrary deserialization instructions supplied by the model.
 
-Fehlt der externe Bezug nach einer möglicherweise ausgeführten ersten Anfrage, wird die
-Sitzung blockiert. Es wird nicht einfach eine neue native Sitzung angelegt.
+If the external reference is missing after a possibly executed first request, the
+session is blocked. A new native session is not simply created.
 
 ### Request
 
-| Feld | Bedeutung und Prüfung |
+| Field | Meaning and validation |
 | --- | --- |
-| RequestId | Lokal erzeugte UUID; genau einer Sitzung zugeordnet |
-| SessionId / Sequence | Fremdschlüssel und eindeutige Annahmereihenfolge je Sitzung |
-| Input | Unveränderte Textnachricht; nicht leer; Größenlimit in UTF-8-Bytes |
-| WorkspaceKey | Optionaler, vom Host deklarierter Arbeitsbereichsschlüssel |
-| Timeout | Endliche Ausführungsfrist; beginnt beim tatsächlichen Dispatch |
-| State | Queued, Running, Succeeded, Failed, Cancelled, TimedOut oder Interrupted |
-| ExecutionCertainty | NotStarted, InProgress, ConfirmedEnded oder Unknown |
-| AcceptedUtc / StartedUtc / EndedUtc | Lebenszykluszeitpunkte |
-| CancellationRequestedUtc | Getrennte Absicht, kein Beweis der externen Beendigung |
-| DispatchId | Persistierte UUID des einzigen erlaubten Dispatch-Versuchs |
-| BindingRevision | Fortsetzungsstand, gegen den die Anfrage gestartet wurde |
+| RequestId | Locally generated UUID; assigned to exactly one session |
+| SessionId / Sequence | Foreign key and unique acceptance order per session |
+| Input | Unchanged text message; not empty; size limit in UTF-8 bytes |
+| WorkspaceKey | Optional workspace key declared by the host |
+| Timeout | Finite execution deadline; begins at the actual dispatch |
+| State | Queued, Running, Succeeded, Failed, Cancelled, TimedOut or Interrupted |
+| ExecutionCertainty | NotStarted, InProgress, ConfirmedEnded or Unknown |
+| AcceptedUtc / StartedUtc / EndedUtc | Lifecycle points in time |
+| CancellationRequestedUtc | Separate intent, no proof of external termination |
+| DispatchId | Persisted UUID of the only permitted dispatch attempt |
+| BindingRevision | Continuation state against which the request was started |
 
-Nur Queued zählt als wartend; Reservierungen einschließlich ungewisser Ausführungen
-zählen bis zur Klärung als belegte Ausführungskapazität. Abgewiesene Anfragen erhalten
-keine Annahmebestätigung und keinen Platz in der dauerhaften Warteschlange.
+Only Queued counts as waiting; reservations including uncertain executions
+count as occupied execution capacity until resolved. Rejected requests receive
+no acceptance confirmation and no place in the durable queue.
 
-Annahme erfolgt erst nach erfolgreichem Commit. Ein Aufruferabbruch nach Commit macht
-die Annahme nicht rückwirkend unwirksam. Bei verlorener Bestätigung bleibt die Anfrage
-abfragbar; es gibt keine automatische Deduplizierung eines neuen Einreichens.
+Acceptance takes place only after a successful commit. A caller cancellation after commit does not
+retroactively invalidate the acceptance. If the confirmation is lost, the request remains
+queryable; there is no automatic deduplication of a new submission.
 
-Zulässige Kombinationen: Queued/NotStarted; Running/InProgress; Succeeded/ConfirmedEnded;
-Failed, Cancelled oder TimedOut mit NotStarted, ConfirmedEnded oder Unknown entsprechend
-dem tatsächlichen Übergabestatus; Interrupted zunächst mit Unknown. InProgress bedeutet
-laufender lokaler Dispatchversuch, nicht bereits bewiesene Annahme beim Hersteller.
-Nach einem lokalen Endzustand mit Unknown bleibt die Reservierung bestehen. Eine spätere
-Recovery darf die Gewissheit auf ConfirmedEnded ändern, nicht den historischen Endzustand
-zu einem behaupteten Erfolg machen. Sitzungs-Lifecycle und BlockReason sind keine Anfragezustände.
+Permissible combinations: Queued/NotStarted; Running/InProgress; Succeeded/ConfirmedEnded;
+Failed, Cancelled or TimedOut with NotStarted, ConfirmedEnded or Unknown according to
+the actual handover status; Interrupted initially with Unknown. InProgress means a
+running local dispatch attempt, not an already proven acceptance at the vendor.
+After a local final state with Unknown, the reservation persists. A later
+recovery may change the certainty to ConfirmedEnded, but MUST NOT turn the historical final state
+into a claimed success. Session lifecycle and BlockReason are not request states.
 
-### RequestResult und HistoryEntry
+### RequestResult and HistoryEntry
 
-| Feld | Bedeutung und Prüfung |
+| Field | Meaning and validation |
 | --- | --- |
-| RequestId | Ein öffentliches finales lokales Ergebnis je Anfrage |
+| RequestId | One public final local result per request |
 | Outcome | Succeeded, Failed, Cancelled, TimedOut, Interrupted |
-| FailureCode | Stabile Kategorie; optional providerbezogener, bereinigter Code |
-| ExecutionCertainty | Ergebnis der tatsächlichen Beendigungsbeobachtung |
-| Output | Vom Provider gemeldete endgültige Textausgabe, nicht selbst generierte Ersatzantwort |
-| OutputComplete | Wahr nur bei vollständig im zulässigen Größenlimit erfasster Ausgabe |
-| ProviderReference | Nicht geheime externe Belegkennung, sofern verfügbar |
-| CompletedUtc | UTC-Zeitpunkt |
-| HistoryOrdinal / HistoryId (HistoryEntry) | Monotone sitzungsbezogene Einfügeordnung und lokale UUID je Historieneintrag |
+| FailureCode | Stable category; optionally a provider-related, sanitized code |
+| ExecutionCertainty | Result of the actual termination observation |
+| Output | Final text output reported by the provider, not a self-generated substitute response |
+| OutputComplete | True only for output captured completely within the permissible size limit |
+| ProviderReference | Non-secret external evidence identifier, if available |
+| CompletedUtc | UTC point in time |
+| HistoryOrdinal / HistoryId (HistoryEntry) | Monotonic session-related insertion order and local UUID per history entry |
 
-HistoryEntry ordnet Eingabe, Ausgabe und Betriebsereignisse über SessionId, RequestId
-und Sequence zu. Eine Ausgabe oberhalb MaxOutputBytes wird mit Failed/OutputLimitExceeded
-ohne gekürzten Erfolgsinhalt erfasst; vorhandene Historie bleibt unverändert. Für diesen
-Fehler bleibt Output leer und OutputComplete=false. Bei regulär vollständiger Ausgabe
-gilt OutputComplete=true. Kann der externe Abschluss nicht bestätigt werden, ist zusätzlich
-Unknown mit erhaltener Reservierung erforderlich. Eine Provider-Kontextgrenze ist ebenfalls
-ein Fehler, keine Berechtigung, vorhandene Einträge zu verkürzen oder zu verdichten.
+HistoryEntry assigns input, output and operational events via SessionId, RequestId
+and Sequence. An output above MaxOutputBytes is recorded with Failed/OutputLimitExceeded
+without truncated success content; existing history remains unchanged. For this
+error, Output remains empty and OutputComplete=false. For regularly complete output,
+OutputComplete=true applies. If the external completion cannot be confirmed, Unknown
+with a retained reservation is additionally required. A provider context limit is likewise
+an error, not an authorization to shorten or compact existing entries.
 
-Die lokale Historie umfasst die über diese Bibliothek beobachteten Inhalte. Bereits
-herstellerseitig existierende oder durch dessen interne Werkzeuge entstandene Inhalte
-werden nicht als vollständig lokal vorhanden behauptet.
+The local history comprises the contents observed via this library. Contents
+already existing at the vendor or created by its internal tools
+are not claimed to be completely present locally.
 
 ### ExecutionReservation
 
-| Feld | Bedeutung und Prüfung |
+| Field | Meaning and validation |
 | --- | --- |
-| DispatchId / RequestId | Eindeutige Zuordnung zum tatsächlich reservierten Versuch |
-| SessionId | Höchstens eine unfreigegebene Reservierung je Sitzung |
-| WorkspaceKey | Höchstens eine unfreigegebene schreibende Reservierung je Schlüssel |
-| ReservedUtc | Vor externem Start gesichert |
-| ReleaseReason / ReleasedUtc | Erst nach bestätigtem Ende oder ausdrücklicher Klärung |
+| DispatchId / RequestId | Unambiguous assignment to the actually reserved attempt |
+| SessionId | At most one unreleased reservation per session |
+| WorkspaceKey | At most one unreleased writing reservation per key |
+| ReservedUtc | Saved before external start |
+| ReleaseReason / ReleasedUtc | Only after confirmed end or explicit resolution |
 
-Für einen schreibenden Auftrag ist WorkspaceKey verpflichtend; die Bibliothek ermittelt
-nicht selbst aus Modelltexten, auf welche Dateien ein Agent zugreifen könnte. Der Host
-liefert konsistente kanonische Schlüssel für gemeinsame Arbeitsbereiche. Ein ungeklärter
-Auftrag hält die zugehörige Reservierung auch nach einem Neustart.
+For a writing job, WorkspaceKey is mandatory; the library does not itself determine
+from model texts which files an agent could access. The host
+supplies consistent canonical keys for shared workspaces. An unresolved
+job holds the associated reservation even after a restart.
 
-### ReservedDispatch und RequestAcceptance
+### ReservedDispatch and RequestAcceptance
 
-ReservedDispatch ist der transaktional mit der Reservierung gespeicherte Ausführungssnapshot
-aus Reservation, Session, Submission, Sequence und BindingRevision. GetReservedDispatchAsync
-liest ihn ohne Provider-I/O; Freigabe/fehlender Auftrag berechtigt nicht zum Send. Prüfung,
-Bindingsfortschreibung und Completion-CAS stehen in orchestration-details.md §1.
+ReservedDispatch is the execution snapshot stored transactionally with the reservation,
+consisting of Reservation, Session, Submission, Sequence and BindingRevision. GetReservedDispatchAsync
+reads it without provider I/O; a release/missing job does not authorize a send. Validation,
+binding update and completion CAS are in orchestration-details.md §1.
 
-RequestAcceptance trägt Kandidaten-RequestId und unveränderten SubmitRequest. Die ID wird
-vor Commit erzeugt, Sequence und Queueplatz weiterhin atomar vom Store vergeben. AdmissionStatus
-ist separate Annahmegewissheit, kein Anfragezustand und keine ExecutionCertainty. Fehler,
-Caller-Cancel, bestätigter Commit und Nachschlagen folgen orchestration-details.md §3.
+RequestAcceptance carries the candidate RequestId and the unchanged SubmitRequest. The ID is
+generated before commit; Sequence and queue slot are still assigned atomically by the store. AdmissionStatus
+is a separate admission certainty, not a request state and not an ExecutionCertainty. Errors,
+caller cancel, confirmed commit and lookup follow orchestration-details.md §3.
 
-### RecoveryCaseSnapshot und RecoveryDecision
+### RecoveryCaseSnapshot and RecoveryDecision
 
-RecoveryTarget identifiziert SessionOpening/SessionId oder RequestExecution/RequestId.
-RecoveryCaseSnapshot trägt dieses Target, SessionId, optionale RequestId/DispatchId,
-CreatedUtc, persistierte Revision ab 1, Fallstatus und bereinigte Klärungsinformationen.
-Native Bezüge sind optional; eine ungewisse Eröffnung benötigt keinen Dummy-Request.
-Erzeugungs-/CAS-/Inspectregeln und Aufbewahrung aufgelöster Fälle stehen in
-orchestration-details.md §2; die Listenordnung in §4.
+RecoveryTarget identifies SessionOpening/SessionId or RequestExecution/RequestId.
+RecoveryCaseSnapshot carries this target, SessionId, optional RequestId/DispatchId,
+CreatedUtc, persisted revision from 1, case status and sanitized resolution information.
+Native references are optional; an uncertain opening requires no dummy request.
+Creation/CAS/inspect rules and retention of resolved cases are in
+orchestration-details.md §2; the list order in §4.
 
-| Feld | Bedeutung und Prüfung |
+| Field | Meaning and validation |
 | --- | --- |
-| DecisionId / Target | Eindeutige Entscheidung für eine ungewisse Eröffnung oder Ausführung |
-| ExpectedRevision | Schutz gegen veraltete oder konkurrierende Entscheidungen |
-| Kind | ConfirmEnded oder CloseSession |
-| Explanation / EvidenceReference | Pflichtbegründung ohne Geheimnisse |
-| DecidedUtc | UTC-Zeitpunkt |
+| DecisionId / Target | Unique decision for an uncertain opening or execution |
+| ExpectedRevision | Protection against stale or competing decisions |
+| Kind | ConfirmEnded or CloseSession |
+| Explanation / EvidenceReference | Mandatory justification without secrets |
+| DecidedUtc | UTC point in time |
 
-ExpectedRevision stammt aus dem öffentlich gelesenen RecoveryCaseSnapshot. Eine Entscheidung
-ändert Fall, Gewissheit und erlaubte Freigabe gemeinsam oder gar nicht; veraltete Revision
-und bereits verwendete DecisionId ergeben RevisionConflict. BindingRevision und Fallrevision
-sind verschiedene Zähler mit verschiedenen Verantwortlichkeiten.
+ExpectedRevision comes from the publicly read RecoveryCaseSnapshot. A decision
+changes case, certainty and permitted release together or not at all; a stale revision
+and an already used DecisionId result in RevisionConflict. BindingRevision and case revision
+are different counters with different responsibilities.
 
-ConfirmEnded bestätigt, dass keine externe Arbeit mehr läuft. Der historische Endzustand
-Interrupted bleibt erhalten; Gewissheit und Reservierungsfreigabe werden nachvollziehbar
-ergänzt. Dies ist kein nachträglicher Erfolgsnachweis. Vor Folgeanfragen muss der Adapter
-denselben Provider-Bezug wieder aufnehmen können; sonst bleibt die Sitzung blockiert.
+ConfirmEnded confirms that no external work is running anymore. The historical final state
+Interrupted is preserved; certainty and reservation release are added traceably.
+This is not retroactive evidence of success. Before follow-up requests, the adapter must
+be able to resume the same provider reference; otherwise the session remains blocked.
 
-CloseSession verhindert weitere Ausführung in der Sitzung. Die Schließung allein löst
-keine ungewisse Arbeitsbereichs-/Kapazitätsreservierung: Auch dafür ist ein gesicherter
-Beendigungsnachweis oder die ausdrückliche Betreiberbestätigung erforderlich.
-Wiederholung ist nur eine neue, ausdrücklich eingereichte Anfrage mit neuer Kennung.
-Eine Recovery-Entscheidung CloseSession bedeutet daher Closing, solange eine solche
-Reservierung offen ist. Closed wird erst nach deren belegter Klärung und dem Ende aller
-weiteren offenen Anfragen erreicht. Das Umbenennen eines Zustands darf keine Sperre umgehen.
+CloseSession prevents further execution in the session. Closing alone does not release
+an uncertain workspace/capacity reservation: for that, too, saved
+termination evidence or the explicit operator confirmation is required.
+A retry is only a new, explicitly submitted request with a new identifier.
+A recovery decision CloseSession therefore means Closing as long as such a
+reservation is open. Closed is only reached after its proven resolution and the end of all
+further open requests. Renaming a state MUST NOT bypass a lock.
 
 ### StoreMetadata
 
-SchemaVersion, StoreId, InstanceTrustScopeId, CreatedUtc und Migrationsversion identifizieren
-den Speicher. Ein unbekanntes neueres Schema wird vor Schreibzugriff abgewiesen.
-Ein absichtlich neuer Speicher wird ausdrücklich initialisiert. Ein fehlender erwarteter
-Speicher darf nicht durch automatische Create-if-missing-Verwendung ersetzt werden.
+SchemaVersion, StoreId, InstanceTrustScopeId, CreatedUtc and migration version identify
+the store. An unknown newer schema is rejected before write access.
+A deliberately new store is initialized explicitly. A missing expected
+store MUST NOT be replaced by automatic create-if-missing use.
 
-Version 1 initialisiert ausschließlich ein ausdrücklich neues Format und öffnet dasselbe
-bekannte Format erneut. Es gibt noch keine In-place-Migration oder automatische
-Formatkonvertierung. Abweichende Schemata/Binding-Versionen führen zu einem Fehler,
-bevor bestehende Nutzdaten oder Metadaten verändert werden. Auch ein fehlgeschlagener
-Start darf keinen Ersatzstore veröffentlichen. Spätere Formatänderungen benötigen
-eine separate Planung mit Backup-, Crash-, Rückkehr- und Abnahmeregeln.
+Version 1 exclusively initializes an explicitly new format and reopens the same
+known format. There is not yet any in-place migration or automatic
+format conversion. Differing schemas/binding versions lead to an error
+before existing payload data or metadata are modified. Even a failed
+start MUST NOT publish a substitute store. Later format changes require
+separate planning with backup, crash, rollback and acceptance rules.
 
-## Zustandsübergänge
+## State Transitions
 
-| Ausgang | Ereignis | Ergebnis / atomare Wirkung |
+| Initial state | Event | Result / atomic effect |
 | --- | --- | --- |
-| Keine Anfrage | Annahme bei offener Sitzung und freiem Wartelimit | Queued + Eingabe + Sequence committen, dann bestätigen |
-| Queued | Abbruch vor Dispatch | Cancelled / NotStarted; kein Provider-Aufruf |
-| Queued | Zulassung mit freier Kapazität und freiem Workspace | Running/InProgress + DispatchId + Reservierung in einer Transaktion |
-| Running | Bestätigter erfolgreicher Abschluss | Succeeded + Ausgabe + neuer Binding-Stand + Reservierungsfreigabe in einer Transaktion |
-| Running | Bestätigter Fehler / Abbruch / Timeout | Entsprechender Endzustand + ConfirmedEnded + Freigabe |
-| Running | Verbindungsausfall, lokaler Abbruch ohne Beendigungsnachweis | Failed/Cancelled/TimedOut + Unknown; Reservierung und Sitzung gesperrt |
-| Running beim Wiederanlauf | Kein sicher gespeichertes Ergebnis | Interrupted + Unknown; kein automatisches Replay |
-| Endzustand / Unknown | ConfirmEnded mit passender Revision | Gewissheit und Reservierung ändern; Ergebnis nicht als Erfolg umdeuten |
-| Open | CloseSession | Closing; neue Annahme sperren, wartende abbrechen, laufende kontrolliert stoppen |
-| Closing | Keine offenen oder ungewissen Ausführungen | Closed; Historie gemäß Aufbewahrungsregel erhalten |
+| No request | Admission with open session and free queue limit | Commit Queued + input + sequence, then confirm |
+| Queued | Cancellation before dispatch | Cancelled / NotStarted; no provider call |
+| Queued | Admission with free capacity and free workspace | Running/InProgress + DispatchId + reservation in one transaction |
+| Running | Confirmed successful completion | Succeeded + output + new binding state + reservation release in one transaction |
+| Running | Confirmed error / cancellation / timeout | Corresponding final state + ConfirmedEnded + release |
+| Running | Connection failure, local cancellation without termination evidence | Failed/Cancelled/TimedOut + Unknown; reservation and session locked |
+| Running at restart | No safely stored result | Interrupted + Unknown; no automatic replay |
+| Final state / Unknown | ConfirmEnded with matching revision | Change certainty and reservation; do not reinterpret the result as success |
+| Open | CloseSession | Closing; lock new admission, cancel waiting ones, stop running ones in a controlled way |
+| Closing | No open or uncertain executions | Closed; retain history according to retention rule |
 
-Ein ausdrücklich abgebrochener, noch nicht versendeter Auftrag darf sicher als NotStarted
-enden. Nach dem persistierten Dispatch-Marker wird konservativ Unknown angenommen, wenn
-nicht sicher belegt ist, dass der Provider keinen Auftrag angenommen hat. Dadurch kann
-ein Crash unmittelbar vor dem echten Versand eine manuelle Klärung verlangen; diese
-Übervorsicht ist die bewusste Alternative zu möglichen doppelten Seiteneffekten.
+An explicitly cancelled job that has not yet been sent may safely end as NotStarted.
+After the persisted dispatch marker, Unknown is conservatively assumed if it is
+not safely proven that the provider has not accepted a job. As a result,
+a crash immediately before the real send can require a manual resolution; this
+over-caution is the deliberate alternative to possible duplicate side effects.
 
-## Speicherung und Transaktionsgrenzen
+## Storage and Transaction Boundaries
 
-Separate Tabellen für Metadata, Sessions, Requests, Results, History, Reservations,
-RecoveryCases und RecoveryDecisions; ReservedDispatch wird an den reservierten Request/
-Dispatch gebunden gespeichert. Eindeutigkeit für `(SessionId, Sequence)`, RequestId und aktive
-Sitzungs-/Arbeitsbereichsreservierungen wird durch Datenbankconstraints abgesichert.
-Dieses Dokument definiert das Zielschema; konkrete SQL-Umsetzung und Integration bleiben
-offene Tasks. Bereits vorhandene C#-Gerüste enthalten noch nicht alle oben genannten Felder.
+Separate tables for Metadata, Sessions, Requests, Results, History, Reservations,
+RecoveryCases and RecoveryDecisions; ReservedDispatch is stored bound to the reserved request/
+dispatch. Uniqueness for `(SessionId, Sequence)`, RequestId and active
+session/workspace reservations is ensured by database constraints.
+This document defines the target schema; concrete SQL implementation and integration remain
+open tasks. Already existing C# scaffolds do not yet contain all of the fields named above.
 
-- Annahme, Kapazitätsprüfung und Sequenzvergabe erfolgen gemeinsam transaktional.
-- Nur der erste wartende Auftrag einer ausführbaren Sitzung darf zugelassen werden.
-- Datenbanksperren werden nie über einen Provider-Netzwerkaufruf gehalten.
-- Nach Antwort müssen Ergebnis und Fortsetzungsstand gemeinsam committen; ein fehlender
-  Commit darf beim Neustart nicht als erfolgreiche Fortsetzung interpretiert werden.
-- Provider-Aufruf und lokaler Commit sind keine verteilte Transaktion. Die Lücke wird
-  durch persistierten Dispatch und Unknown behandelt, nicht durch Exactly-once-Versprechen.
-- Ein nur im Speicher vorhandener Channel ist ein Wecksignal, niemals die Anfragequelle.
+- Admission, capacity check and sequence assignment take place together transactionally.
+- Only the first waiting job of an executable session may be admitted.
+- Database locks are never held across a provider network call.
+- After a response, result and continuation state must commit together; a missing
+  commit MUST NOT be interpreted at restart as a successful continuation.
+- Provider call and local commit are not a distributed transaction. The gap is
+  handled by persisted dispatch and Unknown, not by exactly-once promises.
+- A channel existing only in memory is a wake-up signal, never the request source.
 
-## Wiederanlauf und Aufbewahrung
+## Restart and Retention
 
-Start: exklusiven Speicherbesitz erwerben, Schema prüfen, Konsistenz prüfen, alte Running-
-Aufträge als ungewiss markieren, Reservierungen erhalten, Provider-Bindungen prüfen,
-danach ausschließlich ungesperrte Queued-Aufträge wieder zulassen.
+Start: acquire exclusive store ownership, check schema, check consistency, mark old Running
+jobs as uncertain, retain reservations, check provider bindings,
+then readmit exclusively unlocked Queued jobs.
 
-Kontrollierter Stop ist davon getrennt: Er sperrt neue Annahme, endet nach einer
-endlichen Frist und speichert verbliebene Queued-Anfragen als Cancelled/NotStarted.
-Ein Absturz vor dieser Speicherung lässt sie Queued und damit wiederaufnehmbar.
-Ein bereits gespeicherter Endzustand wird nach Neustart nicht erneut gestartet.
+Controlled stop is separate from this: it locks new admission, ends after a
+finite deadline and stores remaining Queued requests as Cancelled/NotStarted.
+A crash before this storing leaves them Queued and thus resumable.
+An already stored final state is not started again after restart.
 
-Queued-Anfragen haben keine automatische Ablaufzeit. Ihre Anfragefrist beginnt erst
-mit Dispatch; der Host kann sie vorher ausdrücklich abbrechen. Auf die lokale Annahme
-gilt stattdessen die separate endliche AdmissionTimeout-Frist. Bei freier Ausführungskapazität
-wird der älteste zulassungsfähige Sitzungskopf bevorzugt; bei identischem AcceptedUtc
-entscheidet RequestId ordinal. Blockierte Köpfe werden nicht als ausführbar behandelt.
-Keine feste globale Wartezeit oder Starvation-Freiheit wird zugesichert.
+Queued requests have no automatic expiry time. Their request deadline only begins
+with dispatch; the host can explicitly cancel them beforehand. To the local admission,
+the separate finite AdmissionTimeout deadline applies instead. With free execution capacity,
+the oldest admissible session head is preferred; with identical AcceptedUtc,
+RequestId decides ordinally. Blocked heads are not treated as executable.
+No fixed global waiting time or starvation freedom is guaranteed.
 
-Aufbewahrung benötigt eine explizite hostseitige Frist oder die ausdrückliche Einstellung
-RetainUntilExplicitDeletion. Kein stiller Default zur Inhaltslöschung. Nur geschlossene
-Sitzungen ohne wartende, aktive oder ungeklärte Arbeit sind löschbar. Löschung entfernt
-lokale Inhalte aus den Bibliotheksabfragen, nicht automatisch externe Providerdaten,
-Backups oder physische SQLite-Seiten. Sichere Datenträgerlöschung ist keine Zusicherung.
+Retention requires an explicit host-side period or the explicit setting
+RetainUntilExplicitDeletion. No silent default for content deletion. Only closed
+sessions without waiting, active or unresolved work are deletable. Deletion removes
+local contents from the library queries, not automatically external provider data,
+backups or physical SQLite pages. Secure storage-medium erasure is not a guarantee.
 
-## Grenzen für Version 1
+## Limits for Version 1
 
-- Textnachrichten und endgültige Textantworten; keine eigene multimodale Verarbeitung.
-- Ein aktiver Besitzer pro lokalem Store; keine Netzwerkdateisysteme oder aktiven Cluster.
-- Konfigurierbare endliche Queue-, Anfrage-, Ausgabe- und Zeitlimits.
-- Keine eingebauten Tools, Promptverdichtung, Transcript-Replay oder Featureverhandlung.
-- Öffentliche Fehler enthalten keine Tokens, Prompts oder rohe Hersteller-HTTP-Bodies.
+- Text messages and final text responses; no multimodal processing of its own.
+- One active owner per local store; no network file systems or active clusters.
+- Configurable finite queue, request, output and time limits.
+- No built-in tools, prompt compaction, transcript replay or feature negotiation.
+- Public errors contain no tokens, prompts or raw vendor HTTP bodies.
 
-## Implementierte additive Verfügbarkeitsmetadaten
+## Implemented Additive Availability Metadata
 
-`SessionSnapshot.ConfigurationUnavailable` kennzeichnet eine vor Workerfreigabe erneut
-prüfbare Verfügbarkeitssperre. Nullable `AvailabilityError` enthält ausschließlich eine
-bereinigte ErrorCode-Kategorie dieser Prüfung, keine Texte oder Credentials. Beides
-liegt im vorhandenen Sitzungs-JSON; keine zusätzliche SQLspalte/Schemamigration.
-Fehlendes Feld aus früherem Snapshot wird als null gelesen. Undefinierte Kategorien
-oder eine Ursache ohne Herkunftsflag werden vor Recoverymutation abgewiesen. Positives
-Revalidieren löscht ausschließlich eigenen Block/Ursache; bestehende Recovery-/andere
-native Restriktionen und die ursprünglichen IDs/ModelId/Settings/Bindingrevision bleiben.
+`SessionSnapshot.ConfigurationUnavailable` marks an availability lock that can be re-checked
+before worker release. Nullable `AvailabilityError` contains exclusively a
+sanitized ErrorCode category of this check, no texts or credentials. Both
+reside in the existing session JSON; no additional SQL column/schema migration.
+A missing field from an earlier snapshot is read as null. Undefined categories
+or a cause without an origin flag are rejected before recovery mutation. Positive
+revalidation clears exclusively its own block/cause; existing recovery/other
+native restrictions and the original IDs/ModelId/Settings/binding revision remain.

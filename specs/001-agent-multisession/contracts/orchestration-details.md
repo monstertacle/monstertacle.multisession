@@ -1,309 +1,309 @@
-# Orchestrierungsverträge v1 — verbindlicher Zielentwurf
+# Orchestration Contracts v1 — Binding Target Design
 
-Ursprungsentwurf 2026-10-28; Implementierungsabgleich 2026-10-29T21:57:58Z.
-Konkretisiert FR-005/FR-007/FR-018–FR-021. T112–T115 sind nach den dokumentierten
-fachlichen Red-Fällen implementiert: ReservedDispatch mit SQL-Fence, Recoveryziele/CAS,
-Annahmegewissheit und alle vier begrenzten SQL-Keysetlisten. Der Paketstand bleibt
-vor Veröffentlichung; dies ist keine ausgeführte Migration oder neue Produktfreigabe.
+Original design 2026-10-28; implementation reconciliation 2026-10-29T21:57:58Z.
+Concretizes FR-005/FR-007/FR-018–FR-021. T112–T115 are implemented following the documented
+functional Red cases: ReservedDispatch with SQL fence, recovery targets/CAS,
+admission certainty and all four bounded SQL keyset lists. The package state remains
+pre-publication; this is not an executed migration or a new product release.
 
-## 1. Reservierter Dispatch-Snapshot (U1)
+## 1. Reserved Dispatch Snapshot (U1)
 
-TryReserveHeadAsync liefert weiterhin ExecutionReservation. In **derselben** Transaktion
-werden Running/InProgress, DispatchId, die belegten Slots/Schlüssel und ein unveränderlicher
-ReservedDispatch gespeichert. Der Dispatcher liest ihn über die neue fachliche Operation
+TryReserveHeadAsync still returns ExecutionReservation. In the **same** transaction,
+Running/InProgress, DispatchId, the occupied slots/keys and an immutable
+ReservedDispatch are stored. The dispatcher reads it via the new domain operation
 `ISessionQueryStore.GetReservedDispatchAsync(dispatchId, cancellationToken)`.
 
-| ReservedDispatch-Feld | Bedeutung |
+| ReservedDispatch field | Meaning |
 | --- | --- |
-| Reservation | Bereits gespeicherte ExecutionReservation |
-| Session | Bei Reservierung eingefrorener SessionSnapshot mit ProviderId, Context und Binding |
-| Submission | Gespeicherter SubmitRequest mit ausschließlich neuer unveränderter Eingabe und Ausführungsfrist |
-| Sequence | Bestätigte Annahmesequenz |
-| BindingRevision | Persistierte Revision des bestätigten Fortsetzungsstands beim Reservieren |
+| Reservation | Already stored ExecutionReservation |
+| Session | SessionSnapshot frozen at reservation with ProviderId, Context and Binding |
+| Submission | Stored SubmitRequest with exclusively new unchanged input and execution deadline |
+| Sequence | Confirmed acceptance sequence |
+| BindingRevision | Persisted revision of the confirmed continuation state at reservation |
 
-Reservation.RequestId/SessionId, Submission.SessionId und Session.SessionId müssen
-konsistent sein. Session.Binding ist ein gültiges Adapterbinding; dessen SessionReference
-darf nur bei zulässigem Lazy-Open fehlen. Eine unbekannte oder bereits freigegebene
-DispatchId, ein nicht mehr laufender oder bereits zum Abbruch markierter Auftrag liefert
-null; der Dispatcher sendet dann nicht. Ein Storefehler wird nicht als leere Queue kaschiert.
-Die Prüfung gilt zum Lesezeitpunkt; ein danach eintreffender Cancel wird als Abbruch eines
-laufenden Dispatch behandelt, nicht durch eine vorgetäuschte atomare Netz-/DB-Transaktion.
+Reservation.RequestId/SessionId, Submission.SessionId and Session.SessionId must
+be consistent. Session.Binding is a valid adapter binding; its SessionReference
+may be missing only in the case of a permissible lazy open. An unknown or already released
+DispatchId, or a job that is no longer running or already marked for cancellation, returns
+null; the dispatcher then does not send. A store error is not disguised as an empty queue.
+The check applies at the time of reading; a cancel arriving afterwards is treated as cancellation of a
+running dispatch, not by a feigned atomic network/DB transaction.
 
-Die Operation ist rein lesend und startet weder Providerarbeit noch einen zweiten Versuch.
-Der Runtime-Worker verarbeitet jede von ihm neu erworbene DispatchId höchstens einmal.
-Nach Neustart werden alte Reservierungen niemals erneut als Sendberechtigung verwendet.
-Ein wiederholtes Lesen ist kein Retry und keine Erlaubnis für einen weiteren Send.
-Input und Binding dürfen nicht aus aktuellen Hostobjekten oder aus Historien-Replay
-rekonstruiert werden. MaxOutputBytes kommt aus den beim Runtime-Start fixierten Optionen;
-ProviderCall wird aus diesem Limit und dem ReservedDispatch gebildet.
+The operation is purely reading and starts neither provider work nor a second attempt.
+The runtime worker processes each DispatchId it newly acquires at most once.
+After restart, old reservations are never used again as send authorization.
+A repeated read is not a retry and not a permission for a further send.
+Input and binding MUST NOT be reconstructed from current host objects or from history replay.
+MaxOutputBytes comes from the options fixed at runtime start;
+ProviderCall is formed from this limit and the ReservedDispatch.
 
-BindingRevision beginnt bei 0 für das nach Open bestätigte beziehungsweise explizit lazy
-Binding. Jede atomare Veröffentlichung eines neuen bestätigten Fortsetzungsstands erhöht
-sie um 1. Neue native IDs/Operations-IDs aus Beobachtungen werden vor Callbackbestätigung
-dispatchgebunden gespeichert; sie allein veröffentlichen keinen neuen Fortsetzungskopf.
-Completion prüft das beim Dispatch gespeicherte BindingRevision gegen die aktuelle
-Sitzungsrevision und genau diesen noch offenen Dispatch. Bei Abweichung: RevisionConflict,
-kein Ergebnis-/History-/Binding-Erfolgscommit und keine Reservierungsfreigabe.
-Ein abgelehnter oder fehlgeschlagener Commit darf nicht zu einem erneuten Send führen.
+BindingRevision begins at 0 for the binding confirmed after Open or the explicitly lazy
+binding. Every atomic publication of a new confirmed continuation state increases
+it by 1. New native IDs/operation IDs from observations are stored dispatch-bound before callback confirmation;
+they alone do not publish a new continuation head.
+Completion checks the BindingRevision stored at dispatch against the current
+session revision and exactly this still open dispatch. On deviation: RevisionConflict,
+no result/history/binding success commit and no reservation release.
+A rejected or failed commit MUST NOT lead to a renewed send.
 
-## 2. Recovery ohne Dummy-Request und mit lesbarer Revision (U2/U3)
+## 2. Recovery Without Dummy Request and With Readable Revision (U2/U3)
 
-`RecoveryTarget` besteht aus `Kind` und `Id`:
+`RecoveryTarget` consists of `Kind` and `Id`:
 
-| Kind | Id | RequestId im Fallsnapshot |
+| Kind | Id | RequestId in the case snapshot |
 | --- | --- | --- |
-| SessionOpening | Lokale SessionId der ungewissen Eröffnung | null |
-| RequestExecution | RequestId der ungewissen Ausführung | Zugehörige RequestId |
+| SessionOpening | Local SessionId of the uncertain opening | null |
+| RequestExecution | RequestId of the uncertain execution | Associated RequestId |
 
-Keine Sentinel-UUID oder künstliche Anfrage ersetzt SessionOpening. RecoveryCaseSnapshot
-enthält Target, SessionId, optionale RequestId/DispatchId, unveränderliches CreatedUtc,
-Revision, den offenen/aufgelösten Fallstatus, Blockgrund, Gewissheit und verfügbare opaque
-native Bezüge. Er enthält keine Credentials, Prompts oder vollständige Eingaben.
+No sentinel UUID or artificial request replaces SessionOpening. RecoveryCaseSnapshot
+contains Target, SessionId, optional RequestId/DispatchId, immutable CreatedUtc,
+Revision, the open/resolved case status, block reason, certainty and available opaque
+native references. It contains no credentials, prompts or complete inputs.
 
-Die neue öffentliche Leseoperation `IRecovery.GetRecoveryCaseAsync(target, token)` liefert
-den Fallsnapshot oder null. `ListRecoveryCasesAsync` liefert `Page<RecoveryCaseSnapshot>`
-für offene Fälle. `InspectRecoveryAsync` adressiert ebenfalls das Target, liest nur den
-bekannten nativen Bezug und verändert weder Fall, Revision noch Reservierung. Fehlt ein
-inspizierbarer Bezug oder die Fähigkeit, meldet es UnsupportedProviderAction/Unknown,
-ohne native Öffnung, Send oder erfundene Endbestätigung.
+The new public read operation `IRecovery.GetRecoveryCaseAsync(target, token)` returns
+the case snapshot or null. `ListRecoveryCasesAsync` returns `Page<RecoveryCaseSnapshot>`
+for open cases. `InspectRecoveryAsync` likewise addresses the target, reads only the
+known native reference and changes neither case, revision nor reservation. If an
+inspectable reference or the capability is missing, it reports UnsupportedProviderAction/Unknown,
+without native opening, send or invented end confirmation.
 
-RecoveryDecision enthält DecisionId, **Target statt RequestId**, ExpectedRevision, Kind,
-Explanation und EvidenceReference. Der Store verwendet eine atomare ResolveRecoveryAsync-
-Operation für beide Targetarten; die frühere requestgebundene ResolveReservationAsync-
-Signatur ist seit T113 abgelöst. Der Store erhält neben der Entscheidung ein optionales
-confirmedBinding aus dem vorab ausgeführten Reopen. Dieses gehört nicht zur öffentlichen
-Operatorentscheidung: der Service prüft native Identität/Adapter/Format, der Store prüft
-ExpectedRevision erneut und veröffentlicht Klärung und bestätigtes Binding gemeinsam. Ein unbekanntes/fremdes Target ergibt NotFound.
+RecoveryDecision contains DecisionId, **Target instead of RequestId**, ExpectedRevision, Kind,
+Explanation and EvidenceReference. The store uses an atomic ResolveRecoveryAsync
+operation for both target kinds; the earlier request-bound ResolveReservationAsync
+signature has been superseded since T113. In addition to the decision, the store receives an optional
+confirmedBinding from the previously executed reopen. This does not belong to the public
+operator decision: the service checks native identity/adapter/format, the store re-checks
+ExpectedRevision and publishes resolution and confirmed binding together. An unknown/foreign target results in NotFound.
 
-Revision ist eine positive persistierte long-Zahl je Target: erster Fall Revision 1,
-jede angenommene zustands-/beweisrelevante Falländerung erhöht sie genau um 1. Auch nach
-Auflösung und erneutem Öffnen desselben Targets wird sie nicht zurückgesetzt. Reine
-Reads/Inspect/erneute unverändernde Abweisung erhöhen sie nicht. ExpectedRevision muss
-beim atomaren Entscheidungscommit exakt passen; nur ein konkurrierender Commit mit
-derselben Revision kann gewinnen. Die anderen ergeben RevisionConflict ohne Teilwirkung.
-Eine doppelte DecisionId wird ohne erneute Wirkung als RevisionConflict abgewiesen;
-es gibt keine automatische Wiederholung. GetRecoveryCaseAsync kann den inzwischen
-aufgelösten Fall weiterhin liefern, solange die zugehörige Sitzung nicht legitim gelöscht ist.
+Revision is a positive persisted long number per target: the first case has revision 1,
+every accepted state- or evidence-relevant case change increases it by exactly 1. Even after
+resolution and renewed opening of the same target, it is not reset. Pure
+reads/Inspect/renewed non-changing rejection do not increase it. ExpectedRevision must
+match exactly at the atomic decision commit; only one competing commit with
+the same revision can win. The others result in RevisionConflict without partial effect.
+A duplicate DecisionId is rejected without renewed effect as RevisionConflict;
+there is no automatic retry. GetRecoveryCaseAsync can still return the meanwhile
+resolved case as long as the associated session has not been legitimately deleted.
 
-### Ungewisse Eröffnung
+### Uncertain Opening
 
-Blockierung und SessionOpening-Fall werden gemeinsam gespeichert, sobald ein unsicherer
-Open bekannt wird. Beim Wiederanlauf wird auch eine übrig gebliebene Opening-Sitzung
-konservativ als solcher Fall erfasst; sie wird nicht automatisch erneut geöffnet.
-Ein fehlgeschlagener Speichercommit wird als Fehler gemeldet, nicht als gesicherte Sperre.
+Blocking and the SessionOpening case are stored together as soon as an uncertain
+open becomes known. At restart, a leftover Opening session is also
+conservatively recorded as such a case; it is not automatically reopened.
+A failed storage commit is reported as an error, not as a saved lock.
 
-CloseSession setzt Closing und hält den Fall sowie eventuell bestehende Reservierungen
-offen, solange kein belegtes Ende vorliegt. ConfirmEnded benötigt ausdrückliche begründete
-Untersuchung wie bei RequestExecution. Bei bestehender Schließabsicht und ohne weitere
-offene/ungewisse Arbeit darf anschließend Closed atomar erreicht werden. Ohne Schließabsicht
-ist Open/None nur nach erfolgreichem Reopen **desselben bekannten** Bindings zulässig.
-Fehlt dieses oder schlägt Reopen fehl, bleibt der Fall offen/blockiert; es wird keine neue
-native Identität erzeugt. Der Integrator kann nach neuem Read mit aktueller Revision die
-Schließung veranlassen. Native Klärungs-I/O erfolgt außerhalb der Transaktion; vor Anwendung
-der gewonnenen Belege wird ExpectedRevision erneut atomar geprüft. RequestExecution behält
-sein historisches Fehler-/Interrupted-Ergebnis und wird niemals nachträglich Succeeded.
+CloseSession sets Closing and keeps the case as well as any existing reservations
+open as long as there is no proven end. ConfirmEnded requires an explicit justified
+investigation as with RequestExecution. With an existing close intent and without further
+open/uncertain work, Closed may subsequently be reached atomically. Without a close intent,
+Open/None is permissible only after a successful reopen of **the same known** binding.
+If this is missing or reopen fails, the case remains open/blocked; no new
+native identity is created. After a new read with the current revision, the integrator can
+initiate the closing. Native resolution I/O takes place outside the transaction; before applying
+the obtained evidence, ExpectedRevision is atomically checked again. RequestExecution keeps
+its historical error/Interrupted result and never retroactively becomes Succeeded.
 
-## 3. Annahmegewissheit und Nachschlagen (U4)
+## 3. Admission Certainty and Lookup (U4)
 
-`AdmissionStatus` unterscheidet NotAccepted, Committed und Unknown **unabhängig von**
-ExecutionCertainty. Ein Auftrag kann lokal committed, aber extern noch NotStarted sein.
-PublicError erhält ein optionales AdmissionStatus; für andere Operationen bleibt es null.
-SessionId und eine bereits erzeugte Kandidaten-RequestId dürfen als sichere lokale
-Nachschlageschlüssel enthalten sein, nicht als Bestätigung der Annahme.
+`AdmissionStatus` distinguishes NotAccepted, Committed and Unknown **independently of**
+ExecutionCertainty. A job can be committed locally but still be NotStarted externally.
+PublicError receives an optional AdmissionStatus; for other operations it remains null.
+SessionId and an already generated candidate RequestId may be included as safe local
+lookup keys, not as confirmation of acceptance.
 
-| Beobachtung | Öffentliche Aussage |
+| Observation | Public statement |
 | --- | --- |
-| Lokale Validierung scheitert oder Store bestätigt Rollback/Nichtbeginn | NotAccepted; kein Receipt |
-| Store bestätigt erfolgreichen Commit | Committed; tatsächlichen RequestReceipt zurückgeben, auch bei inzwischen ausgelöstem Caller-Token/Timer |
-| Unterbrochenes Warten/Storefehler ohne Beweis für Commit oder Rollback | Unknown; kein Erfolgsreceipt und keine sichere Nichtannahme behaupten |
+| Local validation fails or the store confirms rollback/non-start | NotAccepted; no receipt |
+| Store confirms a successful commit | Committed; return the actual RequestReceipt, even if the caller token/timer has meanwhile fired |
+| Interrupted wait/store error without proof of commit or rollback | Unknown; claim neither a success receipt nor safe non-acceptance |
 
-Vor Beginn der Commitoperation erzeugt RequestAdmission genau eine Kandidaten-RequestId.
-`RequestAcceptance(RequestId, Submission)` wird als Eingabe für CommitAcceptanceAsync
-verwendet; diese Operation übernimmt dieselbe ID und vergibt Sequence/Queueplatz atomar.
-Damit verändert sich in T114 der bisherige Storeparameter, nicht die öffentliche Submit-
-Signatur. ID-Kollisionen werden abgewiesen, nicht mit fremden Requests zusammengeführt.
-Jeder neue Submit erzeugt eine neue Kandidatenkennung; keine automatische Deduplizierung,
-kein automatisches Wiederholen eines unklaren Commits.
+Before the commit operation begins, RequestAdmission generates exactly one candidate RequestId.
+`RequestAcceptance(RequestId, Submission)` is used as input for CommitAcceptanceAsync;
+this operation adopts the same ID and assigns Sequence/queue slot atomically.
+Thus in T114 the previous store parameter changes, not the public Submit
+signature. ID collisions are rejected, not merged with foreign requests.
+Every new submit generates a new candidate identifier; no automatic deduplication,
+no automatic retry of an unclear commit.
 
-Bei Caller-Cancel erhält der Aufrufer eine `AdmissionCancellationException`, abgeleitet
-von OperationCanceledException, mit dem bereinigten PublicError samt AdmissionStatus und
-Kandidatenkennung soweit bereits vorhanden. Bei Frist-/Speicherfehlern verwendet
-SessionOperationException dieselben Metadaten mit AdmissionTimedOut/StorageUnavailable.
-ExecutionCertainty wird separat aus tatsächlich vorhandenem Ausführungswissen bestimmt;
-Unknown-Annahme darf insbesondere kein sicheres externes NotStarted implizieren.
-Der Host kann GetRequestAsync(Kandidatenkennung) beziehungsweise ListRequestsAsync nutzen.
-Ein vorläufig fehlender Datensatz während noch unklarem Commitausgang ist **kein** Beweis
-für Nichtannahme. Es gibt keinen automatischen erneuten Submit oder späteren Receipt-Push.
+On caller cancel, the caller receives an `AdmissionCancellationException`, derived
+from OperationCanceledException, with the sanitized PublicError including AdmissionStatus and
+candidate identifier, insofar as already present. On deadline/storage errors,
+SessionOperationException uses the same metadata with AdmissionTimedOut/StorageUnavailable.
+ExecutionCertainty is determined separately from actually available execution knowledge;
+an Unknown admission in particular MUST NOT imply a safe external NotStarted.
+The host can use GetRequestAsync(candidate identifier) or ListRequestsAsync.
+A record that is provisionally missing while the commit outcome is still unclear is **not** proof
+of non-acceptance. There is no automatic renewed submit or later receipt push.
 
-## 4. Begrenzte Listen und Cursor (A2)
+## 4. Bounded Lists and Cursors (A2)
 
-Für alle Session-/Request-/History-/Recoverylisten gilt explizit `1 <= pageSize <= 100`;
-es wird weder still gekappt noch korrigiert. Die empfohlene Hostseitengröße ist 50,
-kein impliziter Parameterdefault. Gemeinsame benannte Konstanten stehen seit T115 in
-Contracts/PageLimits.cs. Cursor ist null für die erste Seite; ein leerer String ist ungültig.
+For all session/request/history/recovery lists, `1 <= pageSize <= 100` applies explicitly;
+it is neither silently capped nor corrected. The recommended host page size is 50,
+not an implicit parameter default. Shared named constants have been in
+Contracts/PageLimits.cs since T115. The cursor is null for the first page; an empty string is invalid.
 
-| Liste | Aufsteigender stabiler Sortierschlüssel |
+| List | Ascending stable sort key |
 | --- | --- |
 | Sessions | CreatedUtc, SessionId |
-| Requests einer Sitzung | Sequence, RequestId |
-| History einer Sitzung | HistoryOrdinal, HistoryId |
-| Offene Recoveryfälle | CreatedUtc, Target.Kind, Target.Id |
+| Requests of a session | Sequence, RequestId |
+| History of a session | HistoryOrdinal, HistoryId |
+| Open recovery cases | CreatedUtc, Target.Kind, Target.Id |
 
-UUIDs werden im kanonischen D-Format ordinal verglichen, Zeitpunkte als UTC; Target.Kind
-hat die feste Ordnung SessionOpening vor RequestExecution. HistoryOrdinal ist ein beim
-Einfügen monoton vergebener sitzungsbezogener Zähler; HistoryId eine lokale UUID. Auch
-mehrere lokale Beobachtungen zur gleichen Anfrage sind damit eindeutig sortierbar.
+UUIDs are compared ordinally in the canonical D format, points in time as UTC; Target.Kind
+has the fixed order SessionOpening before RequestExecution. HistoryOrdinal is a session-related
+counter assigned monotonically on insertion; HistoryId a local UUID. Thus even
+multiple local observations of the same request can be sorted unambiguously.
 
-Der maximal 2048 UTF-8-Bytes lange Cursor ist eine Base64url-kodierte JSON-Struktur mit
-Version=1, StoreId, Listenart, SessionId bei sitzungsbezogenen Listen und letztem vollständigem
-Sortierschlüssel. Parsing ist strikt und kulturunabhängig. Unbekannte Version, ungültiges
-Encoding/Schlüssel/Größe, andere Listenart, fremder Store oder falsche Session ergeben
-InvalidInput ohne Teilresultat. Ein Cursor ist kein Berechtigungsnachweis und enthält keine
-Secrets/Inhalte. Die Store-/Hostzugriffskontrollen bleiben unabhängig erforderlich.
+The cursor, at most 2048 UTF-8 bytes long, is a Base64url-encoded JSON structure with
+Version=1, StoreId, list kind, SessionId for session-related lists and the last complete
+sort key. Parsing is strict and culture-independent. Unknown version, invalid
+encoding/key/size, a different list kind, a foreign store or a wrong session result in
+InvalidInput without a partial result. A cursor is not proof of authorization and contains no
+secrets/contents. The store/host access controls remain independently required.
 
-Keysetfortsetzung liest strikt hinter dem letzten Schlüssel, höchstens pageSize Elemente;
-ein intern gelesenes zusätzliches Element entscheidet über NextCursor. Am Ende ist dieser
-null. Löschen des zuletzt gelesenen Elements invalidiert die Fortsetzung nicht. Mehrere
-Seiten sind eine **Livesicht**, keine Snapshottransaktion: neu eingefügte Elemente hinter
-dem Cursor können erscheinen, davor erst bei neuem Scan. Zustände können sich zwischen
-Reads ändern; zurückgegebene DTOs selbst sind unveränderliche Snapshots. So werden weder
-Snapshotisolation noch vollständige Auffindbarkeit durch nur einen parallelen Scan behauptet.
+Keyset continuation reads strictly after the last key, at most pageSize elements;
+one additional internally read element decides on NextCursor. At the end, this is
+null. Deleting the last read element does not invalidate the continuation. Multiple
+pages are a **live view**, not a snapshot transaction: newly inserted elements after
+the cursor can appear, those before it only on a new scan. States can change between
+reads; the returned DTOs themselves are immutable snapshots. Thus neither
+snapshot isolation nor complete findability through just one parallel scan is claimed.
 
-## 5. Beleggebundener Fortsetzungskopf (T116)
+## 5. Evidence-Bound Continuation Head (T116)
 
-Für `RequiresOperationAwareRecovery` verwendet RecoveryService den optionalen Port
-`IExecutionRecoveryProvider` statt des gewöhnlichen Reopen. Ein providerdefinierter neuer
-Kopf muss aus der bekannten ungewissen Operation verifiziert werden. Ohne notwendigen
-Bezug oder passenden Port bleiben Fall und Reservierung gesperrt. Die vorhandenen
-Identitäts-/Adapter-/Versions- und CAS-Regeln gelten unverändert.
+For `RequiresOperationAwareRecovery`, RecoveryService uses the optional port
+`IExecutionRecoveryProvider` instead of the ordinary reopen. A provider-defined new
+head must be verified from the known uncertain operation. Without the necessary
+reference or a matching port, case and reservation remain locked. The existing
+identity/adapter/version and CAS rules apply unchanged.
 
-Ein erfolgreich bestätigtes `SessionEstablished` darf die zuvor leere SessionReference
-im RecoveryCase.Binding konkretisieren. Dies veröffentlicht weder einen neuen bestätigten
-Kopf noch das Binding im SessionSnapshot. Der Fall bewahrt die bekannte native Identität
-für explizite Klärung; der Service erhält diese bekannte Fallbindung, und der Store prüft
-sie beim gemeinsamen Entscheidungs-/Bindingcommit. Kein beobachteter Bezug wird durch
-Neueröffnen ersetzt. Produktive Persistenz dieser Projektion gehört zu T060–T062.
+A successfully confirmed `SessionEstablished` may concretize the previously empty SessionReference
+in RecoveryCase.Binding. This publishes neither a new confirmed
+head nor the binding in the SessionSnapshot. The case preserves the known native identity
+for explicit resolution; the service receives this known case binding, and the store checks
+it at the joint decision/binding commit. No observed reference is replaced by
+reopening. Productive persistence of this projection belongs to T060–T062.
 
-## 6. Atomare Sperre bei unbrauchbarer Fortsetzung (T117)
+## 6. Atomic Lock on Unusable Continuation (T117)
 
-CommitCompletionAsync speichert bei `ContinuationAvailable=false` oder einer bekannten
-ProviderSessionExpired-Kategorie den Blockgrund ProviderUnavailable zusammen mit Result,
-History, bestätigtem Binding und zulässiger Reservierungsfreigabe. Null/true alleine ändern
-keine bestehende Policy. RecoveryRequired wird nicht herabgestuft. Eine ungewisse Antwort
-läuft weiterhin über den separaten Unsicherheitscommit und bleibt reserviert. Die Sitzung
-nimmt mit bekanntem Fortsetzungsblocker keine weiteren Requests an; bereits Queued bleiben
-für explizite Close-/Stop-/Klärung sichtbar. Kein neuer nativer Bezug und keine automatische
-Wiederholung. Produktive Transaktionen müssen dieselbe atomare Grenze erfüllen.
+With `ContinuationAvailable=false` or a known ProviderSessionExpired category,
+CommitCompletionAsync stores the block reason ProviderUnavailable together with Result,
+History, confirmed binding and permissible reservation release. Null/true alone change
+no existing policy. RecoveryRequired is not downgraded. An uncertain response
+continues to go through the separate uncertainty commit and remains reserved. With a known
+continuation blocker, the session accepts no further requests; already Queued ones remain
+visible for explicit close/stop/resolution. No new native reference and no automatic
+retry. Productive transactions must fulfill the same atomic boundary.
 
-### Autoritativer Snapshot bei bestätigter Eröffnung
+### Authoritative Snapshot on Confirmed Opening
 
-CommitSessionBindingAsync liefert den in derselben Transaktion bestätigten
-SessionSnapshot. CreateSessionAsync gibt diesen zurück. SettingsRevision und CreatedUtc
-bleiben unverändert; UpdatedUtc bezeichnet die letzte gespeicherte Sessionmutation.
-ClosedUtc ist vor tatsächlichem Closed null, auch bei Closing mit ungeklärter Arbeit.
-Die chronologischen lokalen UTC-Zeitpunkte ersetzen keine monotonen Ausführungsfristen.
+CommitSessionBindingAsync returns the SessionSnapshot confirmed in the same transaction.
+CreateSessionAsync returns it. SettingsRevision and CreatedUtc
+remain unchanged; UpdatedUtc denotes the last stored session mutation.
+ClosedUtc is null before actual Closed, even with Closing with unresolved work.
+The chronological local UTC points in time do not replace monotonic execution deadlines.
 
-### Lokale Konfigurationssperre vor Workerstart
+### Local Configuration Lock Before Worker Start
 
-CommitConfigurationAvailabilityAsync wendet ausschließlich eine lokale Availability-
-entscheidung atomar an. SessionSnapshot.ConfigurationUnavailable markiert deren Herkunft.
-Wieder gültige Konfiguration darf nur eine so markierte ProviderUnavailable-Sperre lösen;
-RecoveryRequired und nicht markierte native Fortsetzungsrestriktionen bleiben bestehen.
-Registry-/Binding-/Executionkind-/Workspaceprüfung erfolgt nach Bootstrap vor Workers.
-Opaque Modell-/Settingsdaten bleiben unverändert; native Auth-/Modellverfügbarkeit wird
-nicht durch einen erfundenen lokalen Featurekatalog vorgetäuscht.
+CommitConfigurationAvailabilityAsync atomically applies exclusively a local availability
+decision. SessionSnapshot.ConfigurationUnavailable marks its origin.
+A configuration that is valid again may only lift a ProviderUnavailable lock marked in this way;
+RecoveryRequired and unmarked native continuation restrictions remain in place.
+Registry/binding/execution kind/workspace checks take place after bootstrap, before workers.
+Opaque model/settings data remain unchanged; native auth/model availability is
+not feigned by an invented local feature catalog.
 
-## 5. Atomare lokale Cancel-/Close-Facetten
+## 5. Atomic Local Cancel/Close Facets
 
-ISessionStore erbt die schmalen Facetten IRequestCancellationStore und ISessionClosureStore.
-RequestCancellationAsync speichert bei Running nur den ersten CancellationRequestedUtc;
-Queued wird atomar Cancelled/NotStarted samt Result/History. Finale Ergebnisse bleiben
-unverändert. CancelQueuedSessionAsync verarbeitet die Menge noch wartender Einträge einer
-lokalen Session in einem Commit mit begrenzten Sequence-Keysetseiten; eine leere Treffer-
-menge ist ein erfolgreicher leerer Sammelabbruch. Dieser Storeport ist kein öffentlicher
-Close oder Ersatz für IRequests.CancelRequestAsync mit dessen NotFound-Vertrag.
+ISessionStore inherits the narrow facets IRequestCancellationStore and ISessionClosureStore.
+For Running, RequestCancellationAsync stores only the first CancellationRequestedUtc;
+Queued atomically becomes Cancelled/NotStarted including Result/History. Final results remain
+unchanged. CancelQueuedSessionAsync processes the set of still waiting entries of a
+local session in one commit with bounded Sequence keyset pages; an empty result
+set is a successful empty bulk cancellation. This store port is not a public
+close or a substitute for IRequests.CancelRequestAsync with its NotFound contract.
 
-BeginSessionCloseAsync sperrt Annahme, finalisiert Queued und speichert Running-Intent
-zusammen. RefreshSessionCloseAsync prüft aktive/ungewisse Requests, unfreigegebene
-Reservierungen und offene Fälle. Closed benötigt die Abwesenheit aller dieser Hindernisse;
-ClosedUtc wird einmal gesetzt. Opening bekommt einen eigenen Fall. Ein später Binding-
-Commit darf Closing/Closed nicht wieder öffnen. Der SessionClosure-Kern beobachtet den
-Fortschritt begrenzt; Completion beziehungsweise Recovery aktualisieren Closing auch ohne
-wartenden Caller. Keine dieser Transaktionen ruft einen Provider auf oder löscht dessen Daten.
+BeginSessionCloseAsync locks admission, finalizes Queued and stores the Running intent
+together. RefreshSessionCloseAsync checks active/uncertain requests, unreleased
+reservations and open cases. Closed requires the absence of all these obstacles;
+ClosedUtc is set once. Opening gets its own case. A late binding
+commit MUST NOT reopen Closing/Closed. The SessionClosure core observes the
+progress in a bounded way; completion or recovery update Closing even without a
+waiting caller. None of these transactions calls a provider or deletes its data.
 
-## 6. Store- und Runtimeoptionen vor Startup
+## 6. Store and Runtime Options Before Startup
 
-SessionRuntime wartet ValidateRuntimeOptionsAsync auf IStoreBootstrap vor StartAsync,
-Recovery und Workeranlage ab. Der SQLite-Store vergleicht die wirksamen RuntimeOptions
-mit seinem bei CreateNew/OpenExisting validierten immutable Factoryrecord. Alle Werte
-müssen übereinstimmen; StateDirectory wird über den gehaltenen Leasebezug abgeglichen,
-kanonisch äquivalente Schreibweisen sind kein anderer Store. Unterschiedliche Retention,
-Limits oder Fristen ergeben InvalidConfiguration vor Änderung gespeicherter Nutzerzustände.
+SessionRuntime awaits ValidateRuntimeOptionsAsync on IStoreBootstrap before StartAsync,
+recovery and worker creation. The SQLite store compares the effective RuntimeOptions
+with its immutable factory record validated at CreateNew/OpenExisting. All values
+must match; StateDirectory is reconciled via the held lease reference,
+canonically equivalent spellings are not a different store. Different retention,
+limits or deadlines result in InvalidConfiguration before any change to stored user states.
 
-Ein explizites OpenExisting mit neuer gültiger Konfiguration ist erlaubt; danach benutzt
-seine Runtime dieselbe Konfiguration. Options werden nicht im Schema ersetzt oder still
-überschrieben. Ein direkter Storeconsumer verwendet bereits seine ausdrücklich validierte
-Factorykonfiguration. Scheitert die Runtime vor erfolgreicher Storevorbereitung, verbleiben
-Store und Lease im Eigentum des Hosts. Zweitbesitz bleibt StoreAlreadyOwned.
+An explicit OpenExisting with a new valid configuration is permitted; afterwards
+its runtime uses the same configuration. Options are not replaced in the schema or silently
+overwritten. A direct store consumer already uses its explicitly validated
+factory configuration. If the runtime fails before successful store preparation,
+store and lease remain owned by the host. Second ownership remains StoreAlreadyOwned.
 
-## 7. Ausdrückliche lokale Löschung und Retention
+## 7. Explicit Local Deletion and Retention
 
-ISessionRetentionStore.DeleteClosedSessionAsync prüft und löscht den lokalen Teilgraph
-atomar. SessionCatalog.DeleteSessionAsync delegiert über den begrenzten SessionDeletion-
-Kern; keine Provideroperation ist daran beteiligt. Closed und ClosedUtc reichen allein
-nicht: dieselbe aktuelle Prüfung für aktive/ungewisse Anfragen, Reservierungen und offene
-Fälle wird in der Löschtransaktion erneut ausgeführt. Ineligible SessionBlocked, fehlende
-Session NotFound, keine teilweise bestätigte Löschung nach Speicherfehler.
+ISessionRetentionStore.DeleteClosedSessionAsync checks and deletes the local subgraph
+atomically. SessionCatalog.DeleteSessionAsync delegates via the bounded SessionDeletion
+core; no provider operation is involved. Closed and ClosedUtc alone are
+not sufficient: the same current check for active/uncertain requests, reservations and open
+cases is executed again in the deletion transaction. Ineligible SessionBlocked, missing
+session NotFound, no partially confirmed deletion after a storage error.
 
-RetainUntilExplicitDeletion erlaubt den ausdrücklichen Delete ohne Zeitfrist. Bei Duration
-ist die volle Frist ab ClosedUtc inklusive abzuwarten; währenddessen bleiben Inhalte
-abfragbar. Es gibt keinen automatischen Löschlauf beim Start, Stop oder Fristablauf. Der
-Host löst Delete aus. Factory- und Runtimepolicy sind gemäß Abschnitt6 identisch; ein
-explizites Reopen darf eine neue gültige Hostkonfiguration wählen. Löschung entfernt auch
-lokale Resultate, Historie, freigegebene Reservierungen sowie aufgelöste Fälle/Entscheidungen
-nur dieser Sitzung. Andere Sessions und Storemetadaten bleiben erhalten. Keine Zusage
-physischer SQLite-Seitensäuberung, externer Herstellerlöschung oder Backupentfernung.
+RetainUntilExplicitDeletion permits the explicit delete without a time period. With Duration,
+the full period from ClosedUtc inclusive must be waited out; meanwhile, contents remain
+queryable. There is no automatic deletion run at start, stop or expiry of the period. The
+host triggers delete. Factory and runtime policy are identical according to section 6; an
+explicit reopen may choose a new valid host configuration. Deletion also removes
+local results, history, released reservations as well as resolved cases/decisions
+of this session only. Other sessions and store metadata are preserved. No guarantee of
+physical SQLite page cleanup, external vendor deletion or backup removal.
 
-## 8. Optionale lokale Diagnosen
+## 8. Optional Local Diagnostics
 
-Ein hosteigenes `SessionDiagnostics` je Runtime wird als optionaler sechster
-Konstruktorparameter übergeben und vom Host erst nach Runtimeende entsorgt.
-`SourceName` identifiziert ActivitySource und Meter. `InstanceId` korreliert Logs/Traces;
-bei Metriken unterscheidet `Meter.Scope` die lokale Instrumentinstanz. Messlabels
-enthalten ausschließlich `request.state`, `execution.certainty` und `error.code`,
-keine lokalen oder nativen IDs. `FailureCount` zählt abgefangene Senken-/Samplingfehler.
+A host-owned `SessionDiagnostics` per runtime is passed as an optional sixth
+constructor parameter and disposed of by the host only after the runtime has ended.
+`SourceName` identifies ActivitySource and Meter. `InstanceId` correlates logs/traces;
+for metrics, `Meter.Scope` distinguishes the local instrument instance. Measurement labels
+contain exclusively `request.state`, `execution.certainty` and `error.code`,
+no local or native IDs. `FailureCount` counts caught sink/sampling errors.
 
-Annahme-/Ausführungsdauerhistogramme verwenden Sekunden. `multisession.requests.completed`
-zählt beobachtete, bestätigt gespeicherte Abschlüsse dieser Instrumentierung; historische
-Ergebnisse und verlorene Commitbestätigungen sind keine zusätzlich behaupteten Events.
-Queue-/Occupied-/Unknown-Gauges beruhen auf `ISessionStatisticsStore.GetRuntimeStatisticsAsync`
-als einer konsistenten lokalen Leseprojektion. Occupied schließt Unknown ein. Der Runtime-
-Monitor aktualisiert initial und nach jeweils einer Sekunde Pause. Observablecallbacks
-lesen nur den atomaren Cache, blockieren keine DBqueue. Bis zur ersten Probe, bei Fehler
-und nach Stop werden Werte zurückgezogen, nicht als Null interpretiert. Cachewerte sind
-keine Kapazitätsentscheidung. Die vollständige Lifecycle-Diagnoseabnahme ist weiterhin offen.
+Admission/execution duration histograms use seconds. `multisession.requests.completed`
+counts observed, confirmed stored completions of this instrumentation; historical
+results and lost commit confirmations are not additionally claimed events.
+Queue/occupied/Unknown gauges are based on `ISessionStatisticsStore.GetRuntimeStatisticsAsync`
+as one consistent local read projection. Occupied includes Unknown. The runtime
+monitor updates initially and after each one-second pause. Observable callbacks
+read only the atomic cache and do not block any DB queue. Until the first sample, on error
+and after stop, values are withdrawn, not interpreted as zero. Cache values are
+not a capacity decision. The complete lifecycle diagnostics acceptance is still open.
 
-Providerantworten dürfen ausschließlich die in `ProviderFailurePolicy` ausdrücklich
-aufgeführten Kategorien liefern. Lokale Queue-/Ownership-/Store-/Admission-/CASkategorien
-und undefinierte Werte werden als ExecutionFailed behandelt. Fehlerobjekte erhalten die
-Gewissheit des Reply und keine providerseitig gelieferten lokalen IDs/Annahmestatus.
-Typisierte Providerexceptions erhalten eine erlaubte Kategorie, bleiben ohne gesonderten
-Endbeleg Unknown. Tatsächlich lokal erkannte Observation-/Speicherfehler behalten ihre
-lokale Kategorie; sie sind keine unbestätigte Behauptung des Adapters.
+Provider responses may return exclusively the categories explicitly listed in `ProviderFailurePolicy`.
+Local queue/ownership/store/admission/CAS categories
+and undefined values are treated as ExecutionFailed. Error objects receive the
+certainty of the reply and no local IDs/admission status supplied by the provider.
+Typed provider exceptions receive a permitted category and remain Unknown without separate
+end evidence. Observation/storage errors actually detected locally keep their
+local category; they are not an unconfirmed claim by the adapter.
 
-## 9. Aktueller Umsetzungsschnitt und verbleibende Freigaben
+## 9. Current Implementation Slice and Remaining Releases
 
-Alle Verträge dieses Dokuments besitzen Common-/SQLiteumsetzung und automatische
-Vertrags-/Persistenzregression. Separate Endpunkt-/Konten-/Zielsystemabnahmen werden
-nicht aus diesen Tests abgeleitet. Nach T118 wird Factory-/Runtimekonfiguration vor
-Recovery gleich geprüft. Native Bindings und optionale Modell-/Credentialverfügbarkeit
-werden vor Workerfreigabe kontrolliert; eigene konfigurationsbedingte Sperren tragen
-eine nullable bereinigte AvailabilityError, ohne Recovery-/Nativefremdsperren zu lösen.
-Workerabbruch wartet auf asynchrone Cancellationcallbacks vor Ressourcenfreigabe, hält
-aber die callergebundene Stopfrist ein. Linux disponiert explizit seine flock-Sperre.
+All contracts of this document have a Common/SQLite implementation and automatic
+contract/persistence regression. Separate endpoint/account/target system acceptances are
+not derived from these tests. After T118, factory/runtime configuration is checked for equality before
+recovery. Native bindings and optional model/credential availability
+are checked before worker release; own configuration-related locks carry
+a nullable sanitized AvailabilityError without lifting recovery/foreign native locks.
+Worker cancellation waits for asynchronous cancellation callbacks before resource release, but
+keeps to the caller-bound stop deadline. Linux explicitly disposes of its flock lock.
 
-Noch offene Gesamtgates sind insbesondere T034s eindeutige native Gemini-Kontextfehler-
-zuordnung, die fehlenden Plattform-/Stunden-/Live-/Integratornachweise und der historische
-TDD-Audit. Aufgabenstatus und konkrete Folgezuordnung stehen in tasks.md sowie den
-Abnahmematrizen unter evidence. Keine Schema-/Bindingmigration, NuGetveröffentlichung,
-Hostport/Dienstinstallation oder SharpClaw-Bestandsumstellung gehört zur Umsetzung.
+Still open overall gates are in particular T034's unambiguous native Gemini context error
+mapping, the missing platform/hour/live/integrator evidence and the historical
+TDD audit. Task status and concrete follow-up mapping are in tasks.md as well as the
+acceptance matrices under evidence. No schema/binding migration, NuGet publication,
+host port/service installation or SharpClaw existing-state migration is part of the implementation.

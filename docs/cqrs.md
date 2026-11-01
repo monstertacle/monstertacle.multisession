@@ -1,12 +1,12 @@
-# Typisierte Runtime-Operationen
+# Typed runtime operations
 
-Common referenziert Monstertacle.SharpQrs 0.2.0-alpha.1 transitiv. Nach dem normalen
-`StartAsync` stehen `runtime.Commands` und `runtime.Queries` bereit:
+Common references Monstertacle.SharpQrs 0.2.0-alpha.1 transitively. After the normal
+`StartAsync`, `runtime.Commands` and `runtime.Queries` are available:
 
 ```csharp
 using Monstertacle.Multisession.Cqrs;
 
-// Die Kennungen vor dem Aufruf im Host-Auftrag persistieren.
+// Persist the identifiers in the host assignment before the call.
 Guid sessionId = Guid.NewGuid();
 Guid requestId = Guid.NewGuid();
 var session = await runtime.Commands.DispatchAsync(
@@ -15,10 +15,10 @@ var receipt = await runtime.Commands.DispatchAsync(new SubmitRequestCommand(
     requestId, new(session.SessionId, "input", TimeSpan.FromSeconds(30), null, false)), cancellationToken);
 var lookup = await runtime.Queries.DispatchAsync(
     new GetRequestQuery(receipt.RequestId), cancellationToken);
-var snapshot = lookup.Value; // null, falls der Datensatz nicht existiert
+var snapshot = lookup.Value; // null if the record does not exist
 ```
 
-| Nachricht | Dispatcher | Ergebnis |
+| Message | Dispatcher | Result |
 | --- | --- | --- |
 | CreateSessionCommand | Command | `SessionSnapshot` |
 | CloseSessionCommand | Command | `CommandAcknowledgement` |
@@ -35,30 +35,30 @@ var snapshot = lookup.Value; // null, falls der Datensatz nicht existiert
 | ListRecoveryCasesQuery | Query | `Page<RecoveryCaseSnapshot>` |
 | InspectRecoveryQuery | Query | `ProviderReply` |
 
-Die Nachrichten liegen im Namespace `Monstertacle.Multisession.Cqrs`, die bestehenden
-Snapshots in `Monstertacle.Multisession.Contracts`. Lookup-Ergebnisse sind immer ein
-nicht-null `LookupResult<T>`; dessen `Value` darf fehlen. Ein `CommandAcknowledgement`
-bestätigt nur die Rückkehr des lokalen Handlers. Cancel und Close bestätigen damit
-keinen tatsächlichen externen Abschluss.
+The messages are in the namespace `Monstertacle.Multisession.Cqrs`, the existing
+snapshots in `Monstertacle.Multisession.Contracts`. Lookup results are always a
+non-null `LookupResult<T>`; its `Value` may be absent. A `CommandAcknowledgement`
+confirms only the return of the local handler. Cancel and Close therefore do not confirm
+an actual external completion.
 
-Die bestehenden `Sessions`-, `Requests`- und `Recovery`-Ports bleiben verfügbar und
-übersetzen in genau diese Nachrichten. Hinter den Handlern gelten unverändert die
-bisherigen Lifecycle-, Transaktions-, Revisions- und Reservierungsregeln.
-`InspectRecoveryQuery` liest native Evidenz ohne lokale Freigabe. Stop verfolgt auch
-die öffentlichen Dispatcher-Tasks bereits gestarteter Lifecycle-Operationen bis zum
-Ende, bevor es Store und Lease freigibt.
+The existing `Sessions`, `Requests` and `Recovery` ports remain available and
+translate into exactly these messages. Behind the handlers, the existing
+lifecycle, transaction, revision and reservation rules apply unchanged.
+`InspectRecoveryQuery` reads native evidence without local release. Stop also tracks
+the public dispatcher tasks of already started lifecycle operations until their
+end before it releases store and lease.
 
-Registrierungen sind je Runtime vollständig vor der Veröffentlichung aufgebaut.
-Die öffentlichen Dispatcher bieten keine Registrierung an. Unbekannte Nachrichten
-werden abgewiesen; es gibt kein automatisches Scanning, Retry oder Replay.
-Der Caller-Token und ursprüngliche Handlerfehler bleiben erhalten; vorhandene
-Lifecycle-Operationen verknüpfen weiterhin den Token mit ihrer Stop-Anforderung.
-Keine zusätzliche Datenbank, Read-Replica oder Event-Sourcing-Schicht ist erforderlich.
+Registrations are fully built per runtime before publication.
+The public dispatchers offer no registration. Unknown messages
+are rejected; there is no automatic scanning, retry or replay.
+The caller token and original handler failures are preserved; existing
+lifecycle operations continue to link the token with their Stop request.
+No additional database, read replica or event-sourcing layer is required.
 
-Coverage: `dotnet tool restore`, danach `pwsh scripts/Invoke-Quality.ps1` auf dem
-nativen Zielbetriebssystem. Beim Multitarget-Plattformprojekt wählt die Qualitätsprüfung
-gezielt das native Framework und übergibt anschließend alle frischen Berichte an Cover.
-Die erzeugte `cover-native-config.json` zählt alle gemeinsamen Bibliotheken und die
-native Plattform. Die fremde Plattform ist im jeweils anderen nativen CI verpflichtend.
-Ein Cover-Aufruf mit der Root-Konfiguration zählt dagegen beide Plattformen und meldet
-fremde, lokal unausführbare Interop-Methoden entsprechend als ungetestet.
+Coverage: `dotnet tool restore`, then `pwsh scripts/Invoke-Quality.ps1` on the
+native target operating system. For the multi-target platform project, the quality check
+specifically selects the native framework and then passes all fresh reports to Cover.
+The generated `cover-native-config.json` counts all shared libraries and the
+native platform. The foreign platform is mandatory in the respective other native CI.
+A Cover invocation with the root configuration, by contrast, counts both platforms and reports
+foreign interop methods that cannot be executed locally as untested accordingly.

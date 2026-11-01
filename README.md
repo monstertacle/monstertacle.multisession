@@ -4,23 +4,23 @@ Host integrations use the provider-neutral `Monstertacle.Multisession.AgentFrame
 
 # Monstertacle.Multisession
 
-Providerneutrale C#/.NET-Bibliotheken zur Verwaltung paralleler Agent-Sitzungen.
-**In Entwicklung, keine Produktfreigabe.** SQLite-Persistenz, native Windows-/Linux-Leases,
-Protokolladapter für Conversations/Responses und Interactions sowie Cancel, Stop und Recovery sind implementiert.
-Live-, Zielsystem-, Integrator- und finale Paketabnahmen bleiben erforderlich;
-der aktuelle Umfang steht im [Arbeitsnachweis](specs/001-agent-multisession/evidence/implementation-progress.md).
+Provider-neutral C#/.NET libraries for managing parallel agent sessions.
+**In development, no product release.** SQLite persistence, native Windows/Linux leases,
+protocol adapters for Conversations/Responses and Interactions, as well as Cancel, Stop and Recovery are implemented.
+Live, target-system, integrator and final package acceptances remain required;
+the current scope is described in the [work record](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Lokale Pakete 0.2.0-alpha.7
+## Local packages 0.2.0-alpha.7
 
-Acht Bibliotheken werden lokal gepackt: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
-`Windows`, `Providers.Conversations`, `Providers.Interactions` und `DeliveryCheckpoints`, jeweils mit dem Präfix
-`Monstertacle.Multisession.`. `DeliveryCheckpoints` ist unabhängig von den Sitzungspaketen: ein opaker dauerhafter
-Zustell-Checkpoint je Kanal mit typisierten atomaren Quittungs-/CAS-Primitiven, siehe [Zustell-Checkpoint](docs/delivery.md). Testprojekte und ValidationHost sind keine Pakete.
-Es erfolgt keine Veröffentlichung. Die Bibliotheken stehen unter der MIT-Lizenz
-(SPDX `MIT`, Datei [LICENSE](LICENSE)); jedes Paket enthält den Lizenztext mit
-Copyrightvermerk. Abhängigkeiten werden nur als NuGet-Verweise geführt und behalten
-ihre eigenen Lizenzen; die Pakete enthalten keinen fremden Code. Dateien unter
-`.opencode/skills/codemetr-guard/` behalten ihre eigene Lizenzdatei.
+Eight libraries are packed locally: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
+`Windows`, `Providers.Conversations`, `Providers.Interactions` and `DeliveryCheckpoints`, each with the prefix
+`Monstertacle.Multisession.`. `DeliveryCheckpoints` is independent of the session packages: one opaque durable
+delivery checkpoint per channel with typed atomic acknowledgement/CAS primitives, see [Delivery checkpoint](docs/delivery.md). Test projects and ValidationHost are not packages.
+No publication takes place. The libraries are licensed under the MIT License
+(SPDX `MIT`, file [LICENSE](LICENSE)); every package contains the license text with
+the copyright notice. Dependencies are carried only as NuGet references and keep
+their own licenses; the packages contain no third-party code. Files under
+`.opencode/skills/codemetr-guard/` keep their own license file.
 
 ```powershell
 dotnet build Monstertacle.Multisession.slnx -c Release --no-restore
@@ -28,29 +28,29 @@ dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/pa
 pwsh -NoProfile -File eng/Test-PackageLayout.ps1
 ```
 
-Eine Anwendung referenziert `Common`, `Storage.Sqlite` und genau ihr natives
-Plattformpaket. Unter Windows ist `net10.0-windows`, unter Linux `net10.0` zu
-verwenden. Herstelleradapter sind optional; eigene Adapter implementieren
-`ISessionProvider` ausschließlich über die öffentlichen Verträge.
-Die Bibliothek wird im Prozess eingebettet und benötigt keinen zusätzlichen Dienst.
-Die [Einbettungsanleitung](docs/embedding.md) führt durch Paketbezug, eigene Adapter,
-Herstellerkonfiguration und Publish. [Betrieb und Recovery](docs/operations.md)
-beschreiben Fristen, Reservierungen, Diagnose und sichere Wiederaufnahme.
+An application references `Common`, `Storage.Sqlite` and exactly its native
+platform package. On Windows, `net10.0-windows` is to be used; on Linux, `net10.0`.
+Vendor adapters are optional; custom adapters implement
+`ISessionProvider` exclusively via the public contracts.
+The library is embedded in-process and requires no additional service.
+The [embedding guide](docs/embedding.md) walks through package reference, custom adapters,
+vendor configuration and publish. [Operations and recovery](docs/operations.md)
+describe deadlines, reservations, diagnostics and safe resumption.
 
-## Entwicklungsumgebung und Prüfungen
+## Development environment and checks
 
-CQRS ist über `Monstertacle.SharpQrs` **0.2.0-alpha.1** eingebunden.
-`SessionRuntime.Commands` und `SessionRuntime.Queries` bieten nach dem Start typisierte
-asynchrone Operationen. Die bisherigen Ports bleiben kompatibel und durchlaufen dieselben
-Dispatcher. [CQRS-Vertrag und Beispiele](docs/cqrs.md), [SpecKit-Feature](specs/002-sharpqrs-cqrs/spec.md).
+CQRS is integrated via `Monstertacle.SharpQrs` **0.2.0-alpha.1**.
+`SessionRuntime.Commands` and `SessionRuntime.Queries` provide typed
+asynchronous operations after start. The existing ports remain compatible and go through the same
+dispatchers. [CQRS contract and examples](docs/cqrs.md), [SpecKit feature](specs/002-sharpqrs-cqrs/spec.md).
 
-- .NET SDK **10.0.403** gemäß `global.json`, kein implizites Roll-forward.
-- PowerShell 7 (`pwsh`), Git und NuGet-Zugriff; kein Python.
-- Genehmigtes lokales `Codemetr.CSharp.Tool` **0.1.0**; keine Debt-Baseline.
-- Repositorylokales `Codemetr.CSharp.Cover.Tool` **0.1.1**; Konfiguration in `codemetr-cover.json`.
-- Mindestens **87 %** Zeilenabdeckung des gesamten nativen Produktumfangs je Plattform.
+- .NET SDK **10.0.403** as per `global.json`, no implicit roll-forward.
+- PowerShell 7 (`pwsh`), Git and NuGet access; no Python.
+- Approved local `Codemetr.CSharp.Tool` **0.1.0**; no debt baseline.
+- Repository-local `Codemetr.CSharp.Cover.Tool` **0.1.1**; configuration in `codemetr-cover.json`.
+- At least **87 %** line coverage of the entire native product scope per platform.
 
-Vom Projektroot:
+From the project root:
 
 ```powershell
 dotnet tool restore
@@ -59,137 +59,137 @@ pwsh -NoProfile -File scripts/Invoke-Quality.ps1 -Platform windows
 dotnet tool run codemetr-csharp -- check --format json
 ```
 
-Auf einem nativen Linuxhost `-Platform linux` verwenden. Die Prüfungen dürfen nicht
-durch einen bloßen TFM-Wechsel auf einem anderen Betriebssystem ersetzt werden.
-Die Qualitätsprüfung führt Codemetr Cover auf den frischen Cobertura-/TRX-Dateien aller
-vier Testsuiten aus und verlangt `complete: true`. Neben dem nativen 87-%-Gate prüft
-Cover mindestens 87 % des gesamten nativen Bibliothekscodes und des vollständigen Prüfhosts einschließlich ungemessener Zeilen
-mit null Treffern sowie die unveränderten Standardgrenzen für Diff-Coverage und CRAP.
-Das separate Produktgate behält den vollständigen Bibliotheksumfang als eigenen Nenner;
-mitgemessene Prüfhost-Zeilen können ein unterschrittenes Produktgate nicht ausgleichen.
-Build-Artefakte und Testcode zählen nicht als eigener Anwendungscode. Der Lauf erzeugt
-`cover-native-config.json` und nimmt genau die fremde Plattform aus; sie wird zwingend
-im jeweils anderen nativen CI-Lauf geprüft. Alle gemeinsamen Bibliotheken bleiben enthalten.
-Berichte liegen unter `artifacts/quality/<plattform>/<lauf>/`.
-Die drei funktionalen Wellen-Szenarien wählen ein explizites Aufnahmebudget von
-30 Sekunden. Der SDK-Standard beträgt weiterhin fünf Sekunden; die eigenen
-Deadline-Regressionen und alle weiteren Szenariofristen bleiben bestehen.
-Diese funktionale Prüflast ist kein Nachweis einer fünfsekündigen Aufnahme-SLA;
-die native Beobachtung dazu steht im [Untersuchungsplan](specs/003-native-reliability/follow-up-windows-admission.md).
-Ausführliche Regeln stehen in [AGENTS.md](AGENTS.md), der
-[Constitution](.specify/memory/constitution.md) und im
+On a native Linux host, use `-Platform linux`. The checks must not
+be replaced by a mere TFM switch on a different operating system.
+The quality check runs Codemetr Cover on the fresh Cobertura/TRX files of all
+four test suites and requires `complete: true`. In addition to the native 87 % gate, Cover checks
+at least 87 % of the entire native library code and of the complete validation host, including unmeasured lines
+with zero hits, as well as the unchanged default limits for diff coverage and CRAP.
+The separate product gate keeps the complete library scope as its own denominator;
+co-measured validation-host lines cannot compensate for a product gate that falls short.
+Build artifacts and test code do not count as separate application code. The run generates
+`cover-native-config.json` and excludes exactly the foreign platform; it is mandatorily
+checked in the respective other native CI run. All shared libraries remain included.
+Reports are located under `artifacts/quality/<platform>/<run>/`.
+The three functional wave scenarios choose an explicit admission budget of
+30 seconds. The SDK default remains five seconds; the dedicated
+deadline regressions and all other scenario deadlines remain in place.
+This functional test load is not evidence of a five-second admission SLA;
+the native observation on this is in the [investigation plan](specs/003-native-reliability/follow-up-windows-admission.md).
+Detailed rules are in [AGENTS.md](AGENTS.md), the
+[Constitution](.specify/memory/constitution.md) and the
 [Quickstart](specs/001-agent-multisession/quickstart.md).
 
-## Übergabe an einen Remote-Agenten
+## Handover to a remote agent
 
 Repository: <https://github.com/monstertacle/monstertacle.multisession>.
-**Aktiver Auftrag: alle offenen Speckit-Tasks autonom implementieren.**
-Arbeitsstand und Abhängigkeiten: [Gesamtimplementierung](specs/001-agent-multisession/evidence/implementation-progress.md).
-T112–T115, Dispatcher und öffentliche Runtimekomposition sind umgesetzt; Nachweise und Grenzen
-stehen in [tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md) und den anderen Storynachweisen.
-Conversations/Responses und stabile Interactions sind gegen lokale HTTP-Fixtures implementiert;
-[Providervertrag und Grenzen](docs/providers.md). Öffentliche Adapterintegration, SQLite-Transaktionen,
-Crash-Recovery sowie Cancel, Stop und Close sind inzwischen mit echten lokalen Storetests umgesetzt;
-Nachweise und verbleibende Abnahmegrenzen stehen in
-[tdd-us3.md](specs/001-agent-multisession/evidence/tdd-us3.md) und
+**Active assignment: implement all open Speckit tasks autonomously.**
+Work status and dependencies: [Overall implementation](specs/001-agent-multisession/evidence/implementation-progress.md).
+T112–T115, dispatchers and public runtime composition are implemented; evidence and limits
+are in [tdd-us1.md](specs/001-agent-multisession/evidence/tdd-us1.md) and the other story evidence records.
+Conversations/Responses and stable Interactions are implemented against local HTTP fixtures;
+[Provider contract and limits](docs/providers.md). Public adapter integration, SQLite transactions,
+crash recovery as well as Cancel, Stop and Close have since been implemented with real local store tests;
+evidence and remaining acceptance limits are in
+[tdd-us3.md](specs/001-agent-multisession/evidence/tdd-us3.md) and
 [tdd-us5.md](specs/001-agent-multisession/evidence/tdd-us5.md).
-Bootstrap-Optionsabgleich und ausdrückliche lokale Retention/Löschung sind ebenfalls umgesetzt;
-ihre vollständigen Abnahmegrenzen bleiben in den Tasks sichtbar. Speicherfehlerproben,
-Diagnostik und native Prozessprüfungen sind vorhanden; Paketkonsum und finale
-Abnahmen stehen im Arbeitsnachweis. Der kontrollierte Store bleibt eine Testprojektion.
-Keine Produktfreigabe.
+Bootstrap options reconciliation and explicit local retention/deletion are also implemented;
+their complete acceptance limits remain visible in the tasks. Storage failure probes,
+diagnostics and native process checks are present; package consumption and final
+acceptances are in the work record. The controlled store remains a test projection.
+No product release.
 
-1. Eigenen Arbeitsbranch aus dem aktuellen Remote-Stand erstellen; keine parallelen
-   Änderungen mehrerer Agenten im selben Arbeitsbaum.
-2. AGENTS.md, Constitution, [Plan](specs/001-agent-multisession/plan.md),
-   [Tasks](specs/001-agent-multisession/tasks.md) und den
-   [Orchestrierungsvertrag](specs/001-agent-multisession/contracts/orchestration-details.md) lesen.
-3. Featurekontext lokal setzen, da `.specify/feature.json` absichtlich nicht versioniert wird:
+1. Create your own working branch from the current remote state; no parallel
+   changes by multiple agents in the same working tree.
+2. Read AGENTS.md, the Constitution, the [Plan](specs/001-agent-multisession/plan.md),
+   the [Tasks](specs/001-agent-multisession/tasks.md) and the
+   [orchestration contract](specs/001-agent-multisession/contracts/orchestration-details.md).
+3. Set the feature context locally, since `.specify/feature.json` is intentionally not versioned:
 
 ```powershell
 $env:SPECIFY_FEATURE_DIRECTORY = 'specs/001-agent-multisession'
 & ./.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireSpec -RequireTasks -IncludeTasks
 ```
 
-Für eine Bash-gestartete Agentensitzung vorab:
+For an agent session started from Bash, beforehand:
 
 ```sh
 export SPECIFY_FEATURE_DIRECTORY=specs/001-agent-multisession
 ```
 
-Die Codex-Skills liegen bereits unter `.agents/skills/`. Bei einem Client mit dieser
-Skill-Unterstützung lautet der Agentenauftrag (kein Shellbefehl):
+The Codex skills are already located under `.agents/skills/`. For a client with this
+skill support, the agent assignment (not a shell command) is:
 
 ```text
-$speckit-implement Alle offenen Tasks nach ihren Abhängigkeiten implementieren.
-Vorhandene Runtime-, Dispatch-, Recovery- und Pagingverträge wiederverwenden.
-Vor Umsetzung aktuellen Deep-Dive dokumentieren,
-fachliches Red vor Green beobachten, Regression, native Qualitätsprüfung und vollständigen
-Codemetr-Guard ausführen. T112/T025 wiederverwenden; alle offenen Storys weiterführen.
-Änderungen und Prüfnachweise
-auf einem Arbeitsbranch zur Überprüfung zurückliefern; kein Merge, Deployment oder NuGet-Push.
+$speckit-implement Implement all open tasks in dependency order.
+Reuse the existing runtime, dispatch, recovery and paging contracts.
+Before implementing, document a current deep dive,
+observe a domain Red before Green, run the regression, the native quality check and the complete
+Codemetr guard. Reuse T112/T025; continue all open stories.
+Return changes and check evidence
+on a working branch for review; no merge, deployment or NuGet push.
 ```
 
-Falls der Client Skills nicht automatisch erkennt, den Skill
-`.agents/skills/speckit-implement/SKILL.md` mit diesem Gesamtimplementierungsauftrag laden.
-Die projektlokalen Spec-Kit-Skripte verwenden PowerShell, auch unter Linux.
+If the client does not detect skills automatically, load the skill
+`.agents/skills/speckit-implement/SKILL.md` with this overall implementation assignment.
+The project-local Spec Kit scripts use PowerShell, also on Linux.
 
-Die mitgelieferte Spec-Kit-Erweiterung `git` (1.0.1) ist nur für den ausdrücklichen
-Aufruf installiert. Alle ihre Hooks sind in `.specify/extensions.yml` abgeschaltet:
-`$speckit-specify` legt keinen Branch an, und kein Befehl committet automatisch. Jedes
-Feature erhält genau einen Branch, angelegt von seinem Autor: entweder der eigene
-Arbeitsbranch aus Schritt 1 oder einmalig `$speckit-git-feature` (OpenCode:
-`/speckit.git.feature`) auf aktuellem `main`, das `feature/{number}-{slug}` mit der
-nächsten Specnummer erzeugt. `$speckit-git-validate` prüft den Branchnamen. Die
-Python-Kopie der Erweiterungsskripte ist wegen der Constitution nicht installiert.
-`specify extension update git` oder eine Neuinstallation schaltet die Hooks wieder ein,
-entfernt die Codex-Skills und stellt `scripts/python` wieder her. Dieser Diff ist vor
-der Nutzung zu prüfen und auf die freigegebene Konfiguration zurückzuführen;
-`scripts/Test-SpecKitConfiguration.ps1 -ForbidPython` prüft sie im Guard-CI und
-weist eine nicht geprüfte Erweiterungsversion zurück.
+The bundled Spec Kit extension `git` (1.0.1) is installed only for explicit
+invocation. All of its hooks are disabled in `.specify/extensions.yml`:
+`$speckit-specify` does not create a branch, and no command commits automatically. Each
+feature receives exactly one branch, created by its author: either the own
+working branch from step 1 or, once, `$speckit-git-feature` (OpenCode:
+`/speckit.git.feature`) on the current `main`, which creates `feature/{number}-{slug}` with the
+next spec number. `$speckit-git-validate` checks the branch name. The
+Python copy of the extension scripts is not installed because of the Constitution.
+`specify extension update git` or a reinstallation re-enables the hooks,
+removes the Codex skills and restores `scripts/python`. This diff is to be reviewed before
+use and reverted to the approved configuration;
+`scripts/Test-SpecKitConfiguration.ps1 -ForbidPython` checks it in the guard CI and
+rejects an unreviewed extension version.
 
-## Nachweise und Repositorygrenzen
+## Evidence and repository boundaries
 
-Arbeitsnachweise liegen unter [evidence](specs/001-agent-multisession/evidence/README.md).
-Die [Repository-/Clone-Prüfung](specs/001-agent-multisession/evidence/repository-bootstrap.md)
-dokumentiert den getesteten Initialcommit und die Grenzen dieser lokalen Prüfung.
-Rohberichte/TRX/Source-Manifeste unter `artifacts/` und `TestResults/` bleiben lokal
-beziehungsweise werden als CI-Artefakte übertragen; ein frischer Clone enthält sie nicht.
-Fehlende Originalartefakte dürfen nicht rekonstruiert und als historische Ausführung
-ausgegeben werden. Die dokumentierte anfängliche Manifestlücke bleibt offen.
+Work evidence is located under [evidence](specs/001-agent-multisession/evidence/README.md).
+The [repository/clone check](specs/001-agent-multisession/evidence/repository-bootstrap.md)
+documents the tested initial commit and the limits of this local check.
+Raw reports/TRX/source manifests under `artifacts/` and `TestResults/` remain local
+or are transferred as CI artifacts; a fresh clone does not contain them.
+Missing original artifacts must not be reconstructed and presented as a historical execution.
+The documented initial manifest gap remains open.
 
-Frühere Aussagen „kein Git-Repository“ in historischen Nachweisen beschreiben den damaligen
-Stand. Die Initialisierung und der erste Push wurden anschließend ausdrücklich freigegeben.
-Das ist keine Erfüllung von T111/Required Checks oder der noch offenen Produktabnahmen.
-SharpClaw bleibt ein späterer Konsument, OpenCode **1.19.0** eine optionale Referenz.
+Earlier statements „kein Git-Repository“ (“no Git repository”) in historical evidence describe the state
+at that time. Initialization and the first push were subsequently explicitly approved.
+This does not fulfil T111/Required Checks or the product acceptances that are still open.
+SharpClaw remains a later consumer, OpenCode **1.19.0** an optional reference.
 
-`.gitignore` basiert auf der [offiziellen GitHub-VisualStudio-Vorlage](https://github.com/github/gitignore/blob/main/VisualStudio.gitignore),
-ergänzt um lokale Agentdaten, SQLite-Zustand und die ausdrückliche Aufnahme des Coverageinventars.
-Es werden keine Zugangsdaten, nativen Sessions oder produktiven Zustandsspeicher versioniert.
+`.gitignore` is based on the [official GitHub VisualStudio template](https://github.com/github/gitignore/blob/main/VisualStudio.gitignore),
+extended with local agent data, SQLite state and the explicit inclusion of the coverage inventory.
+No credentials, native sessions or productive state stores are versioned.
 
-SQLite unterstützt explizites `SqliteStoreFactory.CreateNewAsync` beziehungsweise
-`OpenExistingAsync`, Session-/Requestlookup, Session-/Bindingcommit und dauerhafte Annahme
-über einen begrenzten einzelnen DBworker. Der Leaseport bereitet private Dateien vor;
-Metadaten, Trustscope, Header und tatsächliches Schema werden vor Nutzung geprüft.
-Wiederöffnung erhält wartende Eingaben und Sequenzen. Native DB-Busyzeit ist zunächst
-fest eine Sekunde; andere Werte werden ausdrücklich vor Dateizugriff abgewiesen.
-Fachliche Prozess-Kill- und native Besitznachweise bleiben offen;
-[Nachweise](specs/001-agent-multisession/evidence/tdd-us5.md).
+SQLite supports explicit `SqliteStoreFactory.CreateNewAsync` or
+`OpenExistingAsync`, session/request lookup, session/binding commit and durable admission
+via a bounded single DB worker. The lease port prepares private files;
+metadata, trust scope, header and actual schema are checked before use.
+Reopening preserves waiting inputs and sequences. Native DB busy time is initially
+fixed at one second; other values are explicitly rejected before file access.
+Functional process-kill and native ownership evidence remain open;
+[evidence](specs/001-agent-multisession/evidence/tdd-us5.md).
 
-Der SQLite-Dispatchschnitt sichert Reservierung und unveränderte Eingabe vor Versand,
-native Kennungs-Callbacks vor Bestätigung und bekannte Abschlüsse atomar mit Ergebnis,
-History, Bindungsfortschritt und Freigabe. Session-/Request-/Historyseiten sind verfügbar.
+The SQLite dispatch slice secures reservation and unchanged input before sending,
+native identifier callbacks before confirmation, and known completions atomically with result,
+history, binding progress and release. Session/request/history pages are available.
 
-Die SQL-Recoveryprojektion hält ungewisse Reservierungen, eröffnet persistente Fälle
-und unterstützt revisionsgesicherte explizite Entscheidungen. Bootstrap behandelt alte
-Running als Interrupted/Unknown; offene Fälle sind paginiert lesbar. Vor Workerstart wird
-lokale Provider-/Binding-/Ausführungsunterstützung geprüft. Wieder vorhandene Registrierung
-löst nur eigene Konfigurationssperren. Öffentliche Prozess-Kill-Gesamtabnahme und weitere
-Lebenszyklus-/Plattformaufgaben bleiben offen; keine Produktfreigabe.
+The SQL recovery projection holds uncertain reservations, opens persistent cases
+and supports revision-protected explicit decisions. Bootstrap treats old
+Running as Interrupted/Unknown; open cases are readable with pagination. Before worker start,
+local provider/binding/execution support is checked. A registration that is present again
+releases only its own configuration locks. Public overall process-kill acceptance and further
+lifecycle/platform tasks remain open; no product release.
 
-Optionale Diagnosen werden über ein hosteigenes `SessionDiagnostics` an `SessionRuntime`
-übergeben und nach Runtimeende entsorgt. Bestätigte Annahmen und gespeicherte Abschlüsse
-liefern strukturierte ILogger-Ereignisse und Activities mit lokalen Kennungen, Zustand,
-Gewissheit, Dauer und öffentlicher Fehlerkategorie. Eingaben, Ausgaben, Bindungen und
-Workspaceinhalte werden nicht gemeldet. Logger-/Listenerexceptions sind isoliert;
-`FailureCount` zählt sie. Ein eigenes Diagnoseobjekt je Runtime hält außerdem BCL-Dauerhistogramme, einen Zähler beobachteter Abschlüsse und gecachte Queue-/Reservierungsgauges. Der Monitor liest initial und mit einer Sekunde Pause; fehlende oder veraltete Werte werden bei Lesefehler/Stop zurückgezogen. Die vollständige Diagnoseabnahme ist noch offen.
+Optional diagnostics are passed to `SessionRuntime` via a host-owned `SessionDiagnostics`
+and disposed of after the runtime ends. Confirmed admissions and stored completions
+emit structured ILogger events and Activities with local identifiers, state,
+certainty, duration and public failure category. Inputs, outputs, bindings and
+workspace contents are not reported. Logger/listener exceptions are isolated;
+`FailureCount` counts them. A dedicated diagnostics object per runtime additionally holds BCL duration histograms, a counter of observed completions and cached queue/reservation gauges. The monitor reads initially and with a one-second pause; missing or stale values are withdrawn on read failure/stop. Complete diagnostics acceptance is still open.

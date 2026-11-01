@@ -1,308 +1,308 @@
 # Public Library Contract v1
 
-**Datum**: 2026-10-27 | **Basis**: [spec.md](../spec.md), [data-model.md](../data-model.md)
+**Date**: 2026-10-27 | **Basis**: [spec.md](../spec.md), [data-model.md](../data-model.md)
 
-Dies ist der Bibliotheksvertrag mit Implementierungsabgleich vom 2026-10-29T21:57:58Z.
-Er definiert keine HTTP-Routen, Dienstinstallation oder Benutzeroberfläche.
-Namespace-Wurzel: `Monstertacle.Multisession`.
+This is the library contract with the implementation reconciliation of 2026-10-29T21:57:58Z.
+It defines no HTTP routes, service installation or user interface.
+Namespace root: `Monstertacle.Multisession`.
 
-Erneut gegen Constitution v2.0.0 geprüft; Konkretisierung des bestehenden Umfangs.
-Für seine Verhaltenszusagen sind zuerst ausführbare fehlschlagende Vertrags-/Konsumtests
-zu schreiben (insbesondere TDD-01/TDD-04/TDD-07), bevor das jeweilige Verhalten entsteht.
-Die verbindlichen Dispatch-/Recovery-/Annahme-/Pagingdetails stehen in
-[orchestration-details.md](orchestration-details.md). T112–T115 setzen die dort ausdrücklich
-benannten Unterschiede nach passendem Red um; diese vier Vertragsschnitte sind
-inzwischen implementiert und in den storybezogenen TDD-Nachweisen belegt.
+Re-checked against Constitution v2.0.0; concretization of the existing scope.
+For its behavior guarantees, executable failing contract/consumption tests
+are to be written first (in particular TDD-01/TDD-04/TDD-07), before the respective behavior comes into being.
+The binding dispatch/recovery/admission/paging details are in
+[orchestration-details.md](orchestration-details.md). T112–T115 implement the differences explicitly
+named there after matching Red; these four contract slices are
+now implemented and proven in the story-related TDD evidence.
 
-SharpClaw ist als langfristiger In-Process-Konsument vorgesehen. Es nutzt dieselben
-öffentlichen Verträge wie andere Hosts, ohne Sonderzugriffe auf interne Klassen.
-Die Bibliotheken referenzieren weder dessen Assemblies noch dessen Quellcode oder
-Konfigurationsdateien. Ein eigener zusätzlicher Dienst ist keine Einbettungsvoraussetzung.
-Der Zielhost kann vorhandene Anbindungen über eigene ISessionProvider-Adapter registrieren;
-deren konkrete Migration und Bestandszustände sind nicht Teil dieses Erstvertrags.
+SharpClaw is intended as a long-term in-process consumer. It uses the same
+public contracts as other hosts, without special access to internal classes.
+The libraries reference neither its assemblies nor its source code or
+configuration files. A separate additional service is not an embedding prerequisite.
+The target host can register existing connections via its own ISessionProvider adapters;
+their concrete migration and existing states are not part of this initial contract.
 
-## 1. Zusammensetzung und Lebenszyklus
+## 1. Composition and Lifecycle
 
-Der Host verbindet Common mit einem Store, einer Plattformimplementierung, explizit
-registrierten Providern und einem CredentialResolver. Logging und TimeProvider sind
-injizierbar. Keine versteckten statischen Registrierungen oder herstellerbezogenen Switches.
+The host wires Common with a store, a platform implementation, explicitly
+registered providers and a CredentialResolver. Logging and TimeProvider are
+injectable. No hidden static registrations or vendor-related switches.
 
-`SessionRuntime` stellt die drei fachlichen Facetten Sessions, Requests und Recovery
-bereit. Diese sind getrennte Verantwortlichkeiten, keine Pflicht für eine universelle
-Manager-Klasse mit sämtlichen Methoden. Die Vertragsversion und das NuGet-Paket folgen
-SemVer; Version 1 startet als Paketversion 0.1.0 vor einer stabilen 1.0-Zusage.
+`SessionRuntime` provides the three domain facets Sessions, Requests and Recovery.
+These are separate responsibilities, not an obligation for a universal
+manager class with all methods. The contract version and the NuGet package follow
+SemVer; version 1 starts as package version 0.1.0 before a stable 1.0 commitment.
 
-| Operation | Ergebnis / Pflicht |
+| Operation | Result / obligation |
 | --- | --- |
-| StartAsync(options, cancellationToken) | Besitzt danach exklusiv den Store; Schema, Optionen und Recovery geprüft; keine Netzwerklistener |
-| StopAsync(deadline, cancellationToken) | Nimmt nichts neu an; endliche Frist; alle offenen Anfragen behalten einen sichtbaren Zustand |
-| DisposeAsync() | Gibt Ressourcen/Store-Lease erst nach kontrolliertem Stop frei; keine implizite Löschung von Zustand |
+| StartAsync(options, cancellationToken) | Afterwards exclusively owns the store; schema, options and recovery checked; no network listeners |
+| StopAsync(deadline, cancellationToken) | Accepts nothing new; finite deadline; all open requests keep a visible state |
+| DisposeAsync() | Releases resources/store lease only after a controlled stop; no implicit deletion of state |
 
-Options werden vor Start validiert und danach nicht still geändert. Ein zweiter Start
-oder eine Operation nach abgeschlossenem Stop ist ein eindeutiger Lifecycle-Fehler.
-Der Host muss Stop ausdrücklich abwarten; das bloße Verwerfen eines Objekts ist kein
-Beweis für die Beendigung externer Arbeit.
+Options are validated before start and not silently changed afterwards. A second start
+or an operation after a completed stop is an unambiguous lifecycle error.
+The host must explicitly await stop; merely discarding an object is no
+proof that external work has ended.
 
-Die Stop-Frist beginnt beim Eingang der Stop-Anforderung und wird monoton gemessen.
-Neue Annahme wird ab diesem Zeitpunkt gesperrt. Innerhalb der Frist wird offene Arbeit
-abgeschlossen; danach verbleibende Queued-Anfragen enden ausdrücklich als
-Cancelled/NotStarted. Laufende Arbeit erhält einen bestätigten Endzustand oder Unknown
-mit erhaltener Reservierung. Ein Prozessabsturz vor gesicherter Finalisierung ist dagegen
-Wiederanlauf: Noch Queued gespeicherte Anfragen werden nicht als abgebrochen angenommen.
-Bei nicht verfügbarem Store darf Stop keinen dauerhaften Erfolg behaupten; der Fehler
-bleibt sichtbar, und der zuletzt gesicherte Zustand ist beim nächsten Start maßgeblich.
+The stop deadline begins at receipt of the stop request and is measured monotonically.
+New admission is locked from this point on. Within the deadline, open work is
+completed; Queued requests remaining afterwards explicitly end as
+Cancelled/NotStarted. Running work receives a confirmed final state or Unknown
+with a retained reservation. A process crash before saved finalization, by contrast, is
+a restart: requests still stored as Queued are not assumed to be cancelled.
+If the store is unavailable, stop MUST NOT claim durable success; the error
+remains visible, and the last saved state is authoritative at the next start.
 
-## 2. Sessions — Sitzungskatalog
+## 2. Sessions — Session Catalog
 
-| Operation | Eingabe | Ergebnis und Semantik |
+| Operation | Input | Result and semantics |
 | --- | --- | --- |
-| CreateSessionAsync | string agentProfileId, SessionExecutionContext context, CancellationToken | Lokale SessionId und Snapshot; Context enthält nullable WorkspaceDirectory/WorkspaceKey; native Eröffnung soweit der Provider sie separat unterstützt |
-| GetSessionAsync | SessionId | Snapshot einschließlich Providerbindung, Lifecycle und BlockReason; keine Geheimnisse |
-| ListSessionsAsync | Begrenzte Seitengröße, optionaler Cursor | Nur Sitzungen dieser Instanz; stabile Sortierung nach CreatedUtc und SessionId |
-| ReadHistoryAsync | SessionId, begrenzte Seitengröße, Cursor | Lokal beobachtete Eingaben, Ergebnisse und Betriebsereignisse; kein behaupteter vollständiger nativer Chat |
-| CloseSessionAsync | SessionId | Neue Annahme sofort sperren; wartende Anfragen abbrechen, laufende innerhalb der Frist beenden oder ungewiss sichern |
-| DeleteSessionAsync | SessionId | Nur Closed ohne aktive/ungeklärte Reservierung; lokale Daten gemäß Löschvertrag entfernen |
+| CreateSessionAsync | string agentProfileId, SessionExecutionContext context, CancellationToken | Local SessionId and snapshot; context contains nullable WorkspaceDirectory/WorkspaceKey; native opening insofar as the provider supports it separately |
+| GetSessionAsync | SessionId | Snapshot including provider binding, Lifecycle and BlockReason; no secrets |
+| ListSessionsAsync | Bounded page size, optional cursor | Only sessions of this instance; stable sorting by CreatedUtc and SessionId |
+| ReadHistoryAsync | SessionId, bounded page size, cursor | Locally observed inputs, results and operational events; no claimed complete native chat |
+| CloseSessionAsync | SessionId | Lock new admission immediately; cancel waiting requests, end running ones within the deadline or save them as uncertain |
+| DeleteSessionAsync | SessionId | Only Closed without an active/unresolved reservation; remove local data according to the deletion contract |
 
-Neue lokale Identität und SettingsSnapshot werden vor externer Eröffnung gespeichert.
-Wenn ein Provider erst mit der ersten Nachricht eine native ID vergibt, bleibt das
-Binding bis dahin leer, ohne eine erfundene externe Sitzung zu behaupten.
-Schlägt eine externe Eröffnung möglicherweise nach Annahme fehl, bleibt ein blockierter
-lokaler Datensatz auffindbar; der Fehler enthält dessen SessionId.
+New local identity and SettingsSnapshot are stored before external opening.
+If a provider only assigns a native ID with the first message, the
+binding remains empty until then, without claiming an invented external session.
+If an external opening possibly fails after acceptance, a blocked
+local record remains findable; the error contains its SessionId.
 
-Schließen oder Löschen löst keine implizite Löschung beim Hersteller aus. Verändernde
-Operationen mit fremden/unbekannten Kennungen geben NotFound zurück; einzelne Get-Lese-
-operationen liefern bei unbekannter Identität null. Daten anderer Instanzen werden nicht gesucht.
-Ein Close mit ungewisser Reservierung liefert Closing mit RecoveryRequired, nicht Closed.
-Die Schließabsicht allein ist weder Beendigungsbeweis noch Freigabe des Workspaces.
+Closing or deleting does not trigger an implicit deletion at the vendor. Modifying
+operations with foreign/unknown identifiers return NotFound; individual Get read
+operations return null for an unknown identity. Data of other instances is not searched.
+A close with an uncertain reservation returns Closing with RecoveryRequired, not Closed.
+The close intent alone is neither proof of termination nor release of the workspace.
 
-## 3. Requests — dauerhafte Annahme und Status
+## 3. Requests — Durable Admission and Status
 
-| Operation | Eingabe | Ergebnis und Semantik |
+| Operation | Input | Result and semantics |
 | --- | --- | --- |
-| SubmitAsync | SubmitRequest(SessionId, Input, Timeout, WorkspaceKey, WriteIntent), CancellationToken | RequestReceipt mit RequestId und Sequence erst nach Commit; WorkspaceKey ist nullable, WriteIntent ist ein expliziter bool |
-| GetRequestAsync | RequestId | Snapshot von Zustand, Ergebnis, Gewissheit und bereinigtem Fehler |
-| ListRequestsAsync | SessionId, begrenzte Seitengröße, Cursor | Auffindbarkeit auch nach verlorener Annahmebestätigung |
-| CancelRequestAsync | RequestId | Sichtbarer Abbruchwunsch; Rückgabe beweist nicht die externe Beendigung |
+| SubmitAsync | SubmitRequest(SessionId, Input, Timeout, WorkspaceKey, WriteIntent), CancellationToken | RequestReceipt with RequestId and Sequence only after commit; WorkspaceKey is nullable, WriteIntent is an explicit bool |
+| GetRequestAsync | RequestId | Snapshot of state, result, certainty and sanitized error |
+| ListRequestsAsync | SessionId, bounded page size, cursor | Findability even after a lost acceptance confirmation |
+| CancelRequestAsync | RequestId | Visible cancellation request; the return does not prove external termination |
 
-Submit bedeutet Annahme, nicht bereits abgeschlossene Providerarbeit. Der Aufrufer kann
-den Zustand wiederholt lesen; ein dauerhaftes UI-/SSE-Pushprotokoll wird nicht vorausgesetzt.
-Der an Submit übergebene CancellationToken betrifft zunächst die lokale Annahmeoperation.
-Nach Commit wird für das Beenden des gespeicherten Auftrags CancelRequest verwendet;
-ein verlorenes Client-Warten darf keine bestätigte Anfrage still löschen.
-AdmissionTimeout beginnt beim Eintritt in SubmitAsync und begrenzt nur das lokale
-Warten auf Annahme, nicht die spätere Queue-Wartezeit. Frist-/Tokenabbruch vor sicher
-erfolgtem Commit bedeutet keine bestätigte Annahme. Ist der Commit-Ausgang beim
-Abbruch unbekannt, darf der Fehler keine sichere Nichtannahme behaupten; die Sitzungsliste
-der Anfragen bleibt der Nachschlageweg. Ein neuer Submit wird nicht automatisch dedupliziert.
+Submit means acceptance, not already completed provider work. The caller can
+read the state repeatedly; a persistent UI/SSE push protocol is not presupposed.
+The CancellationToken passed to Submit initially concerns the local admission operation.
+After commit, CancelRequest is used to end the stored job;
+a lost client wait MUST NOT silently delete a confirmed request.
+AdmissionTimeout begins on entry into SubmitAsync and limits only the local
+wait for acceptance, not the later queue waiting time. Deadline/token cancellation before a safely
+completed commit means no confirmed acceptance. If the commit outcome is unknown at
+cancellation, the error MUST NOT claim safe non-acceptance; the session's list
+of requests remains the lookup path. A new submit is not automatically deduplicated.
 
-Annahmereihenfolge ist die unter SQLite-Transaktion vergebene Sequence, nicht die
-Wanduhr-Reihenfolge paralleler Aufrufer. Je Sitzung höchstens ein laufender Dispatch.
-Getrennte Sitzungen können parallel laufen, solange globale Kapazität und Workspace zulassen.
+The acceptance order is the Sequence assigned under the SQLite transaction, not the
+wall-clock order of parallel callers. At most one running dispatch per session.
+Separate sessions can run in parallel as long as global capacity and workspace permit.
 
-Bei vollem Wartelimit erfolgt QueueFull ohne Annahme. Infrastrukturwarteschlangen sind
-ebenfalls begrenzt; Annahme darf kontrolliert warten oder mit LocalCapacityExceeded
-abgewiesen werden, aber niemals unbeschränkt Tasks oder Nachrichten puffern.
+When the queue limit is full, QueueFull occurs without acceptance. Infrastructure queues are
+likewise bounded; admission may wait in a controlled way or be rejected with LocalCapacityExceeded,
+but never buffer tasks or messages without bound.
 
-Eine angenommene Queued-Anfrage besitzt keine automatische Wartefrist; RequestTimeout
-beginnt erst beim Dispatch und wird monoton gemessen. Sie kann vorher ausdrücklich
-abgebrochen werden. Unter zulassungsfähigen Sitzungsköpfen zählt die älteste Annahme,
-bei gleichem AcceptedUtc die ordinal verglichene RequestId. Blockierte Köpfe werden
-übersprungen, ohne die Reihenfolge innerhalb derselben Sitzung zu ändern. Feste Wartezeiten
-oder globale Starvation-Freiheit sind keine Zusicherung. Ungewisse Reservierungen belegen
-weiter Slots; bei vollständig belegtem Limit besteht keine Zusage weiteren Fortschritts.
+An accepted Queued request has no automatic waiting deadline; RequestTimeout
+only begins at dispatch and is measured monotonically. It can be explicitly
+cancelled beforehand. Among admissible session heads, the oldest acceptance counts,
+with equal AcceptedUtc the ordinally compared RequestId. Blocked heads are
+skipped without changing the order within the same session. Fixed waiting times
+or global starvation freedom are not guaranteed. Uncertain reservations continue to occupy
+slots; when the limit is fully occupied, there is no guarantee of further progress.
 
-Die Bibliothek startet nach Timeout/Abbruch keine weiteren Folgeanfragen einer Sitzung,
-solange die tatsächliche Beendigung des vorherigen Dispatch nicht geklärt ist.
-Das gilt auch dann, wenn lokal bereits ein Cancelled-/TimedOut-Ergebnis sichtbar ist.
+After timeout/cancellation, the library starts no further follow-up requests of a session
+as long as the actual termination of the previous dispatch has not been resolved.
+This applies even if a Cancelled/TimedOut result is already visible locally.
 
-## 4. Recovery — ausdrücklich statt blindem Replay
+## 4. Recovery — Explicit Instead of Blind Replay
 
-| Operation | Eingabe | Ergebnis und Semantik |
+| Operation | Input | Result and semantics |
 | --- | --- | --- |
-| ListRecoveryCasesAsync | Begrenzte Seitengröße, Cursor | Offene RecoveryCaseSnapshot für SessionOpening und RequestExecution samt aktueller Revision |
-| GetRecoveryCaseAsync | RecoveryTarget | Einzelner Fallsnapshot samt Revision, auch nach Klärung solange die Sitzung erhalten ist; unbekannt → null |
-| InspectRecoveryAsync | RecoveryTarget | Liest bekannten nativen Zustand ohne Send/Retry, Revisionsänderung oder Reservierungsfreigabe |
-| ResolveRecoveryAsync | RecoveryDecision mit Target/ExpectedRevision/Begründung | Persistiert Klärung atomar; veraltete oder doppelte Entscheidung → RevisionConflict |
+| ListRecoveryCasesAsync | Bounded page size, cursor | Open RecoveryCaseSnapshots for SessionOpening and RequestExecution including current revision |
+| GetRecoveryCaseAsync | RecoveryTarget | Single case snapshot including revision, also after resolution as long as the session is retained; unknown → null |
+| InspectRecoveryAsync | RecoveryTarget | Reads the known native state without send/retry, revision change or reservation release |
+| ResolveRecoveryAsync | RecoveryDecision with Target/ExpectedRevision/justification | Persists resolution atomically; stale or duplicate decision → RevisionConflict |
 
-RecoveryTarget adressiert entweder eine ungewisse Eröffnung per SessionId oder eine
-Ausführung per RequestId. Es werden keine Dummy-Requests angelegt. Erzeugung, Revision,
-Schließung ohne bekannten nativen Bezug und CAS-Regeln: orchestration-details.md §2.
+RecoveryTarget addresses either an uncertain opening via SessionId or an
+execution via RequestId. No dummy requests are created. Creation, revision,
+closing without a known native reference and CAS rules: orchestration-details.md §2.
 
-ConfirmEnded setzt voraus, dass externer Abschluss tatsächlich festgestellt oder vom
-verantwortlichen Betreiber ausdrücklich nach Untersuchung bestätigt wurde. Eine fehlende
-lokale PID, ein abgelaufener Timer oder ein HTTP-Verbindungsende genügt nicht.
+ConfirmEnded presupposes that external completion has actually been determined or has been explicitly
+confirmed by the responsible operator after investigation. A missing
+local PID, an expired timer or an HTTP connection end is not sufficient.
 
-Eine Fortsetzung benötigt zusätzlich einen gültigen nativen Bezug beziehungsweise einen
-vom Adapter aus bestätigten Belegen gewonnenen Fortsetzungsstand. Ohne diesen Nachweis
-bleibt die Sitzung blockiert oder wird geschlossen. Kein Transcript-Replay und kein
-stilles Neueröffnen unter der bisherigen Kennung. Das ursprüngliche Interrupted-/Fehler-
-Ergebnis wird nicht nachträglich zu einem unbewiesenen Erfolg umgeschrieben.
+A continuation additionally requires a valid native reference or a
+continuation state obtained by the adapter from confirmed evidence. Without this proof,
+the session remains blocked or is closed. No transcript replay and no
+silent reopening under the previous identifier. The original Interrupted/error
+result is not retroactively rewritten into an unproven success.
 
-Wiederholung geschieht ausschließlich durch einen neuen Submit mit neuer Kennung nach
-ausdrücklicher Entscheidung. Es gibt kein Exactly-once-Versprechen für externe Hersteller.
+A retry happens exclusively through a new submit with a new identifier after an
+explicit decision. There is no exactly-once promise for external vendors.
 
-## 5. Optionen und Hostpflichten
+## 5. Options and Host Obligations
 
-| Einstellung | Startwert / Validierung |
+| Setting | Initial value / validation |
 | --- | --- |
-| MaxConcurrentRequests | 4; positiv; Unknown-Reservierungen zählen weiter |
-| MaxQueuedRequests | 100; positiv; zählt dauerhafte Queued-Aufträge instanzweit |
-| MaxInputBytes / MaxOutputBytes | 1 MiB / 4 MiB; positiv; UTF-8-Bytes, keine versteckten Zeichenannahmen |
-| AdmissionTimeout | 5 Sekunden ab Eintritt in SubmitAsync; positiv und endlich; betrifft nur lokale Annahme |
-| RequestTimeout | 600 Sekunden; positiv und endlich; beginnt beim Dispatch |
-| ShutdownTimeout | 10 Sekunden; positiv und endlich |
-| DbWorkQueueCapacity | 256; positiv; begrenzt lokale Datenbankarbeit |
-| DbBusyTimeout | 1 Sekunde; positiv und kleiner als ShutdownTimeout; keine unbeschränkten DB-Retries |
-| Retention | Explizite Frist oder RetainUntilExplicitDeletion; keine stille Inhaltslöschung |
-| StateDirectory | Absolut, privat, lokales Dateisystem; explizit initialisiert |
+| MaxConcurrentRequests | 4; positive; Unknown reservations continue to count |
+| MaxQueuedRequests | 100; positive; counts durable Queued jobs instance-wide |
+| MaxInputBytes / MaxOutputBytes | 1 MiB / 4 MiB; positive; UTF-8 bytes, no hidden character assumptions |
+| AdmissionTimeout | 5 seconds from entry into SubmitAsync; positive and finite; concerns only local admission |
+| RequestTimeout | 600 seconds; positive and finite; begins at dispatch |
+| ShutdownTimeout | 10 seconds; positive and finite |
+| DbWorkQueueCapacity | 256; positive; limits local database work |
+| DbBusyTimeout | 1 second; positive and less than ShutdownTimeout; no unbounded DB retries |
+| Retention | Explicit period or RetainUntilExplicitDeletion; no silent content deletion |
+| StateDirectory | Absolute, private, local file system; explicitly initialized |
 
-Eingabe-/Ausgabegrenzen sind inklusive: Genau das Limit ist zulässig, ein Byte darüber
-nicht. Eine leere Eingabe oder Überschreitung wird vor Annahme als InvalidInput beziehungsweise
-InputLimitExceeded abgewiesen. Bei zu großer Provider-Ausgabe endet die Anfrage mit
-Failed/OutputLimitExceeded, leerem Output und OutputComplete=false, nicht mit gekürztem
-Erfolg. Frühere Verlaufseinträge bleiben unverändert. Kann externes Ende nicht bestätigt
-werden, bleibt Unknown mit Reservierung; die native Kontextverwaltung wird nicht verändert.
+Input/output limits are inclusive: exactly the limit is permissible, one byte above it
+is not. An empty input or an overrun is rejected before acceptance as InvalidInput or
+InputLimitExceeded. With an oversized provider output, the request ends with
+Failed/OutputLimitExceeded, empty Output and OutputComplete=false, not with a truncated
+success. Earlier history entries remain unchanged. If the external end cannot be confirmed,
+Unknown with reservation remains; the native context management is not changed.
 
-Ein Anbieteraufruf hat zusätzlich einen endlichen HTTP-Header-Timeout von 30 Sekunden.
-Polling beginnt mit einer Sekunde Abstand; serverseitige Retry-After-Angaben werden für
-ungefährliche Statusabfragen respektiert, ohne die gesamte Anfragefrist zu überschreiten.
-Es gibt keine automatische Wiederholung von Eröffnungs-/Send-POSTs.
+A vendor call additionally has a finite HTTP header timeout of 30 seconds.
+Polling begins with a one-second interval; server-side Retry-After indications are respected for
+harmless status queries without exceeding the overall request deadline.
+There is no automatic retry of opening/send POSTs.
 
-Der Host verantwortet Authentifizierung, Benutzerberechtigungen, Providerzugänge, erlaubte
-Endpunkte, Registrierung der Adapter und konsistente Arbeitsbereichsschlüssel.
-Eine Hostregistrierung ist keine Sandbox-Zulassung für untrusted Code. Von unterschiedlichen
-Benutzern geteilter Arbeitsspeicher oder bewusst geteilte Speicherpfade werden nicht als
-sichere interne Mandantentrennung angeboten.
+The host is responsible for authentication, user authorizations, provider accesses, permitted
+endpoints, registration of the adapters and consistent workspace keys.
+A host registration is not a sandbox approval for untrusted code. Memory shared by different
+users or deliberately shared storage paths are not offered as
+secure internal tenant separation.
 
-Der Host muss Datenträger-/Providerretention und eventuell notwendige Backups betreiben.
-Providerzustand kann trotz vorhandener lokaler Historie ablaufen. Diese Bibliothek
-garantiert kein unbegrenztes Provider-Gedächtnis oder Wiederherstellung nach Datenträgerverlust.
+The host must operate storage-medium/provider retention and any necessary backups.
+Provider state can expire despite existing local history. This library
+guarantees no unlimited provider memory or recovery after loss of the storage medium.
 
-## 6. Store- und Plattformverträge
+## 6. Store and Platform Contracts
 
-`ISessionStore` exponiert fachliche atomare Operationen wie CommitAcceptance,
-TryReserveHead, CommitCompletion, MarkUncertain und ResolveReservation statt eines
-generischen CRUD-Repositories, mit dem der Kern Transaktionsregeln versehentlich umgehen könnte.
-Der Store implementiert keine Provideraufrufe. Alle DB-Arbeiten sind begrenzt und serialisiert.
+`ISessionStore` exposes domain-level atomic operations such as CommitAcceptance,
+TryReserveHead, CommitCompletion, MarkUncertain and ResolveReservation instead of a
+generic CRUD repository with which the core could inadvertently bypass transaction rules.
+The store implements no provider calls. All DB work is bounded and serialized.
 
-Die reine `ReservationPolicy` kann innerhalb dieser atomaren Storeoperation eine
-vollständige konsistente `QueuedRequest`-Projektion auswerten. Sie enthält nur bereits
-angenommene/validierte Queued-Datensätze mit Sequence/AcceptedUtc; WriteWorkspaceKey ist
-nur für Schreibaufträge gesetzt. Auswahl und anschließende Reservierung müssen unter
-derselben Transaktion erfolgen. Ein Policyaufruf allein reserviert nichts.
-`RequestScheduler.TryReserveAsync` delegiert eine solche Operation an den Store;
-RequestDispatcher.TryDispatchAsync verarbeitet eine frische Reservierung mit deren
-ReservedDispatch und fixierten Registrierungen. False bedeutet kein zulässiger Dispatch;
-true bestätigt ein gespeichertes lokales Endergebnis, auch ein bestätigtes Fehlerergebnis.
-Storefehler werden als Fehler gemeldet, nicht als leere Queue. Callbackbestätigung,
-Bindingidentität und Ausgabegrenze werden vor Completion geprüft; unbestätigte Arbeit
-behält ihre Reservierung. SessionRuntime-/Workerkomposition bleibt T026.
+The pure `ReservationPolicy` can evaluate a complete consistent `QueuedRequest` projection
+within this atomic store operation. It contains only already
+accepted/validated Queued records with Sequence/AcceptedUtc; WriteWorkspaceKey is
+set only for write jobs. Selection and subsequent reservation must take place under
+the same transaction. A policy call alone reserves nothing.
+`RequestScheduler.TryReserveAsync` delegates such an operation to the store;
+RequestDispatcher.TryDispatchAsync processes a fresh reservation with its
+ReservedDispatch and fixed registrations. False means no permissible dispatch;
+true confirms a stored local final result, including a confirmed error result.
+Store errors are reported as errors, not as an empty queue. Callback confirmation,
+binding identity and output limit are checked before completion; unconfirmed work
+keeps its reservation. SessionRuntime/worker composition remains T026.
 
-Der in derselben Reservierungstransaktion gespeicherte ReservedDispatch ist über
-GetReservedDispatchAsync lesbar und trägt Eingabe, Timeout, eingefrorenen Sitzungskontext
-und BindingRevision. Öffentliche RequestSnapshots ersetzen diesen Datensatz nicht.
-Die C#-Queryschnittstelle besitzt diese Operation seit T112; Vertrag siehe
-orchestration-details.md §1. Die Annahme verwendet seit T114 RequestAcceptance mit vorab
-erzeugter Kandidatenkennung; nur Sequence/Queuekapazität bleiben Storeautorität (§3).
+The ReservedDispatch stored in the same reservation transaction is readable via
+GetReservedDispatchAsync and carries input, timeout, frozen session context
+and BindingRevision. Public RequestSnapshots do not replace this record.
+The C# query interface has had this operation since T112; contract see
+orchestration-details.md §1. Since T114, admission uses RequestAcceptance with a pre-generated
+candidate identifier; only Sequence/queue capacity remain store authority (§3).
 
-Alle Listen folgen denselben PageLimits-/Cursorregeln aus orchestration-details.md §4:
-Seitengröße 1–100, versionierte bereichsgebundene Keysetcursor, keine seitenübergreifende
-Snapshotzusage. Diese Regeln sind in T115 lokal testgetrieben umgesetzt; produktive SQLitequeries und
-Persistenzabnahmen bleiben T063.
+All lists follow the same PageLimits/cursor rules from orchestration-details.md §4:
+page size 1–100, versioned range-bound keyset cursors, no cross-page
+snapshot guarantee. These rules are implemented locally test-driven in T115; productive SQLite queries and
+persistence acceptances remain T063.
 
-`IStateDirectoryLease` repräsentiert geprüften privaten Speicher und exklusiven Besitz.
-Windows-/Linux-Implementierungen prüfen Rechte, lokale Pfade und den Lifetime-Lock.
-Lease bleibt für die gesamte Store-Nutzung offen. Eine Fremdinstanz erhält StoreAlreadyOwned.
-Fehlerhafte Rechte, nicht unterstützte Plattform oder Netzwerkpfade werden vor Annahme
-einer Anfrage gemeldet. Ein Windows-Paket auf Linux ist kein stiller No-op-Fallback.
+`IStateDirectoryLease` represents checked private storage and exclusive ownership.
+Windows/Linux implementations check permissions, local paths and the lifetime lock.
+The lease remains open for the entire store usage. A foreign instance receives StoreAlreadyOwned.
+Faulty permissions, an unsupported platform or network paths are reported before acceptance
+of a request. A Windows package on Linux is not a silent no-op fallback.
 
-Der gemeinsame Kern wird mit Testimplementierungen dieser Verträge geprüft. Dazu sind
-keine plattformspezifischen Bibliotheken oder echte Herstellerzugänge erforderlich.
+The shared core is checked with test implementations of these contracts. This requires
+no platform-specific libraries or real vendor accesses.
 
-## 7. Fehlervertrag
+## 7. Error Contract
 
-Öffentliche Fehler bestehen aus stabiler Kategorie, SessionId/RequestId soweit vorhanden,
-Ausführungsgewissheit und einem bereinigten optionalen Provider-Code. Rohdaten, Secrets,
-Authorization-Header und vollständige Prompts gehören nicht in die Fehlerbeschreibung.
-Für Annahmefehler kommt das separate optionale AdmissionStatus hinzu; externe Gewissheit
-ersetzt keine Aussage über lokalen Commit. Caller-Cancel bleibt über eine von
-OperationCanceledException abgeleitete AdmissionCancellationException erkennbar.
-Die konkrete Fehler-/Receipt-/Unknown-Semantik ist in orchestration-details.md §3 festgelegt.
+Public errors consist of a stable category, SessionId/RequestId where available,
+execution certainty and a sanitized optional provider code. Raw data, secrets,
+authorization headers and complete prompts do not belong in the error description.
+For admission errors, the separate optional AdmissionStatus is added; external certainty
+does not replace a statement about the local commit. Caller cancel remains recognizable via an
+AdmissionCancellationException derived from OperationCanceledException.
+The concrete error/receipt/Unknown semantics are defined in orchestration-details.md §3.
 
-Kategorien: InvalidConfiguration, NotFound, SessionClosed, SessionBlocked, QueueFull,
+Categories: InvalidConfiguration, NotFound, SessionClosed, SessionBlocked, QueueFull,
 LocalCapacityExceeded, StoreAlreadyOwned, StorageUnavailable, UnsupportedStoreVersion,
 UnsupportedPlatform, AuthenticationFailed, ProviderRateLimited, ProviderUnavailable,
 ProviderSessionExpired, ProviderContextLimit, UnsupportedProviderAction, ExecutionFailed,
 Cancelled, TimedOut, Interrupted, RevisionConflict, InvalidInput, InputLimitExceeded,
-OutputLimitExceeded und AdmissionTimedOut.
+OutputLimitExceeded and AdmissionTimedOut.
 
-Lokal ungültige Eingaben werden vor Annahme zurückgewiesen. Ein bereits angenommener
-Auftrag erhält seinen Fehler dauerhaft als Ergebnis. Kontextgrenzen werden weitergegeben,
-ohne Kompression, Modellwechsel, versteckten Retry oder Kürzen vorhandener Historie.
-Queued/Running sind nicht final; Succeeded, Failed, Cancelled, TimedOut und Interrupted
-sind lokale Endzustände. ExecutionCertainty ist davon getrennt und kann insbesondere
-nach Cancelled/TimedOut/Interrupted weiterhin Unknown sein. Zulässige Kombinationen
-sind im Datenmodell verbindlich festgelegt; Lifecycle und BlockReason gehören zur Sitzung.
+Locally invalid inputs are rejected before acceptance. An already accepted
+job durably receives its error as a result. Context limits are passed on
+without compression, model switch, hidden retry or truncation of existing history.
+Queued/Running are not final; Succeeded, Failed, Cancelled, TimedOut and Interrupted
+are local final states. ExecutionCertainty is separate from this and can, in particular
+after Cancelled/TimedOut/Interrupted, still be Unknown. Permissible combinations
+are bindingly defined in the data model; Lifecycle and BlockReason belong to the session.
 
-## 8. Beobachtbarkeit und Abnahme
+## 8. Observability and Acceptance
 
-Strukturierte Events enthalten Instanz-, Sitzungs-, Anfrage- und Dispatchkennung,
-Lifecycle-Übergang, Gewissheit, Dauer und Fehlerkategorie, aber keine Inhalte/Secrets.
-BCL-Metriken: wartende Anfragen, aktive beziehungsweise ungewisse Reservierungen,
-Annahmedauer, Ausführungsdauer und Ergebniszählungen. Keine hochkardinalen RequestIds
-als Metriklabels; Activity-Korrelation kann diese in gezielten Traces verwenden.
-Logfehler dürfen keinen bereits committed Auftrag verlieren lassen.
+Structured events contain instance, session, request and dispatch identifiers,
+lifecycle transition, certainty, duration and error category, but no contents/secrets.
+BCL metrics: waiting requests, active or uncertain reservations,
+admission duration, execution duration and result counts. No high-cardinality RequestIds
+as metric labels; activity correlation can use them in targeted traces.
+Log errors MUST NOT cause an already committed job to be lost.
 
-| Anforderungen | Vertrags-/Abnahmebezug |
+| Requirements | Contract/acceptance reference |
 | --- | --- |
-| FR-001, FR-014, FR-017, FR-023 | NuGet-Konsum, Common ohne Plattform, echter Windows-/Linux-Hosttest |
-| FR-027 | Eingebetteter konsumierender Host über dieselben öffentlichen Verträge; SC-011 |
-| FR-002–FR-007, FR-022, FR-024–FR-025 | Providervertrag, Routing, native Bindung und unveränderte Inhalte |
-| FR-008–FR-013, FR-016 | Annahme, FIFO, Kapazität, Workspace, Cancel und Stop |
-| FR-015, FR-021, FR-026 | bereinigte Diagnosen, Rechte, Retention und Instanztrennung |
-| FR-018–FR-020 | Commit, Wiederanlauf, Unknown und ausdrückliche Klärung |
+| FR-001, FR-014, FR-017, FR-023 | NuGet consumption, Common without platform, real Windows/Linux host test |
+| FR-027 | Embedded consuming host via the same public contracts; SC-011 |
+| FR-002–FR-007, FR-022, FR-024–FR-025 | Provider contract, routing, native binding and unchanged contents |
+| FR-008–FR-013, FR-016 | Admission, FIFO, capacity, workspace, cancel and stop |
+| FR-015, FR-021, FR-026 | Sanitized diagnostics, permissions, retention and instance separation |
+| FR-018–FR-020 | Commit, restart, Unknown and explicit resolution |
 
-Alle Zeit-/Lastwerte sind zu validierende Ziele, keine bereits erbrachten Messergebnisse.
+All time/load values are targets to be validated, not already achieved measurement results.
 
-## 9. Agent-/Modellgrenze und Zielhostabbildung
+## 9. Agent/Model Boundary and Target Host Mapping
 
-Der generische Adaptervertrag aus `provider-contract.md` §8 ist verbindlich.
-CreateSession erhält zusätzlich den expliziten `SessionExecutionContext`; Workspace,
-ExecutionKind, Modell und Adapterzuordnung werden für Fortsetzungen eingefroren.
-`ProviderRegistration` registriert eine Adapterinstanz samt technischer Identität und
-Vertragsversion. Endpoint und Authentifizierungsoptionen gehören in den konkreten
-Adapter, nicht als zwingende HTTP-Felder in eine generische Registrierung.
-HTTP-Adapter müssen weiterhin erlaubte absolute HTTPS-Endpunkte prüfen; dies ist kein
-Wegfall der Sicherheitsvorgaben. Credentials werden nicht in Sitzungssnapshots kopiert.
+The generic adapter contract from `provider-contract.md` §8 is binding.
+CreateSession additionally receives the explicit `SessionExecutionContext`; workspace,
+ExecutionKind, model and adapter assignment are frozen for continuations.
+`ProviderRegistration` registers an adapter instance including technical identity and
+contract version. Endpoint and authentication options belong in the concrete
+adapter, not as mandatory HTTP fields in a generic registration.
+HTTP adapters must still check permitted absolute HTTPS endpoints; this is not
+a removal of the security requirements. Credentials are not copied into session snapshots.
 
-Die lokale UUID und die opaque externe Sitzungskennung bleiben getrennt; weder
-Providerpräfix noch UUID-Format darf für externe Kennungen zentral vorausgesetzt werden.
-Die Integration mit dem Zielhost erfordert passende Vertragsfälle mit beobachteter
-nativer ID, bestätigtem terminalem Ende, Workspace und Cancellation. Ein Modell-REST-
-Fixture allein erfüllt diesen Nachweis nicht. Bestehende Sitzungen werden nicht migriert.
+The local UUID and the opaque external session identifier remain separate; neither
+a provider prefix nor a UUID format may be centrally presupposed for external identifiers.
+Integration with the target host requires matching contract cases with an observed
+native ID, confirmed terminal end, workspace and cancellation. A model REST
+fixture alone does not fulfill this proof. Existing sessions are not migrated.
 
-## Implementierungsabgleich: Wiederaufnahme und Availability
+## Implementation Reconciliation: Resumption and Availability
 
-Der aktuelle öffentliche Aufruf für die Erzeugung lautet
+The current public call for creation is
 `CreateSessionAsync(string agentProfileId, SessionExecutionContext context, CancellationToken cancellationToken)`;
-`SessionExecutionContext` trägt optionalen WorkspaceDirectory und WorkspaceKey. Die
-Tabellen oben sind semantische Kurzformen. Vor Workerstart werden gespeicherte Open-
-Sitzungen lokal und über ihren gleichen nativen Reopenbezug geprüft. Die optionale
-Facette `ISessionAvailabilityProvider.ValidateAvailabilityAsync(ProviderSessionContext,
-CancellationToken)` ermöglicht eine ausdrücklich lesende Modell-/Credentialprüfung;
-beide nativen Adapter implementieren sie, die generische Runtime kennt keine Herstellernamen.
+`SessionExecutionContext` carries optional WorkspaceDirectory and WorkspaceKey. The
+tables above are semantic short forms. Before worker start, stored Open
+sessions are checked locally and via their same native reopen reference. The optional
+facet `ISessionAvailabilityProvider.ValidateAvailabilityAsync(ProviderSessionContext,
+CancellationToken)` enables an explicitly read-only model/credential check;
+both native adapters implement it, the generic runtime knows no vendor names.
 
-SessionSnapshot ergänzt `ConfigurationUnavailable` als Herkunft einer erneut prüfbaren
-Verfügbarkeitssperre und nullable `AvailabilityError` als bereinigte ErrorCode-Kategorie.
-Erfolgreiche erneute Prüfung entfernt ausschließlich eigene Sperren/Ursache; andere
-native Restriktionen und Recoveryvorrang bleiben. Kein gebundenes Modell, native ID,
-Settings oder Bindingrevision werden aus Metadaten ersetzt. Queued bleibt bei Start-
-ablehnung unverändert. Die Prüfung verwendet die Runtimeausführungsfrist; ein verfügbarer
-anderer Provider kann nach Vorbereitung weiterhin arbeiten. Details und Grenzen in
-`docs/operations.md`, konkrete Red-/Greennachweise in `evidence/tdd-us2.md`.
+SessionSnapshot adds `ConfigurationUnavailable` as the origin of a re-checkable
+availability lock and nullable `AvailabilityError` as a sanitized ErrorCode category.
+A successful re-check removes exclusively its own locks/cause; other
+native restrictions and recovery precedence remain. No bound model, native ID,
+settings or binding revision are replaced from metadata. Queued remains unchanged on start
+rejection. The check uses the runtime execution deadline; an available
+other provider can continue to work after preparation. Details and limits in
+`docs/operations.md`, concrete Red/Green evidence in `evidence/tdd-us2.md`.
 
-Der bestehende Availability-Storewrite erhält als optionalen letzten Parameter eine
-ErrorCode-Kategorie; alte Aufrufe bleiben quellkompatibel. Aktuelle Snapshots persistieren
-das Feld im vorhandenen JSON. Ältere Snapshots ohne Property bleiben lesbar; ältere
-Binärstände können unbekannte neue Felder sicher ablehnen. Daraus folgt keine Zusage
-rückwärtskompatibler Vorabformatmigration oder einer neuen Schemaversion.
+The existing availability store write receives an ErrorCode category as an optional last
+parameter; old calls remain source-compatible. Current snapshots persist
+the field in the existing JSON. Older snapshots without the property remain readable; older
+binary versions can safely reject unknown new fields. This implies no guarantee of
+backward-compatible pre-format migration or a new schema version.

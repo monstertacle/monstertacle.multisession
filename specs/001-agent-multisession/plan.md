@@ -1,175 +1,175 @@
-# Implementation Plan: Herstellerübergreifende Agent-Multisession
+# Implementation Plan: Cross-Vendor Agent Multisession
 
-**Branch**: `001-agent-multisession` (logische Feature-ID); initialer Repositorybranch `main`.
+**Branch**: `001-agent-multisession` (logical feature ID); initial repository branch `main`.
 | **Date**: 2026-10-27 | **Spec**: [spec.md](spec.md)
 
 **Input**: `specs/001-agent-multisession/spec.md`
 
-**Aktueller Ausführungsabgleich 2026-10-30T00:02:08Z:** Runtime, beide nativen
-Provideradapter, SQLite/Recovery, beide Plattformleasen, Diagnostik, ValidationHost
-und Paketkonsum sind implementiert; einzelne frühere Statusabsätze darunter
-beschreiben den damaligen Planungsstand. T112–T115 sind inzwischen ausgeführt,
-keine NotImplemented-Gerüste im Produktcode. Maßgeblich für aktuelle Aufgaben
-ist tasks.md, für technische Nachweise evidence/acceptance-audit.md/build-native.json,
-für fehlende Abnahme evidence/release.md/remaining-acceptance.md. Keine Produktfreigabe:
-fehlende Win11-/Live-/Integrator-/historische Q06-Belege bleiben gesperrt.
-T125/T126 sind mit nativen Red-/Greenbelegen und Testisolation abgeschlossen;
-aktueller technischer Kandidat fb1a167, vollständiger Sourcehash und Prüfstand
-in evidence/delivery-candidate.md. Die tatsächlich laufenden Stunden werden erst
-nach ihrem Ende als bestanden bewertet.
+**Current execution reconciliation 2026-10-30T00:02:08Z:** Runtime, both native
+provider adapters, SQLite/recovery, both platform leases, diagnostics, ValidationHost
+and package consumption are implemented; individual earlier status paragraphs below
+describe the planning state at that time. T112–T115 have since been executed,
+no NotImplemented scaffolds in the product code. Authoritative for current tasks
+is tasks.md, for technical evidence evidence/acceptance-audit.md/build-native.json,
+for missing acceptance evidence/release.md/remaining-acceptance.md. No product release:
+missing Win11/live/integrator/historical Q06 evidence remains blocked.
+T125/T126 are completed with native Red/Green evidence and test isolation;
+current technical candidate fb1a167, full source hash and verification state
+in evidence/delivery-candidate.md. The hours actually running are only assessed as
+passed after they have ended.
 
-**Status**: Phase 0 und Phase 1 dokumentiert; inkrementelle Implementierung läuft,
-keine Produktfreigabe. Aktuelle Teilnachweise und Grenzen: tasks.md sowie
-evidence/tdd-foundation.md, tdd-us1.md, tdd-us2.md und coverage.md.
-Nach FR-027 und Constitution v2.0.0 erneut geprüft: generische Backendgrenze, verbindliches
-TDD, mindestens 87 % Zeilenabdeckung und offizieller Codemetr-Guard. Genehmigt sind
-Toolversion und Standardgrenzwerte, keine Debt-Baseline. Q-01 ist am eingefrorenen
-Kandidaten nativ geprüft; fehlende weitere Q-Gates bleiben Freigabebedingungen.
+**Status**: Phase 0 and Phase 1 documented; incremental implementation in progress,
+no product release. Current partial evidence and limits: tasks.md as well as
+evidence/tdd-foundation.md, tdd-us1.md, tdd-us2.md and coverage.md.
+Re-checked after FR-027 and Constitution v2.0.0: generic backend boundary, mandatory
+TDD, at least 87 % line coverage and official Codemetr guard. Approved are
+tool version and default thresholds, no debt baseline. Q-01 has been checked natively on the frozen
+candidate; missing further Q gates remain release conditions.
 
-**Zielhostabgleich**: R-13/R-14 und provider-contract.md §8 konkretisieren den tatsächlich
-untersuchten Agent-Backend-/Sessionvertrag: explizite Fähigkeiten/ExecutionKind,
-Workspace-Snapshot, awaitable Beobachtungen für opaque native Session-/Operations-ID,
-terminaler Reply und getrennte Gewissheit. T010/T035/T089 müssen diese Vertragsfälle
-vor Green erfüllen. Der Entwurfsabgleich ist abgeschlossen, tatsächlicher Zielhost-/
-Paketkonsum bleibt offen. Keine Änderung des Zielhostcodes oder Bestandsmigration.
-OpenCode **1.19.0** bleibt auf ausdrücklichen Nutzerentscheid die feste Referenz;
-kein Upgrade, keine neuere V2-API und keine zwingend vorgeschaltete OpenCode-Laufzeit.
-Aktualisierung 2026-10-28: R-15 prüft SharpClaw-Commit `7854a12` gegen den ursprünglichen
-Analysecommit. Die relevante Backend-/Sessiongrenze ist unverändert; neue Kontextcache-,
-Output- und Fleetdienste bleiben im Host. Deep-Dive und Testplan vor Request-Annahme:
+**Target host reconciliation**: R-13/R-14 and provider-contract.md §8 make concrete the actually
+examined agent backend/session contract: explicit capabilities/ExecutionKind,
+workspace snapshot, awaitable observations for opaque native session/operation ID,
+terminal reply and separate certainty. T010/T035/T089 must fulfill these contract cases
+before Green. The design reconciliation is complete; actual target host/
+package consumption remains open. No change to the target host code or migration of existing state.
+OpenCode **1.19.0** remains the fixed reference by explicit user decision;
+no upgrade, no newer V2 API and no mandatory upstream OpenCode runtime.
+Update 2026-10-28: R-15 checks SharpClaw commit `7854a12` against the original
+analysis commit. The relevant backend/session boundary is unchanged; new context cache,
+output and fleet services remain in the host. Deep dive and test plan before request admission:
 `evidence/architecture/2026-10-28-sharpclaw-refresh-request-admission.md`.
 
 ## Summary
 
-Wiederverwendbare C#-/NuGet-Bibliotheken verwalten parallele Provider-Sitzungen mit
-getrennter Identität, dauerhaft angenommener FIFO, endlichen Limits und konservativer
-Recovery. Kontextverdichtung, Werkzeuge und Agent-Schleifen verbleiben vollständig
-beim Provider. Eine Instanz gehört einem Vertrauensbereich; der Host kontrolliert den Zugriff.
+Reusable C#/NuGet libraries manage parallel provider sessions with
+separate identity, durably accepted FIFO, finite limits and conservative
+recovery. Context compaction, tools and agent loops remain entirely
+with the provider. An instance belongs to one trust domain; the host controls access.
 
-Ein Common-Kern enthält die Fachlogik. Separate Windows-/Linux-Pakete übernehmen
-Speicherrechte und exklusiven Besitz. SQLite-Persistenz und zwei native HTTP-Provider
-sind getrennte Pakete. Ein späterer Konsolen-/Dienst-/Daemon-Host stellt Lebenszyklus,
-Konfiguration und Anfrageeingang bereit; dieser Plan implementiert keinen Dienst.
-SharpClaw ist ausdrücklich als langfristiger konsumierender Host vorgesehen. Die
-Abhängigkeitsrichtung bleibt `SharpClaw -> NuGet-Bibliotheken`, niemals umgekehrt.
-Seine tatsächliche Produktmigration oder Zustandsübernahme ist eine separate spätere Lieferung.
+A Common core contains the domain logic. Separate Windows/Linux packages take over
+storage permissions and exclusive ownership. SQLite persistence and two native HTTP providers
+are separate packages. A later console/service/daemon host provides lifecycle,
+configuration and request intake; this plan does not implement a service.
+SharpClaw is explicitly intended as a long-term consuming host. The
+dependency direction remains `SharpClaw -> NuGet libraries`, never the reverse.
+Its actual product migration or state adoption is a separate later delivery.
 
-Referenzanbindungen sind OpenAI Conversations/Responses und Gemini Interactions `/v1`.
-Es werden native Sitzungsbezüge fortgeführt, keine Chatverläufe zur Simulation einer
-Sitzung erneut eingespeist. Technische Entscheidungen und Quellen: [research.md](research.md).
+Reference connections are OpenAI Conversations/Responses and Gemini Interactions `/v1`.
+Native session references are continued; no chat histories are re-fed to simulate a
+session. Technical decisions and sources: [research.md](research.md).
 
 ## Technical Context
 
-**Language/Version**: C# 14, .NET 10 LTS, SDK 10.0.403 exakt gepinnt; `net10.0`,
-Windows-Plattformpaket `net10.0-windows`; keine Prereleases oder impliziten SDK-Upgrades.
+**Language/Version**: C# 14, .NET 10 LTS, SDK 10.0.403 exactly pinned; `net10.0`,
+Windows platform package `net10.0-windows`; no prereleases or implicit SDK upgrades.
 
-**Scripting-/Toolinggrenze**: Gemäß Constitution v2.0.0 ist Python für Produktcode,
-Tests, Build-/CI-Skripte, Codegenerierung und agentengestützte Projektarbeiten verboten,
-einschließlich temporärer Hilfsskripte und einmaliger Agentenbefehle. C#/.NET sowie bei
-Bedarf PowerShell beziehungsweise Shellskripte verwenden; keine Python-Laufzeit als
-Projektvoraussetzung einführen. Vom Nutzer am 2026-10-28 ausdrücklich genehmigt.
+**Scripting/tooling boundary**: In accordance with Constitution v2.0.0, Python is prohibited for product code,
+tests, build/CI scripts, code generation and agent-assisted project work,
+including temporary helper scripts and one-off agent commands. Use C#/.NET and, if
+needed, PowerShell or shell scripts; do not introduce a Python runtime as a
+project prerequisite. Explicitly approved by the user on 2026-10-28.
 
 **Primary Dependencies**: Microsoft.Data.Sqlite 10.0.14;
 Microsoft.Extensions.Logging.Abstractions 10.0.14; BCL HttpClient, System.Text.Json,
-Channels, TimeProvider und Diagnostics. Kein Agent-Framework, kein obligatorischer
-Hosting-Stack und keine automatischen POST-Retries. Metadaten/Lizenzen siehe R-08.
+Channels, TimeProvider and Diagnostics. No agent framework, no mandatory
+hosting stack and no automatic POST retries. Metadata/licenses see R-08.
 
-**Storage**: Eine lokale SQLite-Datenbank je Vertrauensbereich; exklusiver Besitzer;
-DELETE-Journal mit synchronous=EXTRA und Fremdschlüsseln. Einzelner begrenzter
-DB-Arbeitskanal; keine SQL-Transaktion über externe Aufrufe. Credentials nur über Host-Resolver.
+**Storage**: One local SQLite database per trust domain; exclusive owner;
+DELETE journal with synchronous=EXTRA and foreign keys. Single bounded
+DB work channel; no SQL transaction across external calls. Credentials only via host resolver.
 
 **Testing**: xUnit 2.9.3, xunit.runner.visualstudio 3.1.5, Microsoft.NET.Test.Sdk 18.11.0;
-deterministische Provider-Fakes, HTTP-Vertragsfixtures, echte Prozess-Kill-/Neustarttests,
-Plattform-Rechte-/Locktests, separate explizite Live-Provider-Abnahme.
-Für jede neue/geänderte Verhaltensanforderung zuerst ausführbaren fachlich roten Test
-beobachten, dann minimale Implementierung, anschließend Refactoring bei grünen Tests.
-Mindestens 87 % Zeilenabdeckung des gesamten eigenen Produktivcodes als CI-Gate unter
-Windows und Linux. Gemeinsame Bibliotheken und das jeweilige native Plattformpaket
-vollständig messen, einschließlich nicht durch Tests geladener Assemblies. Die fremde
-Plattformbibliothek ist im Scopeinventar explizit dem anderen nativen Lauf zuzuordnen;
-kein Produktprojekt darf in beiden Läufen fehlen. Berichte mehrerer Testsuiten je
-Plattform zeilenweise vereinigen, nicht Prozentwerte mitteln. Testcode zählt nicht zum
-Coverage-Nenner; generierter Code/Fremdcode nur begründet ausschließen.
-Collector, Version, Runsettings, Aggregation und Gate-Implementierung werden in T005/T015
-festgelegt und gepinnt; fehlende/leere Berichte oder weniger als 87 % sperren die Freigabe.
-Der Projektverantwortliche hat die Änderung von 90 auf 87 % am 2026-10-28 ausdrücklich
-genehmigt; Änderungsnachweis `evidence/architecture/2026-10-28-coverage-87.md`.
+deterministic provider fakes, HTTP contract fixtures, real process kill/restart tests,
+platform permission/lock tests, separate explicit live provider acceptance.
+For each new/changed behavior requirement, first observe an executable functionally red test,
+then a minimal implementation, followed by refactoring with green tests.
+At least 87 % line coverage of all own production code as a CI gate on
+Windows and Linux. Measure the shared libraries and the respective native platform package
+completely, including assemblies not loaded by tests. The other
+platform library is to be explicitly assigned to the other native run in the scope inventory;
+a product project MUST NOT be missing from both runs. Merge reports of multiple test suites per
+platform line by line, do not average percentages. Test code does not count toward the
+coverage denominator; exclude generated code/third-party code only with justification.
+Collector, version, runsettings, aggregation and gate implementation are defined and pinned in T005/T015;
+missing/empty reports or less than 87 % block the release.
+The project owner explicitly approved the change from 90 to 87 % on 2026-10-28;
+change evidence `evidence/architecture/2026-10-28-coverage-87.md`.
 
-**Quality Guard**: `Codemetr.CSharp.Tool` 0.1.0 lokal gepinnt, genehmigte Standardregeln
-in `codemetr.json`, keine Debt-Baseline. Vollständiger Check vom Root einschließlich
-Tests/ValidationHost: `dotnet tool run codemetr-csharp -- check --format json`.
-Projektlokaler OpenCode-Skill `codemetr-guard` und `.github/workflows/codemetr-guard.yml`
-sind eingerichtet; echte CI-Läufe benötigen weiterhin ein angebundenes Git-Repository.
+**Quality Guard**: `Codemetr.CSharp.Tool` 0.1.0 pinned locally, approved default rules
+in `codemetr.json`, no debt baseline. Full check from the root including
+tests/ValidationHost: `dotnet tool run codemetr-csharp -- check --format json`.
+Project-local OpenCode skill `codemetr-guard` and `.github/workflows/codemetr-guard.yml`
+are set up; real CI runs still require a connected Git repository.
 
-**Target Platform**: Windows 11 25H2 x64, Windows Server 2025 x64 und Ubuntu 24.04 LTS x64.
-Framework-dependent Hosts mit .NET-10-Runtime. Andere Architekturen/Distributionen,
-Windows-Dienstinstallation und Linux-Service-Units sind nicht Teil der ersten Lieferung.
+**Target Platform**: Windows 11 25H2 x64, Windows Server 2025 x64 and Ubuntu 24.04 LTS x64.
+Framework-dependent hosts with .NET 10 runtime. Other architectures/distributions,
+Windows service installation and Linux service units are not part of the first delivery.
 
-**Project Type**: Sechs NuGet-Bibliotheken und ein nicht produktiver Konsum-/Abnahmehost.
-Keine Webendpunkte, Oberfläche, CLI-Produkt oder Betriebsinstallation.
+**Project Type**: Six NuGet libraries and one non-productive consumption/acceptance host.
+No web endpoints, user interface, CLI product or operational installation.
 
-**Performance Goals**: SC-001–SC-010 gelten unverändert: zehn Sitzungen, korrekte
-Zuordnung für 100 Anfragen, nachweislich überlappende unabhängige Arbeit, lokale
-Abbruchbeobachtung innerhalb zwei Sekunden mit kooperativen Providern, zehn Sekunden
-Abschaltfrist im entsprechenden Test und eine Stunde Dauerabnahme pro Zielsystem.
-Keine Zusicherung herstellerseitiger Antwortlatenz oder unbegrenzter Kontextlänge.
-SC-011 ergänzt einen eingebetteten Konsumnachweis ohne Änderung am Bibliotheksquellcode
-oder zusätzlichen Multisession-Prozess als Voraussetzung für den langfristigen Zielhost.
+**Performance Goals**: SC-001–SC-010 apply unchanged: ten sessions, correct
+assignment for 100 requests, demonstrably overlapping independent work, local
+cancellation observation within two seconds with cooperative providers, ten seconds
+shutdown period in the corresponding test and one hour of continuous acceptance per target system.
+No guarantee of vendor-side response latency or unlimited context length.
+SC-011 adds an embedded consumption proof without changes to the library source code
+or an additional multisession process as a prerequisite for the long-term target host.
 
-**Constraints**: Kein eigener Agent-/Tool-Loop, kein Kontext-Replay, keine Verdichtung,
-kein stiller Ersatzprovider; persistierte ungewisse Arbeit wird nicht automatisch wiederholt.
-Kein Netzwerkdateisystem, Cluster, untrusted Plugin-Sandbox oder internes Mandantenmodell.
-Die Paketstruktur ist angelegt; die Übersicht unten beschreibt auch noch geplante Teile.
-Vorhandene Gerüste/Teilimplementierungen sind keine abgeschlossenen Produktfunktionen.
+**Constraints**: No agent/tool loop of its own, no context replay, no compaction,
+no silent substitute provider; persisted uncertain work is not automatically repeated.
+No network file system, cluster, untrusted plugin sandbox or internal tenant model.
+The package structure is in place; the overview below also describes still planned parts.
+Existing scaffolds/partial implementations are not completed product functions.
 
-**Scale/Scope**: Ein aktiver logischer Host je Store. Startwerte: MaxConcurrentRequests=4,
+**Scale/Scope**: One active logical host per store. Initial values: MaxConcurrentRequests=4,
 MaxQueuedRequests=100, MaxInputBytes=1 MiB, MaxOutputBytes=4 MiB, RequestTimeout=600 s,
-ShutdownTimeout=10 s und DbWorkQueueCapacity=256. Positive endliche Werte erforderlich;
-SQLite-Busy-Timeout=1 s statt des langen Bibliotheksdefaults.
-AdmissionTimeout=5 s begrenzt die lokale Annahme; bereits Queued gespeicherte Anfragen
-haben keine automatische Wartefrist. Anfrage- und Stop-Fristen werden monoton gemessen.
-Größere Werte werden nicht allein durch Konfiguration als lastgetestet angesehen.
-Aufbewahrung muss der Host ausdrücklich konfigurieren oder RetainUntilExplicitDeletion wählen.
+ShutdownTimeout=10 s and DbWorkQueueCapacity=256. Positive finite values required;
+SQLite busy timeout=1 s instead of the long library default.
+AdmissionTimeout=5 s limits local admission; requests already stored as Queued
+have no automatic waiting deadline. Request and stop deadlines are measured monotonically.
+Larger values are not considered load-tested solely by configuration.
+The host must explicitly configure retention or choose RetainUntilExplicitDeletion.
 
 ## Constitution Check
 
-*GATE: vor Phase 0 prüfen und nach Phase 1 erneut bewerten. Entwurfskonformität ist
-nicht dieselbe Aussage wie erfüllte Code-/Produktfreigabe.*
+*GATE: check before Phase 0 and re-evaluate after Phase 1. Design conformance is
+not the same statement as fulfilled code/product release.*
 
-Erneuter Prüflauf: Constitution v2.0.0 und FR-027 sind die aktuelle Grundlage.
-Maßgeblich ist die verbindliche generische
-Agent-/Providergrenze. Die in R-13 festgestellte Vertragslücke wurde im Entwurf durch
-provider-contract.md §8 geschlossen; ausführbare Nachweise bleiben offen.
-Die vorhandenen Technikentscheidungen wurden gegen TDD erneut bewertet; keine neue
-Technikauswahl oder Ausweitung auf eine eigene Agent-Laufzeit ist erforderlich.
+Renewed review run: Constitution v2.0.0 and FR-027 are the current basis.
+Authoritative is the mandatory generic
+agent/provider boundary. The contract gap identified in R-13 was closed in the design by
+provider-contract.md §8; executable evidence remains open.
+The existing technical decisions were re-evaluated against TDD; no new
+technology selection or extension to an agent runtime of its own is required.
 
-| Prinzip / Vorgabe | Vor Phase 0 | Nach Phase 1 | Nachweis im Entwurf |
+| Principle / requirement | Before Phase 0 | After Phase 1 | Evidence in the design |
 | --- | --- | --- | --- |
-| I: C#/.NET, kein Python, Analyzer, Nullable, async/await | PASS: Stack passt, konkrete Auswahl in Recherche | PASS (Design); kein behaupteter Implementierungsnachweis | SDK-/Paketpins; Scripting-/Toolinggrenze; Cancellation und endliche Fristen im Vertrag |
-| II: SOLID, DRY, KISS, YAGNI, generische Backends | Kern ohne Herstellerabhängigkeit vorgesehen | PASS (Design): Agent-/Zielhostvertrag explizit abgebildet, Ausführung offen | Common ohne Rückabhängigkeit; provider-contract.md §8; T010/T035/T089 |
-| III: Pflichtprüfung mit Codemetr | PASS für Recherche ohne Code; Freigabe vorbehalten | Tool/Regeln genehmigt; native technische Prüfung am eingefrorenen Kandidaten PASS, übrige Freigabegates offen | R-09, evidence/codemetr-approval.md, evidence/codemetr-results.md und CI-Guard |
-| IV: TDD, ≥87 % Line Coverage, Windows/Linux, CI | PASS (Design): Red vor Verhalten und Coverage-Gate vorgesehen | PASS (Design); tatsächliche Teilnachweise siehe evidence/coverage.md, keine Produktfreigabe | TDD-Strategie, T005/T015/T104, quickstart.md und Q-06 |
-| V: Sicherheit und Diagnose | PASS: ein Vertrauensbereich, Host-Auth | PASS (Design) | Private Store-Rechte, keine Secrets im Zustand/Log, Audit-Gate |
-| Kultur, Zeit, Pfade, unterstützte Plattformen | PASS: keine entgegenstehende Vorgabe | PASS (Design) | UTC, ordinal IDs, explizite Matrix, Plattformadapter |
-| Dokumentation und Änderungskontrolle | PASS | PASS (Design) | Forschungsentscheidungen mit Alternativen, versionierte Verträge |
+| I: C#/.NET, no Python, analyzers, nullable, async/await | PASS: stack fits, concrete selection in research | PASS (design); no claimed implementation evidence | SDK/package pins; scripting/tooling boundary; cancellation and finite deadlines in the contract |
+| II: SOLID, DRY, KISS, YAGNI, generic backends | Core without vendor dependency planned | PASS (design): agent/target host contract explicitly modeled, execution open | Common without back-dependency; provider-contract.md §8; T010/T035/T089 |
+| III: Mandatory check with Codemetr | PASS for research without code; release reserved | Tool/rules approved; native technical check on the frozen candidate PASS, remaining release gates open | R-09, evidence/codemetr-approval.md, evidence/codemetr-results.md and CI guard |
+| IV: TDD, ≥87 % line coverage, Windows/Linux, CI | PASS (design): Red before behavior and coverage gate planned | PASS (design); actual partial evidence see evidence/coverage.md, no product release | TDD strategy, T005/T015/T104, quickstart.md and Q-06 |
+| V: Security and diagnostics | PASS: one trust domain, host auth | PASS (design) | Private store permissions, no secrets in state/log, audit gate |
+| Culture, time, paths, supported platforms | PASS: no conflicting requirement | PASS (design) | UTC, ordinal IDs, explicit matrix, platform adapters |
+| Documentation and change control | PASS | PASS (design) | Research decisions with alternatives, versioned contracts |
 
-Unbekanntes Ratifikationsdatum bleibt unverändert als Governance-TODO in der Constitution.
-Es wird kein Datum erfunden. Codemetr-Werkzeug und Standardgrenzwerte wurden vom
-Projektverantwortlichen ausdrücklich genehmigt; Nachweis in `evidence/codemetr-approval.md`.
-Das ist keine bereits bestandene Prüfung des erst zu implementierenden Produktcodes.
+The unknown ratification date remains unchanged as a governance TODO in the constitution.
+No date is invented. The Codemetr tool and default thresholds were explicitly approved by the
+project owner; evidence in `evidence/codemetr-approval.md`.
+This is not an already passed check of the product code still to be implemented.
 
-Verantwortlich für die Governance-Entscheidungen ist der Projektverantwortliche:
-Er bestätigt das ursprüngliche Ratifikationsdatum, soweit ermittelbar, vor der abschließenden
-Annahme der Constitution-Dokumentation. Bis dahin bleibt der vorhandene TODO sichtbar.
-Er hat CLI 0.1.0 mit Standardregeln ohne Debt-Baseline bestätigt. Am 2026-10-28
-wurde SDK 10.0.403 ausdrücklich freigegeben, da 10.0.402 lokal nicht mehr installiert ist.
-Constitution v1.6.0 bildet diese Entscheidung ab; keine Ausnahme und kein Datum werden erfunden.
-Bekannte Dokumentations-TODOs sind von der Produktfreigabe getrennt.
+The project owner is responsible for the governance decisions:
+he confirms the original ratification date, as far as it can be determined, before the final
+adoption of the constitution documentation. Until then, the existing TODO remains visible.
+He has confirmed CLI 0.1.0 with default rules without a debt baseline. On 2026-10-28,
+SDK 10.0.403 was explicitly approved, since 10.0.402 is no longer installed locally.
+Constitution v1.6.0 reflects this decision; no exception and no date are invented.
+Known documentation TODOs are separate from the product release.
 
-Q-01 ist für den eingefrorenen technischen Kandidaten auf beiden nativen CI-Systemen
-nachgewiesen: 442 Dateien/459 Typen, keine Regelverstöße; semantische Messgrenzen
-in evidence/codemetr-results.md. Das ersetzt keine übrige Produktfreigabe.
-Jede weitere Erweiterung benötigt ihre aktuelle Bestandsanalyse und neue Prüfungen.
+Q-01 is demonstrated for the frozen technical candidate on both native CI systems:
+442 files/459 types, no rule violations; semantic measurement limits
+in evidence/codemetr-results.md. This does not replace the remaining product release.
+Every further extension requires its current analysis of existing code and new checks.
 
 ## Project Structure
 
@@ -191,13 +191,13 @@ specs/001-agent-multisession/
     └── multisession.md
 ```
 
-`tasks.md` liegt vor und steuert die inkrementelle Umsetzung einschließlich der
-Ergänzungen T111–T115 aus der Analysebereinigung vom 2026-10-28.
+`tasks.md` exists and steers the incremental implementation including the
+additions T111–T115 from the analysis cleanup of 2026-10-28.
 
 ### Source Code (repository root)
 
-Der folgende Aufbau ist implementiert. Einzelne noch fehlende Abnahmen und externe
-Voraussetzungen bleiben in tasks.md offen; die Übersicht ersetzt ihre Nachweise nicht:
+The following structure is implemented. Individual still missing acceptances and external
+prerequisites remain open in tasks.md; the overview does not replace their evidence:
 
 ```text
 Monstertacle.Multisession.slnx
@@ -225,164 +225,164 @@ examples/
 └── Monstertacle.Multisession.ValidationHost/
 ```
 
-**Structure Decision**: Plattformbibliotheken, Storage und Provider referenzieren Common;
-Common referenziert keine konkrete Implementierung. Der konsumierende Host verbindet
-das benötigte Plattformpaket, Storage und die ausgewählten Provider ausdrücklich.
-Es entstehen keine leeren Linux-/Windows-Pakete und kein DI-/Reflection-Framework.
-Die gemeinsame Bibliothek ist mit Fakes ohne SQLite oder Plattformcode prüfbar.
-Testprojekte und ValidationHost erhalten IsPackable=false; nur die sechs Bibliotheken
-werden als Produkt-NuGet-Pakete gepackt.
+**Structure Decision**: Platform libraries, storage and providers reference Common;
+Common references no concrete implementation. The consuming host explicitly wires
+the required platform package, storage and the selected providers.
+No empty Linux/Windows packages and no DI/reflection framework are created.
+The shared library is testable with fakes without SQLite or platform code.
+Test projects and ValidationHost get IsPackable=false; only the six libraries
+are packed as product NuGet packages.
 
-**Gemeinsamer Ablauf**:
+**Shared flow**:
 
-1. Host liefert Options, Providerregistrierungen, CredentialResolver, Storage und die
-   zur Plattform passende Zustandsverzeichnis-/Besitzimplementierung.
-2. Start nimmt exklusiven Store-Besitz, prüft Schema und Recovery und startet begrenzte
-   Arbeitskanäle. Kein HTTP-Listener wird implizit geöffnet.
-3. Annahme commitet Eingabe, Sitzungssequenz und Queuelimitprüfung atomar, dann bestätigt sie.
-4. Scheduler wählt FIFO-Köpfe ungesperrter Sitzungen; gleiche Sitzung und gleicher schreibender
-    Workspace werden serialisiert. Ältester zulassungsfähiger Kopf wird bevorzugt.
-    Bei gleichem AcceptedUtc entscheidet RequestId ordinal. Blockierte Köpfe verhindern
-    keine unabhängige zulässige Arbeit; eine feste globale Wartezeit wird nicht garantiert.
-5. Running/Reservierung wird vor externer Übergabe persistiert. Provider erhält nur neue
-    Eingabe plus seinen zuletzt bestätigten nativen Fortsetzungsstand.
-6. Ergebnis und neuer Binding-Stand committen gemeinsam; sichere Reservierung wird freigegeben.
-7. Bei ungewissem Ausgang bleiben Sitzung/Workspace und Ausführungsslot reserviert.
-   Unabhängige Sitzungen dürfen freie übrige Slots nutzen; belegte Kapazität wird nicht erfunden.
+1. Host supplies options, provider registrations, CredentialResolver, storage and the
+   state directory/ownership implementation matching the platform.
+2. Start takes exclusive store ownership, checks schema and recovery and starts bounded
+   work channels. No HTTP listener is opened implicitly.
+3. Admission commits input, session sequence and queue limit check atomically, then confirms.
+4. Scheduler selects FIFO heads of unlocked sessions; same session and same writing
+    workspace are serialized. Oldest admissible head is preferred.
+    With equal AcceptedUtc, RequestId decides ordinally. Blocked heads do not prevent
+    independent admissible work; a fixed global waiting time is not guaranteed.
+5. Running/reservation is persisted before external handover. Provider receives only new
+    input plus its last confirmed native continuation state.
+6. Result and new binding state commit together; safe reservation is released.
+7. In case of uncertain outcome, session/workspace and execution slot remain reserved.
+   Independent sessions may use free remaining slots; occupied capacity is not invented.
 
-Schließen ist eine lokale Lebenszyklusentscheidung, kein implizites Löschen von Providerdaten.
-Beim Stop werden keine neuen Aufträge angenommen. Innerhalb der Frist wird offene Arbeit
-abgeschlossen; verbleibende wartende Anfragen werden ausdrücklich mit Cancelled/NotStarted
-beendet. Laufende Anfragen werden kontrolliert gestoppt beziehungsweise als ungewiss gesichert.
-Nach einem ungeplanten Neustart werden dagegen die noch Queued gebliebenen Anfragen fortgesetzt.
-Kein angenommener Auftrag verschwindet ohne Zustand. Details: [data-model.md](data-model.md).
-Sind alle Slots durch ungewisse Arbeit reserviert, bleibt weitere Arbeit wartend;
-Fehlerisolation ist keine Erlaubnis, das Ausführungslimit oder Workspace-Sperren zu umgehen.
+Closing is a local lifecycle decision, not an implicit deletion of provider data.
+On stop, no new jobs are accepted. Within the deadline, open work is
+completed; remaining waiting requests are explicitly ended with Cancelled/NotStarted.
+Running requests are stopped in a controlled way or saved as uncertain.
+After an unplanned restart, by contrast, the requests that remained Queued are continued.
+No accepted job disappears without a state. Details: [data-model.md](data-model.md).
+If all slots are reserved by uncertain work, further work remains waiting;
+error isolation is no permission to bypass the execution limit or workspace locks.
 
-Für das erste Speicher-/Binding-Format ist keine automatische Migration geplant.
-Ein inkompatibles Format wird vor Änderungen abgewiesen; ein fehlender erwarteter Store
-wird nicht neu initialisiert. Spätere Formatänderungen erfordern einen eigenen
-Migrations-/Rückkehrplan. Es wird hier kein unzureichend spezifizierter Updater implementiert.
+No automatic migration is planned for the first storage/binding format.
+An incompatible format is rejected before changes; a missing expected store
+is not re-initialized. Later format changes require their own
+migration/rollback plan. No insufficiently specified updater is implemented here.
 
-## Konkretisierte Orchestrierungsverträge und Umsetzungsvoraussetzungen
+## Concretized Orchestration Contracts and Implementation Prerequisites
 
-Verbindliche Details: [contracts/orchestration-details.md](contracts/orchestration-details.md).
-ReservedDispatch samt Query und Dispatcher sowie Recovery-/Annahme-/Pagingänderungen
-T112–T115 sind nach den chronologischen Red-/Greenzyklen implementiert.
-Nachweise in evidence/tdd-us1.md, tdd-us3.md und tdd-us5.md. T009/T010 bezeichnen
-weiterhin nur ihren ursprünglichen Signaturumfang; die spätere Implementierungsabnahme
-beruht auf den tatsächlichen ergänzenden Tests und aktuellen nativen Gesamtprüfungen.
+Binding details: [contracts/orchestration-details.md](contracts/orchestration-details.md).
+ReservedDispatch including query and dispatcher as well as recovery/admission/paging changes
+T112–T115 are implemented following the chronological Red/Green cycles.
+Evidence in evidence/tdd-us1.md, tdd-us3.md and tdd-us5.md. T009/T010 still denote
+only their original signature scope; the later implementation acceptance
+is based on the actual supplementary tests and current native overall checks.
 
-| Befund | Architekturentscheidung | Voraussetzung vor Green |
+| Finding | Architecture decision | Prerequisite before Green |
 | --- | --- | --- |
-| U1 | ReservedDispatch wird atomar mit Reservierung gespeichert; GetReservedDispatchAsync liefert Eingabe/Timeout/Sitzung/BindingRevision ohne Rekonstruktion; Completion prüft die Revision | T112 vor T025 und T051/T059/T060 |
-| U2/U3 | RecoveryTarget für SessionOpening oder RequestExecution; öffentlich lesbarer RecoveryCaseSnapshot mit persistierter CAS-Revision; keine Dummy-Requests | T113 vor T052/T062 und dem betreffenden Teil von T037/T079 |
-| U4 | Vorab erzeugte Kandidatenkennung in RequestAcceptance; AdmissionStatus getrennt von externer Gewissheit, bestätigter Commit liefert Receipt | T114 vor T058/T076 |
-| A2 | Gemeinsame Seitengrenzen und bereichsgebundene Keysetcursor; HistoryOrdinal/HistoryId und eigene Recoveryfallsnapshots | T115 vor Pagingteilen T026/T037/T063 |
+| U1 | ReservedDispatch is stored atomically with the reservation; GetReservedDispatchAsync returns input/timeout/session/BindingRevision without reconstruction; completion checks the revision | T112 before T025 and T051/T059/T060 |
+| U2/U3 | RecoveryTarget for SessionOpening or RequestExecution; publicly readable RecoveryCaseSnapshot with persisted CAS revision; no dummy requests | T113 before T052/T062 and the relevant part of T037/T079 |
+| U4 | Pre-generated candidate identifier in RequestAcceptance; AdmissionStatus separate from external certainty, confirmed commit returns receipt | T114 before T058/T076 |
+| A2 | Shared page limits and range-bound keyset cursors; HistoryOrdinal/HistoryId and separate recovery case snapshots | T115 before paging parts T026/T037/T063 |
 
-Die in der Tabelle genannten Abhängigkeiten wurden bei den jeweiligen Zyklen
-eingehalten. Runtimevertikale, Paging und revisionierte Recovery sind inzwischen
-vollständig im technischen Prüfumfang. Einzelne grüne Teilschnitte schließen keine
-fehlende Live-/Zielsystem-/Integratorabnahme; diese bleibt konkret in tasks.md und
-evidence/remaining-acceptance.md zugeordnet. Native SQLite-/Provider-/Recoverybelege
-sind im aktuellen evidence/build-native.json und den TDD-Akten verknüpft.
+The dependencies named in the table were observed in the respective cycles.
+Runtime vertical, paging and revisioned recovery are now
+fully within the technical verification scope. Individual green partial slices do not close any
+missing live/target system/integrator acceptance; this remains concretely assigned in tasks.md and
+evidence/remaining-acceptance.md. Native SQLite/provider/recovery evidence
+is linked in the current evidence/build-native.json and the TDD records.
 
-T015 umfasst lokale Workflow-/Runnerkonfiguration und synthetische Gate-Verhaltenstests.
-Reale Windows-/Linux-CI und erforderliche Branchchecks sind T111 und T104: verpflichtende
-**Freigabegates**, aber keine Voraussetzung für lokale testgetriebene Weiterentwicklung.
-Die freigegebene Repositoryanbindung besteht; native Quality, Guard, Audit und sechs
-erforderliche Branchchecks sind tatsächlich nachgewiesen. Die ausstehenden Live-/
-Zielsystem-/Integratorfreigaben bleiben eigenständige Abnahmevoraussetzungen.
+T015 comprises local workflow/runner configuration and synthetic gate behavior tests.
+Real Windows/Linux CI and required branch checks are T111 and T104: mandatory
+**release gates**, but no prerequisite for local test-driven further development.
+The approved repository connection exists; native quality, guard, audit and six
+required branch checks are actually demonstrated. The pending live/
+target system/integrator approvals remain independent acceptance prerequisites.
 
-## TDD-Umsetzungsstrategie
+## TDD Implementation Strategy
 
-**Voraussetzung vor jeder Erweiterung**: Zuerst den aktuellen Bestandscode per
-Code-Deep-Dive und Architekturanalyse nach Constitution §II prüfen, dann den konkreten
-Erweiterungsentwurf und dessen Red–Green–Refactor-Zyklen festlegen. Betroffene Module,
-relevante Aufrufer/Abhängigkeiten, Verantwortlichkeiten, Verträge, Daten-/Kontrollflüsse,
-Zustände/Persistenz, vorhandene Tests, Wiederverwendung und Regressionsrisiken untersuchen.
-Den Nachweis mit Quellstand/Sourcehash, Datei-/Symbolbelegen, Befunden, offenen Fragen,
-Architekturfolgen, gewähltem Erweiterungspunkt und Testplan unter
-`specs/001-agent-multisession/evidence/architecture/<aenderung>.md` führen; `<aenderung>`
-durch eine eindeutige Änderungskennung ersetzen. Ohne Nachweis oder bei ungeklärten
-implementierungsrelevanten Architekturfragen keine Implementierung beginnen. Alte
-Analysen müssen am aktuellen Code und Umfang erneut geprüft werden; kleine Erweiterungen
-sind nicht ausgenommen. Fehlenden Bestandscode ausdrücklich dokumentieren, vorhandene
-Gerüste/Verträge trotzdem untersuchen. Diese Vorgabe ist noch kein ausgeführter Deep Dive.
+**Prerequisite before every extension**: First examine the current existing code via
+code deep dive and architecture analysis according to Constitution §II, then define the concrete
+extension design and its Red–Green–Refactor cycles. Examine affected modules,
+relevant callers/dependencies, responsibilities, contracts, data/control flows,
+states/persistence, existing tests, reuse and regression risks.
+Keep the evidence with source revision/source hash, file/symbol references, findings, open questions,
+architectural consequences, chosen extension point and test plan under
+`specs/001-agent-multisession/evidence/architecture/<change>.md`; replace `<change>`
+with a unique change identifier. Without evidence or with unresolved
+implementation-relevant architecture questions, do not begin any implementation. Old
+analyses must be re-checked against the current code and scope; small extensions
+are not exempt. Explicitly document missing existing code, but still examine existing
+scaffolds/contracts. This requirement is not yet an executed deep dive.
 
-Jede Zeile beschreibt eine testgetriebene vertikale Umsetzungseinheit, keine Aufforderung,
-erst alle Bibliotheken fertig zu implementieren und danach Tests hinzuzufügen.
-Jede Einheit wird weiter in kleine Red–Green–Refactor-Zyklen zerlegt. Vor Beginn sind
-nur minimale Test-/Projektgerüste und verhaltenslose Signaturen zulässig.
-Fehlendes SDK, nicht restaurierte Pakete, Compilerfehler oder null entdeckte Tests
-zählen niemals als erwarteter fachlicher Red-Nachweis.
+Each row describes a test-driven vertical implementation unit, not a request
+to first fully implement all libraries and add tests afterwards.
+Each unit is further broken down into small Red–Green–Refactor cycles. Before starting,
+only minimal test/project scaffolds and behaviorless signatures are permissible.
+Missing SDK, unrestored packages, compiler errors or zero discovered tests
+never count as expected functional Red evidence.
 
-| Einheit / Bezug | Zuerst ausführbare Tests | Erwarteter fachlicher Red-Grund | Minimales Green, danach Refactor |
+| Unit / reference | Executable tests first | Expected functional Red reason | Minimal Green, then refactor |
 | --- | --- | --- | --- |
-| TDD-01 Sitzungen und Zuordnung; FR-003–FR-007, SC-002 | SessionRoutingTests: Kennungen, feste Zuordnung, getrennte Kontexte, Folgeanfrage, ungültige/geschlossene Sitzung | Neue Sitzung ist nicht auffindbar, falsche Zuordnung oder unzulässiger Send wird nicht verhindert | Nur Sitzungskatalog und Routing gegen kontrollierte Store-/Provider-Fakes; anschließend Verantwortlichkeiten aufteilen |
-| TDD-02 FIFO, Parallelität und Arbeitsbereiche; FR-002, FR-008, FR-016, SC-001/SC-005 | SchedulingTests: angehaltene Fakes, gleiche Sitzung serialisiert, unabhängige überlappen, Limits 2/3, gemeinsamer Workspace | Zweiter unzulässiger Send startet, zulässige unabhängige Arbeit bleibt blockiert oder Queue überschreitet Grenze | Nur begrenzte Zulassung und dauerhafte Reihenfolgeregel implementieren; kein Message-Broker |
-| TDD-03 Dauerhafte Annahme und Recovery; FR-018–FR-021, SC-009 | PersistenceRecoveryTests: echter temporärer Store, Prozess-Kill vor/nach Commit, verlorenes Wecksignal, ungewisser Dispatch, fehlender Store | Bestätigte Anfrage fehlt nach Wiederöffnung, ungewisse Anfrage wird erneut gesendet oder falsche Reservierung freigegeben | Transaktionen und persistierte Dispatchgrenzen einzeln ergänzen; kein Netzaufruf unter DB-Lock |
-| TDD-04 Fehler, Lebenszyklus und Diagnose; FR-009–FR-013, FR-015, FR-026, SC-003/SC-004 | LifecycleTests: fremder Providerfehler, wartender Cancel, lokaler Timeout mit Unknown, Stopfrist, Instanztrennung, bereinigte Diagnosen | Unabhängige Anfrage endet falsch, Cancel löst Send aus, unbestätigtes Ende gilt als sicher oder Daten vermischen sich | Nur Zustandsübergänge und sichere Beobachtung ergänzen; keine Produktivzugänge voraussetzen |
-| TDD-05 native Providerverträge; FR-003/FR-022/FR-024/FR-025, SC-008/SC-010 | ProviderContractTests: kontrollierte HTTP-Antworten, native IDs/Chain-Head, nur neue Nachricht, requires_action, Kontextgrenze, Inspect/Cancel | Falscher Bezug/Body, Historie wird replayt, Kontext selbst verändert oder clientseitige Aktion als Erfolg behandelt | Je Adapter nur dokumentierten nativen Vertrag implementieren; echte Herstellerabnahme zusätzlich nach deterministischem Green |
-| TDD-06 Plattformbesitz und Rechte; FR-014/FR-023, SC-007 | PlatformOwnershipTests: echte Zielsysteme, zweiter Prozess, Pfadalias, private Rechte, falsche Plattform, kaputter Store | Zweiter Besitzer wird zugelassen, falsche Rechte akzeptiert oder nicht unterstützte Plattform still verwendet | Je Plattform nur den gemeinsamen Besitz-/Rechtevertrag erfüllen; keine Sitzungslogik duplizieren |
-| TDD-07 eingebetteter Konsument; FR-001/FR-017/FR-027, SC-006/SC-011 | EmbeddedConsumerTests: separates konsumierendes Testprojekt, eigener Provideradapter, zwei Sitzungen, Folgeanfragen, Status, Abbruch und Stop | Öffentlicher Vertrag routet den Konsumablauf nicht korrekt oder erfordert internes Sonderwissen | Nur fehlendes öffentliches Verhalten ergänzen; später echter Paket-Smoke ohne Source-Referenzen und Integrator-Zeitnachweis |
+| TDD-01 Sessions and assignment; FR-003–FR-007, SC-002 | SessionRoutingTests: identifiers, fixed assignment, separate contexts, follow-up request, invalid/closed session | New session cannot be found, wrong assignment or impermissible send is not prevented | Only session catalog and routing against controlled store/provider fakes; then split responsibilities |
+| TDD-02 FIFO, parallelism and workspaces; FR-002, FR-008, FR-016, SC-001/SC-005 | SchedulingTests: paused fakes, same session serialized, independent ones overlap, limits 2/3, shared workspace | Second impermissible send starts, permissible independent work remains blocked or queue exceeds limit | Implement only bounded admission and the durable ordering rule; no message broker |
+| TDD-03 Durable acceptance and recovery; FR-018–FR-021, SC-009 | PersistenceRecoveryTests: real temporary store, process kill before/after commit, lost wake-up signal, uncertain dispatch, missing store | Confirmed request missing after reopening, uncertain request is sent again or wrong reservation released | Add transactions and persisted dispatch boundaries one at a time; no network call under DB lock |
+| TDD-04 Errors, lifecycle and diagnostics; FR-009–FR-013, FR-015, FR-026, SC-003/SC-004 | LifecycleTests: foreign provider error, waiting cancel, local timeout with Unknown, stop deadline, instance separation, sanitized diagnostics | Independent request ends wrongly, cancel triggers send, unconfirmed end counts as safe or data gets mixed | Add only state transitions and safe observation; do not presuppose production accesses |
+| TDD-05 native provider contracts; FR-003/FR-022/FR-024/FR-025, SC-008/SC-010 | ProviderContractTests: controlled HTTP responses, native IDs/chain head, only new message, requires_action, context limit, Inspect/Cancel | Wrong reference/body, history is replayed, context modified by itself or client-side action treated as success | Per adapter implement only the documented native contract; real vendor acceptance additionally after deterministic Green |
+| TDD-06 Platform ownership and permissions; FR-014/FR-023, SC-007 | PlatformOwnershipTests: real target systems, second process, path alias, private permissions, wrong platform, broken store | Second owner is admitted, wrong permissions accepted or unsupported platform silently used | Per platform fulfill only the shared ownership/permission contract; do not duplicate session logic |
+| TDD-07 embedded consumer; FR-001/FR-017/FR-027, SC-006/SC-011 | EmbeddedConsumerTests: separate consuming test project, own provider adapter, two sessions, follow-up requests, status, cancellation and stop | Public contract does not route the consumption flow correctly or requires internal special knowledge | Add only missing public behavior; later a real package smoke test without source references and integrator timing evidence |
 
-Alle übrigen Akzeptanz- und Negativfälle der Spezifikation werden innerhalb der passenden
-Einheit ebenfalls vor der jeweiligen Verhaltensänderung getestet. Insbesondere Retention,
-Schema-/Speicherfehler und Datenschutz sind keine nachgelagerten optionalen Testaufgaben.
-SC-007-Dauerbetrieb, Live-Provider und tatsächlicher NuGet-Paketkonsum ergänzen die
-deterministischen Red-/Green-Schritte, ersetzen sie aber nicht.
+All remaining acceptance and negative cases of the specification are likewise tested within the matching
+unit before the respective behavior change. In particular, retention,
+schema/storage errors and data protection are not downstream optional test tasks.
+SC-007 continuous operation, live providers and actual NuGet package consumption supplement the
+deterministic Red/Green steps but do not replace them.
 
-Der Arbeitsnachweis speichert pro Zyklus FR-/SC-Bezug, Testkennung und -befehl, geprüften
-Quellstand/Hash, beobachteten fachlichen Red-Grund sowie Green- und Regressionsergebnis.
-Ohne Git ist ein dokumentierter Sourcehash zulässig; eine nicht vorhandene Commit-ID wird
-nicht erfunden. Nachträglich erzeugte Testlogs dürfen keine frühere Testausführung vortäuschen.
+The work record stores per cycle the FR/SC reference, test identifier and command, checked
+source revision/hash, observed functional Red reason as well as Green and regression result.
+Without Git, a documented source hash is permissible; a non-existent commit ID is
+not invented. Test logs generated after the fact MUST NOT feign an earlier test execution.
 
-Q-06 sperrt die Freigabe, wenn ein neuer Verhaltenspfad nur nachträglich grün getestet
-wurde oder Red nur durch Infrastrukturfehler behauptet wird. Reines Refactoring startet
-mit grüner Suite und endet mit grüner Suite plus erneuter Codemetr-Prüfung; kein künstlicher
-Fehler und keine neue fachliche Funktion allein zur Erfüllung der TDD-Schablone.
+Q-06 blocks the release if a new behavior path was only tested green after the fact
+or Red is claimed only through infrastructure errors. Pure refactoring starts
+with a green suite and ends with a green suite plus a renewed Codemetr check; no artificial
+error and no new functional feature solely to satisfy the TDD template.
 
-Die vorhandene Taskliste modelliert Test/Red vor Implementierung/Green und Refactor.
-Neue Ergänzungszyklen erhalten dieselben Abhängigkeiten und aktuelle Vorabanalysen.
+The existing task list models Test/Red before Implementation/Green and Refactor.
+New supplementary cycles receive the same dependencies and current upfront analyses.
 
 ## Complexity Tracking
 
-Keine genehmigungspflichtige Constitution-Abweichung. Die bewussten Entscheidungen:
+No constitution deviation requiring approval. The deliberate decisions:
 
-| Entscheidung | Aktueller Bedarf | Warum die einfachere Alternative nicht genügt |
+| Decision | Current need | Why the simpler alternative is not sufficient |
 | --- | --- | --- |
-| Common plus zwei Plattformpakete | Private Dateirechte und exklusiver Speicherbesitz auf beiden Zielsystemen | Nur Linux-Mechanik verletzt Portabilität; Plattformcode im Kern erschwert unabhängige Tests |
-| Separates Storage-Paket | Transaktionale Annahme, FIFO und Crashzustände | In-Memory-Queue oder mehrere JSON-Dateien erfüllen die Haltbarkeitsgrenze nicht |
-| Zwei separate Providerpakete | Zwei reale unterschiedliche native Sitzungsverträge und unabhängige Konsumwahl | Universeller Chat-Adapter würde native Sitzungsemantik vortäuschen oder eigenen Kontext nachbauen |
-| Persistierter Dispatch/Fence | Ungewisse externe Wirkung nach Crash | Automatisches Replay kann dieselbe Arbeit doppelt auslösen |
+| Common plus two platform packages | Private file permissions and exclusive storage ownership on both target systems | Linux-only mechanics violate portability; platform code in the core impedes independent tests |
+| Separate storage package | Transactional admission, FIFO and crash states | In-memory queue or multiple JSON files do not meet the durability boundary |
+| Two separate provider packages | Two real different native session contracts and independent consumer choice | A universal chat adapter would feign native session semantics or rebuild its own context |
+| Persisted dispatch/fence | Uncertain external effect after crash | Automatic replay can trigger the same work twice |
 
-Nicht ergänzt: eigener Agent-Loop, generischer Tool-Executor, Token-/Kontextdienst,
-SSH-/Remote-Gateway, Prozesssupervisor, produktiver Diensthost oder zusätzlicher Message-Broker.
+Not added: own agent loop, generic tool executor, token/context service,
+SSH/remote gateway, process supervisor, productive service host or additional message broker.
 
 ## Phase 0 — Research
 
-Abgeschlossen und erneut bewertet als Dokumentationsarbeit: R-01–R-12 in [research.md](research.md) lösen
-Stack, Paketgrenzen, Providersemantik, Speicherung, Besitz und Validierungsstrategie.
-Verifizierte Fakten und noch auszuführende Nachweise sind dort getrennt.
+Completed and re-evaluated as documentation work: R-01–R-12 in [research.md](research.md) resolve
+stack, package boundaries, provider semantics, storage, ownership and validation strategy.
+Verified facts and evidence still to be produced are kept separate there.
 
 ## Phase 1 — Design & Contracts
 
-- [data-model.md](data-model.md): Identitäten, Zustände, Reservierungen, Commit- und Crash-Grenzen.
-- [contracts/public-api.md](contracts/public-api.md): öffentliche Bibliotheksoperationen,
-  Hostpflichten, Fehler und Lebenszyklus.
-- [contracts/provider-contract.md](contracts/provider-contract.md): native Sitzungsadapter,
-  konkrete Referenzprotokolle und deren Grenzen.
-- [contracts/orchestration-details.md](contracts/orchestration-details.md): Dispatchdaten,
-  Recoverytargets/-revisionen, Annahmegewissheit sowie Listen-/Cursorgrenzen (T112–T115).
-- [quickstart.md](quickstart.md): spätere ausführbare Nachweise einschließlich SC-Zuordnung.
+- [data-model.md](data-model.md): identities, states, reservations, commit and crash boundaries.
+- [contracts/public-api.md](contracts/public-api.md): public library operations,
+  host obligations, errors and lifecycle.
+- [contracts/provider-contract.md](contracts/provider-contract.md): native session adapters,
+  concrete reference protocols and their limits.
+- [contracts/orchestration-details.md](contracts/orchestration-details.md): dispatch data,
+  recovery targets/revisions, admission certainty as well as list/cursor limits (T112–T115).
+- [quickstart.md](quickstart.md): later executable evidence including SC assignment.
 
-Post-Design-Check unter Constitution v2.0.0 siehe Constitution-Tabelle; Agentvertragsentwurf abgeglichen, vollständige Verhaltensabnahme offen.
-Q-01 tatsächliche Codemetr-Produktprüfung (Tool/Regeln genehmigt), Q-02 Build/Audit/Coverage, Q-03 Plattform-/Crash-Verhalten,
-Q-04 Live-Provider, Q-05 Paketkonsum und Q-06 tatsächliche Red–Green–Refactor-Nachweise sind vor Codefreigabe
-am finalen Lieferstand offen. Lokale Teilprüfungen sind in den aktuellen Nachweisen
-dokumentiert; dieser Plan behauptet weder eine abgeschlossene Story noch Produktfreigabe.
+Post-design check under Constitution v2.0.0 see constitution table; agent contract draft reconciled, full behavior acceptance open.
+Q-01 actual Codemetr product check (tool/rules approved), Q-02 build/audit/coverage, Q-03 platform/crash behavior,
+Q-04 live providers, Q-05 package consumption and Q-06 actual Red–Green–Refactor evidence are open before code release
+on the final delivery state. Local partial checks are documented in the current evidence;
+this plan claims neither a completed story nor product release.
 
-Ergänzung FR-027: Q-05 umfasst auch den hostähnlichen Konsumnachweis aus SC-011 mit
-einer vom Konsumenten registrierten Providerimplementierung. Das ist kein Eingriff
-in ein externes Anwendungsrepository und keine Zusicherung vollständiger Bestandsmigration.
+Addition FR-027: Q-05 also comprises the host-like consumption proof from SC-011 with
+a provider implementation registered by the consumer. This is no intervention
+in an external application repository and no guarantee of complete migration of existing state.

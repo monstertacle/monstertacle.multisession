@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Herstellerübergreifende Agent-Multisession
+# Specification Quality Checklist: Cross-Vendor Agent Multisession
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-10-26

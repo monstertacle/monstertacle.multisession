@@ -1,0 +1,324 @@
+{
+  "listenerCommit": "2c4a8af153f866d09bfb564fa88d4ac2856b20ec",
+  "generatedUtc": "2026-11-01T12:04:50.4327534+00:00",
+  "fixtures": {
+    "custody": {
+      "database": "custody.db",
+      "sha256": "1c98f67a02ba59eb77a00219f0414878d56541f2e915dc30a9e344e2e51433d7",
+      "rows": "custody.rows.json"
+    },
+    "uncertain": {
+      "database": "uncertain.db",
+      "sha256": "ebe99d3d2dabd37f985b65763995fd7cde5cfefa64895e8fde1dc80346f83ec8",
+      "rows": "uncertain.rows.json"
+    }
+  },
+  "outputs": {
+    "preparationKey": "{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3}",
+    "preparationReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"34a91c19545ced95777dc4460b57946749da08fb0924a482fa5c6fb190013fcf\",\"before\":{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:04:46.7452712+00:00\"}",
+    "deliveryKey": "{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4}",
+    "deliveryReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000002\",\"requestDigest\":\"60ccea2b617dc6a38596e59ebaabc2057969f6b74f3e98e0b9e12173a6242c00\",\"before\":{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:04:47.7232751+00:00\"}",
+    "rebindKey": "{\"schema\":1,\"oldConfigurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"oldRouteDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"newConfigurationDigest\":\"8e462c76500bcab52ba31cbbdabf57062eecfae5801392b5896086aa3943d8e5\",\"newRouteDigest\":\"2cb1ef25b6ee37dc41152bf428877b0b10ff873fd2663643f9b5397ec2344b4d\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}",
+    "rebindReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"bff82472778823b97769d418b59486022a17f1a94e25911f30a3c55907fec386\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"oldRouteDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"newConfigurationDigest\":\"8e462c76500bcab52ba31cbbdabf57062eecfae5801392b5896086aa3943d8e5\",\"newRouteDigest\":\"2cb1ef25b6ee37dc41152bf428877b0b10ff873fd2663643f9b5397ec2344b4d\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:04:48.4998854+00:00\"}",
+    "movedPreparationKey": "{\"schema\":1,\"configurationDigest\":\"8e462c76500bcab52ba31cbbdabf57062eecfae5801392b5896086aa3943d8e5\",\"routeDigest\":\"2cb1ef25b6ee37dc41152bf428877b0b10ff873fd2663643f9b5397ec2344b4d\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}",
+    "uncertainKey": "{\"schema\":1,\"configurationDigest\":\"db0d06e63144c3571e8ea693989b0c7e7e077e9f836d206c3f18198aec346fd8\",\"routeDigest\":\"de2b356e2c2ca8d15ad5027f2c7572ff6a67c862a41f693fc385cbeea29def8f\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1}",
+    "uncertainReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000004\",\"requestDigest\":\"3d2927ab402dca75e179261f9636065aefb2e06709f127024b1ed6a1fb956cdb\",\"before\":{\"schema\":1,\"configurationDigest\":\"db0d06e63144c3571e8ea693989b0c7e7e077e9f836d206c3f18198aec346fd8\",\"routeDigest\":\"de2b356e2c2ca8d15ad5027f2c7572ff6a67c862a41f693fc385cbeea29def8f\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:04:49.7056467+00:00\"}",
+    "uncertainSecondKey": "{\"schema\":1,\"configurationDigest\":\"db0d06e63144c3571e8ea693989b0c7e7e077e9f836d206c3f18198aec346fd8\",\"routeDigest\":\"de2b356e2c2ca8d15ad5027f2c7572ff6a67c862a41f693fc385cbeea29def8f\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":2}"
+  },
+  "sends": [
+    "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa lose",
+    "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa accept",
+    "cccccccc-cccc-4ccc-8ccc-cccccccccccc lose",
+    "cccccccc-cccc-4ccc-8ccc-cccccccccccc lose"
+  ],
+  "transcript": [
+    {
+      "step": "prepare-1",
+      "mode": "unready",
+      "arguments": [
+        "once",
+        "custody-before.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "listener_attempt_failed:InvalidDataException\n"
+    },
+    {
+      "step": "prepare-2",
+      "mode": "unready",
+      "arguments": [
+        "once",
+        "custody-before.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "listener_attempt_failed:InvalidDataException\n"
+    },
+    {
+      "step": "prepare-3",
+      "mode": "unready",
+      "arguments": [
+        "once",
+        "custody-before.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "listener_attempt_failed:InvalidDataException\n"
+    },
+    {
+      "step": "exhausted",
+      "mode": "unready",
+      "arguments": [
+        "once",
+        "custody-before.json"
+      ],
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "delivery_requires_reconciliation\n"
+    },
+    {
+      "step": "preparation-key",
+      "mode": "idle",
+      "arguments": [
+        "preparation-key",
+        "custody-before.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3}\n",
+      "stderr": ""
+    },
+    {
+      "step": "preparation-rearm",
+      "mode": "idle",
+      "arguments": [
+        "preparation-rearm",
+        "custody-before.json",
+        "rearm-request.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"34a91c19545ced95777dc4460b57946749da08fb0924a482fa5c6fb190013fcf\",\"before\":{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:04:46.7452712+00:00\"}\n",
+      "stderr": ""
+    },
+    {
+      "step": "preparation-rearm-repeat",
+      "mode": "idle",
+      "arguments": [
+        "preparation-rearm",
+        "custody-before.json",
+        "rearm-request.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"34a91c19545ced95777dc4460b57946749da08fb0924a482fa5c6fb190013fcf\",\"before\":{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:04:46.7452712+00:00\"}\n",
+      "stderr": ""
+    },
+    {
+      "step": "lost-acknowledgement",
+      "mode": "lose",
+      "arguments": [
+        "once",
+        "custody-before.json"
+      ],
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "listener_attempt_failed:WebSocketException\n"
+    },
+    {
+      "step": "delivery-key",
+      "mode": "accept",
+      "arguments": [
+        "delivery-key",
+        "custody-before.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4}\n",
+      "stderr": ""
+    },
+    {
+      "step": "delivery-replay",
+      "mode": "accept",
+      "arguments": [
+        "delivery-replay",
+        "custody-before.json",
+        "replay-request.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000002\",\"requestDigest\":\"60ccea2b617dc6a38596e59ebaabc2057969f6b74f3e98e0b9e12173a6242c00\",\"before\":{\"schema\":1,\"configurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"routeDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:04:47.7232751+00:00\"}\n",
+      "stderr": ""
+    },
+    {
+      "step": "stage-second",
+      "mode": "unready",
+      "arguments": [
+        "once",
+        "custody-before.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "listener_attempt_failed:InvalidDataException\n"
+    },
+    {
+      "step": "delivery-rebind-key",
+      "mode": "idle",
+      "arguments": [
+        "delivery-rebind-key",
+        "custody-before.json",
+        "custody-after.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"oldConfigurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"oldRouteDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"newConfigurationDigest\":\"8e462c76500bcab52ba31cbbdabf57062eecfae5801392b5896086aa3943d8e5\",\"newRouteDigest\":\"2cb1ef25b6ee37dc41152bf428877b0b10ff873fd2663643f9b5397ec2344b4d\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}\n",
+      "stderr": ""
+    },
+    {
+      "step": "delivery-rebind",
+      "mode": "idle",
+      "arguments": [
+        "delivery-rebind",
+        "custody-before.json",
+        "custody-after.json",
+        "rebind-request.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"bff82472778823b97769d418b59486022a17f1a94e25911f30a3c55907fec386\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"oldRouteDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"newConfigurationDigest\":\"8e462c76500bcab52ba31cbbdabf57062eecfae5801392b5896086aa3943d8e5\",\"newRouteDigest\":\"2cb1ef25b6ee37dc41152bf428877b0b10ff873fd2663643f9b5397ec2344b4d\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:04:48.4998854+00:00\"}\n",
+      "stderr": ""
+    },
+    {
+      "step": "delivery-rebind-repeat",
+      "mode": "idle",
+      "arguments": [
+        "delivery-rebind",
+        "custody-before.json",
+        "custody-after.json",
+        "rebind-request.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"bff82472778823b97769d418b59486022a17f1a94e25911f30a3c55907fec386\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"3d08b481314f495d3414772fe40c192b645310d984f0e7ebdb2d12ebfaef57ff\",\"oldRouteDigest\":\"c6e4203340f15ec1779a61971e8b6927181dbc813aa60d04ac8d3bb9f9cd85e0\",\"newConfigurationDigest\":\"8e462c76500bcab52ba31cbbdabf57062eecfae5801392b5896086aa3943d8e5\",\"newRouteDigest\":\"2cb1ef25b6ee37dc41152bf428877b0b10ff873fd2663643f9b5397ec2344b4d\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:04:48.4998854+00:00\"}\n",
+      "stderr": ""
+    },
+    {
+      "step": "old-route-refused",
+      "mode": "idle",
+      "arguments": [
+        "preparation-key",
+        "custody-before.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "listener_failed:InvalidDataException\n"
+    },
+    {
+      "step": "moved-preparation-key",
+      "mode": "idle",
+      "arguments": [
+        "preparation-key",
+        "custody-after.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"8e462c76500bcab52ba31cbbdabf57062eecfae5801392b5896086aa3943d8e5\",\"routeDigest\":\"2cb1ef25b6ee37dc41152bf428877b0b10ff873fd2663643f9b5397ec2344b4d\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}\n",
+      "stderr": ""
+    },
+    {
+      "step": "uncertain-first-loss",
+      "mode": "lose",
+      "arguments": [
+        "once",
+        "uncertain.json"
+      ],
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "listener_attempt_failed:WebSocketException\n"
+    },
+    {
+      "step": "uncertain-delivery-key",
+      "mode": "lose",
+      "arguments": [
+        "delivery-key",
+        "uncertain.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"db0d06e63144c3571e8ea693989b0c7e7e077e9f836d206c3f18198aec346fd8\",\"routeDigest\":\"de2b356e2c2ca8d15ad5027f2c7572ff6a67c862a41f693fc385cbeea29def8f\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1}\n",
+      "stderr": ""
+    },
+    {
+      "step": "uncertain-replay-loss",
+      "mode": "lose",
+      "arguments": [
+        "delivery-replay",
+        "uncertain.json",
+        "uncertain-replay-request.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "listener_failed:WebSocketException\n"
+    },
+    {
+      "step": "uncertain-replay-repeat",
+      "mode": "accept",
+      "arguments": [
+        "delivery-replay",
+        "uncertain.json",
+        "uncertain-replay-request.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000004\",\"requestDigest\":\"3d2927ab402dca75e179261f9636065aefb2e06709f127024b1ed6a1fb956cdb\",\"before\":{\"schema\":1,\"configurationDigest\":\"db0d06e63144c3571e8ea693989b0c7e7e077e9f836d206c3f18198aec346fd8\",\"routeDigest\":\"de2b356e2c2ca8d15ad5027f2c7572ff6a67c862a41f693fc385cbeea29def8f\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:04:49.7056467+00:00\"}\n",
+      "stderr": ""
+    },
+    {
+      "step": "uncertain-second-key",
+      "mode": "accept",
+      "arguments": [
+        "delivery-key",
+        "uncertain.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"db0d06e63144c3571e8ea693989b0c7e7e077e9f836d206c3f18198aec346fd8\",\"routeDigest\":\"de2b356e2c2ca8d15ad5027f2c7572ff6a67c862a41f693fc385cbeea29def8f\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":2}\n",
+      "stderr": ""
+    },
+    {
+      "step": "uncertain-second-refused",
+      "mode": "accept",
+      "arguments": [
+        "delivery-replay",
+        "uncertain.json",
+        "uncertain-second-request.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "listener_delivery_refused:delivery_replay_consumed\n"
+    }
+  ],
+  "harness": [
+    {
+      "file": "CheckpointSnapshot.cs",
+      "sha256": "09004cab372eee5e523342b024c23ab3b6a77686c24e33ab5d4499a058266708"
+    },
+    {
+      "file": "FeedFixture.cs",
+      "sha256": "0a574a2e4c09d856e87673f30330d6d08e41d8d4914453b521abd0ac2ee25b70"
+    },
+    {
+      "file": "FixtureHarness.csproj",
+      "sha256": "131b92494f1863bf5ec32f375d0a208af910ccd2f9588cc907e0412c7b04ec93"
+    },
+    {
+      "file": "New-CurrentListenerFixture.ps1",
+      "sha256": "c71e23f092c46aa344f2b1373aaf78b7ba2af20ff3ae7f3f1553f58d122a4d96"
+    },
+    {
+      "file": "packages.lock.json",
+      "sha256": "2245ff32c0a3e0d8a8d8e7fae981d028bcc428d5554a1c6d5171c93fd9eb971d"
+    },
+    {
+      "file": "Program.cs",
+      "sha256": "3a3e4c468fe9f2b50b5a3ec08e7797554c51397880125fcf1801330fb4808737"
+    },
+    {
+      "file": "RpcFixtureServer.cs",
+      "sha256": "9e8f90b2c4cfb0145cfaf92bb2a76703c3f7b8b6d78df09f132077b72c38fa70"
+    }
+  ],
+  "release": {
+    "commit": "2c4a8af153f866d09bfb564fa88d4ac2856b20ec",
+    "listenerSha256": "5b66f62afcd533ce38d71b32f7bd19ece114f610cc72310d98d669f130af9453",
+    "protocolSha256": "aa0729524e1d5b995311172e90b0a03b0ad978846a2bc0d881001caf4f93b8af"
+  }
+}

@@ -11,3 +11,10 @@
 Local evidence (2026-11-01, Linux): Release build 0 errors; pack of 8 alpha.7 packages; eng/Test-PackageLayout.ps1 PASS for all 8;
 DeliveryCheckpoints.Tests 94 passed; eng/Test-DeliveryConsumer.ps1 PASS against the alpha.7 package; mutant packing the repository
 README fails the layout guard ("Packaged README is not docs/package-readme.md").
+
+CI round 1 (PR 13): quality Linux failed with MSB1009 because scripts/Invoke-Quality.ps1 builds the test project path from the bare
+suite name 'Delivery.Tests', which the word-bounded rename did not match. Fixed to 'DeliveryCheckpoints.Tests' in both suite lists; a
+sweep of all tracked files outside spec 009 and ADR 0007 finds no other old reference. Local scripts/Invoke-Quality.ps1 (Linux) passes,
+including DeliveryCheckpoints.Tests 94 and the coverage gate.
+Process deviation: one read-only python3 one-liner was used to inspect the local codemetr-cover.json quality artifact of this SDK
+change; nothing was executed in or written to the SDK. Further SDK inspection uses jq or PowerShell only.

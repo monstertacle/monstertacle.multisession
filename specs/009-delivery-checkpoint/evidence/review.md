@@ -23,3 +23,20 @@ Root verified every disposition below at the source; fixes are in `cdbffec` (fol
 | D7 mid-statement cancellation may surface as `SqliteException` | `StorageFailures.cs` | Accepted P3: transaction rolls back, never reported as success |
 | C9 logical dump instead of files; `.db` left in Fixtures | harness | Repository forbids SQLite fixtures; dump keeps DDL text and storage classes (integers vs text); harness now deletes the files after hashing |
 | Skeleton passed three tests | `red-skeleton-tests.txt` | Recorded in `tdd.md`; two tests tightened before Green |
+
+## Follow-up round (both reviewers, diff 9e8b487 → cdbffec)
+
+Defender (12:40:10Z–12:41:04Z, about 6 tool calls): changes necessary and minimal, no new production defect; noted harness
+lock-file loss and a misleading variable name (P3) and the missing concrete follow-up for C1 (P2, process).
+Challenger (12:40:08Z–12:41:27Z, 6 tool calls): C2, C3, C4 (code/test), C6, C7, C9, D6 closed; disputed C1 process, C5 doc
+wording, skeleton evidence; new N1–N3 (P3). Dispositions, fixed in the next commits:
+
+| Item | Disposition |
+| --- | --- |
+| C1 concrete follow-up | `tasks.md` F-009-1: owner product integration actor, bounded job (private read-only copy, `OpenExistingAsync`, `ReadAsync`, three `FindAsync`, no writes, no live data committed), acceptance (no refusal, pending digest equals host key digest, receipts byte-equal, host suites green) |
+| C1/D4 Windows | closed only by the green Windows job of the final head (`handoff.md`) |
+| C5 | `DeliveryRefusal.ExclusiveAccessUnavailable` doc now names lease-file open failures and the inner exception |
+| Skeleton evidence | mutation Red recorded in `tdd.md` |
+| N1 | phase storage-class case now a blob equal to `pending` text |
+| N2 | harness lock file kept as template, restore with `--locked-mode` |
+| N3 / misleading name | snapshot written and merged inside the private work directory; variable renamed |

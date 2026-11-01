@@ -19,6 +19,10 @@ version are decided by the supervisor and the version owner of PR #11 (current-v
 merge of #11 into this branch was clean (README only) and passed restore, build, delivery tests, layout and consumer.
 
 Open follow-up owned outside this feature (not implemented here by authorization):
-- F-009-1 (owner: product integration actor): prove the package against a read-only copy of the live Listener checkpoint
-  and replace Store/Preparation*/DeliveryReplay*/DeliveryRebind* in SharpClaw with the package after the no-legacy work;
-  acceptance: current host black-box suites green on the package-based Listener, identical keys/receipts on the copy.
+- F-009-1 (owner: product integration actor; origin: review finding C1 and architecture decision "read-only live-state
+  copy"). Scope: after the no-legacy cleanup, open a private read-only copy of the live Listener checkpoint with
+  `OpenExistingAsync` (never the live path), call `ReadAsync` and the three `FindAsync` for the recorded request ids; no
+  writes, no live data committed; then replace Store/Preparation*/DeliveryReplay*/DeliveryRebind* logic in SharpClaw with
+  the package. Depends on PR #10 merged and the shared version decided. Acceptance: no refusal on the copy; pending digest
+  equals the host key `pendingDigest`; stored receipts byte-equal to the host CLI output; current host black-box suites
+  (listener rebind/replay/rearm/event) green on the package-based Listener.

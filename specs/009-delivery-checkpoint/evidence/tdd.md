@@ -37,3 +37,11 @@ the release against private configurations, a fixture feed process and a private
 `~/dev/.agenttemp` directory. Every Listener invocation, exit code and output is in `oracle.json` (`transcript`). The
 resulting checkpoints were merged from WAL and dumped (exact DDL text and rows); SQLite files are not committed per the
 repository `.gitignore` rule, their hashes are recorded in `oracle.json`.
+
+## Red for the two tightened tests (follow-up review)
+
+The red skeleton run predates the tightening of `TheLeaseIsAnOperatingSystemExclusiveLock` and
+`ExistingCheckpointIgnoresANewInitialPosition`, so their Red was not observed against the skeleton. It is observed by
+mutation (`mutation-tightened-tests.txt`): lease suffix `.lease` turns the lease test red; `INSERT OR REPLACE` instead of
+`INSERT OR IGNORE` turns the initial-position test (and the identity tests) red; the restored source is green again.
+Expectation-check mutant for attempt grants: `mutation-expectation-attempts.txt`.

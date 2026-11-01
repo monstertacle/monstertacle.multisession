@@ -1,0 +1,44 @@
+{
+  "status": "alpha.4 canonical CI packages for a570e6c (MIT); local feed only, not published",
+  "recordedUtc": "2026-11-01T10:09:47Z",
+  "sourceCommit": "a570e6c664c10680211d33403cf297699e53a5e4",
+  "githubRun": 41295442582,
+  "jobs": "quality linux/windows, canonical-consumer linux/windows, codemetr-guard (run 41295442583): success",
+  "linuxProductCoveragePercent": 97.9511,
+  "windowsProductCoveragePercent": 97.8759,
+  "priorReaderRefusal": "PASS on all four jobs (prior 0.2.0-alpha.2)",
+  "license": "SPDX MIT, copyright and full LICENSE text checked by eng/Test-PackageLayout.ps1 in every job",
+  "nuspecRepositoryCommit": "a570e6c664c10680211d33403cf297699e53a5e4",
+  "producerManifestSha256": "a02b2b8de922fad3319e3f7d3276e8345f5af0fc902c5f6857023a3469691c92",
+  "alpha3": "unchanged; bound in specs/006-host-execution-authority/evidence/alpha3-feed.json",
+  "packages": [
+    {
+      "File": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.4.nupkg",
+      "Sha256": "378610ea23ef740cc1b241dbc21bbdb3e5ea3525049c34bd40be6aa32b61ab9b"
+    },
+    {
+      "File": "Monstertacle.Multisession.Common.0.2.0-alpha.4.nupkg",
+      "Sha256": "07afaccbb095b3f9af5f99ce2c61140e4b027ac4eaba8b04f0aeac916cd8b88c"
+    },
+    {
+      "File": "Monstertacle.Multisession.Linux.0.2.0-alpha.4.nupkg",
+      "Sha256": "0924cac52d866b4e30ad98d7a03603ceacfca3bdd88310ada9fdd1d0bc0e21e5"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.4.nupkg",
+      "Sha256": "d0baa0dd6ed51a7fc472259998c62e64d2e4b1db826b2311aba4ef6b9e872485"
+    },
+    {
+      "File": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.4.nupkg",
+      "Sha256": "b349e48adc6bd938b090eeb63ecec06bb051cf965b97d4a4b7c034d8066f2a6c"
+    },
+    {
+      "File": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.4.nupkg",
+      "Sha256": "35195d25dd0c43e12706091e788ccf826b84764bdf18c06ad2ef11c97fae1ec5"
+    },
+    {
+      "File": "Monstertacle.Multisession.Windows.0.2.0-alpha.4.nupkg",
+      "Sha256": "eb275ce1e2a2e8e7595c423a2daa4f3295b7a7844aa2f302a72e76889f892683"
+    }
+  ]
+}

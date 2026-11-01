@@ -1,0 +1,12 @@
+{
+  "recordedUtc": "2026-11-01T09:50:00Z",
+  "base": "dbf629da4a2c76d0b4f77cf23a1fbaf006a72465",
+  "source": "feature/mit-package-license working tree before commit (diff: Directory.Build.props, LICENSE, README.md, eng/PackageSmoke.ps1, eng/Test-PackageLayout.ps1, five packages.lock.json, specs/007)",
+  "command": "run-capped -m 4G -s 1G: scripts/Invoke-Quality.ps1 -Platform linux; dotnet pack -c Release --no-build; eng/PackageSmoke.ps1",
+  "tests": { "UnitTests": 442, "ContractTests": 252, "IntegrationTests": 429, "PlatformTests": 68, "failed": 0, "skipped": 0 },
+  "linuxProductCoveragePercent": 97.9511,
+  "thresholdPercent": 87.0,
+  "packageLayout": "PASS for all seven packages: 0.2.0-alpha.4, MIT expression, copyright, packaged LICENSE",
+  "packageSmoke": ["PASS actual prior package refuses current store", "PASS framework package-only consumer", "PASS package consumer"],
+  "note": "Local packages are not the canonical bytes; canonical alpha.4 packages come from the native CI run of the pushed producer commit (evidence/alpha4-feed.json)."
+}

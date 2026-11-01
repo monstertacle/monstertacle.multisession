@@ -46,3 +46,19 @@ of PR #11 (current-version-only, root `0.2.0-alpha.5`) and the supervisor.
 
 All review findings are dispositioned in `review.md`; open owned item F-009-1 (integration actor) and the version/merge
 decision (supervisor with the PR #11 owner). No P0/P1 open in the package.
+
+## Addendum: canonical 0.2.0-alpha.6 binding (supersedes the open version question above)
+
+Supervisor decision 2026-11-01T12:42:35Z: current-version-only (PR #11, alpha.5, immutable) merged first; PR #10 merged
+main and carried the single delegated root advance to `0.2.0-alpha.6`. Integration review follow-up in `review.md`.
+
+- PR #10 merged as `06bbbcc84ff15eda8e51e8a12b04c1640aa36c93` (qualified head `d5f6952`, run 41310100937 green).
+- Canonical producer: main push run 41311179519 for `06bbbcc` (quality and canonical-consumer on Linux and Windows success;
+  codemetr-guard 41311179551 success). Coverage Linux 97.7130, Windows 97.8729 percent. Source hash
+  `ed436f993a4eea300406ea1091ff9a0e4d3385aa8397b192299cdf24786d7761` on both platforms.
+- `Monstertacle.Multisession.Delivery.0.2.0-alpha.6.nupkg` sha256 `f088b776c42abda71b98aff5e16be0f5ed9ede82026c6d788e06460cad3b5c6a`,
+  lock content hash `fyz76GByDEgrOB30sYEUzlwReeUEITiRe/KOuA0f/Pjr9rwQO/pDzp8bITybTrMWIhG8QPkypEiLtTYnwSXjjg==`,
+  `lib/net10.0/Monstertacle.Multisession.Delivery.dll` sha256 `8ff834dad0d07cd7e089accb85079f6d2b3d905b59c2d0ab8975fbd453573cd7`.
+- The canonical consumers and the isolated delivery consumer restored exactly these bytes on Linux and Windows (9/9 PASS).
+- Only these bytes are the alpha.6 release set; packages built by later commits (including this documentation commit) are
+  CI artifacts and must not be promoted. The earlier alpha.4-labelled development bytes above are superseded.

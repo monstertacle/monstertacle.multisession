@@ -40,3 +40,16 @@ wording, skeleton evidence; new N1–N3 (P3). Dispositions, fixed in the next co
 | N1 | phase storage-class case now a blob equal to `pending` text |
 | N2 | harness lock file kept as template, restore with `--locked-mode` |
 | N3 / misleading name | snapshot written and merged inside the private work directory; variable renamed |
+
+## Integration follow-up (alpha.6 head)
+
+After PR #11 merged (main `8d9202a`), main was normal-merged (`984f866`, README the only shared file) and the delegated
+root advance to `0.2.0-alpha.6` applied (`c8e116b`). Both reviewers checked the integration delta on a clean clone
+(defender 13:00:30Z–13:01:04Z, about 6 calls; challenger 13:00:28Z–13:01:33Z, 7 calls): legacy deletions preserved,
+no package identity reissued, delivery scripts consistent, earlier follow-up items all closed.
+
+| Item | Disposition |
+| --- | --- |
+| I1 (challenger, P1): five lock files still pinned `[0.2.0-alpha.5, )` for project references; locked restore must fail | Confirmed at source (`git grep`); root's local locked restore had been a cached no-op. Fixed by one unlocked restore: only the 68 version lines in the same five files as the previous bump changed; forced locked restore then passed. Final head must be green in native CI |
+| I2 / defender P3: handoff still lists alpha.4 bytes | Addendum with alpha.6 hashes from the final green head (`handoff.md`, `package-handoff.json`) |
+| Defender P2: integrated head needs its own CI | Required before merge; recorded in `handoff.md` |

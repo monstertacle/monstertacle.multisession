@@ -1,29 +1,29 @@
 {
   "listenerCommit": "2c4a8af153f866d09bfb564fa88d4ac2856b20ec",
-  "generatedUtc": "2026-11-01T12:28:00.6524273+00:00",
+  "generatedUtc": "2026-11-01T12:42:41.0364859+00:00",
   "fixtures": {
     "custody": {
       "database": "custody.db",
-      "sha256": "7e512e99387d82a8ea076aa56f9fa637cd498d263b32c83c264690f78118758a",
+      "sha256": "ffcb2e1a990ea8d98c06f74716ee70dd5a2d0c1ff45f5eac8b1761f243a752ad",
       "rows": "custody.rows.json"
     },
     "uncertain": {
       "database": "uncertain.db",
-      "sha256": "e76ad344230c5195f82d73057d9bfce27327eba33afa3beb696cd486e9346547",
+      "sha256": "0d4dc3b00ddd46d67992387e61f64059d9289e4233f5a2ac0076ca510599bb0a",
       "rows": "uncertain.rows.json"
     }
   },
   "outputs": {
-    "preparationKey": "{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3}",
-    "preparationReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"7703fd3f8b42772509e54438965a90e5666f69846aac21b0130eb203e0c1665e\",\"before\":{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:27:57.2864007+00:00\"}",
-    "deliveryKey": "{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4}",
-    "deliveryReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000002\",\"requestDigest\":\"105e8c88abbc27d103549a07411679e9f77066bdba20d30c814da0fffb4766f0\",\"before\":{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:27:58.1826552+00:00\"}",
-    "rebindKey": "{\"schema\":1,\"oldConfigurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"oldRouteDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"newConfigurationDigest\":\"44dd82a221041a2fe8dd7934732b1b050d493820dd49983f626fd7b9959f1a1e\",\"newRouteDigest\":\"35ac1ed90de48830e2a44dab0a6c1b3376d33f8bf62280abf5ad77f255485171\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}",
-    "rebindReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"2c5c74153c5aec63bf3593c5d0eb132aafc89a2527726ee6b94e66902c3d2bcb\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"oldRouteDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"newConfigurationDigest\":\"44dd82a221041a2fe8dd7934732b1b050d493820dd49983f626fd7b9959f1a1e\",\"newRouteDigest\":\"35ac1ed90de48830e2a44dab0a6c1b3376d33f8bf62280abf5ad77f255485171\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:27:58.8961308+00:00\"}",
-    "movedPreparationKey": "{\"schema\":1,\"configurationDigest\":\"44dd82a221041a2fe8dd7934732b1b050d493820dd49983f626fd7b9959f1a1e\",\"routeDigest\":\"35ac1ed90de48830e2a44dab0a6c1b3376d33f8bf62280abf5ad77f255485171\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}",
-    "uncertainKey": "{\"schema\":1,\"configurationDigest\":\"3796a72aad76efb982f69df97fc1b637af5f4c61d1acb8d838784d4c3db721b6\",\"routeDigest\":\"0e9ac670cef1ec660da74be23fd6482d72a2d968a3832d1d6ec8fefca6886bc5\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1}",
-    "uncertainReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000004\",\"requestDigest\":\"f0b7d0656ffefe960d36d473afe78ce2297cd43b997c4febffc220fdb295f890\",\"before\":{\"schema\":1,\"configurationDigest\":\"3796a72aad76efb982f69df97fc1b637af5f4c61d1acb8d838784d4c3db721b6\",\"routeDigest\":\"0e9ac670cef1ec660da74be23fd6482d72a2d968a3832d1d6ec8fefca6886bc5\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:28:00.0118798+00:00\"}",
-    "uncertainSecondKey": "{\"schema\":1,\"configurationDigest\":\"3796a72aad76efb982f69df97fc1b637af5f4c61d1acb8d838784d4c3db721b6\",\"routeDigest\":\"0e9ac670cef1ec660da74be23fd6482d72a2d968a3832d1d6ec8fefca6886bc5\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":2}"
+    "preparationKey": "{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3}",
+    "preparationReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"b636a55debd8911c7a50780de50aa7343846afa2d885162bbe13e80e9f0bf407\",\"before\":{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:42:36.9948771+00:00\"}",
+    "deliveryKey": "{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4}",
+    "deliveryReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000002\",\"requestDigest\":\"03a7457d9db8e5eaeee92159f56f74b188deb90121d29bd9511bf06f439c8a2d\",\"before\":{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:42:37.9548039+00:00\"}",
+    "rebindKey": "{\"schema\":1,\"oldConfigurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"oldRouteDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"newConfigurationDigest\":\"612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\",\"newRouteDigest\":\"08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}",
+    "rebindReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"6c9fa9d75199b1f81c73e1d74147ae11ce2b493e4d3aaf389f463f313bd196de\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"oldRouteDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"newConfigurationDigest\":\"612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\",\"newRouteDigest\":\"08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:42:38.8246184+00:00\"}",
+    "movedPreparationKey": "{\"schema\":1,\"configurationDigest\":\"612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\",\"routeDigest\":\"08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}",
+    "uncertainKey": "{\"schema\":1,\"configurationDigest\":\"2080a60400ab06879776939910e534f4a9f81ea4f8f0e5a9cdd6cd26ebdb23d7\",\"routeDigest\":\"f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1}",
+    "uncertainReceipt": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000004\",\"requestDigest\":\"34003fa3eb84b7d8fa5f8f6724eb3ccdde5b3e10d4c68bb6fe0da4e2b4fe7c7e\",\"before\":{\"schema\":1,\"configurationDigest\":\"2080a60400ab06879776939910e534f4a9f81ea4f8f0e5a9cdd6cd26ebdb23d7\",\"routeDigest\":\"f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:42:40.2513044+00:00\"}",
+    "uncertainSecondKey": "{\"schema\":1,\"configurationDigest\":\"2080a60400ab06879776939910e534f4a9f81ea4f8f0e5a9cdd6cd26ebdb23d7\",\"routeDigest\":\"f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":2}"
   },
   "sends": [
     "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa lose",
@@ -84,7 +84,7 @@
         "custody-before.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3}\n",
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3}\n",
       "stderr": ""
     },
     {
@@ -96,7 +96,7 @@
         "rearm-request.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"7703fd3f8b42772509e54438965a90e5666f69846aac21b0130eb203e0c1665e\",\"before\":{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:27:57.2864007+00:00\"}\n",
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"b636a55debd8911c7a50780de50aa7343846afa2d885162bbe13e80e9f0bf407\",\"before\":{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:42:36.9948771+00:00\"}\n",
       "stderr": ""
     },
     {
@@ -108,7 +108,7 @@
         "rearm-request.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"7703fd3f8b42772509e54438965a90e5666f69846aac21b0130eb203e0c1665e\",\"before\":{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:27:57.2864007+00:00\"}\n",
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000001\",\"requestDigest\":\"b636a55debd8911c7a50780de50aa7343846afa2d885162bbe13e80e9f0bf407\",\"before\":{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"pending\",\"attempts\":3},\"grantedAttempts\":3,\"createdUtc\":\"2026-11-01T12:42:36.9948771+00:00\"}\n",
       "stderr": ""
     },
     {
@@ -130,7 +130,7 @@
         "custody-before.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4}\n",
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4}\n",
       "stderr": ""
     },
     {
@@ -142,7 +142,7 @@
         "replay-request.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000002\",\"requestDigest\":\"105e8c88abbc27d103549a07411679e9f77066bdba20d30c814da0fffb4766f0\",\"before\":{\"schema\":1,\"configurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"routeDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:27:58.1826552+00:00\"}\n",
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000002\",\"requestDigest\":\"03a7457d9db8e5eaeee92159f56f74b188deb90121d29bd9511bf06f439c8a2d\",\"before\":{\"schema\":1,\"configurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"routeDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":4},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:42:37.9548039+00:00\"}\n",
       "stderr": ""
     },
     {
@@ -165,7 +165,7 @@
         "custody-after.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"oldConfigurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"oldRouteDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"newConfigurationDigest\":\"44dd82a221041a2fe8dd7934732b1b050d493820dd49983f626fd7b9959f1a1e\",\"newRouteDigest\":\"35ac1ed90de48830e2a44dab0a6c1b3376d33f8bf62280abf5ad77f255485171\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}\n",
+      "stdout": "{\"schema\":1,\"oldConfigurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"oldRouteDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"newConfigurationDigest\":\"612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\",\"newRouteDigest\":\"08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}\n",
       "stderr": ""
     },
     {
@@ -178,7 +178,7 @@
         "rebind-request.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"2c5c74153c5aec63bf3593c5d0eb132aafc89a2527726ee6b94e66902c3d2bcb\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"oldRouteDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"newConfigurationDigest\":\"44dd82a221041a2fe8dd7934732b1b050d493820dd49983f626fd7b9959f1a1e\",\"newRouteDigest\":\"35ac1ed90de48830e2a44dab0a6c1b3376d33f8bf62280abf5ad77f255485171\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:27:58.8961308+00:00\"}\n",
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"6c9fa9d75199b1f81c73e1d74147ae11ce2b493e4d3aaf389f463f313bd196de\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"oldRouteDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"newConfigurationDigest\":\"612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\",\"newRouteDigest\":\"08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:42:38.8246184+00:00\"}\n",
       "stderr": ""
     },
     {
@@ -191,7 +191,7 @@
         "rebind-request.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"2c5c74153c5aec63bf3593c5d0eb132aafc89a2527726ee6b94e66902c3d2bcb\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"fe6fd33b588351ea545a278d12f96d7434a87f63b6d166e3a1ac9d3e357ad75c\",\"oldRouteDigest\":\"210a41b77e0df90d3c2334a006105bee890558aea692f2f3319f2adbda488fc7\",\"newConfigurationDigest\":\"44dd82a221041a2fe8dd7934732b1b050d493820dd49983f626fd7b9959f1a1e\",\"newRouteDigest\":\"35ac1ed90de48830e2a44dab0a6c1b3376d33f8bf62280abf5ad77f255485171\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:27:58.8961308+00:00\"}\n",
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000003\",\"requestDigest\":\"6c9fa9d75199b1f81c73e1d74147ae11ce2b493e4d3aaf389f463f313bd196de\",\"before\":{\"schema\":1,\"oldConfigurationDigest\":\"6e5c4724a36b8062a7c0168c304c9f1fd9880f251a122542dff6cf3b2abaa0b7\",\"oldRouteDigest\":\"c471cc042019388103ea61e15692e251a5f53d528c6d752659e24bca919a5f0e\",\"newConfigurationDigest\":\"612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\",\"newRouteDigest\":\"08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1},\"createdUtc\":\"2026-11-01T12:42:38.8246184+00:00\"}\n",
       "stderr": ""
     },
     {
@@ -213,7 +213,7 @@
         "custody-after.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"configurationDigest\":\"44dd82a221041a2fe8dd7934732b1b050d493820dd49983f626fd7b9959f1a1e\",\"routeDigest\":\"35ac1ed90de48830e2a44dab0a6c1b3376d33f8bf62280abf5ad77f255485171\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}\n",
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"612b2bf4274e1f148bd8d8d6ba8ddac28f644d5c63651e9d74e51536b85e9c8d\",\"routeDigest\":\"08e2d2aadd8d76fc984bdf5ac56cd1ce062cc87d83de6553dc3f350f65808b33\",\"cursor\":1,\"pendingId\":\"22222222-2222-4222-8222-222222222222\",\"pendingDigest\":\"d9e35be47201f8ab6247e9e513e35254cacb68ac1ed836e90a822aa4f2b3dcd7\",\"phase\":\"pending\",\"attempts\":1}\n",
       "stderr": ""
     },
     {
@@ -235,7 +235,7 @@
         "uncertain.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"configurationDigest\":\"3796a72aad76efb982f69df97fc1b637af5f4c61d1acb8d838784d4c3db721b6\",\"routeDigest\":\"0e9ac670cef1ec660da74be23fd6482d72a2d968a3832d1d6ec8fefca6886bc5\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1}\n",
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"2080a60400ab06879776939910e534f4a9f81ea4f8f0e5a9cdd6cd26ebdb23d7\",\"routeDigest\":\"f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1}\n",
       "stderr": ""
     },
     {
@@ -259,7 +259,7 @@
         "uncertain-replay-request.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000004\",\"requestDigest\":\"f0b7d0656ffefe960d36d473afe78ce2297cd43b997c4febffc220fdb295f890\",\"before\":{\"schema\":1,\"configurationDigest\":\"3796a72aad76efb982f69df97fc1b637af5f4c61d1acb8d838784d4c3db721b6\",\"routeDigest\":\"0e9ac670cef1ec660da74be23fd6482d72a2d968a3832d1d6ec8fefca6886bc5\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:28:00.0118798+00:00\"}\n",
+      "stdout": "{\"schema\":1,\"requestId\":\"c0000000-0000-4000-8000-000000000004\",\"requestDigest\":\"34003fa3eb84b7d8fa5f8f6724eb3ccdde5b3e10d4c68bb6fe0da4e2b4fe7c7e\",\"before\":{\"schema\":1,\"configurationDigest\":\"2080a60400ab06879776939910e534f4a9f81ea4f8f0e5a9cdd6cd26ebdb23d7\",\"routeDigest\":\"f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":1},\"consumedSendAllowance\":1,\"createdUtc\":\"2026-11-01T12:42:40.2513044+00:00\"}\n",
       "stderr": ""
     },
     {
@@ -270,7 +270,7 @@
         "uncertain.json"
       ],
       "exitCode": 0,
-      "stdout": "{\"schema\":1,\"configurationDigest\":\"3796a72aad76efb982f69df97fc1b637af5f4c61d1acb8d838784d4c3db721b6\",\"routeDigest\":\"0e9ac670cef1ec660da74be23fd6482d72a2d968a3832d1d6ec8fefca6886bc5\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":2}\n",
+      "stdout": "{\"schema\":1,\"configurationDigest\":\"2080a60400ab06879776939910e534f4a9f81ea4f8f0e5a9cdd6cd26ebdb23d7\",\"routeDigest\":\"f6a9b764ae1cdf8548c90efb75cd10e2ea10335827c4318260e5ac2e0f556a96\",\"cursor\":0,\"pendingCursor\":1,\"pendingId\":\"11111111-1111-4111-8111-111111111111\",\"pendingDigest\":\"ab0d404ac3b8da3feb4194288f9beaa09a8f7f9330f30a7bbd61c4f222f28e82\",\"phase\":\"uncertain\",\"attempts\":2}\n",
       "stderr": ""
     },
     {
@@ -297,11 +297,15 @@
     },
     {
       "file": "FixtureHarness.csproj.txt",
-      "sha256": "2d964cbba8ffc40a80b88ddeb06b2c7488b013e27dece29f1129de57103c5491"
+      "sha256": "ab747e6f41f2342539feeacfbb2abde7fc2bab2a1def4572d2dc12139877cf0d"
     },
     {
       "file": "New-CurrentListenerFixture.ps1",
-      "sha256": "24fcca2d3cee58ad7d0810dc3363127c4d0d333e0df64f76757a50ae3a4d9a4a"
+      "sha256": "0f2c94cbc89770d0a8ff16631c778c4c9bebf01ffa1e9bb9d1f7d750d9097ad4"
+    },
+    {
+      "file": "packages.lock.json.txt",
+      "sha256": "59401a39d47e7326dc9b5f44ab7ca3d26997e5f2dd58a88995f93ad756e9240b"
     },
     {
       "file": "Program.cs.txt",

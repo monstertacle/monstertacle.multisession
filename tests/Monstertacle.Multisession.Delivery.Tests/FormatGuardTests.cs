@@ -32,7 +32,7 @@ public sealed class FormatGuardTests : IDisposable
     [Theory]
     [InlineData("UPDATE checkpoint SET cursor='x'")]
     [InlineData("UPDATE checkpoint SET attempts='x'")]
-    [InlineData("UPDATE checkpoint SET phase=1")]
+    [InlineData("UPDATE checkpoint SET pending='{}', phase=X'70656E64696E67'")]
     [InlineData("UPDATE checkpoint SET receipt=X'00'")]
     [InlineData("UPDATE checkpoint SET cursor=-1")]
     public async Task StoredValuesOfAnotherStorageClassAreRefused(string corruption)

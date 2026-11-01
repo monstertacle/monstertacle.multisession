@@ -36,7 +36,9 @@ try { $sources | & $dotnet tool run codemetr-csharp -- check --files-from - --fo
 finally { Pop-Location }
 if ($LASTEXITCODE -ne 0) { throw 'Fixture harness Codemetr check failed.' }
 $harness = Join-Path $work 'harness'
-& $dotnet build (Join-Path $source 'FixtureHarness.csproj') -c Release -o $harness --nologo -v quiet | Out-Null
+& $dotnet restore (Join-Path $source 'FixtureHarness.csproj') --locked-mode -v quiet | Out-Null
+if ($LASTEXITCODE -ne 0) { throw 'Fixture harness locked restore failed.' }
+& $dotnet build (Join-Path $source 'FixtureHarness.csproj') -c Release -o $harness --no-restore --nologo -v quiet | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Fixture harness build failed.' }
 $harnessDll = Join-Path $harness 'FixtureHarness.dll'
 
@@ -125,7 +127,7 @@ $null = New-Item -Path $Output -ItemType Directory -Force
 $sends = @(Get-Content -LiteralPath $sendLog)
 $oracle = [ordered]@{ listenerCommit = $ExpectedCommit; generatedUtc = [DateTimeOffset]::UtcNow.ToString('O'); fixtures = [ordered]@{} }
 foreach ($state in @('custody', 'uncertain')) {
-    $target = Join-Path $Output "$state.db"
+    $target = Join-Path $work "snapshot-$state.db"
     Copy-Item -LiteralPath (Join-Path $work "$state/checkpoint.db") -Destination $target -Force
     foreach ($suffix in @('-wal', '-shm')) {
         $side = Join-Path $work "$state/checkpoint.db$suffix"
@@ -135,10 +137,9 @@ foreach ($state in @('custody', 'uncertain')) {
     & $dotnet $harnessDll snapshot $target $dump
     if ($LASTEXITCODE -ne 0) { throw "Snapshot failed: $state" }
     foreach ($suffix in @('-wal', '-shm')) { if (Test-Path -LiteralPath "$target$suffix") { throw "Write-ahead log was not merged: $state" } }
-    $dumpHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
-    # SQLite files are never source fixtures (.gitignore); only the dump and the hash stay.
-    Remove-Item -LiteralPath $target
-    $oracle.fixtures[$state] = [ordered]@{ database = "$state.db"; sha256 = $dumpHash; rows = "$state.rows.json" }
+    $databaseHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+    # SQLite files are never source fixtures (.gitignore); the merged file stays in the private work directory.
+    $oracle.fixtures[$state] = [ordered]@{ database = "$state.db"; sha256 = $databaseHash; rows = "$state.rows.json" }
 }
 $oracle.outputs = [ordered]@{ preparationKey = $rearmKey; preparationReceipt = $rearmReceipt; deliveryKey = $replayKey; deliveryReceipt = $replayReceipt
     rebindKey = $rebindKey; rebindReceipt = $rebindReceipt; movedPreparationKey = $movedKey; uncertainKey = $lostKey; uncertainReceipt = $lostReceipt; uncertainSecondKey = $secondKey }

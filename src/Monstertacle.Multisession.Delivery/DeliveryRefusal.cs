@@ -15,7 +15,7 @@ public enum DeliveryRefusal
     /// <summary>The file is not a checkpoint of the supported format or its stored values are inconsistent.</summary>
     CheckpointCorrupt,
 
-    /// <summary>Another owner holds the exclusive checkpoint lease.</summary>
+    /// <summary>Another owner holds the exclusive checkpoint lease, or the lease file could not be opened; see the inner exception.</summary>
     ExclusiveAccessUnavailable,
 
     /// <summary>The database stayed locked by another writer beyond the configured busy timeout.</summary>

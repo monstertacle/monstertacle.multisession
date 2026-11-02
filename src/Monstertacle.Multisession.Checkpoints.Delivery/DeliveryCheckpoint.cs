@@ -7,7 +7,7 @@ namespace Monstertacle.Multisession.Checkpoints.Delivery;
 /// lease. Every transition is a compare-and-swap on the single stored row. The checkpoint performs no external effect, no
 /// retry and no background work; the host calls <see cref="MarkSendingAsync"/> immediately before its own external effect.
 /// </summary>
-public sealed class DeliveryCheckpoint : IDisposable
+public sealed class DeliveryCheckpoint : IDeliveryCheckpoint
 {
     private readonly CheckpointFile _file;
 

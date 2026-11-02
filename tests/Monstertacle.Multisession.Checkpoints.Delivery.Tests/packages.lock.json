@@ -139,10 +139,14 @@
           "xunit.extensibility.core": "[2.9.3]"
         }
       },
+      "monstertacle.multisession.checkpoints": {
+        "type": "Project"
+      },
       "monstertacle.multisession.checkpoints.delivery": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Data.Sqlite": "[10.0.14, )"
+          "Microsoft.Data.Sqlite": "[10.0.14, )",
+          "Monstertacle.Multisession.Checkpoints": "[0.2.0-alpha.7, )"
         }
       }
     }

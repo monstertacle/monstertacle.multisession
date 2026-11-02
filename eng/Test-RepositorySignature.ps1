@@ -5,8 +5,10 @@ param([Parameter(Mandatory)][string]$Package)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $repositorySigner = 'CN=NuGet.org Repository by Microsoft,'
+# The output is parsed, so it must be the English output whatever the machine's language.
+$env:DOTNET_CLI_UI_LANGUAGE = 'en'
 $output = @(dotnet nuget verify --all $Package --verbosity detailed 2>&1 | ForEach-Object ToString)
-if ($LASTEXITCODE -ne 0) { throw "Signature verification failed for $Package" }
+if ($LASTEXITCODE -ne 0) { $output | ForEach-Object { Write-Host $_ }; throw "Signature verification failed for $Package" }
 $signatureType = @($output | Select-String -Pattern '^\s*Signature type:\s*(\S+)' | ForEach-Object { $_.Matches[0].Groups[1].Value })
 $signerLine = @($output | Select-String -Pattern 'Verifying the repository primary signature with certificate' | Select-Object -First 1)
 if ($signatureType.Count -lt 1 -or $signatureType[0] -cne 'Repository' -or $signerLine.Count -ne 1) { throw "No repository primary signature on $Package" }

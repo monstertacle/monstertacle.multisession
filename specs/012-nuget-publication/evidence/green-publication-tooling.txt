@@ -1,9 +1,9 @@
 command: pwsh -NoProfile -File eng/Test-PublicationTooling.ps1 -WorkRoot <agenttemp>
-scripts: working tree after the review fixes
-measuredUtc: 2026-11-02T01:57:46Z
+scripts: working tree after the round-2 fixes
+measuredUtc: 2026-11-02T02:06:18Z
 {
   "Status": "PASS",
-  "Passed": 16,
+  "Passed": 19,
   "Failed": []
 }
 exit=0

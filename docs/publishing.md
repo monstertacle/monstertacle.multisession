@@ -32,7 +32,7 @@ their own policy and workflow.
 3. Only if a package is absent, the job logs in and pushes it without symbols. It then waits until every package is served and compares
    the served package with the canonical one. The canonical packages are unsigned; nuget.org adds its repository primary signature as
    the entry `.signature.p7s`, which changes the archive digest but no other entry. The workflow requires that entry, verifies it with
-   `dotnet nuget verify --all` and requires the nuget.org repository certificate; any other difference fails the run. The run summary
+   `dotnet nuget verify --all` (trusted chain) and requires a repository primary signature whose certificate subject is the nuget.org repository (the certificate itself rotates, so its fingerprint is recorded, not pinned); any other difference fails the run. The run summary
    holds the receipt with the served digest, the signer and its certificate fingerprint.
 
 A failed run can be started again. Packages that nuget.org already serves are recognised as present. A package that nuget.org has

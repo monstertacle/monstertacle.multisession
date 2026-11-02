@@ -32,9 +32,9 @@ from a qualified producer run to a public feed. A long-lived API key would be a 
   (`eng/Test-PublishedPackage.ps1`): the served package must carry the repository signature entry `.signature.p7s`, and every other
   entry must have the same name and content. The canonical packages are unsigned; nuget.org adds its repository primary signature,
   which changes the archive digest without changing any other entry. The signature is verified with `dotnet nuget verify --all` and
-  must be a repository primary signature by the nuget.org repository certificate (`eng/Test-RepositorySignature.ps1`). The receipt
+  must be a repository primary signature with a trusted chain whose certificate subject is the nuget.org repository; the fingerprint is recorded, not pinned, because the certificate rotates (`eng/Test-RepositorySignature.ps1`; English CLI output is forced for parsing). The receipt
   (served digest, compared entries, signer, certificate fingerprint) is written to the run summary.
-- FR-007: The artifact's package directory holds exactly the recorded packages; a symbol package or any other file is refused.
+- FR-007: The artifact's package directory holds exactly the recorded packages; a symbol package or any other file, including hidden files and files in subdirectories, is refused. Only the push client's own 409 status message marks a package pending; any other push failure stops the run, and the push output is always logged.
 - FR-008: `eng/Test-PublicationTooling.ps1` tests the scripts with synthetic packages and a local test feed on 127.0.0.1 (no network,
   no credentials) and runs in the quality workflow on Linux and Windows.
 - FR-006: The account-side policy (owner `monstertacle`, repository `monstertacle.multisession`, workflow `publish.yml`, environment
@@ -44,12 +44,12 @@ from a qualified producer run to a public feed. A long-lived API key would be a 
 ## Success criteria
 
 - The real producer artifact of run 41333282133 passes the input check.
-- `eng/Test-PublicationTooling.ps1` passes (16 cases); mutation probes that remove the pending rule, the signature requirement and the
+- `eng/Test-PublicationTooling.ps1` passes (19 cases); mutation probes that remove the pending rule, the signature requirement and the
   unrecorded-file rules turn it red.
 - `eng/Test-RepositorySignature.ps1` accepts a real nuget.org-signed package and refuses an unsigned canonical one.
 - Required CI passes on the PR head; the workflow and scripts are reviewed by two opposed roles.
 - After merge, one manual run publishes 0.2.0-alpha.7 and its receipt shows all eight packages served, equivalent and signed by the
-  nuget.org repository certificate.
+  nuget.org repository certificate subject.
 
 ## Out of scope
 

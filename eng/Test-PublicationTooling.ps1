@@ -95,6 +95,9 @@ $wrongCommit = New-Release (Join-Path $WorkRoot 'input-commit')
 Invoke-Case 'input: nuspec commit differing from the record refused' $false { & $inputCheck -Release $wrongCommit.Record -ArtifactDirectory $wrongCommit.Artifact }
 $symbols = New-Release (Join-Path $WorkRoot 'input-symbols'); Set-Content -LiteralPath (Join-Path $symbols.Packages "$($ids[0]).$version.snupkg") 'symbols'
 Invoke-Case 'input: unrecorded symbol package refused' $false { & $inputCheck -Release $symbols.Record -ArtifactDirectory $symbols.Artifact }
+$hidden = New-Release (Join-Path $WorkRoot 'input-hidden'); New-Item -ItemType Directory -Path (Join-Path $hidden.Packages 'nested') | Out-Null
+Set-Content -LiteralPath (Join-Path $hidden.Packages 'nested/.extra.snupkg') 'symbols'
+Invoke-Case 'input: hidden or nested file refused' $false { & $inputCheck -Release $hidden.Record -ArtifactDirectory $hidden.Artifact }
 $signedInput = New-Release (Join-Path $WorkRoot 'input-signed')
 Add-Entry (Join-Path $signedInput.Packages "$($ids[0]).$version.nupkg") '.signature.p7s' 'sig'
 Invoke-Case 'input: signed canonical package refused' $false { & $inputCheck -Release $signedInput.Record -ArtifactDirectory $signedInput.Artifact }
@@ -111,13 +114,19 @@ Invoke-Case 'compare: changed entry refused' $false { & $compare -Canonical $can
 Copy-Item $canonical $served; Add-Entry $served '.signature.p7s' 'sig'; Add-Entry $served 'lib/net10.0/extra.dll' 'x'
 Invoke-Case 'compare: added entry refused' $false { & $compare -Canonical $canonical -Published $served }
 
-# Local test feed: serves flat-container files and answers pushes (201, or 409 for ids listed in conflict.txt).
+# Local test feed: serves flat-container files and answers pushes: 201; 409 for ids listed in conflict.txt; 403 for ids listed in
+# forbidden.txt, with a reason phrase that contains "409" so a loose match on the output would misread it.
 $feedRoot = Join-Path $WorkRoot 'feed'
 New-Item -ItemType Directory -Force -Path $feedRoot | Out-Null
-$listener = [Net.HttpListener]::new()
-$port = Get-Random -Minimum 20000 -Maximum 60000
-$listener.Prefixes.Add("http://127.0.0.1:$port/")
-$listener.Start()
+$listenerAttempts = 10
+$listener = $null
+for ($attempt = 1; $null -eq $listener -and $attempt -le $listenerAttempts; $attempt++) {
+    $candidate = [Net.HttpListener]::new()
+    $port = Get-Random -Minimum 20000 -Maximum 60000
+    $candidate.Prefixes.Add("http://127.0.0.1:$port/")
+    try { $candidate.Start(); $listener = $candidate } catch { $candidate.Close() }
+}
+if ($null -eq $listener) { throw 'No free local port for the test feed.' }
 $server = Start-ThreadJob -ArgumentList $listener, $feedRoot -ScriptBlock {
     param($listener, $feedRoot)
     while ($listener.IsListening) {
@@ -126,7 +135,11 @@ $server = Start-ThreadJob -ArgumentList $listener, $feedRoot -ScriptBlock {
         if ($context.Request.HttpMethod -eq 'PUT') {
             $conflicts = Join-Path $feedRoot 'conflict.txt'
             $body = [IO.StreamReader]::new($context.Request.InputStream).ReadToEnd()
-            $context.Response.StatusCode = if ((Test-Path $conflicts) -and @(Get-Content $conflicts | Where-Object { $body.Contains($_) }).Count -gt 0) { 409 } else { 201 }
+            $forbidden = Join-Path $feedRoot 'forbidden.txt'
+            if ((Test-Path $forbidden) -and @(Get-Content $forbidden | Where-Object { $body.Contains($_) }).Count -gt 0) {
+                $context.Response.StatusCode = 403; $context.Response.StatusDescription = 'Forbidden for quota 409'
+            }
+            else { $context.Response.StatusCode = if ((Test-Path $conflicts) -and @(Get-Content $conflicts | Where-Object { $body.Contains($_) }).Count -gt 0) { 409 } else { 201 } }
             Add-Content -LiteralPath (Join-Path $feedRoot 'pushes.log') $context.Response.StatusCode
         }
         elseif (Test-Path -LiteralPath $path -PathType Leaf) { $bytes = [IO.File]::ReadAllBytes($path); $context.Response.OutputStream.Write($bytes, 0, $bytes.Length) }
@@ -177,6 +190,11 @@ try {
         $states = @((Get-Content -Raw (Join-Path $work 'push-result.json') | ConvertFrom-Json).Packages | ForEach-Object State)
         if ($states -notcontains 'pending' -or $states -notcontains 'pushed') { throw "states $states" }
     }
+    Clear-Feed
+    Set-Content -LiteralPath (Join-Path $feedRoot 'forbidden.txt') $ids[0]
+    Invoke-Case 'push: a refused push (403) fails even when its message contains 409' $false {
+        & $publish -Mode Push -Release $release.Record -PackageDirectory $release.Packages -WorkDirectory $work -FeedIndex $pushSource -PackageContent $content -AllowInsecureTestFeed
+    }
     Remove-Item Env:NUGET_API_KEY
 
     # Verify: every package must be served, equivalent and signed; an unsigned served package is refused.
@@ -185,6 +203,12 @@ try {
     Set-Served $ids[1] $second
     Invoke-Case 'verify: an unsigned served package is refused' $false {
         & $publish -Mode Verify -Release $release.Record -PackageDirectory $release.Packages -WorkDirectory (Join-Path $WorkRoot 'verify-unsigned') -PackageContent $content -VerifyTimeoutMinutes 0 -SkipSignatureVerification
+    }
+    $secondSigned = Join-Path $WorkRoot 'second-signed.nupkg'; Copy-Item $second $secondSigned; Add-Entry $secondSigned '.signature.p7s' 'sig'
+    Clear-Feed; Set-Served $ids[0] $equivalent; Set-Served $ids[1] $secondSigned
+    Invoke-Case 'verify: served equivalent packages pass with a receipt per package' $true {
+        $receipt = & $publish -Mode Verify -Release $release.Record -PackageDirectory $release.Packages -WorkDirectory (Join-Path $WorkRoot 'verify-ok') -PackageContent $content -VerifyTimeoutMinutes 0 -SkipSignatureVerification | ConvertFrom-Json
+        if ($receipt.Status -ne 'PASS' -or @($receipt.Packages | Where-Object { $_.Status -eq 'EQUIVALENT' -and $_.RepositorySigned }).Count -ne $ids.Count) { throw 'receipt' }
     }
     Clear-Feed; Set-Served $ids[0] $equivalent
     Invoke-Case 'verify: a package that is never served fails within the timeout' $false {

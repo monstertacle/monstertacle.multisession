@@ -19,7 +19,10 @@ $packageDirectory = Join-Path $ArtifactDirectory 'packages'
 & (Join-Path $PSScriptRoot 'Test-CanonicalPackageHashes.ps1') -ProducerManifest $manifests[0].FullName -PackageDirectory $packageDirectory | Out-Null
 # Every file in the package directory must be a recorded package: a symbol package or any other file beside them is refused, because a
 # push would publish it without a record.
-$files = @(Get-ChildItem -LiteralPath $packageDirectory -File)
+$files = @(Get-ChildItem -LiteralPath $packageDirectory -File -Recurse -Force | ForEach-Object {
+    if ($_.DirectoryName -ne (Get-Item -LiteralPath $packageDirectory).FullName) { throw "Unrecorded file below the package directory: $($_.FullName)" }
+    $_
+})
 $recordedFiles = @($record.packages | ForEach-Object file)
 $unrecorded = @($files | Where-Object { $recordedFiles -cnotcontains $_.Name })
 if ($unrecorded.Count -ne 0) { throw "Unrecorded files in the package directory: $($unrecorded.Name -join ', ')" }

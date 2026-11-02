@@ -31,7 +31,7 @@ Source state: `main` at e158507 (PR 14), producer commit 8167d37, producer run 4
 - Principle IV: the scripts are release tooling with behavior; they get automated tests (`eng/Test-PublicationTooling.ps1`) in CI on
   Linux and Windows. The first version of the scripts was written before its tests (checked by hand against the real artifact, see
   evidence/manual-checks.md); that part is not TDD and is recorded as such. The review fixes (signature requirement, 409 pending, symbol
-  and unrecorded-file refusal) were driven by tests that failed first (evidence/red-publication-tooling.txt) and by mutation probes.
+  and unrecorded-file refusal): domain Red first only for the symbol-package and unsigned-comparison cases (evidence/red-publication-tooling.txt); the 409 case failed first for an infrastructure reason and the unsigned-Verify case did not fail first, so their domain behavior rests on the mutation probes (evidence/mutation-publication-tooling.txt); the signature script is checked by hand (evidence/manual-checks.md). Round 2 (strict 409 match, hidden and nested files) had a domain Red first (evidence/red2-publication-tooling.txt).
 - Principle V: least privilege (empty top-level permissions; job contents/actions read and id-token write; `GH_TOKEN` only in the step
   that reads the producer run); no stored key; inputs validated; secrets never printed.
 - Principle VI: English throughout.

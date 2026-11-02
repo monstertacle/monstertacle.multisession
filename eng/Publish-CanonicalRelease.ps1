@@ -70,9 +70,12 @@ switch ($Mode) {
             $pushArguments = @('nuget', 'push', $path, '--api-key', $env:NUGET_API_KEY, '--source', $FeedIndex, '--no-symbols')
             if ($AllowInsecureTestFeed) { $pushArguments += '--allow-insecure-connections' }
             $output = @(dotnet @pushArguments 2>&1 | ForEach-Object ToString)
-            $state = if ($LASTEXITCODE -eq 0) { 'pushed' }
-                elseif (@($output | Select-String -SimpleMatch '409').Count -gt 0) { 'pending' }
-                else { $output | Write-Output; throw "Push failed: $($entry.File)" }
+            $exitCode = $LASTEXITCODE
+            $output | ForEach-Object { Write-Host $_ }
+            # Only the push client's own status message for a conflict counts; a 409 elsewhere in the output (a reason phrase, a
+            # version or an elapsed time) does not.
+            $conflict = @($output | Select-String -Pattern 'Response status code does not indicate success: 409 \(').Count -gt 0
+            $state = if ($exitCode -eq 0) { 'pushed' } elseif ($conflict) { 'pending' } else { throw "Push failed: $($entry.File)" }
             [ordered]@{ Id = $entry.Id; Sha256 = $hash; State = $state }
         })
         $result = [ordered]@{ Version = $version; Packages = $results }

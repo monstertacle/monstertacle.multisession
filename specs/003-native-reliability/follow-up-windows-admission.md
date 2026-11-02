@@ -1,7 +1,7 @@
 # Native default-budget admission variability
 
 Owner: Alexander Bleissem
-Status: ready; no production latency or historical root-cause claim accepted
+Status: in progress; attribution added and envelope measured (evidence/windows-restart-admission-20261102.md); no production latency or root-cause claim accepted
 Origin: PR run41054347449 at head98948da, source f4d2c1889c44f2978fff81b3cdbb8bc286c787d31b8d048042689d1aa481b490;
 routing/deterministic AdmissionTimedOut at AdmissionCommit with Unknown outcome.
 Related release work: feature001 T099 and its required real native host evidence.

@@ -4,12 +4,13 @@ using Monstertacle.Multisession.IntegrationTests.Fixtures;
 using Monstertacle.Multisession.Storage.Sqlite;
 using Monstertacle.Multisession.ValidationHost;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>Runs ten actual forced child terminations with the exact SC-009 persisted state.</summary>
 [Collection("Exclusive storage volume")]
-public sealed class PersistenceRecoveryTests
+public sealed class PersistenceRecoveryTests(ITestOutputHelper output)
 {
     /// <summary>Every confirmed original identity survives; queued A continues FIFO and uncertain B is never sent again.</summary>
     [Theory]
@@ -31,6 +32,8 @@ public sealed class PersistenceRecoveryTests
         await directory.PrepareFileAsync(CrashProtocol.ScopeFileName, StateFileMode.CreateNew, CancellationToken.None);
         await File.WriteAllTextAsync(Path.Combine(directory.StateDirectory, CrashProtocol.ScopeFileName), directory.TrustScopeId.ToString("D"));
         await using CrashHarness child = await CrashHarness.StartAsync(directory, CrashProtocol.RecoveryPoint);
+        // Measured worker step times go to the test output, so native runs show where crash setup spends its time.
+        output.WriteLine(child.StepsReport());
         CrashStateManifest manifest = child.Signal!.State!;
         Assert.NotNull(manifest);
         Assert.Equal(3, manifest.QueuedA.Count);

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.ValidationHost;
@@ -12,7 +13,12 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
     private static readonly TimeSpan _fileReleasePollInterval = TimeSpan.FromMilliseconds(20);
     private const int _sharingViolation = 32;
     private const int _lockViolation = 33;
+    private const string _databaseFileName = "multisession.db";
+    private static readonly JsonSerializerOptions _web = new(JsonSerializerDefaults.Web);
     public CrashSignal? Signal { get; private set; }
+
+    // The measured worker steps of the signal, for test output on every native run.
+    public string StepsReport() => "worker steps: " + JsonSerializer.Serialize(Signal?.Steps ?? []);
 
     public static async Task<CrashHarness> StartAsync(IStateDirectoryLease lease, string point)
     {
@@ -42,11 +48,31 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
             string expectedBarrier = point == CrashProtocol.JournalPoint ? CrashProtocol.JournalBarrier : CrashProtocol.RecoveryBarrier;
             if (harness.Signal is null || harness.Signal.Barrier != expectedBarrier || harness.Signal.ProcessId != child.Id)
             {
-                throw new InvalidOperationException($"Crash worker did not reach the expected barrier: {line}");
+                // The worker is stopped first; only then is a reported uncertain candidate looked up, never sent again.
+                await harness.KillAsync();
+                throw new InvalidOperationException($"Crash worker did not reach the expected barrier: {line}{DescribeCandidate(Path.Combine(stateDirectory, _databaseFileName), ReportedCandidate(line))}");
             }
             return harness;
         }
         catch { await harness.DisposeAsync(); throw; }
+    }
+
+    // Read-only lookup of a candidate the worker reported, after the worker is gone: never a resubmission.
+    internal static string DescribeCandidate(string databasePath, Guid? requestId)
+    {
+        if (requestId is not { } candidate) { return string.Empty; }
+        string id = candidate.ToString("D");
+        object? state = StoreProbe.Scalar(databasePath, "SELECT State FROM Requests WHERE RequestId='" + id + "'");
+        if (state is null) { return " candidate " + id + ": absent"; }
+        object? certainty = StoreProbe.Scalar(databasePath, "SELECT Certainty FROM Requests WHERE RequestId='" + id + "'");
+        return " candidate " + id + ": state=" + (RequestState)Convert.ToInt32(state, CultureInfo.InvariantCulture)
+            + " certainty=" + (ExecutionCertainty)Convert.ToInt32(certainty, CultureInfo.InvariantCulture);
+    }
+
+    private static Guid? ReportedCandidate(string? line)
+    {
+        try { return line is null ? null : JsonSerializer.Deserialize<CrashFailure>(line, _web)?.RequestId; }
+        catch (JsonException) { return null; }
     }
 
     public async Task KillAsync()

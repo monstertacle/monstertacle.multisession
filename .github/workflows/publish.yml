@@ -1,0 +1,98 @@
+# Publishes one recorded canonical release to nuget.org through trusted publishing (short-lived OIDC API key).
+# Manual only, from main, in the protected `nuget` environment. The packages are the exact bytes of the recorded producer run;
+# nothing is built or repacked here. See docs/publishing.md.
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version recorded in eng/release-records/<version>.json
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: publish-nuget
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && github.repository == 'monstertacle/monstertacle.multisession'
+    runs-on: ubuntu-24.04
+    environment: nuget
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check the requested version
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "Invalid version"; exit 1; }
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          global-json-file: global.json
+
+      - name: Verify the producer run
+        shell: bash
+        run: |
+          set -euo pipefail
+          record="eng/release-records/$RELEASE_VERSION.json"
+          test -f "$record"
+          commit=$(jq -r .producerCommit "$record")
+          run=$(jq -r .producerRun "$record")
+          [[ "$(jq -r .producerRepository "$record")" == "$GITHUB_REPOSITORY" ]]
+          [[ "$run" =~ ^[0-9]+$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" > "$RUNNER_TEMP/producer-run.json"
+          jq -e --arg commit "$commit" --arg repo "$GITHUB_REPOSITORY" --arg path "$(jq -r .producerWorkflow "$record")" \
+            '.head_sha == $commit and .conclusion == "success" and .event == "push" and .head_branch == "main" and .path == $path and .repository.full_name == $repo' \
+            "$RUNNER_TEMP/producer-run.json" > /dev/null
+          git merge-base --is-ancestor "$commit" HEAD
+          gh run download "$run" -R "$GITHUB_REPOSITORY" -n "$(jq -r .artifact "$record")" -D "$RUNNER_TEMP/producer"
+
+      - name: Verify the canonical packages
+        shell: pwsh
+        run: ./eng/Test-ReleaseInput.ps1 -Release "eng/release-records/$env:RELEASE_VERSION.json" -ArtifactDirectory "$env:RUNNER_TEMP/producer"
+
+      - name: Plan against nuget.org
+        id: plan
+        shell: pwsh
+        run: |
+          ./eng/Publish-CanonicalRelease.ps1 -Mode Plan -Release "eng/release-records/$env:RELEASE_VERSION.json" -PackageDirectory "$env:RUNNER_TEMP/producer/packages" -WorkDirectory "$env:RUNNER_TEMP/publication"
+          $absent = @((Get-Content -Raw "$env:RUNNER_TEMP/publication/publication-plan.json" | ConvertFrom-Json).Packages | Where-Object State -eq 'absent').Count
+          "push=$($absent -gt 0)".ToLowerInvariant() >> $env:GITHUB_OUTPUT
+
+      # The only step that uses the OIDC token: exchanged for an API key valid for one hour, right before the push.
+      - name: NuGet login (OIDC)
+        if: steps.plan.outputs.push == 'true'
+        id: login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push the absent packages
+        if: steps.plan.outputs.push == 'true'
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: ./eng/Publish-CanonicalRelease.ps1 -Mode Push -Release "eng/release-records/$env:RELEASE_VERSION.json" -PackageDirectory "$env:RUNNER_TEMP/producer/packages" -WorkDirectory "$env:RUNNER_TEMP/publication"
+
+      - name: Verify the served packages
+        shell: pwsh
+        run: |
+          $receipt = ./eng/Publish-CanonicalRelease.ps1 -Mode Verify -Release "eng/release-records/$env:RELEASE_VERSION.json" -PackageDirectory "$env:RUNNER_TEMP/producer/packages" -WorkDirectory "$env:RUNNER_TEMP/publication"
+          $receipt
+          "``````json`n$($receipt -join "`n")`n``````" >> $env:GITHUB_STEP_SUMMARY

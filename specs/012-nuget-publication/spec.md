@@ -1,6 +1,6 @@
 # Feature: Publish canonical releases to nuget.org through trusted publishing
 
-Status: in_progress
+Status: done
 Created: 2026-11-02T01:45:49Z
 Owner: implementation agent (SDK writer)
 Origin: owner authorization to publish the canonical 0.2.0-alpha.7 package set to nuget.org (recorded 2026-11-01T22:24:22Z); repository

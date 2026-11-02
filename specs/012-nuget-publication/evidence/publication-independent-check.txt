@@ -1,0 +1,11 @@
+measuredUtc 2026-11-02T02:38:44Z
+Monstertacle.Multisession.AgentFramework served=133d15153ae214a2 EQUIVALENT entries=8 cert=1f4b311d9acc115c owners=bleissem versions=0.2.0-alpha.7
+Monstertacle.Multisession.Common served=e6ec5c3376c47c18 EQUIVALENT entries=8 cert=1f4b311d9acc115c owners=bleissem versions=0.2.0-alpha.7
+Monstertacle.Multisession.DeliveryCheckpoints served=b796b29bdc7d67d2 EQUIVALENT entries=8 cert=1f4b311d9acc115c owners=bleissem versions=0.2.0-alpha.7
+Monstertacle.Multisession.Linux served=d7fccf988a36301c EQUIVALENT entries=8 cert=1f4b311d9acc115c owners=bleissem versions=0.2.0-alpha.7
+Monstertacle.Multisession.Providers.Conversations served=49e98dab1d4aac6d EQUIVALENT entries=8 cert=1f4b311d9acc115c 
+Monstertacle.Multisession.Providers.Interactions served=03591aa19622d884 EQUIVALENT entries=8 cert=1f4b311d9acc115c owners=bleissem versions=0.2.0-alpha.7
+Monstertacle.Multisession.Storage.Sqlite served=1c424d478a3a20ff EQUIVALENT entries=8 cert=1f4b311d9acc115c 
+Monstertacle.Multisession.Windows served=e9869e85bdc2fb76 EQUIVALENT entries=8 cert=1f4b311d9acc115c owners=bleissem versions=0.2.0-alpha.7
+monstertacle.multisession.providers.conversations listed=true published=2026-11-02T02:24:32.68+00:00
+monstertacle.multisession.storage.sqlite listed=true published=2026-11-02T02:24:35.29+00:00

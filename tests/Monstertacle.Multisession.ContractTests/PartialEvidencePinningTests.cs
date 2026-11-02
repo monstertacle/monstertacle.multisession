@@ -18,6 +18,8 @@ public sealed class PartialEvidencePinningTests
     [Fact]
     public void UnknownNeverBecomesNotStarted()
     {
+        // Positive control: clarifying an unknown end to a confirmed end stays allowed, so the refusal below is not a blanket refusal.
+        Assert.True(RequestStateMachine.CanTransition(RequestState.Failed, ExecutionCertainty.Unknown, RequestState.Failed, ExecutionCertainty.ConfirmedEnded));
         RequestState[] states = Enum.GetValues<RequestState>();
         foreach (RequestState current in states)
         {

@@ -17,8 +17,13 @@ if ($manifestHash -ne $record.producerManifestSha256) { throw 'Producer manifest
 $packageDirectory = Join-Path $ArtifactDirectory 'packages'
 # The producer's own check: a passing manifest and the exact package bytes it lists.
 & (Join-Path $PSScriptRoot 'Test-CanonicalPackageHashes.ps1') -ProducerManifest $manifests[0].FullName -PackageDirectory $packageDirectory | Out-Null
-$files = @(Get-ChildItem -LiteralPath $packageDirectory -File -Filter '*.nupkg')
-if ($files.Count -ne @($record.packages).Count) { throw 'Package count differs from the release record.' }
+# Every file in the package directory must be a recorded package: a symbol package or any other file beside them is refused, because a
+# push would publish it without a record.
+$files = @(Get-ChildItem -LiteralPath $packageDirectory -File)
+$recordedFiles = @($record.packages | ForEach-Object file)
+$unrecorded = @($files | Where-Object { $recordedFiles -cnotcontains $_.Name })
+if ($unrecorded.Count -ne 0) { throw "Unrecorded files in the package directory: $($unrecorded.Name -join ', ')" }
+if ($files.Count -ne $recordedFiles.Count) { throw 'Package count differs from the release record.' }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $verified = @(foreach ($package in $record.packages) {
     if ($package.id -notmatch '^Monstertacle\.Multisession(\.[A-Za-z0-9]+)+$' -or $package.file -cne "$($package.id).$($record.version).nupkg") {

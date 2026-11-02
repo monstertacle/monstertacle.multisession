@@ -3,8 +3,9 @@ param(
     [Parameter(Mandatory)][string]$Canonical,
     [Parameter(Mandatory)][string]$Published
 )
-# Compares a package served by a feed with the canonical package. A repository countersignature adds the entry .signature.p7s and
-# rewrites the archive, so archive bytes differ; every other entry must have the same name and content. Anything else is a conflict.
+# Compares a package served by nuget.org with the canonical unsigned package. nuget.org adds its repository signature as the entry
+# .signature.p7s and rewrites the archive, so archive bytes differ; every other entry must have the same name and content. A served
+# package without that entry, or with any other difference, is a conflict. The signature itself is checked by Test-RepositorySignature.ps1.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -32,6 +33,7 @@ if ($canonicalEntries.ContainsKey($signatureEntry)) { throw 'The canonical packa
 $signed = $publishedEntries.ContainsKey($signatureEntry)
 $publishedContent = @($publishedEntries.Keys | Where-Object { $_ -cne $signatureEntry })
 $differences = @(
+    @(if (-not $signed) { "missing $signatureEntry" })
     @($canonicalEntries.Keys | Where-Object { -not $publishedEntries.ContainsKey($_) } | ForEach-Object { "missing $_" })
     @($publishedContent | Where-Object { -not $canonicalEntries.ContainsKey($_) } | ForEach-Object { "added $_" })
     @($canonicalEntries.Keys | Where-Object { $publishedEntries.ContainsKey($_) -and $publishedEntries[$_] -ne $canonicalEntries[$_] } | ForEach-Object { "changed $_" })

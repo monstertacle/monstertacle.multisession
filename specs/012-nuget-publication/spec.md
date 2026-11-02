@@ -25,22 +25,31 @@ from a qualified producer run to a public feed. A long-lived API key would be a 
   canonical package. A present package with other content stops the run; it is never skipped as a duplicate and never replaced by a
   new identity (`eng/Publish-CanonicalRelease.ps1 -Mode Plan`).
 - FR-004: Only when a package is absent, `NuGet/login` exchanges the job's OIDC token for an API key (valid one hour) immediately
-  before the push; the key is passed in the step environment only. No long-lived key exists. Pushes do not use `--skip-duplicate`.
+  before the push; the key is passed in the step environment only. No long-lived key exists. Pushes use `--no-symbols` and do not use
+  `--skip-duplicate`. A 409 answer (the version is already held, for example accepted by an earlier run but not yet served) marks the
+  package pending; it is not treated as success: FR-005 still requires it to be served with the canonical content.
 - FR-005: After the push the workflow waits until every package is served and compares the served package with the canonical one
-  (`eng/Test-PublishedPackage.ps1`): every entry except the repository signature `.signature.p7s` must have the same name and content.
-  The archive digest is expected to change when nuget.org adds its repository countersignature; that is not a content change.
-  The receipt (served digest, signed flag, compared entries) is written to the run summary.
+  (`eng/Test-PublishedPackage.ps1`): the served package must carry the repository signature entry `.signature.p7s`, and every other
+  entry must have the same name and content. The canonical packages are unsigned; nuget.org adds its repository primary signature,
+  which changes the archive digest without changing any other entry. The signature is verified with `dotnet nuget verify --all` and
+  must be a repository primary signature by the nuget.org repository certificate (`eng/Test-RepositorySignature.ps1`). The receipt
+  (served digest, compared entries, signer, certificate fingerprint) is written to the run summary.
+- FR-007: The artifact's package directory holds exactly the recorded packages; a symbol package or any other file is refused.
+- FR-008: `eng/Test-PublicationTooling.ps1` tests the scripts with synthetic packages and a local test feed on 127.0.0.1 (no network,
+  no credentials) and runs in the quality workflow on Linux and Windows.
 - FR-006: The account-side policy (owner `monstertacle`, repository `monstertacle.multisession`, workflow `publish.yml`, environment
   `nuget`, package scope covering `Monstertacle.Multisession.*` for new packages and new versions) is documented in
   docs/publishing.md. Another repository's packages (for example Monstertacle.SharpQrs) are not covered.
 
 ## Success criteria
 
-- Local checks against the real producer artifact of run 41333282133: the input check passes; a changed package byte, manifest,
-  version or commit is refused; the comparison accepts an added signature entry and refuses a changed, added or missing entry; the
-  plan classifies an equivalent present package as present and stops on a conflicting one (local test feed).
-- Required CI passes on the PR head; the workflow file is reviewed by two opposed roles.
-- After merge, one manual run publishes 0.2.0-alpha.7 and its receipt shows all eight packages served and equivalent.
+- The real producer artifact of run 41333282133 passes the input check.
+- `eng/Test-PublicationTooling.ps1` passes (16 cases); mutation probes that remove the pending rule, the signature requirement and the
+  unrecorded-file rules turn it red.
+- `eng/Test-RepositorySignature.ps1` accepts a real nuget.org-signed package and refuses an unsigned canonical one.
+- Required CI passes on the PR head; the workflow and scripts are reviewed by two opposed roles.
+- After merge, one manual run publishes 0.2.0-alpha.7 and its receipt shows all eight packages served, equivalent and signed by the
+  nuget.org repository certificate.
 
 ## Out of scope
 

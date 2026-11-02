@@ -1,0 +1,13 @@
+command: pwsh -NoProfile -File eng/Test-PublicationTooling.ps1 -WorkRoot <agenttemp>
+scripts at: dc9c67c (before the review fixes)
+measuredUtc: 2026-11-02T01:53:52Z
+{
+  "Status": "FAIL",
+  "Passed": 13,
+  "Failed": [
+    "input: unrecorded symbol package refused (expected refusal)",
+    "compare: unsigned served package is refused (expected refusal)",
+    "push: a 409 for an accepted package is pending and the rest are pushed (expected success)"
+  ]
+}
+exit=1

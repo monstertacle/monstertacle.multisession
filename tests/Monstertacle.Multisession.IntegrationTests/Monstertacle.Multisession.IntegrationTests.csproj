@@ -10,6 +10,9 @@
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/MetricGaugeCapture.cs" Link="Fixtures/MetricGaugeCapture.cs" />
     <ProjectReference Include="../../examples/Monstertacle.Multisession.ValidationHost/Monstertacle.Multisession.ValidationHost.csproj" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashProtocol.cs" Link="Fixtures/CrashProtocol.cs" />
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashStep.cs" Link="Fixtures/CrashStep.cs" />
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashStepClock.cs" Link="Fixtures/CrashStepClock.cs" />
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashFailure.cs" Link="Fixtures/CrashFailure.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/ProcessExitWait.cs" Link="Fixtures/ProcessExitWait.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/DiskFullProtocol.cs" Link="Fixtures/DiskFullProtocol.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashStateDirectoryLease.cs" Link="Fixtures/CrashStateDirectoryLease.cs" />

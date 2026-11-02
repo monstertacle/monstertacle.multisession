@@ -30,6 +30,8 @@ internal static class CrashProtocol
 internal sealed record CrashSignal(string Barrier, int ProcessId, DateTimeOffset Utc)
 {
     public CrashStateManifest? State { get; init; }
+
+    public IReadOnlyList<CrashStep> Steps { get; init; } = [];
 }
 
 internal sealed record CrashStateManifest(Guid SessionA, Guid SessionB, Guid CompletedA, Guid CompletedB, IReadOnlyList<Guid> QueuedA, Guid RunningB);

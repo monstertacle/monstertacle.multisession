@@ -1,0 +1,12 @@
+command: pwsh -NoProfile -File eng/Test-PublicationTooling.ps1 -WorkRoot <agenttemp>
+scripts: 64a982d (round-2 review), tests extended first
+measuredUtc: 2026-11-02T02:05:34Z
+{
+  "Status": "FAIL",
+  "Passed": 17,
+  "Failed": [
+    "input: hidden or nested file refused (expected refusal)",
+    "push: a refused push (403) fails even when its message contains 409 (expected refusal)"
+  ]
+}
+exit=1

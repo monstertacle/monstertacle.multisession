@@ -1,0 +1,44 @@
+measuredUtc: 2026-11-02T01:56:54Z
+base: working tree of feature/012-nuget-publication after the review fixes; each case is a copy of eng/ with one textual mutation, applied and checked by the probe (it throws if the text is not found)
+== control (0 replacement(s) applied)
+{
+  "Status": "PASS",
+  "Passed": 16,
+  "Failed": []
+}
+exit=0
+== no-pending (1 replacement(s) applied)
+{
+  "Status": "FAIL",
+  "Passed": 15,
+  "Failed": [
+    "push: a 409 for an accepted package is pending and the rest are pushed (expected success): Push failed: Monstertacle.Multisession.Common.9.9.9-test.1.nupkg"
+  ]
+}
+exit=1
+== no-signature-required (1 replacement(s) applied)
+{
+  "Status": "FAIL",
+  "Passed": 14,
+  "Failed": [
+    "compare: unsigned served package is refused (expected refusal)",
+    "verify: an unsigned served package is refused (expected refusal)"
+  ]
+}
+exit=1
+== symbols-allowed (1 replacement(s) applied)
+{
+  "Status": "PASS",
+  "Passed": 16,
+  "Failed": []
+}
+exit=0
+== symbols-allowed-both-guards (2 replacement(s) applied)
+{
+  "Status": "FAIL",
+  "Passed": 15,
+  "Failed": [
+    "input: unrecorded symbol package refused (expected refusal)"
+  ]
+}
+exit=1

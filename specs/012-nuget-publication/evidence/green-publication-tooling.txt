@@ -1,0 +1,17 @@
+commands: (1) pwsh -NoProfile -File eng/Test-PublicationTooling.ps1; (2) the CI wrapper form
+scripts: working tree after the exit-code fix
+measuredUtc: 2026-11-02T02:10:57Z
+== (1)
+{
+  "Status": "PASS",
+  "Passed": 19,
+  "Failed": []
+}
+exit=0
+== (2) CI wrapper form
+{
+  "Status": "PASS",
+  "Passed": 19,
+  "Failed": []
+}
+exit=0

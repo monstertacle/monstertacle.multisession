@@ -1,0 +1,19 @@
+commands: (1) pwsh -NoProfile -File eng/Test-PublicationTooling.ps1; (2) the CI wrapper form: pwsh -command ". 'eng/Test-PublicationTooling.ps1'; if (Test-Path variable:LASTEXITCODE) { exit $LASTEXITCODE }"
+scripts: f04582c, test extended first (exit code after a pending push of the last package)
+measuredUtc: 2026-11-02T02:10:38Z
+== (1)
+{
+  "Status": "FAIL",
+  "Passed": 18,
+  "Failed": [
+    "push: a 409 for an accepted package is pending and the rest are pushed (expected success): exit code 1 after a successful push step"
+  ]
+}
+exit=1
+== (2) CI wrapper form
+  "Passed": 18,
+  "Failed": [
+    "push: a 409 for an accepted package is pending and the rest are pushed (expected success): exit code 1 after a successful push step"
+  ]
+}
+exit=1

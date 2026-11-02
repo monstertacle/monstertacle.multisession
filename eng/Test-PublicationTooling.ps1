@@ -181,10 +181,13 @@ try {
     Clear-Feed
     $work = Join-Path $WorkRoot 'push'
     & $publish -Mode Plan -Release $release.Record -PackageDirectory $release.Packages -WorkDirectory $work -PackageContent $content *> $null
-    Set-Content -LiteralPath (Join-Path $feedRoot 'conflict.txt') $ids[0]
+    # The conflicting package is the last one pushed, so its non-zero client exit would be the last native exit code.
+    Set-Content -LiteralPath (Join-Path $feedRoot 'conflict.txt') $ids[-1]
     $env:NUGET_API_KEY = 'test-key'
     Invoke-Case 'push: a 409 for an accepted package is pending and the rest are pushed' $true {
         & $publish -Mode Push -Release $release.Record -PackageDirectory $release.Packages -WorkDirectory $work -FeedIndex $pushSource -PackageContent $content -AllowInsecureTestFeed
+        # A CI step ends with the last native exit code: a pending push (the client exited non-zero) must still leave 0.
+        if ($LASTEXITCODE -ne 0) { throw "exit code $LASTEXITCODE after a successful push step" }
         $codes = @(Get-Content (Join-Path $feedRoot 'pushes.log'))
         if ($codes.Count -ne $ids.Count -or $codes -notcontains '201') { throw "pushes $codes" }
         $states = @((Get-Content -Raw (Join-Path $work 'push-result.json') | ConvertFrom-Json).Packages | ForEach-Object State)
@@ -223,3 +226,5 @@ finally {
 Remove-Item -LiteralPath $WorkRoot -Recurse -Force
 [ordered]@{ Status = if ($failures.Count -eq 0) { 'PASS' } else { 'FAIL' }; Passed = $passed; Failed = @($failures) } | ConvertTo-Json -Depth 3
 if ($failures.Count -ne 0) { exit 1 }
+# Several cases end with a deliberately failing push client; the suite result is its own.
+exit 0

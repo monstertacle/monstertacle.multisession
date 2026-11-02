@@ -40,3 +40,25 @@ Challenger fix-first (one P2), defender merge (P3 only); reports evidence/review
 | PC2 Windows not shown (P3) | Shown by the required quality job on Windows for the PR head before merge. |
 | PD2-F2 (P3) Red claim overstated | plan.md states exactly which cases had a domain Red and which rest on mutation probes or manual checks. |
 | PD2-F3 (P3) untested paths | Verify success is now tested; the signature branch is covered by the manual check and the real publication receipt. |
+
+## Review dispositions (round 3, fix diff 64a982d..f04582c)
+
+Both roles: no P0-P2; merge after required CI. Reports evidence/review3-{challenge,defend}.md.
+
+| Finding | Disposition |
+| --- | --- |
+| PD3-F1 (P3) German-language check not recorded | Recorded in evidence/manual-checks.md. |
+| PD3-F2 / PC3-F3 (P3) nested-file check redundant with the name and count checks | Accepted: defence in depth, refusals are equivalent. |
+| PC3-F1 (P3) a 409 for a deleted, unreusable version waits 60 minutes before failing | Accepted: fails closed; the receipt names the package. |
+| PC3-F2 (P3) refusal cases accept any error | Accepted for this suite; each refusal case changes one input. |
+| PC3-F4 (P3) English CLI setting persists in the process | Accepted: the scripts run in their own step processes. |
+| PC3-F5 (P3) redacted path differs from the frozen copy | The repository copies are redacted for the public repository; the frozen copies are the reviewed originals. |
+| PC3-F6 (P3) Windows not shown | See the CI finding below. |
+
+## CI finding on f04582c
+
+The required Linux quality job failed after the tooling suite printed PASS (19 of 19): the runner's PowerShell step ends with the last
+native exit code, here a deliberately refused test push. The same applies to the publish workflow: a pending (409) push of the last
+package would have failed the push step. Test first (evidence/red3-exit-code.txt: a pending push of the last package leaves exit code 1,
+direct and in the CI wrapper form), then the publish script and the suite end with an explicit `exit 0` on success
+(evidence/green-publication-tooling.txt, both forms).

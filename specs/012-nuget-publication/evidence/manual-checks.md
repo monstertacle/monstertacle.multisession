@@ -24,3 +24,7 @@ second guard also refuses it).
 
 Process note: during this feature one empty `python3` invocation (no program, no effect) was started by mistake in a shell command.
 It is recorded here because the project rules forbid Python for any project work.
+
+Language check (2026-11-02): `DOTNET_CLI_UI_LANGUAGE=de-DE pwsh -NoProfile -File eng/Test-RepositorySignature.ps1 -Package <signed
+Monstertacle.SharpQrs 0.2.0-alpha.1>` returned the repository signature by `CN=NuGet.org Repository by Microsoft` (the script forces
+English CLI output for parsing). The round-3 challenger ran the whole tooling suite under the same setting: 19 passed.

@@ -103,3 +103,5 @@ switch ($Mode) {
             ConvertTo-Json -Depth 4
     }
 }
+# A failing push client inside a successful step (409 pending) must not leave its exit code as the step result.
+exit 0

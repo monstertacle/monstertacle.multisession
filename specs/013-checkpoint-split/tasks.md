@@ -66,7 +66,7 @@
   - the loop bypasses the port;
   - a test project is missing from the suites;
   - a package is missing from the layout.
-- [ ] T015 Native Linux `scripts/Invoke-Quality.ps1 -Platform linux`, full Codemetr check, pack, layout and both consumers,
+- [x] T015 Native Linux `scripts/Invoke-Quality.ps1 -Platform linux`, full Codemetr check, pack, layout and both consumers,
   run capped. Hosted Linux and Windows CI on the pull request (FR-013, SC-004).
 - [x] T016 Evidence in `specs/013-checkpoint-split/evidence/implementation.md`: commands, Red reasons, Green results,
   mutations and unexecuted checks.

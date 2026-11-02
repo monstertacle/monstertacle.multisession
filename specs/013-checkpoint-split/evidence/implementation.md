@@ -77,3 +77,13 @@ remains detected.
   would have stopped matching silently. It now matches any count and throws when the constant is absent.
   - Mutation M7: renaming the constant made the tooling throw `no longer declares $expectedPackageCount`.
   - The suite passes 19 of 19 cases.
+
+## Hosted CI, pull request head `56266a7`
+
+Push runs 41529686920 (quality) and 41529686633 (guard), and pull request runs 41529698171 and 41529698091. Every job passed:
+- `quality` on `ubuntu-24.04` and `windows-latest`;
+- `canonical-consumer` on both platforms;
+- `guard` on both platforms.
+
+Product line coverage was 97.71 % on Linux and 97.87 % on Windows. The module lists include `Monstertacle.Multisession.Checkpoints`
+and `Monstertacle.Multisession.Checkpoints.Delivery`. The pull request was clean and mergeable against `main` at `a44cb4f`.

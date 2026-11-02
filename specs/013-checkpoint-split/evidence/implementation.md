@@ -87,3 +87,14 @@ Push runs 41529686920 (quality) and 41529686633 (guard), and pull request runs 4
 
 Product line coverage was 97.71 % on Linux and 97.87 % on Windows. The module lists include `Monstertacle.Multisession.Checkpoints`
 and `Monstertacle.Multisession.Checkpoints.Delivery`. The pull request was clean and mergeable against `main` at `a44cb4f`.
+
+## Producer run and release record
+
+- The first `main` push run after the merge (41533898656, `bfac6d6`) failed: 4 Windows forced-restart iterations hit
+  `AdmissionTimedOut`. The analysis and measurements are in `specs/003-native-reliability/evidence/windows-restart-admission-20261102.md`.
+  No source defect was isolated, and nothing was changed to obtain green.
+- After the attribution change merged (`efb3f20`), the `main` push run 41545723083 (attempt 1) passed `quality` and
+  `canonical-consumer` on Linux and Windows.
+- Its `packages-and-consumer-linux` artefact is recorded in `eng/release-records/0.2.0-alpha.8.json` (producer manifest
+  SHA-256 `29408342…22cb`, nine packages). `eng/Test-ReleaseInput.ps1` against the downloaded artefact: PASS.
+- On 2026-11-02, nuget.org listed only 0.2.0-alpha.7 for the seven existing IDs and nothing for the two new IDs.

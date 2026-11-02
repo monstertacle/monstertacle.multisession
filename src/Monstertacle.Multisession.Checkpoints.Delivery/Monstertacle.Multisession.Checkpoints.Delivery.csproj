@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Opaque single-channel durable delivery checkpoint with typed atomic receipt and compare-and-swap primitives on SQLite.</Description>
+    <PackageTags>delivery;checkpoint;sqlite;idempotency;custody</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Monstertacle.Multisession.Checkpoints/Monstertacle.Multisession.Checkpoints.csproj" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <InternalsVisibleTo Include="Monstertacle.Multisession.Checkpoints.Delivery.Tests" />
+  </ItemGroup>
+</Project>

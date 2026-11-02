@@ -6,7 +6,8 @@
     "Monstertacle.Multisession.Storage.Sqlite",
     "Monstertacle.Multisession.Providers.Conversations",
     "Monstertacle.Multisession.Providers.Interactions",
-    "Monstertacle.Multisession.DeliveryCheckpoints"
+    "Monstertacle.Multisession.Checkpoints",
+    "Monstertacle.Multisession.Checkpoints.Delivery"
   ],
   "platformAssemblies": {
     "windows": "Monstertacle.Multisession.Windows",

@@ -1,0 +1,65 @@
+using System.Text.Json;
+using Monstertacle.Multisession.Checkpoints;
+
+// Independent host: an import job that resumes from its own typed progress snapshot. It references only the packed
+// Monstertacle.Multisession.Checkpoints package and implements the contract itself, without storage, SQLite or sessions.
+var cases = await new ImportResumeConformance().RunAsync();
+Console.WriteLine(JsonSerializer.Serialize(new { Status = cases.All(c => c.Passed) ? "PASS" : "FAIL", Cases = cases }));
+return cases.All(c => c.Passed) ? 0 : 1;
+
+internal sealed record ConformanceCase(string Name, bool Passed, string Observed);
+
+internal sealed record ImportProgress(string BatchId, int ImportedRows);
+
+internal sealed class ImportProgressCheckpoint(ImportProgress progress) : ICheckpoint<ImportProgress>
+{
+    public int Releases { get; private set; }
+
+    public Task<ImportProgress> ReadAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ObjectDisposedException.ThrowIf(Releases > 0, this);
+        return Task.FromResult(progress);
+    }
+
+    public void Dispose() => Releases++;
+}
+
+internal sealed class ImportResumeConformance
+{
+    private readonly List<ConformanceCase> _cases = [];
+
+    // Written against the contract only: the importer resumes from whatever checkpoint it is given and owns its release.
+    private static async Task<TSnapshot> ResumeAsync<TSnapshot>(ICheckpoint<TSnapshot> checkpoint, CancellationToken cancellationToken)
+    {
+        using (checkpoint)
+        {
+            return await checkpoint.ReadAsync(cancellationToken);
+        }
+    }
+
+    public async Task<IReadOnlyList<ConformanceCase>> RunAsync()
+    {
+        var checkpoint = new ImportProgressCheckpoint(new ImportProgress("batch-42", 1200));
+        var progress = await ResumeAsync(checkpoint, CancellationToken.None);
+        Record("typed-read", progress is { BatchId: "batch-42", ImportedRows: 1200 }, progress);
+        Record("released-once", checkpoint.Releases == 1, checkpoint.Releases);
+
+        var cancelled = new ImportProgressCheckpoint(new ImportProgress("batch-43", 0));
+        using var source = new CancellationTokenSource();
+        await source.CancelAsync();
+        var refused = false;
+        try
+        {
+            await ResumeAsync(cancelled, source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            refused = true;
+        }
+        Record("cancelled-read-refused-and-released", refused && cancelled.Releases == 1, new { refused, cancelled.Releases });
+        return _cases;
+    }
+
+    private void Record(string name, bool passed, object? observed) => _cases.Add(new ConformanceCase(name, passed, JsonSerializer.Serialize(observed)));
+}

@@ -1,6 +1,6 @@
 # ADR 0008: Package name DeliveryCheckpoints
 
-Status: accepted
+Status: superseded by ADR 0009 (package names from 0.2.0-alpha.8)
 Context: owner request for a more precise name than `Delivery` (2026-11-01); spec 010.
 
 ## Decision

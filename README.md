@@ -10,12 +10,13 @@ protocol adapters for Conversations/Responses and Interactions, as well as Cance
 Live, target-system, integrator and final package acceptances remain required;
 the current scope is described in the [work record](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Local packages 0.2.0-alpha.7
+## Local packages 0.2.0-alpha.8
 
-Eight libraries are packed locally: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
-`Windows`, `Providers.Conversations`, `Providers.Interactions` and `DeliveryCheckpoints`, each with the prefix
-`Monstertacle.Multisession.`. `DeliveryCheckpoints` is independent of the session packages: one opaque durable
-delivery checkpoint per channel with typed atomic acknowledgement/CAS primitives, see [Delivery checkpoint](docs/delivery.md). Test projects and ValidationHost are not packages.
+Nine libraries are packed locally: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
+`Windows`, `Providers.Conversations`, `Providers.Interactions`, `Checkpoints` and `Checkpoints.Delivery`, each with the
+prefix `Monstertacle.Multisession.`. `Checkpoints` holds the storage-independent `ICheckpoint<TSnapshot>` contract;
+`Checkpoints.Delivery` depends only on it and SQLite: one opaque durable delivery checkpoint per channel with typed atomic
+acknowledgement/CAS primitives, see [Delivery checkpoint](docs/delivery.md). Both are independent of the session packages. Test projects and ValidationHost are not packages.
 No publication takes place. The libraries are licensed under the MIT License
 (SPDX `MIT`, file [LICENSE](LICENSE)); every package contains the license text with
 the copyright notice. Dependencies are carried only as NuGet references and keep

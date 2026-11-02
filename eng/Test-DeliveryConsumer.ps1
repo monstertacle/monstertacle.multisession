@@ -10,12 +10,14 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 [xml]$properties = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
 $version = @($properties.Project.PropertyGroup.Version | Where-Object { $_ })[0]
-$name = 'Monstertacle.Multisession.DeliveryCheckpoints'
+$name = 'Monstertacle.Multisession.Checkpoints.Delivery'
+$baseName = 'Monstertacle.Multisession.Checkpoints'
 $package = Get-Item -LiteralPath (Join-Path $PackageDirectory "$name.$version.nupkg")
+$basePackage = Get-Item -LiteralPath (Join-Path $PackageDirectory "$baseName.$version.nupkg")
 $workspace = Join-Path ([IO.Path]::GetFullPath($TempRoot)) ('delivery-consumer-' + [Guid]::NewGuid().ToString('N'))
 $feed = Join-Path $workspace 'feed'
 $null = New-Item -Path $feed -ItemType Directory -Force
-Copy-Item -LiteralPath $package.FullName -Destination $feed
+Copy-Item -LiteralPath $package.FullName, $basePackage.FullName -Destination $feed
 $source = Join-Path $workspace 'Program.cs'
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'DeliveryConsumer.cs.txt') -Destination $source
 $project = Join-Path $workspace 'InvoiceOutbox.csproj'
@@ -36,7 +38,7 @@ $config = Join-Path $workspace 'NuGet.Config'
 <configuration>
   <packageSources><clear /><add key="delivery" value="$([Security.SecurityElement]::Escape($feed))" /><add key="nuget" value="https://api.nuget.org/v3/index.json" /></packageSources>
   <packageSourceMapping>
-    <packageSource key="delivery"><package pattern="$name" /></packageSource>
+    <packageSource key="delivery"><package pattern="$name" /><package pattern="$baseName" /></packageSource>
     <packageSource key="nuget"><package pattern="Microsoft.*" /><package pattern="System.*" /><package pattern="SQLitePCLRaw.*" /></packageSource>
   </packageSourceMapping>
 </configuration>
@@ -54,6 +56,12 @@ try {
     $entry = $lock.dependencies['net10.0'][$name]
     $sha512 = [Convert]::ToBase64String([Security.Cryptography.SHA512]::HashData([IO.File]::ReadAllBytes($package.FullName)))
     if ($entry.resolved -ne $version -or $entry.contentHash -ne $sha512) { throw 'The lock file does not bind the exact packed delivery package.' }
+    # The base contract arrives transitively, from the same packed set.
+    $baseEntry = $lock.dependencies['net10.0'][$baseName]
+    $baseSha512 = [Convert]::ToBase64String([Security.Cryptography.SHA512]::HashData([IO.File]::ReadAllBytes($basePackage.FullName)))
+    if ($null -eq $baseEntry -or $baseEntry.type -ne 'Transitive' -or $baseEntry.resolved -ne $version -or $baseEntry.contentHash -ne $baseSha512) {
+        throw 'The lock file does not bind the exact packed base contract package.'
+    }
     $direct = @($lock.dependencies['net10.0'].Keys | Where-Object { $lock.dependencies['net10.0'][$_].type -eq 'Direct' })
     if ($direct.Count -ne 1 -or $direct[0] -ne $name) { throw 'The consumer must reference the delivery package only.' }
     if (@($lock.dependencies['net10.0'].Keys | Where-Object { $_ -like 'SharpClaw*' -or $_ -like 'Monstertacle.Multisession.Common*' -or $_ -like 'Microsoft.Agents*' }).Count -ne 0) {

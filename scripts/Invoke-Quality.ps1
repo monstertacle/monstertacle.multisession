@@ -13,6 +13,26 @@ function Invoke-Dotnet([string[]]$Arguments) {
     if ($LASTEXITCODE -ne 0) { throw "dotnet command failed (exit $LASTEXITCODE): $($Arguments -join ' ')" }
 }
 
+# Every test project of the solution is a quality suite; a test project outside the solution, a listed project that does not
+# exist or an empty test folder fails instead of being skipped.
+function Get-QualitySuites([string]$Root) {
+    [xml]$solution = Get-Content -Raw -LiteralPath (Join-Path $Root 'Monstertacle.Multisession.slnx')
+    $listed = @($solution.SelectNodes("/Solution/Folder[@Name='/tests/']/Project/@Path") | ForEach-Object { $_.Value })
+    if ($listed.Count -eq 0) { throw 'The solution lists no test projects.' }
+    $suites = foreach ($path in $listed) {
+        if ($path -cmatch '^tests/(Monstertacle\.Multisession\.([^/]+))/\1\.csproj$') { $Matches[2] }
+        else { throw "Unexpected test project path in the solution: $path" }
+        if (-not (Test-Path -LiteralPath (Join-Path $Root $path) -PathType Leaf)) { throw "Solution test project is missing: $path" }
+    }
+    $testsDirectory = Join-Path $Root 'tests'
+    $onDisk = @(Get-ChildItem -LiteralPath $testsDirectory -Filter '*.csproj' -Recurse -File |
+        Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } |
+        ForEach-Object { 'tests/' + [IO.Path]::GetRelativePath($testsDirectory, $_.FullName).Replace('\', '/') })
+    $unlisted = @($onDisk | Where-Object { $_ -cnotin $listed })
+    if ($unlisted.Count -ne 0) { throw "Test projects missing from the solution: $($unlisted -join ', ')" }
+    return @($suites)
+}
+
 function Get-SourceHash {
     $files = @(Get-Item -Force global.json, Directory.Build.props, Directory.Packages.props, .editorconfig,
         Monstertacle.Multisession.slnx, codemetr.json, codemetr-cover.json, .config/dotnet-tools.json, README.md)
@@ -49,9 +69,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Canonical package hash behavior tests failed.' }
     & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-SpecKitConfiguration.Tests.ps1
     if ($LASTEXITCODE -ne 0) { throw 'Spec Kit configuration behavior tests failed.' }
+    & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-QualitySuites.Tests.ps1
+    if ($LASTEXITCODE -ne 0) { throw 'Quality suite inventory behavior tests failed.' }
+    $suites = @(Get-QualitySuites $root)
 
     # A new directory per invocation prevents old reports from contributing to this run.
-    foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests', 'DeliveryCheckpoints.Tests')) {
+    foreach ($suite in $suites) {
         $project = "tests/Monstertacle.Multisession.$suite/Monstertacle.Multisession.$suite.csproj"
         $arguments = @('test', $project, '-c', 'Release', '--no-build', '--no-restore',
             '--settings', 'tests/coverage.runsettings', '--collect', 'XPlat Code Coverage',
@@ -84,7 +107,7 @@ try {
     $coverConfig | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $nativeConfig -Encoding utf8
     $coverArguments = @('tool', 'run', 'codemetr-csharp-cover', '--', 'check', '--format', 'json',
         '--config', $nativeConfig, '--output', (Join-Path $runDirectory 'codemetr-cover.json'))
-    foreach ($suite in @('UnitTests', 'ContractTests', 'IntegrationTests', 'PlatformTests', 'DeliveryCheckpoints.Tests')) {
+    foreach ($suite in $suites) {
         $suiteDirectory = Join-Path $runDirectory $suite
         $reports = @(Get-ChildItem -LiteralPath $suiteDirectory -Recurse -Filter 'coverage.cobertura.xml' -File |
             Group-Object { (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash })

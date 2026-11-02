@@ -1,10 +1,28 @@
-# Delivery checkpoint (`Monstertacle.Multisession.DeliveryCheckpoints`)
+# Delivery checkpoint (`Monstertacle.Multisession.Checkpoints.Delivery`)
 
 Durable custody of one delivery channel to a destination that is not idempotent. The package stores one opaque pending
 item, its phase and attempt counter in SQLite under an exclusive lease, and records three kinds of host-authorized grants
 atomically with their state change. It sends nothing, retries nothing and runs nothing in the background. It has no
-dependency on the session packages, Microsoft Agent Framework or any host. Specification: `specs/009-delivery-checkpoint`,
-decision: `docs/adr/0007-delivery-checkpoint-primitives.md`.
+dependency on the session packages, Microsoft Agent Framework or any host; its only own dependency is the contract package
+`Monstertacle.Multisession.Checkpoints`. Specification: `specs/009-delivery-checkpoint` and `specs/013-checkpoint-split`,
+decisions: `docs/adr/0007-delivery-checkpoint-primitives.md` and `docs/adr/0009-checkpoint-packages.md`.
+
+## Contracts and composition
+
+- `ICheckpoint<TSnapshot>` (namespace `Monstertacle.Multisession.Checkpoints`): a typed read and the ownership lifetime. It promises
+  nothing about persistence, leases or atomicity; the implementing domain defines its snapshot.
+- `IDeliveryCheckpoint : ICheckpoint<CheckpointState>` (namespace `Monstertacle.Multisession.Checkpoints.Delivery`): the stage,
+  sending, preparation-failure, uncertain and accept operations below, with unchanged semantics.
+- `DeliveryCheckpoint` implements the port. Compose with the concrete store returned by `OpenAsync`/`OpenExistingAsync`,
+  construct the grant helpers from it (they share its private transaction) and give ordinary delivery code the
+  `IDeliveryCheckpoint` view of the same object. One owner disposes it once.
+
+### Migrating from `Monstertacle.Multisession.DeliveryCheckpoints` 0.2.0-alpha.7
+
+Replace the package reference with `Monstertacle.Multisession.Checkpoints.Delivery` (it brings the contract package) and the
+namespace `Monstertacle.Multisession.DeliveryCheckpoints` with `Monstertacle.Multisession.Checkpoints.Delivery`, then regenerate
+lock files. Type and member names, refusal reasons and the on-disk format are unchanged: existing checkpoint files open as they
+are. There is no alias package or type forwarder; the 0.2.0-alpha.7 package stays as published.
 
 ## Contract
 

@@ -9,8 +9,10 @@
   fix-first, defender merge); dispositions below.
 - [x] T009 Review fixes, test-first: eng/Test-PublicationTooling.ps1 (Red and mutation evidence as stated in plan.md, Green after),
   eng/Test-RepositorySignature.ps1, quality workflow step, plan.md, corrected guide.
-- [ ] T007 Required CI on the PR head; narrow follow-up review of the fix diff; merge.
-- [ ] T008 Manual run for 0.2.0-alpha.7; record the run and the served-package receipt.
+- [x] T007 Required CI on the PR head 70c9d7c (all twelve checks green, Linux and Windows); four review rounds; merged as 02c6129 (PR 15).
+- [x] T008 Publish run 41377508020 from main 02c6129 (2026-11-02): OIDC login, eight packages pushed, all served, equivalent and signed by
+  the nuget.org repository certificate (evidence/publication-receipt-0.2.0-alpha.7.json); an independent download and comparison outside the
+  workflow, on the local development host, gave the same served digests (evidence/publication-independent-check.txt). Owner on nuget.org: bleissem.
 
 ## Review dispositions (round 1)
 
@@ -59,6 +61,7 @@ Both roles: no P0-P2; merge after required CI. Reports evidence/review3-{challen
 
 The required Linux quality job failed after the tooling suite printed PASS (19 of 19): the runner's PowerShell step ends with the last
 native exit code, here a deliberately refused test push. The same applies to the publish workflow: a pending (409) push of the last
-package would have failed the push step. Test first (evidence/red3-exit-code.txt: a pending push of the last package leaves exit code 1,
-direct and in the CI wrapper form), then the publish script and the suite end with an explicit `exit 0` on success
+package would have failed the push step. Test first (evidence/red3-exit-code.txt: after a pending push of the last package the new assertion on
+the exit code fails, direct and in the CI wrapper form; this is the test's own failure, the CI symptom itself, PASS followed by exit
+code 1, was reproduced only by the round-4 reviewers' wrapper experiments, evidence/review4-*.md), then the publish script and the suite end with an explicit `exit 0` on success
 (evidence/green-publication-tooling.txt, both forms).

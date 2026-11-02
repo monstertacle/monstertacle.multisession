@@ -18,7 +18,8 @@ public sealed class BaseAssemblyBoundaryTests
         string[] references = [.. _base.GetReferencedAssemblies().Select(reference => reference.Name!)];
 
         Assert.NotEmpty(references);
-        Assert.All(references, name => Assert.True(name == "System.Runtime" || name.StartsWith("System.", StringComparison.Ordinal), name));
+        // netstandard is the BCL facade that coverage instrumentation references; it is part of the runtime as well.
+        Assert.All(references, name => Assert.True(name is "System.Runtime" or "netstandard" || name.StartsWith("System.", StringComparison.Ordinal), name));
     }
 
     /// <summary>The base assembly exports exactly the checkpoint contract and nothing delivery-specific.</summary>

@@ -1,10 +1,9 @@
 # Monstertacle.Multisession
 
 Provider-neutral .NET libraries for running many agent sessions in parallel inside an application process: durable request
-identity, SQLite persistence, native Windows and Linux leases, cancellation, stop and explicit recovery. Development release; not
-published to a public feed.
+identity, SQLite persistence, native Windows and Linux leases, cancellation, stop and explicit recovery. Development prerelease.
 
-## Packages (0.2.0-alpha.7)
+## Packages (0.2.0-alpha.8)
 
 | Package | Purpose |
 | --- | --- |
@@ -13,10 +12,11 @@ published to a public feed.
 | `Monstertacle.Multisession.Linux` / `Monstertacle.Multisession.Windows` | Native process leases for the platform |
 | `Monstertacle.Multisession.AgentFramework` | Integration with Microsoft Agent Framework 1.27.0 |
 | `Monstertacle.Multisession.Providers.Conversations` / `.Providers.Interactions` | Optional provider protocol adapters |
-| `Monstertacle.Multisession.DeliveryCheckpoints` | Opaque durable delivery checkpoint for one channel to a non-idempotent destination, with atomic receipt and compare-and-swap primitives; it sends nothing itself |
+| `Monstertacle.Multisession.Checkpoints` | Storage-independent checkpoint contract `ICheckpoint<TSnapshot>`: a typed read and the ownership lifetime; no dependencies |
+| `Monstertacle.Multisession.Checkpoints.Delivery` | Opaque durable delivery checkpoint for one channel to a non-idempotent destination, with atomic receipt and compare-and-swap primitives, implementing `IDeliveryCheckpoint`; it sends nothing itself |
 
 An application references `Common`, `Storage.Sqlite` and exactly one native platform package (`net10.0` on Linux,
-`net10.0-windows` on Windows). `DeliveryCheckpoints` is independent of the session packages.
+`net10.0-windows` on Windows). `Checkpoints` and `Checkpoints.Delivery` are independent of the session packages.
 
 ## Documentation
 

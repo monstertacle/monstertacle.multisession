@@ -17,10 +17,11 @@ $names = @(
     'Monstertacle.Multisession.Storage.Sqlite',
     'Monstertacle.Multisession.Providers.Conversations',
     'Monstertacle.Multisession.Providers.Interactions',
-    'Monstertacle.Multisession.DeliveryCheckpoints'
+    'Monstertacle.Multisession.Checkpoints',
+    'Monstertacle.Multisession.Checkpoints.Delivery'
 )
 $packages = @(Get-ChildItem -LiteralPath $PackageDirectory -Filter '*.nupkg' -File)
-if ($packages.Count -ne $names.Count) { throw 'Expected exactly eight library packages.' }
+if ($packages.Count -ne $names.Count) { throw "Expected exactly $($names.Count) library packages." }
 foreach ($name in $names) {
     $package = @($packages | Where-Object Name -EQ "$name.$version.nupkg")
     if ($package.Count -ne 1) { throw "Missing expected package: $name $version" }
@@ -48,7 +49,15 @@ foreach ($name in $names) {
         if ($text.Replace("`r`n", "`n") -cne $license) { throw "Packaged LICENSE differs from the repository MIT notice: $name" }
         $assemblies = @($zip.Entries | Where-Object FullName -Like 'lib/*/*.dll')
         if ($assemblies.Count -ne 1 -or $assemblies[0].Name -ne "$name.dll") { throw "Unexpected assembly contents: $name" }
-        foreach ($dependency in $metadata.dependencies.group.dependency) {
+        # A package without dependencies (the contract package) has no dependency elements at all.
+        $dependencies = @($specification.GetElementsByTagName('dependency'))
+        # Dependency direction of the checkpoint packages: the contract stands alone, the delivery package builds on it.
+        if ($name -eq 'Monstertacle.Multisession.Checkpoints' -and $dependencies.Count -ne 0) { throw "The checkpoint contract package must have no dependencies." }
+        if ($name -eq 'Monstertacle.Multisession.Checkpoints.Delivery' -and
+            @($dependencies | Where-Object { $_.id -eq 'Monstertacle.Multisession.Checkpoints' -and $_.version -eq $version }).Count -ne 1) {
+            throw "The delivery checkpoint package must depend on Monstertacle.Multisession.Checkpoints $version."
+        }
+        foreach ($dependency in $dependencies) {
             if ($dependency.id -eq 'Monstertacle.SharpQrs') {
                 if ($name -ne 'Monstertacle.Multisession.Common' -or $dependency.version -ne '0.2.0-alpha.1') { throw "Unexpected CQRS dependency: $name" }
             } elseif ($dependency.id -like 'Monstertacle.*') {

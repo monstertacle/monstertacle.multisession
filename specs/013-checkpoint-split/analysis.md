@@ -1,6 +1,6 @@
 # Analysis: consistency of specification, plan, tasks and constitution
 
-Date: 2026-11-02. Inputs: spec.md, plan.md, tasks.md, contracts/checkpoint-contracts.md, constitution 1.x (principles I–VI).
+Date: 2026-11-02. Inputs: spec.md, plan.md, tasks.md, contracts/checkpoint-contracts.md, constitution 2.1.0 (principles I–VI).
 
 ## Requirement coverage
 

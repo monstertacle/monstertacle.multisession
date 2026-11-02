@@ -62,3 +62,18 @@ remains detected.
 
 - Native Windows quality and consumers: they run in hosted CI on the pull request.
 - Publication, the release record and SharpClaw consumption: out of scope for this change.
+
+## Hosted CI, first pull request head `ad8f801`
+
+- Push run 41527382180 and pull request run 41527394023: `quality` passed natively on `ubuntu-24.04` and `windows-latest`;
+  `guard` passed on both.
+- `canonical-consumer` failed on both platforms: `Incomplete or failed canonical package producer.`
+  `eng/Test-CanonicalPackageHashes.ps1` still expected eight packages. Its existing guard refused the new nine-package set.
+- Fix: the expected count is now 9, and the synthetic fixture holds nine packages.
+  - Red: with the new count and the old eight-package fixture, the `valid` and `producer-input-hashes` cases failed.
+  - Green: all 8 fixture scenarios pass.
+  - The real local producer manifest of the packed set now passes (`Status: PASS`).
+- The same review found that `eng/Test-PublicationTooling.ps1` rewrote the constant with a literal `= 8` pattern, which
+  would have stopped matching silently. It now matches any count and throws when the constant is absent.
+  - Mutation M7: renaming the constant made the tooling throw `no longer declares $expectedPackageCount`.
+  - The suite passes 19 of 19 cases.

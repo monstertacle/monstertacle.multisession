@@ -77,7 +77,10 @@ foreach ($script in 'Test-ReleaseInput.ps1', 'Test-PublishedPackage.ps1', 'Publi
     $source = Join-Path $PSScriptRoot $script
     if (Test-Path -LiteralPath $source) { Copy-Item -LiteralPath $source -Destination $toolDir }
 }
-(Get-Content -Raw -LiteralPath $canonicalHashes) -replace '\$expectedPackageCount = 8', "`$expectedPackageCount = $($ids.Count)" |
+$canonicalText = Get-Content -Raw -LiteralPath $canonicalHashes
+# A changed constant must still be rewritten; a silent non-match would exercise the real release size instead.
+if ($canonicalText -notmatch '\$expectedPackageCount = \d+') { throw 'Test-CanonicalPackageHashes.ps1 no longer declares $expectedPackageCount.' }
+$canonicalText -replace '\$expectedPackageCount = \d+', "`$expectedPackageCount = $($ids.Count)" |
     Set-Content -LiteralPath (Join-Path $toolDir 'Test-CanonicalPackageHashes.ps1')
 $inputCheck = Join-Path $toolDir 'Test-ReleaseInput.ps1'
 $compare = Join-Path $toolDir 'Test-PublishedPackage.ps1'

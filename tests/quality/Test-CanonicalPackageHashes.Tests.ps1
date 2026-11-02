@@ -9,7 +9,7 @@ try {
         $case = Join-Path $root $scenario
         $feed = Join-Path $case 'packages'
         $null = New-Item -Path $feed -ItemType Directory -Force
-        $hashes = @(foreach ($index in 0..7) {
+        $hashes = @(foreach ($index in 0..8) {
             $name = "Fixture.$index.0.1.0.nupkg"
             $path = Join-Path $feed $name
             Set-Content -LiteralPath $path -Value "synthetic package bytes $index"

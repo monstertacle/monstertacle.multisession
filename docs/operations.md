@@ -70,6 +70,14 @@ that have already started are tracked as runtime work. If
 local work runs beyond the wait deadline, store and lease remain protected until the end
 of cleanup. An expired wait deadline is not proof of disposal.
 `Completion` and the observed Stop/Dispose result belong to host supervision.
+A failed stop is reported to its `StopAsync` caller and again to every later
+`StopAsync` call. `DisposeAsync` reports failures of the stop it performs itself,
+for example its own `ShutdownTimeout` or a failed cleanup, but does not replay an
+earlier stop's failure once that stop has published the stopped state. After
+disposal, `StopAsync` does nothing. Await `StopAsync` before calling `DisposeAsync`:
+a disposal that overlaps a stop which has not yet returned can make that stop end
+with an unsanitized `ObjectDisposedException` (open item C1 in
+`specs/003-native-reliability/follow-up-dispose-stop-race.md`).
 Dispose during a running start waits for its actual completion
 and prevents a subsequent worker release. Concurrent Dispose calls
 share the running cleanup; before store preparation has been taken over,

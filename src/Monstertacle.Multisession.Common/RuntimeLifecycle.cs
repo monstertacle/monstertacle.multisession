@@ -102,13 +102,20 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
 
     internal async ValueTask StopAsync(TimeSpan timeout, CancellationToken cancellationToken)
     {
+        if (await StopOnceAsync(timeout, cancellationToken)) { ThrowStopFailure(); }
+    }
+
+    // True when this call performed no stop because another stop had already published Stopped (or, once this call held the
+    // stop gate, Stopped or Disposed); public stop callers then replay that stop's recorded outcome. Own failures still throw.
+    private async ValueTask<bool> StopOnceAsync(TimeSpan timeout, CancellationToken cancellationToken)
+    {
         if (!ExecutionDeadline.IsValid(timeout)) { throw Error(ErrorCode.InvalidInput); }
         using CancellationTokenSource deadline = new(timeout, host.Clock);
         using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
         lock (_gate)
         {
-            if (_state == RuntimeState.Disposed) { return; }
-            if (_state == RuntimeState.Stopped) { ThrowStopFailure(); return; }
+            if (_state == RuntimeState.Disposed) { return false; }
+            if (_state == RuntimeState.Stopped) { return true; }
             if (_state is RuntimeState.Created or RuntimeState.Starting) { throw Error(ErrorCode.InvalidConfiguration); }
             _state = RuntimeState.Stopping;
         }
@@ -117,8 +124,9 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         catch (Exception) { throw Error(ErrorCode.StorageUnavailable); }
         try
         {
-            if (_state is RuntimeState.Stopped or RuntimeState.Disposed) { ThrowStopFailure(); return; }
+            if (_state is RuntimeState.Stopped or RuntimeState.Disposed) { return true; }
             await CompleteStopAsync(linked.Token);
+            return false;
         }
         finally { _shutdown.Release(); }
     }
@@ -180,7 +188,7 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
         }
         if (_state is not (RuntimeState.Stopped or RuntimeState.Disposed))
         {
-            await StopAsync(Components.Options.ShutdownTimeout, CancellationToken.None);
+            await StopOnceAsync(Components.Options.ShutdownTimeout, CancellationToken.None);
         }
         _state = RuntimeState.Disposed;
         _shutdown.Dispose();

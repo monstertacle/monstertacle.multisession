@@ -98,3 +98,20 @@ and `Monstertacle.Multisession.Checkpoints.Delivery`. The pull request was clean
 - Its `packages-and-consumer-linux` artefact is recorded in `eng/release-records/0.2.0-alpha.8.json` (producer manifest
   SHA-256 `29408342…22cb`, nine packages). `eng/Test-ReleaseInput.ps1` against the downloaded artefact: PASS.
 - On 2026-11-02, nuget.org listed only 0.2.0-alpha.7 for the seven existing IDs and nothing for the two new IDs.
+
+## Publication
+
+`publish.yml` run 41549813829 (manual, `main`, version 0.2.0-alpha.8) succeeded:
+- the producer run and canonical packages were verified;
+- nuget.org was planned with all nine packages absent;
+- the OIDC login, push and served-package verification all passed.
+
+Receipt: `publication-receipt-0.2.0-alpha.8.json`. The independent check after publication is in
+`publication-independent-check.txt`:
+- entry-by-entry equality with the canonical bytes, plus only `.signature.p7s`;
+- version and producer commit;
+- `dotnet nuget verify --all` exited 0 with the nuget.org repository signature;
+- the served hashes equal the receipt (9 of 9);
+- both new IDs are listed.
+
+The 0.2.0-alpha.7 packages are unchanged.

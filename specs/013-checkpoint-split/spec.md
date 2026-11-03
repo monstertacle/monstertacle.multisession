@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-02
 
-**Status**: Specified and clarified. The contract decision of 2026-11-02 is recorded under Clarifications.
+**Status**: Implemented and published as 0.2.0-alpha.8 (see evidence). The contract decision of 2026-11-02 is recorded under Clarifications. Host consumption is a separate step.
 
 **Input**: Owner commission of 2026-11-02: "Implement two assemblies: `Monstertacle.Multisession.Checkpoints` and
 `Monstertacle.Multisession.Checkpoints.Delivery`, base interfaces and concrete implementation under SOLID." The owner fixed

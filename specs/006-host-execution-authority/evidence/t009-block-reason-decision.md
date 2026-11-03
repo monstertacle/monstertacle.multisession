@@ -1,6 +1,6 @@
 # T009: frozen decision on a distinct block reason for an unavailable framework continuation
 
-Status: **open, needs a decision before implementation**. Source: `main` at `4b533c9`.
+Status: **decided, alternative C (root decision of 2026-11-03T18:45:58Z)**. Source: `main` at `4b533c9`; decision against `a24e548`.
 
 ## Measured source facts
 
@@ -43,3 +43,17 @@ taken only together with an explicit store-format and host state-protocol decisi
 with both setters covered, and record the host impact.
 
 Not implemented in this change: no enum, property or format change was made while this decision is open.
+
+## Decision (root, 2026-11-03)
+
+Alternative C: document the existing contract. This supersedes the recommendation B above.
+
+Reason: the public `ISessionStore.MarkSessionBlockedAsync` can set `ProviderUnavailable` with `ConfigurationUnavailable == false`
+without any continuation. A derived property would therefore present persisted state as proof of a historical cause.
+
+Implemented:
+- `contracts/public.md` documents both normal pathways, the public-setter countercase and the revalidation rule.
+- `IntegrationTests/ProviderBlockProvenanceTests` pins them on SQLite, across a reopen. It is a regression pin of existing
+  behaviour, not a behavioural Red. Its mutation control (configuration revalidation also clearing a block it did not set) fails.
+
+There is no enum, property, store-format or state-protocol change.

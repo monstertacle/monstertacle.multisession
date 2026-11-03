@@ -1,0 +1,15 @@
+measuredUtc 2026-11-03T00:10:44Z
+publish run 41549813829 (workflow_dispatch on main, version 0.2.0-alpha.8): success; all nine packages planned absent, pushed and verified
+Monstertacle.Multisession.AgentFramework canonical=972a4c8a8dcfc843 served=590e39d4fd4e8c51 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Checkpoints canonical=eb90bc5d06e10dad served=927aa63e62956eb3 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Checkpoints.Delivery canonical=f0a1787985343c59 served=e3e4ab7e34c8dd7f PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Common canonical=3f021c5685e067e5 served=ae41ed821bc82b35 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Linux canonical=ba68d3e24a21752c served=39a50fc0fb7479d7 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Providers.Conversations canonical=3d0e71074e20a05c served=5ff013ef12aefcaa PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Providers.Interactions canonical=2b58bd51dc10294d served=1293cbd0f7b7ffcb PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Storage.Sqlite canonical=a26317dfe2eb77b2 served=3f8065a29051b5a9 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+Monstertacle.Multisession.Windows canonical=a9ff43f57555acc3 served=c60169320648d068 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.8 commit=efb3f20
+dotnet nuget verify --all: exit 0 for all nine served packages; repository primary signature, CN=NuGet.org Repository by Microsoft, certificate SHA-256 1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d
+served SHA-256 of the independent downloads equals the workflow receipt for 9 of 9 packages
+monstertacle.multisession.checkpoints listed=true published=2026-11-03T00:02:06.987+00:00
+monstertacle.multisession.checkpoints.delivery listed=true published=2026-11-03T00:02:08.16+00:00

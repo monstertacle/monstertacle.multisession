@@ -1,0 +1,107 @@
+{
+  "Status": "PASS",
+  "Version": "0.2.0-alpha.8",
+  "ProducerCommit": "efb3f20d8830906e6d0408219c5b6387163aa611",
+  "VerifiedUtc": "2026-11-03T00:08:22.5431044+00:00",
+  "Packages": [
+    {
+      "Id": "Monstertacle.Multisession.Common",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "3f021c5685e067e5b6d3114b729e6b92a2a4892280848fea96f01f404fe86e32",
+      "ServedSha256": "ae41ed821bc82b35492b28f8410b4a9e4f809ecda61c4820ee5206f865e56531",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.AgentFramework",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "972a4c8a8dcfc843830e709eaceceedd57732e5cdff586beae568a6b6d2c837e",
+      "ServedSha256": "590e39d4fd4e8c51993fd407c82596fb328f03be35ce1e9e23244fb21832dcbe",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.Checkpoints",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "eb90bc5d06e10dad790a16295342576cadf42a1c4909a265949568cd73bbdd17",
+      "ServedSha256": "927aa63e62956eb370c534388cf5e07a67b2000fa77dbafa265676895a11a268",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.Checkpoints.Delivery",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "f0a1787985343c596680d70ad143570d96c3e023c96629e711a8989e8c67be55",
+      "ServedSha256": "e3e4ab7e34c8dd7f631b5002e2e7fddecfcc8d3028b86d1b108d459b3db0a4e9",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.Linux",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "ba68d3e24a21752c622fdd38a4ab2587f8c437812864872bd472358ba1f1901e",
+      "ServedSha256": "39a50fc0fb7479d749bd60b6580f55f2e5a1707a5baadaf53e3cc663fde6f6f4",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.Providers.Conversations",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "3d0e71074e20a05c9b252e113b3e49ca7030c4c86114251ad1e06d90951b45aa",
+      "ServedSha256": "5ff013ef12aefcaaab65aa2914607027bdbc995c1c27869a62fe31802429262e",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.Providers.Interactions",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "2b58bd51dc10294d2807f9447b4f9fd7b74f89c74507a6beb24f531fd7be94f3",
+      "ServedSha256": "1293cbd0f7b7ffcb111f0850595084d7604947fc2be2df25e3714e2c27476839",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.Storage.Sqlite",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "a26317dfe2eb77b2852db6417f7da073b8ddd712141e0120ac04c454b6a56018",
+      "ServedSha256": "3f8065a29051b5a9ce03a173398e3aac016b98cd44be14d9aab87aa4e6679481",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    },
+    {
+      "Id": "Monstertacle.Multisession.Windows",
+      "Version": "0.2.0-alpha.8",
+      "CanonicalSha256": "a9ff43f57555acc32ad7dc340280d8df7974cc70e354f6b255de673e43b7e250",
+      "ServedSha256": "c60169320648d0687df21835ea6e848f12a5b9f209a89115e5f289b493cf4cf8",
+      "RepositorySigned": true,
+      "ComparedEntries": 8,
+      "Status": "EQUIVALENT",
+      "Signer": "CN=NuGet.org Repository by Microsoft, O=NuGet.org Repository by Microsoft, L=Redmond, S=Washington, C=US",
+      "SignerCertificateSha256": "1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d"
+    }
+  ]
+}

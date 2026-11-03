@@ -17,7 +17,7 @@ Nine libraries are packed locally: `Common`, `AgentFramework`, `Storage.Sqlite`,
 prefix `Monstertacle.Multisession.`. `Checkpoints` holds the storage-independent `ICheckpoint<TSnapshot>` contract;
 `Checkpoints.Delivery` depends only on it and SQLite: one opaque durable delivery checkpoint per channel with typed atomic
 acknowledgement/CAS primitives, see [Delivery checkpoint](docs/delivery.md). Both are independent of the session packages. Test projects and ValidationHost are not packages.
-No publication takes place. The libraries are licensed under the MIT License
+Published releases are recorded under `eng/release-records/` (see [publishing](docs/publishing.md)). The libraries are licensed under the MIT License
 (SPDX `MIT`, file [LICENSE](LICENSE)); every package contains the license text with
 the copyright notice. Dependencies are carried only as NuGet references and keep
 their own licenses; the packages contain no third-party code. Files under

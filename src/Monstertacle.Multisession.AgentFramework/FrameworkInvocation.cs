@@ -11,7 +11,6 @@ public sealed class FrameworkInvocation
     public const int MaximumReferenceCharacters = 512;
     private const int _externalMarker = 1;
     private const int _operationMarker = 2;
-    private static readonly string _key = typeof(FrameworkInvocation).FullName!;
     private readonly Func<ProviderObservation, CancellationToken, ValueTask> _observe;
     private readonly CancellationToken _execution;
     private readonly int _maximum;
@@ -41,7 +40,7 @@ public sealed class FrameworkInvocation
     /// <summary>Finds the invocation context supplied by the adapter, requiring the exact CLR type.</summary>
     public static bool TryGet(AgentRunOptions? options, out FrameworkInvocation? invocation)
     {
-        invocation = options?.AdditionalProperties is { } properties && properties.TryGetValue(_key, out object? value) ? value as FrameworkInvocation : null;
+        invocation = (options as FrameworkRunOptions)?.Invocation;
         return invocation is not null;
     }
 
@@ -54,7 +53,7 @@ public sealed class FrameworkInvocation
     /// <summary>Durably records content-free progress.</summary>
     public ValueTask ReportProgressAsync(CancellationToken cancellationToken) => RecordAsync(ProviderObservationKind.Progress, null, cancellationToken);
 
-    internal AgentRunOptions CreateOptions() => new() { AdditionalProperties = new() { [_key] = this } };
+    internal AgentRunOptions CreateOptions() => new FrameworkRunOptions(this);
 
     internal void Close() => Interlocked.Exchange(ref _closed, 1);
 

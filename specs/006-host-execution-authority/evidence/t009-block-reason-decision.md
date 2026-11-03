@@ -6,7 +6,7 @@ Status: **decided, alternative C (root decision of 2026-11-03T18:45:58Z)**. Sour
 
 - `SessionBlockReason` (`Contracts/SessionBlockReason.cs`) has four members: `None`, `RecoveryRequired`, `ProviderUnavailable`,
   `StorageFailure`.
-- In SDK code, `ProviderUnavailable` has exactly two setters:
+- In SDK code, `ProviderUnavailable` has exactly two policy setters (incomplete as a list of writers; see Corrections):
   - `SessionBindingPolicy.AfterCompletion` (`Sessions/SessionBindingPolicy.cs:13-14`): the reply reports
     `ContinuationAvailable is false`, or error `ProviderSessionExpired`. `ConfigurationUnavailable` stays false.
   - `SessionAvailabilityPolicy.ForConfiguration` (`Sessions/SessionAvailabilityPolicy.cs:23-28`): the registered provider is
@@ -14,7 +14,8 @@ Status: **decided, alternative C (root decision of 2026-11-03T18:45:58Z)**. Sour
 
   `ISessionStore.MarkSessionBlockedAsync` is public, but the SDK only passes it `RecoveryRequired` (`SessionCatalog.cs:87`).
 - Only the configuration case is cleared again: `ForConfiguration(available: true)` clears `ProviderUnavailable` only while
-  `ConfigurationUnavailable` is set. A lost continuation therefore blocks the session until it is closed. It reads exactly like
+  `ConfigurationUnavailable` is set. A lost continuation therefore blocks the session until it is closed (within the SDK's own
+  paths only; see Corrections). It reads exactly like
   a configuration outage, apart from `ConfigurationUnavailable == false`.
 - Persistence: SQLite stores `BlockReason` as an integer, in `Sessions.BlockReason` and inside `SnapshotJson`. No enum-name
   converter is used. Readers accept only defined members: `SessionStoreConsistency.StateMatches` requires
@@ -54,6 +55,37 @@ without any continuation. A derived property would therefore present persisted s
 Implemented:
 - `contracts/public.md` documents both normal pathways, the public-setter countercase and the revalidation rule.
 - `IntegrationTests/ProviderBlockProvenanceTests` pins them on SQLite, across a reopen. It is a regression pin of existing
-  behaviour, not a behavioural Red. Its mutation control (configuration revalidation also clearing a block it did not set) fails.
+  behaviour, not a behavioural Red. Its mutation control (configuration revalidation also clearing a block it did not set) fails;
+  the executed mutant is recorded under Mutation record.
 
 There is no enum, property, store-format or state-protocol change.
+
+## Mutation record (executed 2026-11-03T18:54Z, Linux, before commit `4669501`)
+
+- Source: the working tree that was then committed as `4669501`. Test file blob `38bdb0a`
+  (`ProviderBlockProvenanceTests.cs`, unchanged since); policy file blob `777230b` (`SessionAvailabilityPolicy.cs`, restored after
+  the run and unchanged since `4b533c9`).
+- Mutant: one line in `SessionAvailabilityPolicy.ForConfiguration` (line 14),
+  `if (available && session.ConfigurationUnavailable)` replaced by
+  `if (available && (session.ConfigurationUnavailable || session.BlockReason == SessionBlockReason.ProviderUnavailable))`. With it,
+  a successful configuration check also clears a block that the configuration check did not record.
+- Command: `dotnet test tests/Monstertacle.Multisession.IntegrationTests -c Release -f net10.0 --filter
+  "FullyQualifiedName~ProviderBlockProvenanceTests"`.
+- Observed: exit code 1, 1 failed of 1. The assertion at `ProviderBlockProvenanceTests.cs` line 55 (the completion-path session
+  after revalidation and reopen) expected `(ProviderUnavailable, False, null)` and found `(None, False, null)`.
+- The same filter on the unmutated source passed 1 of 1. The private run logs are kept outside the repository with SHA-256
+  `d33eacb390cea65a7f7fd90835db26768ab328df987fbacd26c63366b8f13278` (mutant) and
+  `a4645730c75bee1ad68eb0c439207391089ca1f3f240ce68d0385a90356a29ce` (unmutated).
+
+## Corrections (2026-11-03, after review)
+
+The measured-facts section above is kept as written at decision time. Two of its statements are incomplete:
+- Writers of `ProviderUnavailable`: besides the two policy setters, the dispatcher's registration-mismatch path
+  (`RequestDispatcher`, a `Failed`/`NotStarted`/`InvalidConfiguration` reply with `ContinuationAvailable == false`) reaches
+  `AfterCompletion` through the same completion commit and leaves the same shape. The public `MarkSessionBlockedAsync` is a
+  further writer that store callers can use with any reason; on SQLite it replaces every reason except `RecoveryRequired`.
+- "Blocks the session until it is closed" holds only for the SDK's own paths: the start-time reopen guard in
+  `RecoveryCoordinator.PrepareAsync` and `ForConfiguration` leave such a block unchanged for every provider, but
+  `MarkSessionBlockedAsync(sessionId, None)` removes it.
+
+`contracts/public.md` states the corrected contract. Choice C is unaffected; the third writer strengthens the reason for it.

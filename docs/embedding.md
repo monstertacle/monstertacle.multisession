@@ -42,10 +42,14 @@ path with the actual package folder:
 </configuration>
 ```
 
-Then, in the consumer project, add for example `dotnet add package
-Monstertacle.Multisession.Common --version 0.2.0-alpha.9` and correspondingly Storage and
-the native package. No project references to the library source tree
-are required. Do not disable the direct/transitive audit.
+Then, in the consumer project and only with that local feed of packages you packed yourself from
+this source, add for example `dotnet add package Monstertacle.Multisession.Common --version
+0.2.0-alpha.9` and correspondingly Storage and the native package. Version 0.2.0-alpha.9 is not
+on nuget.org; from nuget.org, use the published 0.2.0-alpha.8 instead. The published 0.2.0-alpha.8
+`FrameworkInvocation` still writes and reads the invocation context through
+`AgentRunOptions.AdditionalProperties`; the typed run-options carrier exists only in this source.
+No project references to the library source tree are required. Do not disable the
+direct/transitive audit.
 
 ## Complete technical entry point without vendor access
 

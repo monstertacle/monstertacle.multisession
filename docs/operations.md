@@ -78,10 +78,11 @@ can replace an earlier record, and a failure while waiting for another stop is n
 recorded. `DisposeAsync` reports failures of the stop it performs itself,
 for example its own `ShutdownTimeout` or a failed cleanup, but does not replay an
 earlier stop's failure once that stop has published the stopped state. After
-disposal, a valid `StopAsync` does nothing. Await `StopAsync` before calling `DisposeAsync`:
-a disposal that overlaps a stop which has not yet returned can make that stop end
-with an unsanitized `ObjectDisposedException` (open item C1 in
-`specs/003-native-reliability/follow-up-dispose-stop-race.md`).
+disposal, a valid `StopAsync` does nothing. `DisposeAsync` does not guarantee that
+all running `StopAsync` calls have returned. It can complete before an overlapping
+call returns, and that call then ends with its own outcome. Await `StopAsync` before
+`DisposeAsync` when the host needs that outcome before releasing its own
+dependencies.
 Dispose during a running start waits for its actual completion
 and prevents a subsequent worker release. Concurrent Dispose calls
 share the running cleanup; before store preparation has been taken over,

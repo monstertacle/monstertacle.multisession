@@ -1,8 +1,8 @@
 # Disposal after a timed-out stop can rethrow the earlier stop failure
 
 Owner: Alexander Bleissem
-Status: contract Q decided (2026-11-03); the timing-dependent replay is fixed on branch `fix/dispose-stop-failure-ownership`,
-which is not merged. Its parent, pull request #22, is merged into `main`. Item C1 below is open.
+Status: contract Q decided and merged into `main` (pull request #23, 2026-11-03). Item C1 has a root decision and is being
+implemented on branch `fix/c1-retain-stop-gate` (not merged). Item C1b is an unconfirmed source-only candidate.
 Origin: push run 41699098083 at `4669501` (pull request #22). `quality (windows-latest)` failed one case,
 `ContractTests.RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`. The pull request run 41699106368 on the same
 head passed the same test, as did the runs on `a24e548` and `8054481`. The runtime source is unchanged from `main` (`4b533c9`).
@@ -100,11 +100,11 @@ old and the changed source.
 
 What still holds in that run: one store cleanup, the store closed before the lease, and the lease released.
 
-How it was reproduced: a private probe holds the stop's continuations in a caller-owned `SynchronizationContext`. It is not
-committed, because it fails until a correction is decided.
+How it was reproduced: a private probe holds the stop's continuations in a caller-owned `SynchronizationContext`. The same
+technique is now committed as `ContractTests/StopDisposeOverlapTests` (see C1 evidence).
 
 Severity P2: only callers that dispose without awaiting a running `StopAsync` are affected, but they get an untyped, unsanitized
-exception. Until a correction is decided, `docs/operations.md` tells callers to await `StopAsync` before disposing.
+exception. `docs/operations.md` describes the caller contract after the C1 correction.
 
 **Task C1** (owner Alexander Bleissem):
 - **Decision:** root decides the correction. Candidates are that disposal waits for a running stop to release the gate before
@@ -117,4 +117,84 @@ exception. Until a correction is decided, `docs/operations.md` tells callers to 
   - run the full native gates.
 - **Acceptance:** the overlapping `StopAsync` ends with its own typed outcome, disposal stays bounded, there is still one
   cleanup, and the store-before-lease order holds.
-- **Not done:** not closed by the contract Q change, and not closed by a green CI run.
+- **Not done:** not closed by the contract Q change, and not closed by a green CI run. The correction is decided and implemented on
+  `fix/c1-retain-stop-gate` (see C1 decision and C1 evidence); it stays open until review and merge.
+
+### C1 decision (root, 2026-11-03, after two opposed architecture reviews)
+
+Source at `main` `dd1ca0e`: `RuntimeLifecycle.cs` SHA-256 `9e092ebe...`, `RuntimeShutdown.cs` `89c533e8...`,
+`RuntimeOperations.cs` `d8bfad56...`.
+
+- **Chosen, the minimum correction:** `RuntimeShutdown.Dispose` no longer disposes the private stop gate (`_stopGate`, a
+  `SemaphoreSlim`). The gate stays usable for stops that were admitted earlier: the holder can release it, and waiters can enter
+  and observe `Stopped` or `Disposed`. The gate is only used through `WaitAsync` and `Release`; nothing reads
+  `AvailableWaitHandle`, so it holds no wait handle to release. Disposal of the operations token source and all other cleanup is
+  unchanged.
+- **Not chosen:** a disposal drain or barrier that waits for running stops. It would be a new, stronger guarantee that the
+  contract does not require, and the proposed placement missed the earlier replay path. Also rejected: catching
+  `ObjectDisposedException` at `Release`, which leaves queued waiters stranded and hides the lifetime error, and moving where
+  `Stopped` is published.
+- **Contract after the fix:** `DisposeAsync` can complete before an overlapping `StopAsync` call has returned. That call then
+  ends with its own typed outcome. Disposal does not promise that all stop calls have returned.
+
+## C1b: stop admitted after an unprepared start while disposal releases the operations token (open, unconfirmed)
+
+Origin: the C1 necessity review (2026-11-03), from source at `main` `dd1ca0e` (hashes above). It is not reproduced, not a
+confirmed defect, and not part of the C1 correction.
+
+The candidate sequence:
+1. Start-up fails during store-side option validation or store start, before the store has started. Early
+   `RuntimeOptions.Validate()` rejection is outside this sequence because it occurs before the start-up try block and does not
+   set `Faulted`. In this sequence the state becomes `Faulted`, `_components`
+   stays null, and no cleanup runs (`StartAsync` cleans up only once the store has started), so
+   `RuntimeOperations.Stop` was never called.
+2. A public `StopAsync` passes its first locked check (`Faulted` is admitted), sets `Stopping`, and is descheduled before it calls
+   `_shutdown.Operations.Stop()`.
+3. A concurrent `DisposeAsync` takes the `_components is null` branch, publishes `Disposed` and disposes `RuntimeOperations`,
+   including its token source.
+4. The stop resumes, and `Operations.Stop()` calls `CancelAsync` on the disposed token source.
+
+On the normal path this cannot happen, because cleanup drains the operations, which initialises the cancellation, before
+publishing `Stopped`.
+
+External control: between leaving the lock and calling `Operations.Stop()` there is no await and no call into a host-supplied
+dependency. No existing public seam (clock, store, provider or synchronization context) can hold the stop there; only thread
+preemption can. A deterministic probe therefore needs either a new seam, which needs an architecture decision, or a source-level
+argument.
+
+**Task C1b** (owner Alexander Bleissem; root decides):
+- **Next:** confirm or refute the sequence with a bounded private probe, if a deterministic external control is found. Otherwise
+  record a source-backed disposition. Possible corrections, only after evidence and a separate decision, are making the
+  operations cancellation part of the stop's admission, or coordinating `RuntimeOperations.Stop` and `Dispose`.
+- **Acceptance:** either a source-and-probe-backed safe disposition, or an observed Red followed by a separately decided minimal
+  correction. In the corrected state there is no raw token-source disposal exception, the typed stop semantics are unchanged, and
+  host-owned dependencies are not disposed before ownership transfers.
+- **Not done:** not closed by C1, and not closed by a green CI run.
+
+### C1 evidence (branch `fix/c1-retain-stop-gate`, base `main` `dd1ca0e`)
+
+`ContractTests/StopDisposeOverlapTests` holds a public stop's continuations in a caller-owned synchronization context
+(`Fixtures/QueuedSynchronizationContext`). This depends on the lifecycle's awaits capturing the caller's context; adding
+`ConfigureAwait(false)` there would remove the control. No production hook was added.
+
+- **Red** on the unchanged runtime:
+  - a successful stop that is still unwinding ended with `ObjectDisposedException` from `SemaphoreSlim.Release`;
+  - a stop with its own failed worker cancellation ended with `ObjectDisposedException` instead of its sanitized
+    `StorageUnavailable`;
+  - a stop that started waiting for the gate before `Stopped` was published never finished. The guard ended the test while the
+    stop's deadline was still unexpired.
+  - The fourth test passed (a queued stop's own deadline is reported), and it pins existing behaviour.
+- **Green** after removing the gate disposal: all four pass, and so do the contract Q, cleanup, callback and ownership tests.
+- **Mutations:**
+
+  | Mutation | Result |
+  | --- | --- |
+  | Restoring the gate disposal | 3 tests fail |
+  | Disposing the gate and ignoring `ObjectDisposedException` at `Release` | The queued-waiter test still fails |
+
+- **Not covered:**
+  - a stop that passes its first check after disposal began but before `Disposed` is published, beyond the queued-waiter case;
+  - the contract Q survivor at the post-gate check;
+  - C1b.
+
+  The fix does not claim general concurrency safety for stop and disposal.

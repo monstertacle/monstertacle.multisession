@@ -70,11 +70,15 @@ that have already started are tracked as runtime work. If
 local work runs beyond the wait deadline, store and lease remain protected until the end
 of cleanup. An expired wait deadline is not proof of disposal.
 `Completion` and the observed Stop/Dispose result belong to host supervision.
-A failed stop is reported to its `StopAsync` caller and again to every later
-`StopAsync` call. `DisposeAsync` reports failures of the stop it performs itself,
+A failed stop is reported to its `StopAsync` caller. When a later valid
+`StopAsync` call observes the stopped state, it reports the stop failure recorded
+at that time, if any. A call that performs or waits for a stop can report its own
+failure instead: a stop that completes the shutdown records its own outcome, which
+can replace an earlier record, and a failure while waiting for another stop is not
+recorded. `DisposeAsync` reports failures of the stop it performs itself,
 for example its own `ShutdownTimeout` or a failed cleanup, but does not replay an
 earlier stop's failure once that stop has published the stopped state. After
-disposal, `StopAsync` does nothing. Await `StopAsync` before calling `DisposeAsync`:
+disposal, a valid `StopAsync` does nothing. Await `StopAsync` before calling `DisposeAsync`:
 a disposal that overlaps a stop which has not yet returned can make that stop end
 with an unsanitized `ObjectDisposedException` (open item C1 in
 `specs/003-native-reliability/follow-up-dispose-stop-race.md`).

@@ -1,8 +1,8 @@
 # Disposal after a timed-out stop can rethrow the earlier stop failure
 
 Owner: Alexander Bleissem
-Status: contract Q decided (2026-11-03); the timing-dependent replay is fixed on branch `fix/dispose-stop-failure-ownership`
-(not merged). Item C1 below is open.
+Status: contract Q decided (2026-11-03); the timing-dependent replay is fixed on branch `fix/dispose-stop-failure-ownership`,
+which is not merged. Its parent, pull request #22, is merged into `main`. Item C1 below is open.
 Origin: push run 41699098083 at `4669501` (pull request #22). `quality (windows-latest)` failed one case,
 `ContractTests.RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`. The pull request run 41699106368 on the same
 head passed the same test, as did the runs on `a24e548` and `8054481`. The runtime source is unchanged from `main` (`4b533c9`).
@@ -34,9 +34,12 @@ revisited even when the contract still holds.
 ## Decision: contract Q (root, 2026-11-03, after two opposed reviews)
 
 - `DisposeAsync` does not replay an earlier stop failure merely because that stop's cleanup published `Stopped` first.
-- The public `StopAsync` caller that failed keeps its failure, and every later `StopAsync` call reports it again.
+- The public `StopAsync` caller that failed keeps its failure. A later valid public `StopAsync` call that observes the stopped
+  state replays the failure recorded at that time, if any. This is not a permanent failure history: a stop that completes the
+  shutdown records its own outcome and can replace the record, and a failure while waiting for another stop is reported only to
+  that caller.
 - Failures of the stop that disposal performs itself still propagate: its own deadline, gate wait or cleanup failure.
-- After disposal, `StopAsync` does nothing.
+- After disposal, a valid `StopAsync` call does nothing.
 
 Rejected: contract R, where disposal always re-reports a recorded failure. It contradicts existing callers that dispose after
 handling a stop failure (`RuntimeOwnershipTests`, `StopCallbackDeadlineTests`, `RuntimeLifecycleTests`). Also rejected: catching

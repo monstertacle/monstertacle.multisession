@@ -12,7 +12,7 @@ on the target system. Supported acceptance targets are Windows 11 25H2 x64,
 Windows Server 2025 x64 and Ubuntu 24.04 LTS x64. The complete target-system
 acceptance is still open; a successful build does not replace it.
 
-The nine packages carry version 0.2.0-alpha.8 and are published on nuget.org (release record `eng/release-records/0.2.0-alpha.8.json`).
+The source carries version 0.2.0-alpha.9, which is not published. The latest published release is 0.2.0-alpha.8 (release record `eng/release-records/0.2.0-alpha.8.json`).
 The packages are licensed under the MIT License. With a local
 feed and nuget.org as a separate source, the host references:
 
@@ -43,7 +43,7 @@ path with the actual package folder:
 ```
 
 Then, in the consumer project, add for example `dotnet add package
-Monstertacle.Multisession.Common --version 0.2.0-alpha.8` and correspondingly Storage and
+Monstertacle.Multisession.Common --version 0.2.0-alpha.9` and correspondingly Storage and
 the native package. No project references to the library source tree
 are required. Do not disable the direct/transitive audit.
 

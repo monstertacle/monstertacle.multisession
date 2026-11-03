@@ -1,7 +1,7 @@
 # Native published capacity probe investigation
 
 Owner: Alexander Bleissem
-Status: in progress; scenario failure attribution added (evidence/windows-scenario-attribution-20261103.md); cause open
+Status: in progress; scenario failure attribution added (evidence/windows-scenario-attribution-20261103.md); native envelope measured (evidence/native-envelope-20261103.md); cause open, Windows 11 release-matrix gap open
 Origin: push41065255148, head18a9f1d9140c62e752e961775283926854168608,
 Windows published capacity scenario; PR41065265199 at the same source passed all
 four quality/canonical-consumer jobs and fourteen published scenarios on both OS.

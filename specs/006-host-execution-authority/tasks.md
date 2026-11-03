@@ -18,6 +18,7 @@ Current ownership: explicit complete quiescent handoff accepted for SharpClaw se
 ## Follow-up (owned by the integration maintainer)
 
 - [ ] T009 Distinct session block reason for an explicitly unavailable framework continuation (today ProviderUnavailable), plus a consumer test with a real ChatClientAgent and recording IChatClient proving FrameworkInvocation never reaches chat options or the wire. Acceptance: semantic Red then Green; full native gates; host switch impact documented. Origin: review-r2 change P2-4/P3. Not a blocker for alpha.3 consumption; must precede a non-alpha release.
+  Status 2026-11-03: the non-leak half is implemented. A real ChatClientAgent copied the invocation context into chat options and their JSON; it is now carried by internal run options (evidence/t009-block-reason-decision.md covers the open half). The distinct block reason changes the persisted value domain, so it is frozen for a decision with alternatives A, B and C (same file); it is not implemented.
 
 T005 progress (2026-10-31): typed outcomes, invocation context, preparation versus acceptance and request-linked native evidence implemented with observed semantic Reds (evidence/tdd.md) and contrary review r2 dispositions (evidence/review-r2/). T006 old-reader refusal is implemented in package smoke; restart/late result cases are in FrameworkEvidenceTests. T007 needs the final full gate, GitHub CI and alpha.3 feed binding.
 

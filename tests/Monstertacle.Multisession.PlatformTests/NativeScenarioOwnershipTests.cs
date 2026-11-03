@@ -29,7 +29,10 @@ public sealed class NativeScenarioOwnershipTests
         Assert.False(Directory.Exists(root));
         try
         {
-            Assert.Equal(0, await ScenarioRunner.RunAsync(["--scenario", scenario, "--state-root", root]));
+            // The report stays with a failure: a native run that exits non-zero shows why, not only its exit code.
+            using StringWriter report = new();
+            int exit = await ScenarioRunner.RunAsync(["--scenario", scenario, "--state-root", root], report);
+            Assert.True(exit == 0, "scenario " + scenario + " exited " + exit + ": " + report);
             string run = Assert.Single(Directory.GetDirectories(root, "run-*"));
             await using NativeLease reopened = NativeLease.OpenExisting(run);
             Assert.True(reopened.IsHeld);

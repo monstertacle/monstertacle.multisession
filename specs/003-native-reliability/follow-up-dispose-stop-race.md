@@ -143,7 +143,9 @@ Origin: the C1 necessity review (2026-11-03), from source at `main` `dd1ca0e` (h
 confirmed defect, and not part of the C1 correction.
 
 The candidate sequence:
-1. Start-up fails before the store has started (option validation or store start). The state becomes `Faulted`, `_components`
+1. Start-up fails during store-side option validation or store start, before the store has started. Early
+   `RuntimeOptions.Validate()` rejection is outside this sequence because it occurs before the start-up try block and does not
+   set `Faulted`. In this sequence the state becomes `Faulted`, `_components`
    stays null, and no cleanup runs (`StartAsync` cleans up only once the store has started), so
    `RuntimeOperations.Stop` was never called.
 2. A public `StopAsync` passes its first locked check (`Faulted` is admitted), sets `Stopping`, and is descheduled before it calls

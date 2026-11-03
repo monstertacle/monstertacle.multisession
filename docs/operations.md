@@ -78,9 +78,9 @@ can replace an earlier record, and a failure while waiting for another stop is n
 recorded. `DisposeAsync` reports failures of the stop it performs itself,
 for example its own `ShutdownTimeout` or a failed cleanup, but does not replay an
 earlier stop's failure once that stop has published the stopped state. After
-disposal, a valid `StopAsync` does nothing. `DisposeAsync` does not wait for
-`StopAsync` calls that are still running: it can complete before such a call has
-returned, and that call then ends with its own outcome. Await `StopAsync` before
+disposal, a valid `StopAsync` does nothing. `DisposeAsync` does not guarantee that
+all running `StopAsync` calls have returned. It can complete before an overlapping
+call returns, and that call then ends with its own outcome. Await `StopAsync` before
 `DisposeAsync` when the host needs that outcome before releasing its own
 dependencies.
 Dispose during a running start waits for its actual completion

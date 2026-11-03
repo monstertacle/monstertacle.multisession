@@ -17,6 +17,7 @@ Created: 2026-10-30T06:20:36Z
 - [x] T015 Close current-head Windows CRAP gaps with deterministic direct worker protocol tests in WorkerProtocolTests.cs and repeat complete native CI without gate changes.
 - [ ] T016 Investigate the independent published Windows capacity failure under follow-up-capacity-probe.md; preserve bounds and original failure, no retry-as-fix claim.
 - [ ] T017 Disposal after a reported stop failure (follow-up-dispose-stop-race.md): contract Q implemented with a controlled Red then Green, own-failure and shared-disposal controls and mutations on fix/dispose-stop-failure-ownership; stays open until review, merge and native gates on the merged head. Its item C1 (a stop still unwinding while disposal completes ends with a raw ObjectDisposedException, reproduced and pre-existing) is open with its own owner, task and acceptance and is not closed by T017.
+- [ ] T018 C1 (follow-up-dispose-stop-race.md): keep the private stop gate usable instead of disposing it, per the root decision of 2026-11-03; red-first overlap, own-failure and queued-waiter tests, then native gates on fix/c1-retain-stop-gate. Stays open until review and merge. C1b (stop admitted after an unprepared start while disposal releases the operations token) is a separate unconfirmed candidate with its own owner, next step and acceptance and is not closed by T018.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and

@@ -26,11 +26,13 @@ internal static class ScenarioRunner
             ["soak"] = SoakProbeFlow.ExecuteAsync,
         }.ToFrozenDictionary(StringComparer.Ordinal);
 
-    internal static async Task<int> RunAsync(string[] args)
+    internal static Task<int> RunAsync(string[] args) => RunAsync(args, Console.Out);
+
+    internal static async Task<int> RunAsync(string[] args, TextWriter output)
     {
         ValidationReport? report = ValidationArguments.Parse(args, out ValidationArguments? options);
         report ??= await ExecuteAsync(options!);
-        await Console.Out.WriteLineAsync(JsonSerializer.Serialize(report));
+        await output.WriteLineAsync(JsonSerializer.Serialize(report));
         return report.ExitCode;
     }
 

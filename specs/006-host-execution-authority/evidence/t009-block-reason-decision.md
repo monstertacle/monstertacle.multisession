@@ -37,13 +37,13 @@ The review that raised this (review-r2 change P2-4) allowed "make the cause dist
 asks for a distinct block reason, which is only literally met by A. A is the only alternative that changes what is persisted
 and what older releases can read.
 
-## Recommendation (for root)
+## Historical recommendation before the root decision
 
 B. It makes the cause distinguishable without changing the persisted format or the readers of existing releases. A should be
 taken only together with an explicit store-format and host state-protocol decision. Whichever is chosen, implement it red first
 with both setters covered, and record the host impact.
 
-Not implemented in this change: no enum, property or format change was made while this decision is open.
+At that open-decision checkpoint no enum, property or format change had been implemented. The decision and current contract are recorded below.
 
 ## Decision (root, 2026-11-03)
 
@@ -84,8 +84,11 @@ The measured-facts section above is kept as written at decision time. Two of its
   (`RequestDispatcher`, a `Failed`/`NotStarted`/`InvalidConfiguration` reply with `ContinuationAvailable == false`) reaches
   `AfterCompletion` through the same completion commit and leaves the same shape. The public `MarkSessionBlockedAsync` is a
   further writer that store callers can use with any reason; on SQLite it replaces every reason except `RecoveryRequired`.
-- "Blocks the session until it is closed" holds only for the SDK's own paths: the start-time reopen guard in
-  `RecoveryCoordinator.PrepareAsync` and `ForConfiguration` leave such a block unchanged for every provider, but
-  `MarkSessionBlockedAsync(sessionId, None)` removes it.
+- "Blocks the session until it is closed" is not a lifetime contract. The start-time reopen guard in
+  `RecoveryCoordinator.PrepareAsync` and `ForConfiguration` leave this block unchanged. Other successfully committed
+  transitions can replace the reason: `UnknownTransactions.Apply` sets `RecoveryRequired`, and explicit recovery decisions
+  can change it again. Public `MarkSessionBlockedAsync(sessionId, None)` can also remove a `ProviderUnavailable` block.
 
-`contracts/public.md` states the corrected contract. Choice C is unaffected; the third writer strengthens the reason for it.
+The configuration-path statement above also requires its guard: `ForConfiguration` changes the flag only when the block reason is `None` or `ConfigurationUnavailable` is already true. A flag-false provider block is left unchanged.
+
+`contracts/public.md` states the corrected contract. Choice C is unaffected: the shared stored shape does not prove its historical cause.

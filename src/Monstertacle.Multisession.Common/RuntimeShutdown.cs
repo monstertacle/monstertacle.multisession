@@ -35,7 +35,8 @@ internal sealed class RuntimeShutdown(ISessionStore store) : IDisposable
     public void Dispose()
     {
         Operations.Dispose();
-        _stopGate.Dispose();
+        // The stop gate is deliberately not disposed: a stop admitted earlier can still release it or be waiting for it after
+        // disposal. It is only used through WaitAsync and Release, so it holds no wait handle that needs releasing.
     }
 
     internal async ValueTask CancelQueuedAsync(CancellationToken token)

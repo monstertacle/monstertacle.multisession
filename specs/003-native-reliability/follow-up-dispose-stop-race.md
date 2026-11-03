@@ -100,11 +100,11 @@ old and the changed source.
 
 What still holds in that run: one store cleanup, the store closed before the lease, and the lease released.
 
-How it was reproduced: a private probe holds the stop's continuations in a caller-owned `SynchronizationContext`. It is not
-committed, because it fails until a correction is decided.
+How it was reproduced: a private probe holds the stop's continuations in a caller-owned `SynchronizationContext`. The same
+technique is now committed as `ContractTests/StopDisposeOverlapTests` (see C1 evidence).
 
 Severity P2: only callers that dispose without awaiting a running `StopAsync` are affected, but they get an untyped, unsanitized
-exception. Until a correction is decided, `docs/operations.md` tells callers to await `StopAsync` before disposing.
+exception. `docs/operations.md` describes the caller contract after the C1 correction.
 
 **Task C1** (owner Alexander Bleissem):
 - **Decision:** root decides the correction. Candidates are that disposal waits for a running stop to release the gate before
@@ -117,7 +117,8 @@ exception. Until a correction is decided, `docs/operations.md` tells callers to 
   - run the full native gates.
 - **Acceptance:** the overlapping `StopAsync` ends with its own typed outcome, disposal stays bounded, there is still one
   cleanup, and the store-before-lease order holds.
-- **Not done:** not closed by the contract Q change, and not closed by a green CI run.
+- **Not done:** not closed by the contract Q change, and not closed by a green CI run. The correction is decided and implemented on
+  `fix/c1-retain-stop-gate` (see C1 decision and C1 evidence); it stays open until review and merge.
 
 ### C1 decision (root, 2026-11-03, after two opposed architecture reviews)
 
@@ -167,3 +168,31 @@ argument.
   correction. In the corrected state there is no raw token-source disposal exception, the typed stop semantics are unchanged, and
   host-owned dependencies are not disposed before ownership transfers.
 - **Not done:** not closed by C1, and not closed by a green CI run.
+
+### C1 evidence (branch `fix/c1-retain-stop-gate`, base `main` `dd1ca0e`)
+
+`ContractTests/StopDisposeOverlapTests` holds a public stop's continuations in a caller-owned synchronization context
+(`Fixtures/QueuedSynchronizationContext`). This depends on the lifecycle's awaits capturing the caller's context; adding
+`ConfigureAwait(false)` there would remove the control. No production hook was added.
+
+- **Red** on the unchanged runtime:
+  - a successful stop that is still unwinding ended with `ObjectDisposedException` from `SemaphoreSlim.Release`;
+  - a stop with its own failed worker cancellation ended with `ObjectDisposedException` instead of its sanitized
+    `StorageUnavailable`;
+  - a stop that started waiting for the gate before `Stopped` was published never finished. The guard ended the test while the
+    stop's deadline was still unexpired.
+  - The fourth test passed (a queued stop's own deadline is reported), and it pins existing behaviour.
+- **Green** after removing the gate disposal: all four pass, and so do the contract Q, cleanup, callback and ownership tests.
+- **Mutations:**
+
+  | Mutation | Result |
+  | --- | --- |
+  | Restoring the gate disposal | 3 tests fail |
+  | Disposing the gate and ignoring `ObjectDisposedException` at `Release` | The queued-waiter test still fails |
+
+- **Not covered:**
+  - a stop that passes its first check after disposal began but before `Disposed` is published, beyond the queued-waiter case;
+  - the contract Q survivor at the post-gate check;
+  - C1b.
+
+  The fix does not claim general concurrency safety for stop and disposal.

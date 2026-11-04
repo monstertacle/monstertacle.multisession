@@ -93,3 +93,18 @@ Recurrence 2026-11-04: the pull request #30 push run 41769537053 on Windows fail
 Merge receipt 2026-11-04: root merged pull request #30 normally as `451792bc` from head `5454bfe`. On that `main` head, quality
 run 41772922424 and codemetr-guard run 41772922429 passed on their first attempt. That pass does not explain the earlier admission
 timeout. follow-up-windows-admission.md keeps its owner, next steps and acceptance.
+
+Merge receipt 2026-11-04: root merged pull request #31 normally as `18cbcbba` from head `f832c14`. On that `main` head, quality
+run 41776140605 and codemetr-guard run 41776140604 passed on their first attempt.
+- Closed by that merge, within their bounded scope only: the review findings NEC-S31-001 and DEF-STAGE-02, about the T019/T020
+  call-site controls. They were closed by the actual change, the probes, two narrow opposed reviews and the root merge.
+- T019 and T020 stay open with the cause unknown. Root monitoring binds the next naturally failing native TRX stage line, and no
+  runs are started to find one.
+
+Admission analysis 2026-11-04: follow-up-windows-admission.md, section "Source analysis and private controls 2026-11-04", and
+evidence/windows-default-admission-source-analysis-20261104.md. These hold:
+- the source architecture, the TRX comparison and five private offline controls;
+- finding ADM-CERTAINTY-QUEUE-20261104;
+- measurement proposals M1 to M4 for root decision.
+No product, test, bound or pipeline change; no cause is claimed. C1b, Q-M4, T016 and the Windows 11 release matrix keep their
+owners and open status.

@@ -1,13 +1,15 @@
 using System.Diagnostics;
+using System.Globalization;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.IntegrationTests.Fixtures;
 using Monstertacle.Multisession.Storage.Sqlite;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>An independent consumer-owned adapter composes only public library APIs.</summary>
-public sealed class EmbeddedConsumerTests
+public sealed class EmbeddedConsumerTests(ITestOutputHelper output)
 {
     private static readonly string[] _headSequence = ["0", "1"];
     private static readonly string[] _secondSessionInputs = ["first-b", "follow-b"];
@@ -45,7 +47,14 @@ public sealed class EmbeddedConsumerTests
         Assert.Equal(delayed.RequestId, await provider.DelayedEntered.Task.WaitAsync(TimeSpan.FromSeconds(5)));
         long cancellation = Stopwatch.GetTimestamp();
         await runtime.Requests.CancelRequestAsync(delayed.RequestId, CancellationToken.None);
+        long recorded = Stopwatch.GetTimestamp();
         RequestSnapshot cancelled = await EndAsync(runtime, delayed.RequestId);
+        long ended = Stopwatch.GetTimestamp();
+        // Diagnostic stage timing (T019), written before the unchanged bound.
+        output.WriteLine(string.Format(CultureInfo.InvariantCulture, "stage-timing T019 cancel-recorded-ms={0:F1} provider-observed-ms={1:F1} end-read-ms={2:F1} bound-ms=2000",
+            Stopwatch.GetElapsedTime(cancellation, recorded).TotalMilliseconds,
+            provider.DelayedCancellationObserved == 0 ? -1 : Stopwatch.GetElapsedTime(cancellation, provider.DelayedCancellationObserved).TotalMilliseconds,
+            Stopwatch.GetElapsedTime(cancellation, ended).TotalMilliseconds));
         Assert.True(Stopwatch.GetElapsedTime(cancellation) < TimeSpan.FromSeconds(2));
         Assert.Equal(RequestState.Cancelled, cancelled.State);
         Assert.Equal(ExecutionCertainty.ConfirmedEnded, cancelled.Certainty);

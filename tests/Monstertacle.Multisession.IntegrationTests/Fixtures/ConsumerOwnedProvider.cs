@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using Monstertacle.Multisession.Contracts;
 
@@ -13,6 +14,8 @@ internal sealed class ConsumerOwnedProvider : ISessionProvider
     internal TaskCompletionSource BothEntered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     internal TaskCompletionSource<Guid> DelayedEntered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     internal ConcurrentQueue<ConsumerInput> Inputs { get; } = new();
+    // Diagnostic: when the delayed request observed its cancellation (Stopwatch timestamp, 0 until then).
+    internal long DelayedCancellationObserved { get; private set; }
     public ProviderCapabilities Capabilities { get; } = new(true, false, false, false, false);
     internal void ReleaseFirsts() => _release.TrySetResult();
     public ValueTask<ProviderBinding> OpenAsync(ProviderSessionContext context, CancellationToken cancellationToken)
@@ -45,6 +48,7 @@ internal sealed class ConsumerOwnedProvider : ISessionProvider
             try { await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken); }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
+                DelayedCancellationObserved = Stopwatch.GetTimestamp();
                 return new(RequestState.Cancelled, ExecutionCertainty.ConfirmedEnded, "", false, binding,
                     new(ErrorCode.Cancelled, ExecutionCertainty.ConfirmedEnded));
             }

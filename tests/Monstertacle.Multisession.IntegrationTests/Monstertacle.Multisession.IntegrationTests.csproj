@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Monstertacle.Multisession.AgentFramework/Monstertacle.Multisession.AgentFramework.csproj" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/StageObservation.cs" Link="Fixtures/StageObservation.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/FrameworkTestAgent.cs" Link="Fixtures/FrameworkTestAgent.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/FrameworkTestSession.cs" Link="Fixtures/FrameworkTestSession.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/MetricGaugeCapture.cs" Link="Fixtures/MetricGaugeCapture.cs" />

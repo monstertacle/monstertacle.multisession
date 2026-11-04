@@ -109,3 +109,36 @@ Root chose a revised, permanent test-only observation after two opposed reviews.
 
 T019 and T020 stay open with the cause unknown. The next natural failing native run is bound to them by root monitoring, with no
 extra runs started to find one.
+
+## Call-site failure controls (root grant 2026-11-04)
+
+Two opposed reviews found that the helper tests throw synchronously and do not show the real tests failing. These controls fill
+that gap.
+
+**Setup**
+
+- The probes ran on Linux, in Release, in a private copy of head `ac4aab8`. That copy had the same tree, `3973e38`.
+- Each probe changed one test in that copy only. Afterwards the file was restored, and its SHA-256 matched the head again.
+- No bound was loosened, and no probe change is kept in the source.
+
+**The probes**
+
+| Probe | Private change | Fails at | Stage line in the test's own TRX result |
+|---|---|---|---|
+| P1, T019 early await | `CancelRequestAsync` gets an already cancelled token | line 56, from the awaited `RequestCancellation.CancelAsync` | `failed:System.OperationCanceledException`, all three stages not observed |
+| P2, T019 elapsed | bound `TimeSpan.FromSeconds(2)` becomes `TimeSpan.Zero` | the original assertion, line 60 | `failed:Xunit.Sdk.TrueException`: cancel-request-returned 10.0 ms, provider-cancellation-observed 95.1 ms, terminal-read-returned 110.9 ms |
+| P3, T020 early wait | the store's `Disposing` no longer signals entry | the original 5 s entry wait, line 32 (test took 5.04 s) | `failed:System.TimeoutException`, both stages not observed |
+| P4, T020 elapsed | bound `TimeSpan.FromSeconds(1)` becomes `TimeSpan.Zero`, plus order markers in the original `finally` | the original assertion, line 39 | `failed:Xunit.Sdk.TrueException`: cleanup-entry-wait-observed 14.2 ms, stop-failure-observed 209.0 ms |
+
+**Results**
+
+- **Failure kept:** each probe's test failed with its primary exception. The stage line was written once per test result.
+- **Failure-only echo:** for a failing test, the xUnit adapter also copies the test output into the run summary and the console
+  log. A passing test's line is only in its TRX result.
+- **P4 cleanup order:** the markers show the original `finally` unchanged: finish released, then the stop observed, then the runtime
+  disposed. The assertion failure stayed the primary failure.
+- **P3 cleanup boundary:** the failure is raised at line 32, before the inner `try` at line 34. That cleanup therefore does not run,
+  as documented. The probe added no markers for this.
+- **Baselines:** the unmodified tests passed in the same copy, each with one passing line.
+
+These controls show how the observation reports a failure. They say nothing about the cause of the original Windows failures.

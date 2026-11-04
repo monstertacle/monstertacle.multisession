@@ -36,6 +36,8 @@ Current ownership: explicit complete quiescent handoff accepted for SharpClaw se
       nine host Python suites pass (spec 017 T005).
     - This closes the source task. It is not a deployment, a live host change or a stable-release claim; the non-alpha release
       matrix remains open in the native-reliability follow-ups.
+    - Merge receipt 2026-11-04: root merged pull request #28 normally as `6b2dfbf`. On that `main` head, quality run
+      41767176413 and codemetr-guard run 41767176359 passed.
 
 T005 progress (2026-10-31): typed outcomes, invocation context, preparation versus acceptance and request-linked native evidence implemented with observed semantic Reds (evidence/tdd.md) and contrary review r2 dispositions (evidence/review-r2/). T006 old-reader refusal is implemented in package smoke; restart/late result cases are in FrameworkEvidenceTests. T007 needs the final full gate, GitHub CI and alpha.3 feed binding.
 

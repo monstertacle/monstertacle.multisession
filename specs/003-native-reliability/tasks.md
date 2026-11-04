@@ -79,3 +79,7 @@ Closure 2026-11-04 (root acceptance of the published 0.2.0-alpha.9): T017 is clo
 (record merge `654563c`, receipt merge `9ac1a8e`). The task texts above keep their wording from implementation time. Still open
 and not closed by T017 or T018: C1b and the contract Q post-gate survivor M4 (both with tasks in follow-up-dispose-stop-race.md),
 T016, follow-up-windows-admission.md and the Windows 11 release matrix.
+
+Recurrence 2026-11-04: the pull request #30 push run 41769537053 on Windows failed with a setup admission timeout in
+`RuntimeLifecycleTests.StopsAcceptanceAndFinalizesAllQueuedPages`. It is bound to follow-up-windows-admission.md (Recurrence
+2026-11-04), not to T019 or T020. The pull_request run of the same head passed. Neither run was retried.

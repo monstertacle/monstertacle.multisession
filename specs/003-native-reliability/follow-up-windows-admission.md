@@ -92,6 +92,34 @@ Source state: `main` `18cbcbba`. The record contains:
     and the end gap.
   - No runtime, API, schema, pipeline or budget change. M3 and M4 are not granted.
   - Owner: Alexander Bleissem. Next: a separate test topic.
+  - Implemented 2026-11-04 on branch `test/003-admission-setup-diagnostics`
+    (evidence/admission-setup-diagnostics-architecture-20261104.md). Test-only.
+    - New fixtures: `AdmissionSetupObservation`, `SchedulingSampler`, `CandidateLookup` and `TaskObservation`.
+    - Only the first setup loop uses them.
+    - On a failed submit:
+      - a synchronous snapshot is taken first: index, candidate, the exception's own fields, submit and setup time, the last 10
+        durations, thread-pool counters, the GC pause delta and the sampler state;
+      - then the sampler is stopped within a bound;
+      - then one read-only lookup runs, with a 2 s token and a 3 s outer bound;
+      - one line is written and the original exception is rethrown unchanged.
+    - A failing report is thrown with the primary failure first.
+  - Red: 10 of 11 new tests failed against behaviourless signatures. A first scaffold that did not compile (CA1822) is not
+    counted. Green: 11 of 11.
+  - Private call-site controls, run in a patched private copy that is not retained:
+    - the unchanged old loop under a store stall writes nothing;
+    - the new loop writes one line under a store stall (stage, index 50, candidate, low sampled lag);
+    - under a scheduling stall it shows a 5965 ms lag;
+    - under a lookup stall it shows `lookup=timeout` after 3003 ms;
+    - under an output failure it gives `AggregateException`, primary first;
+    - the passing run writes nothing and leaves no state behind.
+  - Mutations, all detected by assertions:
+    - the primary is wrapped;
+    - the lookup or the sampler stop is unbounded;
+    - missing samples are reported as zero;
+    - absence is reported as not accepted;
+    - an output failure replaces the primary;
+    - the ring is unbounded.
+  - These controls show how the diagnostic reports a failure. They say nothing about the cause on Windows.
 
 ## Acceptance
 

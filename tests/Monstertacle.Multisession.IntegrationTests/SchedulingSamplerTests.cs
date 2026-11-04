@@ -18,7 +18,7 @@ public sealed class SchedulingSamplerTests
         SchedulingSampler sampler = new(startGate: gate.Task);
         string snapshot = sampler.Snapshot(Stopwatch.GetTimestamp()).Describe();
         Assert.Contains("sampler-ready=not-ready samples=0 max-lag-ms=not-sampled end-gap-ms=unknown", snapshot, StringComparison.Ordinal);
-        Assert.Equal("stop-timeout", await sampler.StopAsync(_shortBound));
+        Assert.Equal("stop-timeout", await sampler.StopAsync(_shortBound).WaitAsync(TimeSpan.FromSeconds(5)));
         await Assert.ThrowsAsync<InvalidOperationException>(() => sampler.DisposeAsync().AsTask());
         gate.SetResult();
     }

@@ -217,9 +217,11 @@ The runtime has no `ConfigureAwait(false)`, so its continuations go to the calle
 - **What was added:** one probe test file only. The export otherwise compared byte-equal with the archive, the clone stayed
   untouched, and nothing was kept in the source.
 - **The probe:** it repeats the T020 scenario exactly and records:
-  - D, when the selected 200 ms deadline callback starts. A wrapping `TimeProvider` passed through the public `clock` parameter
-    records this.
-  - C, when the stop task completes, through an `ExecuteSynchronously` continuation.
+  - D, when the wrapped callback of the selected 200 ms deadline starts. A wrapping `TimeProvider`, passed through the public
+    `clock` parameter, records this. That is a changed clock path, not the `TimeProvider.System` fast path of the canonical test.
+  - C, when an `ExecuteSynchronously` continuation registered on the stop task runs. This is when that observer executed, not
+    an atomic completion timestamp: inlining can be declined or deferred, and the observer can run before or after the
+    awaited continuation.
   - O, when the test observes the failure.
   - Two samplers: how far a dedicated thread overslept its 10 ms sleeps, and the dispatch latency of one pool item queued per
     wake.
@@ -245,15 +247,20 @@ The runtime has no `ConfigureAwait(false)`, so its continuations go to the calle
 - The test's context is xUnit's `AsyncTestSyncContext` with no inner context.
 - The deadline callback runs on a pool thread.
 - The runtime's continuation after the deadline runs on a different, non-pool thread, about 1 ms later.
-- The test's observation runs inline on that same thread, 0.0 to 0.1 ms after the stop completes, unless something blocks it.
+- Under these controls only, the test's observation ran inline on that same thread, 0.0 to 0.1 ms after C, unless something
+  blocked it. The control "Blocked after the stop completed" shows that a block there moves O by about 900 ms.
 - An earlier loop variant lost the xUnit context after the first sample. Its samples are not used.
 
-**Inference, not measured on Windows**
+**Inference, not measured on Windows** (corrected 2026-11-04, NEC-T020-PROP-CLAIM-002 / DEF-T020-MEASURE-003)
 
-- With nothing else registered on the stop task, point (c) is unlikely. The 1101.8 ms then lies at (a), (b) or (d).
-- If the Windows path behaves like the Linux one, the current line cannot separate (a) a delayed timer from (a) pool
-  starvation. The samplers and the D stamp can, and they also separate (b) and (c).
-- (d) was not simulated. Its expected signature is that both samplers rise by the stall.
+- For the natural Windows failure, (a), (b), (c) and (d) all stay open.
+  - The Linux near-inline result says nothing about Windows observer scheduling. It does not exclude (c), and it does not
+    exclude (d), a process or host stall.
+  - An earlier version of this record called (c) unlikely and placed the delay at (a), (b) or (d). That went beyond the
+    evidence and is withdrawn.
+- In the private controls, a delayed timer and pool starvation had different sampler and D signatures. Without C, D and the
+  samplers do not separate (b) from (c): the interval after D stays one combined runtime-and-observer interval.
+- (d) was not simulated. A high maximum does not prove a whole-host stall, and a low one does not exclude a short stall.
 - No Windows cause is claimed.
 
 **Observer effects of the candidate stamps**
@@ -262,7 +269,7 @@ The runtime has no `ConfigureAwait(false)`, so its continuations go to the calle
 - The sampler adds a dedicated thread that wakes every 10 ms, plus one tiny pool item per wake.
 - A completion continuation (C) adds almost nothing beyond O here, and root's earlier decision excluded it.
 
-**Decision for root**
+**Decision for root** (superseded the same day by the review and root disposition below; kept as history)
 
 There is no isolated defect, no Red and no fix proposal. The bounds, the assertions and the runtime are unchanged. Root chooses
 between:
@@ -275,3 +282,90 @@ between:
 2. **Keep the line as it is** and wait for the next natural failure, accepting that (a), (b) and (d) stay inseparable.
 
 Acceptance is as above.
+
+## Proposal review and repair 2026-11-04 (T020)
+
+**The findings, all under T020**
+
+Two opposed reviews read the proposal above, and root decided. Nothing here is a product defect.
+
+| Finding | What was wrong | Root disposition |
+|---|---|---|
+| NEC-T020-PROP-RESOURCE-001 / DEF-T020-MEASURE-002 | The private sampler joined without a bound and queued a pool item at every wake with no cap. Late callbacks still changed its maxima, so the window was not finite. In one starved sample the pool maximum, 1792.4 ms, included time after the observation at about 903.6 ms. | an accepted proposal-admission blocker |
+| NEC-T020-PROP-CLAIM-002 / DEF-T020-MEASURE-003 | The Linux near-inline result was used to place the Windows delay. | an accepted docs repair, made in this record and in `tasks.md` |
+| DEF-T020-MEASURE-001 | The clock wrapper changes the `TimeProvider.System` fast path. | keep System; the wrapper stays a historical private probe |
+
+- **Root's decision:** a bounded, System-preserving, sampler-only private proposal.
+- **Not readmitted:** D (the clock wrapper) and C (a completion observer).
+- **History only:** the injected D and C controls above.
+
+**Candidate (private, not in this repository)**
+
+The candidate is a private export of `ba130ea`. Its diff from that head, SHA-256 `4303bc76…`, touches five test-side files:
+- a new `SchedulingSampler` fixture;
+- its tests;
+- two read-after-window members on `StageObservation`, `Stamp(int)` and `Append(string)`;
+- the ContractTests link;
+- the T020 call.
+
+The T020 call change is a single line pair:
+- the old comment line becomes `SchedulingSampler.Started()`, before `began`;
+- the existing `ObserveAsync` call gains a `collect` argument that appends the frozen snapshot.
+
+Every original bound stays on its line: 200 ms at 31, 5 s at 32, 2 s at 36 and < 1 s at 39. The `finally` order is unchanged,
+and nothing is added to the measured lambda.
+
+**How the sampler works**
+
+- **Thread:** one dedicated background thread wakes on a 10 ms monitor timeout and records how far it overslept. It exits on
+  stop or at a 15 s lifetime cap.
+- **Pool probe:** at most one is pending at a time. A wake that finds one pending queues nothing and counts a skip.
+- **Window:** from `began` to the stop-failure-observed stamp, or to the freeze if that stage was not observed. Samples outside
+  it never count.
+- **Pending values:** a probe pending at the end is reported as a lower-bound age, never as a maximum.
+- **Missing values:** an empty window reads `missing`, not 0.
+- **Freeze:** it runs from `collect`, after the measured work and its cleanup.
+  - The join is bounded at 200 ms.
+  - The snapshot is immutable, and every later write is discarded.
+  - It never throws. A fault becomes `sampler=fault:<type>` in the same line.
+- **Not used:** reflection, xUnit internals, scheduler or context wrapping, and `ThreadPool` tuning.
+- **Warnings:** the build ran with warnings as errors; there are no probe-only exceptions.
+
+**Private controls (Linux, Release, capped build)**
+
+| # | Control | Result |
+|---|---|---|
+| 1 | Healthy baseline: the candidate T020 test on the System path | passed; `cleanup-entry-wait-observed-ms=8.5 stop-failure-observed-ms=214.1 sampler=complete window-end=stop-failure-observed stop=joined dedicated-n=20 … pool-n=20 … pool-pending-at-end=false` |
+| 2 | Held sampler thread | the freeze returned within the bound with `stop=timeout`; the late wake was discarded and the snapshot text was unchanged |
+| 3 | Held pool probe | at most 1 outstanding; ≥ 3 skips; `pool-pending-at-end=true` with an age; the dispatch maximum read `missing` |
+| 4 | Probe released after the freeze | discarded; the snapshot was equal and the same instance |
+| 5 | Empty window (end = origin) | dedicated and pool maxima `missing`, counts 0 |
+| 6 | Stop-failure stage not observed | `window-end=freeze` |
+| 7 | Sampler fault with a failing measured window and a failing write | `AggregateException(primary, write)` with the primary first; the line read `sampler=fault:System.InvalidOperationException` |
+| 8 | Variant: 1 s bound set to Zero | `TrueException` at line 39 stayed primary; cleanup markers showed release, stop, dispose and the lease disposed, then the sampler was frozen with `stop=joined` |
+| 9 | Variant: entry never signalled | `TimeoutException` at line 32 stayed primary; both stages not observed; `window-end=freeze stop=joined` |
+| 10 | Lifetime cap of 300 ms, never frozen | the thread ended by itself; `sampler=expired` |
+
+- **Negative controls:** four one-line mutants were each detected:
+  - an unbounded join failed control 2;
+  - no pending cap failed control 3;
+  - no window filter failed control 5;
+  - no late discard failed controls 3 and 4.
+- **Format:** `dotnet format --verify-no-changes` passed for both test projects.
+- **Variants:** controls 8 and 9 were private edits, restored afterwards and checked by hash.
+
+**What stays unknown**
+
+- These are Linux mechanism controls, not a canonical qualification and not a Windows cause.
+- The maxima are correlation envelopes and missingness for the window, not a classifier.
+- Without D and C, (a) the timer cannot be separated from (b) or (c).
+- (d) was not simulated.
+- The observer effect is one thread waking every 10 ms, plus at most one tiny pool item, both during the timed window.
+
+**Next (root decides; owner: this task's owner)**
+
+1. Grant the candidate as a canonical test-only change, with its own review, the full local quality gate and the
+   required native gates.
+2. Or keep the current line.
+
+Acceptance stays as above. T019, 008 T006 and 008 T007 (pull request #38 held) are not closed by this.

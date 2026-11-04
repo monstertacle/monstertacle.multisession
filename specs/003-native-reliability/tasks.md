@@ -43,14 +43,26 @@ Created: 2026-10-30T06:20:36Z
     - Owner: this task's owner; root decides.
   - Source analysis and private controls 2026-11-04 (same file, Source analysis): the 1101.8 ms is when the test observed the
     failure. It is not a measured runtime interval and not a timer cause.
-    - Private Linux controls show that, in this source, the observer runs inline after the stop completes (0.0 to 0.1 ms apart).
-      So the delay lies before the deadline callback or between that callback and the stop's completion.
-    - A delayed deadline and a starved thread pool leave the same stage line, and the existing line cannot tell them apart.
-      Two private samplers did tell them apart.
+    - Private Linux controls: under those controls only, the test's observation ran 0.0 to 0.1 ms after a continuation observer
+      on the stop task ran (C). C is when that observer executed, not an atomic completion timestamp.
+    - On Windows none of the candidate locations is excluded. They are (a) deadline delivery or its dispatch, (b) the runtime
+      continuation, (c) the test observer, and (d) a process or host stall. In particular, observer delay and host stall are
+      still possible. (Wording corrected 2026-11-04 under NEC-T020-PROP-CLAIM-002; see the follow-up.)
+    - A delayed deadline and a starved thread pool leave the same stage line. In the private controls only, two samplers had
+      different signatures for them. They are not a cause classifier.
     - No defect is isolated, no Red exists and no fix is proposed. The cause is unknown.
-  - Next (root decides): extend the T020 observation, test-only, with a deadline-callback stamp and the two samplers, after
-    private call-site controls like P1 to P4. Or keep the current line and wait for the next natural failure. Acceptance:
-    unchanged.
+  - Proposal review 2026-11-04 (follow-up, Proposal review and repair). Two opposed reviews and the root disposition accepted
+    these findings under this task:
+    - NEC-T020-PROP-RESOURCE-001 / DEF-T020-MEASURE-002: the private sampler had no finite lifetime or window. It is a
+      proposal-admission blocker, not a product defect.
+    - NEC-T020-PROP-CLAIM-002 / DEF-T020-MEASURE-003: the Linux-to-Windows inference was unsupported. Repaired in these
+      records.
+    - DEF-T020-MEASURE-001: keep the `TimeProvider.System` path. The clock wrapper (D) stays a historical private probe.
+      Neither D nor a completion observer (C) is readmitted.
+  - Repair 2026-11-04 (follow-up, Proposal review and repair): a bounded, System-preserving, sampler-only private candidate,
+    with 10 private controls and 4 detected mutants. Nothing canonical changed.
+  - Next (root decides): admit the candidate as a canonical test-only change with its required gates, or keep the current
+    line. Owner: this task's owner. Acceptance: unchanged. T019, 008 T006 and 008 T007 stay open.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

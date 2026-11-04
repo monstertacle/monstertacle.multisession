@@ -190,3 +190,21 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
       3. root decides on publication, and `publish.yml` then runs from `main`;
       4. an independent served-package check follows;
       5. the host uptake is a separate host task.
+  - Review finding NEC-A10-FEED-001 (alias DEF-A10-DOC-001), accepted by root as a source acceptance blocker:
+    - The finding: in `docs/embedding.md`, the install command asked for 0.2.0-alpha.9 "from nuget.org or from a local feed of
+      packages packed from this source", but this source packs 0.2.0-alpha.10. The shown mapping also sent the library's own
+      packages only to the local feed, so the nuget.org alternative was not enabled.
+    - The repair, in `docs/embedding.md` only, splits the guide into two routes, each with its own `NuGet.Config`:
+      - published 0.2.0-alpha.9 from nuget.org, with the library's own packages mapped to nuget.org;
+      - unpublished 0.2.0-alpha.10 packed from this source, with the library's own packages mapped only to the local folder,
+        and a note that it is not on nuget.org.
+      - The third-party mappings are unchanged.
+    - Evidence, from private consumers in `~/dev/.agenttemp`, each with its own packages folder. Each uses the documented
+      configuration and references Common, Storage.Sqlite and Linux:
+      - published route: restore and build pass, with all three packages resolved as 0.2.0-alpha.9 from nuget.org. The served
+        Common package matches the served digest in `publication-receipt-0.2.0-alpha.9.json`;
+      - local route: restore and build pass, with all three packages resolved as 0.2.0-alpha.10. The Common package is
+        byte-identical to the locally packed candidate;
+      - old wording as a control: the local-only mapping with `--version 0.2.0-alpha.9` fails with NU1603. NuGet substitutes
+        0.2.0-alpha.10 for the requested 0.2.0-alpha.9.
+    - Unchanged: version, lock files, product, tests, CI and release policy. T007's next steps above are unchanged.

@@ -59,3 +59,7 @@ Windows capacity scenario failed with only generic ExecutionFailed16. The cause
 is unknown and is not equated with earlier admission variability. Original failure
 and a concrete owned investigation are retained in follow-up-capacity-probe.md.
 T016 remains open; no full release or stable published-capacity fix is claimed.
+
+Release 2026-11-04: T017 (pull request #23) and T018 (pull request #24) are contained in 0.2.0-alpha.9, produced by the
+`main` run 41738827195 at `67a7de9` and published (receipts in `specs/006-host-execution-authority/evidence/`). Closing
+both tasks is the root acceptance record. C1b, the contract Q post-gate survivor, T016 and the Windows follow-ups stay open.

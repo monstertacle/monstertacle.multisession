@@ -63,27 +63,49 @@ Related: `follow-up-windows-admission.md` (Windows admission variability), `foll
 
 ## Measurements 2026-11-04 (passing runs only)
 
-- **Instrumentation:** test-only stage logging on the observation branch `diag/t019-t020-stage-timing` (`22ab323`, not for merge).
-  The two tests and the provider fixture each write one stage line before their unchanged bound.
+- **Instrumentation (historical, kept as evidence):** test-only stage logging on the observation branch
+  `diag/t019-t020-stage-timing` (`22ab323`, not for merge).
+  - The two tests each wrote one stage line, and the provider fixture only stored a timestamp.
+  - The lines were written before the unchanged bounds, so formatting and output ran inside the measured windows, and nothing was
+    written when an earlier step failed.
 - **Runs:**
   - Linux: 20 local runs of each test;
   - native Windows and Linux: one push run of `ci.yml`, 41762345411, all jobs successful.
-- **Values:** in milliseconds from the start of each measured window. Windows and Linux CI are single runs.
+- **Values:** in milliseconds from the start of each measured window. Windows and Linux CI are single runs. The values are
+  unchanged; the labels say what each stamp observed.
 
-| Stage | Linux local (min / median / max) | Windows CI | Linux CI |
+| Stage, as observed by the test | Linux local (min / median / max) | Windows CI | Linux CI |
 | --- | --- | --- | --- |
-| T019 cancellation recorded | 7.0 / 8.7 / 21.0 | 19.1 | 1.2 |
+| T019 `CancelRequestAsync` completion observed (logged as "cancellation recorded") | 7.0 / 8.7 / 21.0 | 19.1 | 1.2 |
 | T019 provider observed cancellation | 91.8 / 96.7 / 101.2 | 87.8 | 99.0 |
-| T019 end read (bound 2000) | 105.6 / 107.8 / 119.6 | 115.6 | 103.9 |
-| T020 cleanup entered | 7.6 / 8.5 / 13.4 | 2.3 | 1.1 |
-| T020 stop returned (deadline 200) | 200.6 / 204.6 / 213.0 | 201.5 | 200.7 |
-| T020 observed at the bound (bound 1000) | 204.4 / 208.2 / 216.3 | 201.6 | 200.8 |
+| T019 terminal read returned (bound 2000) | 105.6 / 107.8 / 119.6 | 115.6 | 103.9 |
+| T020 test resumed after the cleanup-entry wait (logged as "cleanup entered") | 7.6 / 8.5 / 13.4 | 2.3 | 1.1 |
+| T020 stop task completion callback observed (logged as "stop returned"; deadline 200) | 200.6 / 204.6 / 213.0 | 201.5 | 200.7 |
+| T020 snapshot before output, not the live assertion time (logged as "observed"; bound 1000) | 204.4 / 208.2 / 216.3 | 201.6 | 200.8 |
 
 - **Normal envelope:** in normal runs both paths sit far inside their bounds. The cancellation is seen within one 100 ms poll, and
-  the stop returns just after its 200 ms deadline.
+  the stop completes just after its 200 ms deadline.
 - **Not measured:** the failing runs (pull request #28, run 41754114699). The stage that stalled there is unknown, and no cause is
   claimed.
 
-**Proposal for root:** keep the stage line in both tests on `main`. It is test-only and prints before the unchanged bound, so any
-future native failure reports which stage stalled. Repeated native runs of the observation branch would be the alternative, but
-they spend runner time on passing runs and are root's decision.
+## Permanent test-only observation (root decision 2026-11-04)
+
+Root chose a revised, permanent test-only observation after two opposed reviews. It is not a runtime fix. It is on branch
+`test/t019-t020-stage-observation`, separate from these records.
+
+- **Unchanged:** both tests keep their timer origins, live elapsed assertions, deadlines, semantic assertions and, for T020, the
+  cleanup order.
+- **The line:** a `StageObservation` fixture writes one line after the measured window, from a `finally`, whether the window passed
+  or failed.
+  - It includes the outcome and the failure type.
+  - A stage that was not reached is written as not observed.
+  - A failing write is thrown together with the measured failure, which comes first.
+- **No completion continuation:** the stop stamp is taken when the test's await of the stop failure returns. The provider timestamp
+  is published and read atomically.
+- **Limits:**
+  - the line shows the last stages the test observed, not which internal runtime step was slow;
+  - nothing is written if the process ends or an awaited step never returns;
+  - passing runs do not explain the original failures.
+
+T019 and T020 stay open with the cause unknown. The next natural failing native run is bound to them by root monitoring, with no
+extra runs started to find one.

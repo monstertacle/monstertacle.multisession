@@ -23,8 +23,10 @@ Created: 2026-10-30T06:20:36Z
   - Measurements 2026-11-04 (follow-up-windows-elapsed-bounds.md, Measurements): in passing runs on Linux and native Windows the
     T019 path ends in about 120 ms or less and the T020 stop returns within about 15 ms of its 200 ms deadline. The failing runs
     were not measured, so T019 and T020 stay open with their cause unknown.
-  - Next, owner root: decide whether the test-only stage line goes to `main`, so that the next native failure reports its stalled
-    stage, or whether to request repeated native observation runs.
+  - Root decision 2026-11-04: a revised permanent test-only observation (follow-up-windows-elapsed-bounds.md, Permanent test-only
+    observation; branch `test/t019-t020-stage-observation`). It is not a runtime fix.
+  - Next: root monitoring binds the next naturally failing native run of either test to T019 or T020 with its stage line.
+    Owner: this task's owner, with root deciding. No extra runs are started to find a failure.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and

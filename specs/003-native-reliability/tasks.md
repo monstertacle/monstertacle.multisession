@@ -34,7 +34,8 @@ Created: 2026-10-30T06:20:36Z
     - T020 kept its cleanup order.
     No source change is kept, no bound is changed and no cause is claimed.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
-  SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2, open: a question, not an established product defect.
+  SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
+  defect, was answered by root's own-root decision and pull request #34 (see Closure below).
   - Observation: `NativeScenarioOwnershipTests.ReleasesNativeStateAfterConcreteScenario` creates a
     `multisession-native-scenario-*` root and never deletes it, whereas the 14 theory cases delete theirs. 37 such roots had
     accumulated locally on 2026-11-04.

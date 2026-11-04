@@ -52,3 +52,36 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
         cancellation independently of gate admission. That is a product change needing its own Red; it widens no limit.
     - Acceptance stays as above: the cause recorded, and 20 consecutive Windows runs of the class passing in normal CI. No
       runs are started to find a failure.
+  - D1 result 2026-11-04 (private control, granted by root; nothing retained in the repository):
+    - **Setup:**
+      - a private copy of `7c55c3e`; the product is unchanged;
+      - the real `SessionRuntime`, receiving the clock through its existing public `TimeProvider` parameter;
+      - the same provider, callback and composition as `ReportsDeadlineWhileCancellationCallbackIsBlocked(false)`.
+    - **The injected clock** fires at once only the first 100 ms timer created on the stop call's own async flow. Every
+      other timer goes to the system clock. Each run logged the timers: 600000 ms, 5000 ms, 30000 ms and the stop's 100 ms,
+      and only the stop's timer fired.
+    - **Results in three runs, all the same:**
+      - *Expired deadline:* `StopAsync` failed with `StorageUnavailable`/`Unknown` after 0.2-0.5 ms. The provider token was
+        not cancelled, at the stop result or 5 s later. The callback was not entered within 5 s, which is the line-47
+        `TimeoutException` signature.
+      - *Healthy clock:* `StopAsync` failed with `StorageUnavailable`/`Unknown` after 104-105 ms. The token was cancelled
+        and the callback entered, which is the behaviour the test expects.
+      - In both cases, the second `StopAsync(5 s)` cancelled the provider, the callback ran and the lease was disposed.
+      - Separately, `SemaphoreSlim.WaitAsync` with an already cancelled token and a free count gave `Canceled`, with the
+        count kept at 1.
+    - **Established:** if the stop deadline has expired when `StopOnceAsync` reaches the gate (line 123), the stop returns at
+      line 124 without requesting worker cancellation. That alone reproduces the observed failure.
+    - **Not established:** that this happened on the Windows runners; that needs a stall of 100 ms or more inside
+      `StopOnceAsync` before the gate. H2 is not excluded. The Windows cause stays unknown.
+    - **Contract question for the maintainer and root:** `StopAsync` reports `StorageUnavailable` with `Unknown` certainty in
+      both cases. But only the healthy path has requested provider cancellation. Should a stop that fails its deadline before
+      entering the gate still request worker cancellation (as `Operations.Stop()` already does for public operations), or is
+      leaving the workers running until the next stop or dispose the intended contract?
+    - **Minimal proposals for root**, none implemented:
+      - (a) a contract test, Red first: an expired-deadline stop must still cancel the dispatch token. It would use the same
+        public `TimeProvider` injection.
+      - (b) if (a) is the wanted contract: call `StopWorkers()` before or independently of the gate admission in
+        `StopOnceAsync`. No deadline or bound changes, and the gate's single-stop ordering stays.
+      - (c) if the current contract is kept: `StopCallbackDeadlineTests` should not rely on the 100 ms deadline outliving
+        gate admission. That would be a test change with its own decision. Widening the 100 ms deadline is not proposed.
+    - D2, the test-only discriminator for a natural failure, stays ungranted. The acceptance above is unchanged.

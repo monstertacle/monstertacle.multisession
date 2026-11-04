@@ -241,3 +241,18 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
       3. an independent served-package check;
       4. host uptake in a separate host task.
     - **Acceptance:** unchanged.
+  - Published 2026-11-04 (the owner's explicit authority):
+    - **The record merge:** root merged the record (pull request #39) as `main` `fc3891f`.
+    - **The publication:** root dispatched `publish.yml` once, as run 41892137368, version 0.2.0-alpha.10, attempt 1, and it
+      succeeded. All nine packages were planned absent, pushed through trusted publishing and verified as served with the
+      canonical content and the nuget.org repository signature (evidence/publication-receipt-0.2.0-alpha.10.json).
+    - **The independent check** (evidence/publication-independent-check-0.2.0-alpha.10.txt): all nine served packages were
+      downloaded separately.
+      - Every entry equals the canonical package of producer run 41869316232; only `.signature.p7s` is added.
+      - `dotnet nuget verify --all` passes, with the repository primary signature.
+      - The served SHA-256 values equal the receipt.
+      - 0.2.0-alpha.9 is unchanged.
+    - **`docs/embedding.md`** now names 0.2.0-alpha.10 as the latest published release.
+    - **Host uptake:** in progress in SharpClaw spec 018 (pull request #102, draft, not merged). Its review, the host suites that
+      start Python, and the deployment remain with root.
+    - **Still open:** T007 stays open until the host consumes 0.2.0-alpha.10 in production.

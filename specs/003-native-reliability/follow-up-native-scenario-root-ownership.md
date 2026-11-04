@@ -52,6 +52,18 @@ in source or docs.
 
 **Dependencies:** root's decision on the retention intent. A native Windows CI run is needed only if a cleanup change is made.
 
+## Root decision 2026-11-04
+
+Root read `0a9da51`, the ownership source and the host contract.
+
+- **Decision:** a passing native-ownership test has no evidence duty for its root, so the test deletes its own fresh root after
+  the release and probe assertions and after its handles are disposed. On a failure it keeps the root as evidence and reports
+  its path.
+- **Scope:** this is a test resource policy, not product state cleanup. `ValidationRunState` and the ValidationHost keep
+  releasing the lease only.
+- **Not allowed:** no existing or foreign root is deleted, and nothing is enumerated or swept.
+- Implementation: branch `test/003-t021-native-scenario-root-ownership` from `main` `558f9b1`.
+
 ## Acceptance
 
 One of these two:

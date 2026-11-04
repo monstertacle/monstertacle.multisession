@@ -33,6 +33,24 @@ Created: 2026-10-30T06:20:36Z
     - each wrote one stage line with honest not-observed stages;
     - T020 kept its cleanup order.
     No source change is kept, no bound is changed and no cause is claimed.
+  - Natural recurrence 2026-11-04 (follow-up-windows-elapsed-bounds.md, Natural recurrence): bound by root monitoring.
+    - Run 41836330209, pull_request, attempt 1, head `91192c5` (pull request #38; documentation-only delta, `src` and `tests`
+      identical to `main` `4ab04c4`), job 126596070216 `quality (windows-latest)`.
+    - Failure: `RuntimeCleanupTests.cs:39`, the elapsed bound (the line numbering moved from 29 when the observation was added).
+    - Stage line: `cleanup-entry-wait-observed-ms=11.4 stop-failure-observed-ms=1101.8`. Root's log is
+      `b929fff0…7606`.
+    - Not retried. The four runs of that head had 9 successful jobs, 1 failed and 1 skipped.
+    - Owner: this task's owner; root decides.
+  - Source analysis and private controls 2026-11-04 (same file, Source analysis): the 1101.8 ms is when the test observed the
+    failure. It is not a measured runtime interval and not a timer cause.
+    - Private Linux controls show that, in this source, the observer runs inline after the stop completes (0.0 to 0.1 ms apart).
+      So the delay lies before the deadline callback or between that callback and the stop's completion.
+    - A delayed deadline and a starved thread pool leave the same stage line, and the existing line cannot tell them apart.
+      Two private samplers did tell them apart.
+    - No defect is isolated, no Red exists and no fix is proposed. The cause is unknown.
+  - Next (root decides): extend the T020 observation, test-only, with a deadline-callback stamp and the two samplers, after
+    private call-site controls like P1 to P4. Or keep the current line and wait for the next natural failure. Acceptance:
+    unchanged.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

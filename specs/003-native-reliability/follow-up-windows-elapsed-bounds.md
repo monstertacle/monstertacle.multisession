@@ -142,3 +142,136 @@ that gap.
 - **Baselines:** the unmodified tests passed in the same copy, each with one passing line.
 
 These controls show how the observation reports a failure. They say nothing about the cause of the original Windows failures.
+
+## Natural recurrence 2026-11-04 (T020; bound by root monitoring)
+
+This is the first natural failure of either test since the permanent observation was added.
+
+**Where it ran**
+
+- **Run:** 41836330209, `pull_request`, attempt 1, head `91192c5`.
+- **Branch:** pull request #38. The delta is documentation only, so `src` and `tests` are identical to `main` `4ab04c4`.
+- **Job:** 126596070216, `quality (windows-latest)`. The test step ended at 13:18:06Z.
+
+**What failed**
+
+- **Test:** `RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`, at `RuntimeCleanupTests.cs:39`. This is the
+  elapsed bound, which was line 29 before the observation was added.
+- **Log:** `[xUnit.net 00:00:02.33] … [FAIL]`, then `Failed … [1 s]`.
+- **Stack:** lines 39, 46, `StageObservation.cs:28`, 29 and 49.
+- **Stage line:** `stage-observation T020 outcome=failed:Xunit.Sdk.TrueException cleanup-entry-wait-observed-ms=11.4
+  stop-failure-observed-ms=1101.8`.
+- **Raw log:** root's copy, SHA-256 `b929fff0f267e575b627fa3b9ffd93a61f7ab4c80a5638692f4b2017df3d7606`.
+
+**The rest of the run**
+
+- **Other suites:** UnitTests 452 of 452 passed. ContractTests had 1 failure out of 274. Linux quality in the same run passed
+  274 of 274.
+- **Other runs of this head:** the push quality run 41836319036 passed on Windows.
+- **Job totals:** across the four runs of this head, 9 jobs succeeded, 1 failed and 1 was skipped. The skipped job is the
+  dependent canonical consumer. The author's report had said "10 pass"; root's live job facts are authoritative.
+- **Not retried.**
+
+**What the line shows**
+
+- **Within the bound:** the test resumed after the entry wait at 11.4 ms.
+- **The overrun:** the stop failure was observed at 1101.8 ms. That is about 900 ms after the 200 ms deadline, and passing runs
+  observe it at 200 to 216 ms.
+- **What it does not show:** the line does not say whether the deadline callback, the stop's completion or the test's resumption
+  was late.
+
+## Source analysis 2026-11-04 (T020)
+
+**Path at `91192c5`**
+
+Source SHA-256:
+- `RuntimeLifecycle.cs` `19c1437d…`;
+- `RuntimeShutdown.cs` `069c219c…`;
+- `RuntimeCleanupTests.cs` `bdb98c8e…`;
+- `StageObservation.cs` `2d40b6aa…`.
+
+1. `StopOnceAsync` creates the deadline as `new CancellationTokenSource(200 ms, host.Clock)`. The test passes no clock, so this
+   is `TimeProvider.System`. The deadline is linked with the caller's token.
+2. It moves to `Stopping`, stops operations, requests worker cancellation without waiting, and enters the stop gate.
+3. `CompleteStopAsync` stops acceptance, cancels queued work, waits for the workers, then awaits
+   `CleanupAsync().WaitAsync(token)`.
+4. `CleanupCoreAsync` drains, disposes statistics, then disposes the store, which the test holds. The lease and `Stopped` come
+   only after that.
+5. The stop can therefore end only through the deadline. That `WaitAsync` faults, `StorageUnavailable` is thrown, and the gate
+   is released in a `finally`.
+6. While the store is held, the lease stays held.
+
+The runtime has no `ConfigureAwait(false)`, so its continuations go to the caller's synchronization context.
+
+**Points where the delay could arise**
+
+- **(a)** before the deadline callback runs: the timer firing, or the thread pool dispatching it;
+- **(b)** between that callback and the stop's completion: the continuation posted to the caller's context, or a stall of the
+  thread that runs it;
+- **(c)** between the stop's completion and the test resuming;
+- **(d)** a stall of the whole process or host.
+
+**Private controls**
+
+- **Where they ran:** Linux, 8 cores, Release, in a private export of `91192c5` under `~/dev/.agenttemp`.
+- **What was added:** one probe test file only. The export otherwise compared byte-equal with the archive, the clone stayed
+  untouched, and nothing was kept in the source.
+- **The probe:** it repeats the T020 scenario exactly and records:
+  - D, when the selected 200 ms deadline callback starts. A wrapping `TimeProvider` passed through the public `clock` parameter
+    records this.
+  - C, when the stop task completes, through an `ExecuteSynchronously` continuation.
+  - O, when the test observes the failure.
+  - Two samplers: how far a dedicated thread overslept its 10 ms sleeps, and the dispatch latency of one pool item queued per
+    wake.
+- **Samples:** each case ran as its own test, so that it started in the same xUnit context as the canonical test. There were 5
+  cases per condition.
+- **Logs:** run 3, SHA-256 `1e960c51…`; the suite control, `05f8aa28…`. Both are kept privately.
+
+| Condition (injected 900 ms) | D (ms) | C − D (ms) | O − C (ms) | pool dispatch max (ms) | dedicated oversleep max (ms) |
+|---|---|---|---|---|---|
+| Healthy | 197.3–202.0 | 0.7–0.9 | 0.0–0.1 | ≤ 3.2 | ≤ 3.2 |
+| Deadline delivery delayed | 1098.6–1108.6 | 0.7–4.3 | 0.0–1.0 | ≤ 13.6 | ≤ 8.0 |
+| Thread pool starved by blocking items | 632.3–902.4 | 0.6–1.5 | 0.0–0.1 | 622–1792 | ≤ 3.8 |
+| Continuation posted to the caller's context delayed | 199.8–203.5 | 2498–2502 | 0.0–0.1 | ≤ 3.5 | ≤ 2.1 |
+| Blocked after the stop completed | 200.7–203.4 | 0.7–1.2 | 900.2–900.3 | ≤ 2.1 | ≤ 2.6 |
+
+- **Full-suite control:** one run of the ContractTests suite with the probe cases included passed 299 of 299. The canonical
+  line read `3.0` and `202.3`, and the healthy probe cases read D 199.1–201.3, C − D 0.7–1.9 and O − C ≤ 0.1.
+- **In every condition** the failure code was `StorageUnavailable`, the lease was held at observation, and the lease was
+  released after cleanup.
+
+**Measured facts, Linux only**
+
+- The test's context is xUnit's `AsyncTestSyncContext` with no inner context.
+- The deadline callback runs on a pool thread.
+- The runtime's continuation after the deadline runs on a different, non-pool thread, about 1 ms later.
+- The test's observation runs inline on that same thread, 0.0 to 0.1 ms after the stop completes, unless something blocks it.
+- An earlier loop variant lost the xUnit context after the first sample. Its samples are not used.
+
+**Inference, not measured on Windows**
+
+- With nothing else registered on the stop task, point (c) is unlikely. The 1101.8 ms then lies at (a), (b) or (d).
+- If the Windows path behaves like the Linux one, the current line cannot separate (a) a delayed timer from (a) pool
+  starvation. The samplers and the D stamp can, and they also separate (b) and (c).
+- (d) was not simulated. Its expected signature is that both samplers rise by the stall.
+- No Windows cause is claimed.
+
+**Observer effects of the candidate stamps**
+
+- The wrapping clock moves the deadline from the `TimeProvider.System` fast path to `CreateTimer`, on the same timer queue.
+- The sampler adds a dedicated thread that wakes every 10 ms, plus one tiny pool item per wake.
+- A completion continuation (C) adds almost nothing beyond O here, and root's earlier decision excluded it.
+
+**Decision for root**
+
+There is no isolated defect, no Red and no fix proposal. The bounds, the assertions and the runtime are unchanged. Root chooses
+between:
+
+1. **Extend the T020 line, test-only:**
+   - add the D stamp, with the clock wrapper selected only for the 200 ms deadline;
+   - add the two sampler maxima, written in the existing `finally` after the window;
+   - before any merge, run call-site controls like P1 to P4 and a healthy control, keeping the primary failure first and the
+     cleanup order unchanged.
+2. **Keep the line as it is** and wait for the next natural failure, accepting that (a), (b) and (d) stay inseparable.
+
+Acceptance is as above.

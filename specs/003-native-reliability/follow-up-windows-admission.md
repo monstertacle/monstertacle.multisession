@@ -50,21 +50,29 @@ Source state: `main` `18cbcbba`. The record contains:
 
 **Established by the controls**
 - The public error keeps only one bit of stage information.
-- A store stall and a thread-pool stall look identical to the caller. A 50 ms scheduling canary separates them: 3-7 ms of lag
-  against 5983 ms.
+- A store stall and a thread-pool stall look identical to the caller. In these controls a 50 ms scheduling canary separated
+  them: 3-7 ms of lag against 5983 ms. A low, zero or missing sampled lag is not proof that no scheduling stall happened.
 - A stage-8 `Unknown` covers both "never written" and "durably accepted". Only the lookup separates them.
-- A plain lock wait fails with `StorageUnavailable` and native code 5 after about 1 s, not with `AdmissionTimedOut`.
+- In the Linux control, a plain lock wait failed with `StorageUnavailable` and native code 5 after about 1 s, not with
+  `AdmissionTimedOut`. Windows VFS sharing retries are not covered.
 
 **Not established:** which of these happened on the Windows runner. No cause is claimed.
 
 **Finding ADM-CERTAINTY-QUEUE-20261104**
 - What: a commit that times out while still waiting in the store queue is reported as `Unknown` / `AdmissionCommit`, although
-  the store holds `NotAccepted` / `StoreQueue` (control C2). This is conservative and safe; nothing is changed.
+  by source the store completes a still-waiting item with `NotAccepted` / `StoreQueue` (control C2; the transition itself was not
+  logged). This is conservative and safe; nothing is changed.
 - Owner: this follow-up (Alexander Bleissem). Root decides.
 - Next: root decides whether certainty preservation for queued commits is wanted. If so, it needs its own architecture analysis
   and a Red first.
 - Acceptance: either a recorded decision to keep `Unknown`, or a reviewed change with a regression test. Deadlines and the
   no-replay rule stay unchanged in both cases.
+- Root decision 2026-11-04: KEEP the conservative `Unknown` / `AdmissionCommit`.
+  - Reason: the caller's deadline can win before the store's no-write proof arrives, and a durable acceptance stays possible
+    (C3). The finite deadline and the no-replay rule are kept.
+  - Accepted cost: some requests that never ran need an extra lookup, and may stay unknown if the store is unavailable. The
+    queue-stage attribution is lost. This is a conservative diagnostic burden, not a demonstrated correctness bug.
+  - This closes the precision decision only. No runtime defect is fixed, and the Windows cause stays open.
 
 **Measurement proposal**, for root decision (section 7 of the record, nothing implemented):
 - M1: test-only failure attribution: loop index, stage, status, recent durations and the candidate lookup.
@@ -76,6 +84,17 @@ Source state: `main` `18cbcbba`. The record contains:
 - Dependencies: a root measurement or code grant.
 - Acceptance: a future natural failure reports its stage, index, candidate outcome and canary lag, with every bound unchanged and
   no reruns started to find one.
+- Root decision 2026-11-04: M1 and M2 are granted as a test-only change in
+  `RuntimeLifecycleTests.StopsAcceptanceAndFinalizesAllQueuedPages` (the 102-submit setup loop) only.
+  - Conditions: M1-SCOPE, M1-PRIMARY, M1-TIMING, M1-LOOKUP, M2-SAMPLES, M2-POINTS, M2-LIFETIME, M1M2-VALIDATION and
+    SCOPE-BOUNDARY.
+  - The original exception is rethrown unchanged; the lookup is finite and read-only; the canary reports readiness, sample count
+    and the end gap.
+  - No runtime, API, schema, pipeline or budget change. M3 and M4 are not granted.
+  - Owner: Alexander Bleissem. Next: a separate test topic.
+
+## Acceptance
+
 
 Source/package/trace hashes and measured timings account for the observed expiry
 or explicitly state the remaining uncertainty. Every timed-out candidate is looked

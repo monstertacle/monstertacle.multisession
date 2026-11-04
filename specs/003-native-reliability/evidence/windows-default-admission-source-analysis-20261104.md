@@ -93,8 +93,9 @@ files come from the retained `quality-windows` artifacts.
 **The failure itself**
 - The failed test took 8.73 s; on the passing run the same test took 4.08 s, including a 116 ms stop.
 - The stack ends at `RequestAdmission.cs:54`, the deadline branch. That line serves both stages.
-- The test prints only the exception message. The stage, admission status and loop index were in the exception object but not
-  in the log.
+- The test prints only the exception message. The exception itself carried the stage (`FailureDetails`) and the admission status
+  and request id (`PublicError`), but they were not printed. The loop index existed only in the test's loop variable and was not
+  captured at all. It cannot be recovered.
 - From 8.73 s minus the 5 s budget, the earlier submits and cleanup took at most about 3.7 s.
 
 **What ran around it**
@@ -131,7 +132,10 @@ files come from the retained `quality-windows` artifacts.
 | C4 | a second connection holds `BEGIN EXCLUSIVE` for 6 s | `StorageUnavailable`, `StoreExecution`, native 5 (busy), `NotAccepted`, 1.0 s | absent | 3 ms |
 | C5 | every thread-pool worker blocked for 6 s; the store worker stays free | `AdmissionTimedOut`, `AdmissionLookup`, `NotAccepted`, 6.0 s; the lookup work ended after 1.6 ms | absent | **5983 ms** |
 
-**Envelope without injection:** 20 iterations, 2040 submits, 0 failures.
+**Envelope without injection:** 20 iterations, 2040 submits, 0 failures. Limits:
+- These timings were taken with the private marks in place. They are not a production or Windows cost.
+- The "queue wait" rows start at the `ExecuteAsync` offer mark, taken before `TryAdd`. They measure offer to run start, not proof
+  of a successful enqueue.
 
 | Interval | p50 | p99 | max |
 |---|---|---|---|
@@ -149,21 +153,26 @@ files come from the retained `quality-windows` artifacts.
    public error. Without a scheduling measurement they cannot be told apart.
 2. **Stage 8 `Unknown` covers two opposite states:** the request was never written (C2) or durably accepted (C3). Only the later
    lookup separates them. This agrees with the existing no-replay rule.
-3. **A store lock wait** under these settings fails with `StorageUnavailable` and native code 5 after about 1 s (C4), not with
-   `AdmissionTimedOut`. A single busy wait on a held lock therefore does not produce the observed error on this path.
+3. **A store lock wait** in this Linux control fails with `StorageUnavailable` and native code 5 after about 1 s (C4), not with
+   `AdmissionTimedOut`. In this control, a single busy wait on a held lock did not produce the observed error.
    - Limit: Linux only. The win32 VFS retries some sharing violations internally, and that is not covered here.
 4. **A fast store can still time out:** a store that finishes in under 2 ms is reported as `AdmissionTimedOut` when the thread
    pool cannot resume the caller (C5). So the error does not show that the store was slow.
-5. **The canary separates scheduling from store stalls:** a 50 ms thread-pool tick showed 3-7 ms of lag in C1 to C4 and 5983 ms
-   in C5.
+5. **In these controls, the canary separated scheduling from store stalls:** a 50 ms thread-pool tick showed 3-7 ms of lag in C1
+   to C4 and 5983 ms in C5.
+   - Limit: the private canary only sampled. It read its maximum before it was stopped, had no readiness or sample count, and
+     could miss the final interval.
+   - A low, zero or missing lag is therefore not proof that no scheduling stall happened. Only a high lag is informative, and
+     it shows delayed scheduling, not which of the thread pool, the GC, the host or native code caused it.
 
 **Finding ADM-CERTAINTY-QUEUE-20261104 (source, not a cause)**
-- In C2 the store still holds proof that the commit never ran (`SqliteWork.CancelWaiting`: `NotAccepted`, `StoreQueue`).
-  The caller nevertheless receives `Unknown` and stage `AdmissionCommit`.
+- In C2 the commit work never ran, as the later absent lookup and the controlled order show. By source,
+  `SqliteWork.CancelWaiting` completes only a still-waiting item, with `NotAccepted` and `StoreQueue`. That transition was not
+  logged directly. The caller nevertheless receives `Unknown` and stage `AdmissionCommit`.
 - Inferred mechanism: the `WaitAsync(token)` cancellation reaches the catch first, and line 47 trusts only the store's own
   exception. The order of the token callbacks was not measured.
 - This is conservative and safe, because `Unknown` requires a lookup and no replay. It does lose certainty and the queue stage.
-- It is recorded for root decision in `follow-up-windows-admission.md`. Nothing is changed.
+- Root decided to keep this behaviour (see `follow-up-windows-admission.md`). Nothing is changed.
 
 ## 5. Inference, kept separate
 
@@ -178,7 +187,8 @@ host or process-wide episodes. That fits the existing inference and is still not
 **Not supported for this path:**
 - a self-inflicted queue backlog: the test is sequential and nothing else uses the store during setup;
 - a parallel test: parallelization is disabled;
-- a plain lock wait: that would be `StorageUnavailable` with native code 5.
+- a plain lock wait, as in the Linux control C4: that gave `StorageUnavailable` with native code 5. Windows VFS sharing retries
+  are not covered by it.
 
 ## 6. Open questions
 
@@ -197,19 +207,21 @@ host or process-wide episodes. That fits the existing inference and is still not
 The options are ordered by intrusiveness. Each keeps every bound and assertion, and none adds a CI retry or a failure hunt.
 
 **M1, test-only failure attribution** (answers question 1 for future failures)
-- Default-budget setup loops in IntegrationTests catch `SessionOperationException` and rethrow it with the loop index, stage,
-  admission status and the last 10 submit durations.
+- Default-budget setup loops in IntegrationTests write a separate test diagnostic on failure, then rethrow the original exception
+  unchanged. The diagnostic carries the loop index, stage, admission status and the last 10 submit durations.
   - First user: `RuntimeLifecycleTests.cs:22-27`.
   - Related: `SubmitAsync` is called in 16 IntegrationTests files. Which of them are default-budget setup loops is listed as
     part of M1, not assumed here.
 - After a stage-8 `Unknown`, the rethrow also carries the read-only lookup outcome of the candidate.
-- No product change. The cost is one catch per loop.
+- No product change. The observer cost was not measured.
 
 **M2, test-only scheduling canary** (answers question 3)
 - The same test-only scope as M1, plus a 50 ms thread-pool tick that records its maximum lateness.
 - The value is reported only on failure, together with `ThreadPool.ThreadCount`, `ThreadPool.PendingWorkItemCount` and
-  `GC.GetTotalPauseDuration()`.
-- C1 and C5 show that the canary separates the two stalls the public error cannot. It needs no runtime access.
+  `GC.GetTotalPauseDuration()`. The GC value is cumulative over the process lifetime, so it is reported as a delta from the
+  setup baseline.
+- In C1 and C5, the canary separated the two stalls the public error cannot. A low lag proves nothing (item 5 above). It needs
+  no runtime access.
 
 **M3, internal store stage stamps** (answers question 2; needs an architecture decision because it changes product source)
 - Timestamps for enqueue, run start, SQLite commit start and end, run end, and deadline fired, kept in the existing
@@ -223,5 +235,8 @@ The options are ordered by intrusiveness. Each keeps every bound and assertion, 
 - Native counters such as `GetFileInformationByHandleEx` timings or ETW are out of this grant and need their own decision.
 
 **Recommendation:** M1 and M2 together, as one bounded test-only change. A naturally failing native run would then show the stage,
-the index, the candidate outcome and whether the process was being scheduled. M3 is the follow-up if M2 shows a normal canary.
-None of this is started without root's decision.
+the index, the candidate outcome and the sampled scheduling lag. A normal canary alone does not authorize M3; root assesses the
+actual failure evidence first. None of this is started without root's decision.
+
+Root decision 2026-11-04: M1 and M2 are granted as a test-only change in the first `RuntimeLifecycleTests` setup loop only, under
+nine named conditions. M3 and M4 are not granted. See `follow-up-windows-admission.md`.

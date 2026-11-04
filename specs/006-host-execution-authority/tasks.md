@@ -17,13 +17,25 @@ Current ownership: explicit complete quiescent handoff accepted for SharpClaw se
 
 ## Follow-up (owned by the integration maintainer)
 
-- [ ] T009 Distinct session block reason for an explicitly unavailable framework continuation (today ProviderUnavailable), plus a consumer test with a real ChatClientAgent and recording IChatClient proving FrameworkInvocation never reaches chat options or the wire. Acceptance: semantic Red then Green; full native gates; host switch impact documented. Origin: review-r2 change P2-4/P3. Not a blocker for alpha.3 consumption; must precede a non-alpha release.
+- [x] T009 Distinct session block reason for an explicitly unavailable framework continuation (today ProviderUnavailable), plus a consumer test with a real ChatClientAgent and recording IChatClient proving FrameworkInvocation never reaches chat options or the wire. Acceptance: semantic Red then Green; full native gates; host switch impact documented. Origin: review-r2 change P2-4/P3. Not a blocker for alpha.3 consumption; must precede a non-alpha release.
   Status 2026-11-03 (T009 stays open until its review is accepted and the change is merged; the checkbox is not a completion record):
   - Non-leak half, behaviour change, implemented with Red then Green: on `4b533c9`, `UnitTests/FrameworkChatClientIsolationTests` failed with the invocation key in chat options, because a real ChatClientAgent copies run-option additional properties into chat options; a measurement variant showed the key in the serialized request. It passed after the context moved to internal typed run options; two mutations were detected (evidence/t009-nonleak.md).
   - Block-reason half, decided by root choice C: document the existing contract instead of adding a block reason, a derived cause property, an API or a persisted format change. The documentation is in contracts/public.md and the decision in evidence/t009-block-reason-decision.md. Because choice C changes no behaviour, its acceptance is not a semantic Red: `IntegrationTests/ProviderBlockProvenanceTests` is a regression pin that passes on the unmodified implementation, and a recorded mutant of the revalidation rule made it fail (same decision file). The literal request for a distinct block reason is therefore not implemented, by decision.
   - Open for T009: accepted review, merge, full native gates on the merged head and the host switch impact record.
   - Release 2026-11-04: pull request #22 is merged; the `main` producer run 41738827195 at `67a7de9` passed all native gates, and the change is published as 0.2.0-alpha.9 (evidence/publication-receipt-0.2.0-alpha.9.json, evidence/publication-independent-check-0.2.0-alpha.9.txt). Still open for T009: the host switch impact record; consuming 0.2.0-alpha.9 in SharpClaw is a separate host task.
   - Host switch impact 2026-11-04: assigned to the accepted host consumption task MT-A9-HOST-01 (owner root, executed as SharpClaw spec 017-multisession-alpha9-consumption). T009 stays open until that consumption is accepted.
+  - Closure 2026-11-04 (root acceptance):
+    - Non-leak half: released in 0.2.0-alpha.9 (pull request #22, `main` producer run 41738827195 at `67a7de9`, publish run
+      41742503760).
+    - Block-reason half: disposed by root choice C, which documents the existing contract with no new block reason, cause property,
+      API or format. The original request for a distinct reason is therefore not implemented, by decision.
+    - Host switch impact: accepted with SharpClaw pull request #96 (spec 017, task origin MT-A9-HOST-01), normally merged as
+      `c7ceee4` from the qualified head `344e852`. It consumes 0.2.0-alpha.9 from nuget.org for all six resolved packages, with
+      250 lock entries canonical. The host's four `FrameworkInvocation.TryGet` call sites pass through the packaged adapter. The
+      .NET gates give the same results as the base, including a standing FrameworkRuntime failure tracked as spec 017 T008, and the
+      nine host Python suites pass (spec 017 T005).
+    - This closes the source task. It is not a deployment, a live host change or a stable-release claim; the non-alpha release
+      matrix remains open in the native-reliability follow-ups.
 
 T005 progress (2026-10-31): typed outcomes, invocation context, preparation versus acceptance and request-linked native evidence implemented with observed semantic Reds (evidence/tdd.md) and contrary review r2 dispositions (evidence/review-r2/). T006 old-reader refusal is implemented in package smoke; restart/late result cases are in FrameworkEvidenceTests. T007 needs the final full gate, GitHub CI and alpha.3 feed binding.
 

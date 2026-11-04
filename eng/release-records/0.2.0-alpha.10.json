@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "version": "0.2.0-alpha.10",
+  "producerRepository": "monstertacle/monstertacle.multisession",
+  "producerCommit": "db28d7b674be63b471eda1752964c86db3835e29",
+  "producerRun": 41869316232,
+  "producerWorkflow": ".github/workflows/ci.yml",
+  "artifact": "packages-and-consumer-linux",
+  "producerManifestSha256": "bd157023fb04e04c62ea10f17bebbf86210d3cb638fe81b7cf4ad90f7d898ff3",
+  "packages": [
+    {
+      "id": "Monstertacle.Multisession.Common",
+      "file": "Monstertacle.Multisession.Common.0.2.0-alpha.10.nupkg",
+      "sha256": "4f71ac8e763b4cf207991010e9d014a4e43e59d6ec451f37fb96fb9b03677361"
+    },
+    {
+      "id": "Monstertacle.Multisession.AgentFramework",
+      "file": "Monstertacle.Multisession.AgentFramework.0.2.0-alpha.10.nupkg",
+      "sha256": "ec4d611ce1a3d5869c5e6b5ccf31a616f7039d2f9fa77a195ddbf92062406bc6"
+    },
+    {
+      "id": "Monstertacle.Multisession.Checkpoints",
+      "file": "Monstertacle.Multisession.Checkpoints.0.2.0-alpha.10.nupkg",
+      "sha256": "d9963aff3b604837e1166973080406e952a699b8bad94c531720018ebf3e791e"
+    },
+    {
+      "id": "Monstertacle.Multisession.Checkpoints.Delivery",
+      "file": "Monstertacle.Multisession.Checkpoints.Delivery.0.2.0-alpha.10.nupkg",
+      "sha256": "04ed94825357c53b9277e15128a8d457278803810751e9d08e1dfef7acdf1bb8"
+    },
+    {
+      "id": "Monstertacle.Multisession.Linux",
+      "file": "Monstertacle.Multisession.Linux.0.2.0-alpha.10.nupkg",
+      "sha256": "f6c8f2a8d0a8f0ea51478bb36bd2e67e3d336990c402afdd1590f3332169b613"
+    },
+    {
+      "id": "Monstertacle.Multisession.Providers.Conversations",
+      "file": "Monstertacle.Multisession.Providers.Conversations.0.2.0-alpha.10.nupkg",
+      "sha256": "44ffa1fba02f071e5027b33c2141201711de8b48b8d89ba366d19a38dec7cb4a"
+    },
+    {
+      "id": "Monstertacle.Multisession.Providers.Interactions",
+      "file": "Monstertacle.Multisession.Providers.Interactions.0.2.0-alpha.10.nupkg",
+      "sha256": "449586c8614dc120a644e6668d5151e360e965c2f7323599b06cca9908ba44ab"
+    },
+    {
+      "id": "Monstertacle.Multisession.Storage.Sqlite",
+      "file": "Monstertacle.Multisession.Storage.Sqlite.0.2.0-alpha.10.nupkg",
+      "sha256": "199223d86327f670801fcbe118fef58a8ab394864bdabfb08ecc052743c2002c"
+    },
+    {
+      "id": "Monstertacle.Multisession.Windows",
+      "file": "Monstertacle.Multisession.Windows.0.2.0-alpha.10.nupkg",
+      "sha256": "493f5099b60002027ff7aff4249d09e1ae32945c59373fcd125c01eb03797bde"
+    }
+  ]
+}

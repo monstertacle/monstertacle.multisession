@@ -126,3 +126,41 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
       - skipping the observation of the first stop survived, and is equivalent with the current exit points;
       - the product mutation without the early request still fails with its own primary message.
     - The Windows cause, D2 and the 20-run acceptance above stay open.
+  - Merge receipt 2026-11-04: root merged pull request #36 normally as `53cb6af` (parents `4950b82` and `239b589`; tree
+    `e877de6a` equal to the qualified `239b589`). All 12 exact-head native checks passed on their first attempt.
+    - NEC-T006-STOP-INTENT-001 is implemented: the stop requests worker cancellation before the gate.
+    - NEC-T006-TEST-CLEANUP-001 is resolved in that source.
+    - The fix is in source only. It is not yet in a published package or in the host; see T007.
+  - D2 granted by root 2026-11-04, prospectively, for the next natural failure:
+    - Implemented in `StopCallbackDeadlineTests`, test only. When the line-47 callback-entry wait times out, the test writes one
+      line, `t006-d2 observation`, then rethrows the original `TimeoutException` unchanged. The line holds:
+      - the stage;
+      - `stopping.Status`, and the failure code and certainty if the stop has already failed;
+      - whether the provider token was captured, and if so whether cancellation was requested;
+      - whether the callback was entered.
+    - All values are read without waiting. The 100 ms, 2 s and 5 s limits, the cleanup and both callback cases are unchanged. A
+      failing write is thrown together with the timeout, which stays first.
+    - Reading the line: since the early worker request is merged, a token without a cancellation request can also mean that
+      the stop had not yet run or reached that request. The line therefore names no cause and does not separate H1 from H2.
+    - Evidence, through private controls in which the callback entry is never signalled:
+      - the unchanged test gave a line-47 `TimeoutException` and no line (Red);
+      - the new test gave the same timeout and one line per test result;
+      - a failing write gave `AggregateException` with the timeout first;
+      - the controls detected two mutations: not rethrowing the timeout (the test then passed), and the write failure
+        replacing the timeout. No retained test detects them; only the private controls do.
+  - Still open: the historical Windows cause, which no later run can assign, and the acceptance of 20 consecutive normal Windows
+    runs. No CI runs are started to find a failure or to reach 20. Owner: integration maintainer; root accepts.
+- [ ] T007 Release of the T006 stop-intent fix. Owner: integration maintainer; publication only by root decision.
+  - Source: `main` `53cb6af`, which contains the stop-intent change in `RuntimeLifecycle.StopOnceAsync` and
+    `StopIntentCancellationTests`. The published 0.2.0-alpha.9 packages do not contain it and stay immutable.
+  - Proposal: the next prerelease, 0.2.0-alpha.10, built from an exact, root-accepted `main` commit that contains `53cb6af`. The
+    version is not changed in this task.
+  - Next: root decides whether and when to publish. Then:
+    - a version change on a topic branch;
+    - the full native Linux and Windows quality, coverage, Codemetr and canonical-consumer gates on that exact head;
+    - publication through the existing producer workflow.
+  - Acceptance:
+    - the publication receipt and an independent served-package check (hashes and versions of the packages as served);
+    - the host consumes 0.2.0-alpha.10 in a separate host task, with its own gates;
+    - until then the fix counts as source only.
+  - Dependencies: a root publication decision; the T006 items stay separate.

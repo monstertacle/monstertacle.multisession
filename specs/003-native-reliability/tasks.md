@@ -27,6 +27,12 @@ Created: 2026-10-30T06:20:36Z
     observation; branch `test/t019-t020-stage-observation`). It is not a runtime fix.
   - Next: root monitoring binds the next naturally failing native run of either test to T019 or T020 with its stage line.
     Owner: this task's owner, with root deciding. No extra runs are started to find a failure.
+  - Call-site controls 2026-11-04 (follow-up-windows-elapsed-bounds.md, Call-site failure controls): four private probes. Each
+    test was failed once at its early await and once at its original elapsed assertion. The results:
+    - each probe kept its primary failure;
+    - each wrote one stage line with honest not-observed stages;
+    - T020 kept its cleanup order.
+    No source change is kept, no bound is changed and no cause is claimed.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and
@@ -83,3 +89,7 @@ T016, follow-up-windows-admission.md and the Windows 11 release matrix.
 Recurrence 2026-11-04: the pull request #30 push run 41769537053 on Windows failed with a setup admission timeout in
 `RuntimeLifecycleTests.StopsAcceptanceAndFinalizesAllQueuedPages`. It is bound to follow-up-windows-admission.md (Recurrence
 2026-11-04), not to T019 or T020. The pull_request run of the same head passed. Neither run was retried.
+
+Merge receipt 2026-11-04: root merged pull request #30 normally as `451792bc` from head `5454bfe`. On that `main` head, quality
+run 41772922424 and codemetr-guard run 41772922429 passed on their first attempt. That pass does not explain the earlier admission
+timeout. follow-up-windows-admission.md keeps its owner, next steps and acceptance.

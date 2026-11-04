@@ -33,6 +33,16 @@ Created: 2026-10-30T06:20:36Z
     - each wrote one stage line with honest not-observed stages;
     - T020 kept its cleanup order.
     No source change is kept, no bound is changed and no cause is claimed.
+- [ ] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
+  SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2, open: a question, not an established product defect.
+  - Observation: `NativeScenarioOwnershipTests.ReleasesNativeStateAfterConcreteScenario` creates a
+    `multisession-native-scenario-*` root and never deletes it, whereas the 14 theory cases delete theirs. 37 such roots had
+    accumulated locally on 2026-11-04.
+  - Owner: Alexander Bleissem; root accepts.
+  - Next: decide from source and history whether the retention is intended.
+  - Dependencies: root's decision.
+  - Acceptance: a Red/Green test cleanup of its own root only, passing native Linux and Windows CI, or a documented intentional
+    retention. No existing root is deleted as part of it.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and

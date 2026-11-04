@@ -26,11 +26,13 @@ internal sealed class SchedulingSampler : IAsyncDisposable
         _loop = RunAsync(startGate ?? Task.CompletedTask);
     }
 
-    internal SamplerSnapshot Snapshot(long at)
+    // The observation time is read under the same lock that publishes samples, so no published sample is newer than it.
+    internal SamplerSnapshot Snapshot()
     {
         lock (_gate)
         {
-            return new(_started, _state.Ready == 0 ? null : _state.Ready, _state.Samples, _state.Samples == 0 ? null : _state.LastSample, _state.MaxLagMs, at);
+            return new(_started, _state.Ready == 0 ? null : _state.Ready, _state.Samples, _state.Samples == 0 ? null : _state.LastSample, _state.MaxLagMs,
+                Stopwatch.GetTimestamp());
         }
     }
 
@@ -82,15 +84,21 @@ internal sealed class SchedulingSampler : IAsyncDisposable
     }
 }
 
-/// <summary>One sampler reading; unstarted or unsampled parts are written as such, never as zero.</summary>
-internal readonly record struct SamplerSnapshot(long Started, long? Ready, int Samples, long? LastSample, double MaxLagMs, long At)
+/// <summary>
+/// One sampler reading at its own observation time, which is never earlier than any sample it contains. It is described against
+/// the earlier failure point: how long after it the sampler was read, and whether the last sample came after that point. The end
+/// gap runs to the observation time. Unstarted or unsampled parts are written as such, never as zero.
+/// </summary>
+internal readonly record struct SamplerSnapshot(long Started, long? Ready, int Samples, long? LastSample, double MaxLagMs, long ObservedAt)
 {
-    internal string Describe()
+    internal string Describe(long failureAt)
     {
         string ready = Ready is { } readyAt ? Milliseconds(Started, readyAt) : "not-ready";
         string lag = Samples == 0 ? "not-sampled" : MaxLagMs.ToString("F1", CultureInfo.InvariantCulture);
-        string gap = (LastSample ?? Ready) is { } since ? Milliseconds(since, At) : "unknown";
-        return string.Create(CultureInfo.InvariantCulture, $"sampler-ready={ready} samples={Samples} max-lag-ms={lag} end-gap-ms={gap}");
+        string gap = (LastSample ?? Ready) is { } since ? Milliseconds(since, ObservedAt) : "unknown";
+        string afterFailure = LastSample is { } last ? (last > failureAt ? "yes" : "no") : "none";
+        return string.Create(CultureInfo.InvariantCulture, $"sampler-observed-ms-after-failure={Milliseconds(failureAt, ObservedAt)} sampler-ready={ready}"
+            + $" samples={Samples} max-lag-ms={lag} end-gap-ms={gap} last-sample-after-failure={afterFailure}");
     }
 
     private static string Milliseconds(long from, long to)

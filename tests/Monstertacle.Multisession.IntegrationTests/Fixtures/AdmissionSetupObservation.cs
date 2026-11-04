@@ -42,7 +42,7 @@ internal sealed class AdmissionSetupObservation : IAsyncDisposable
         long at = Stopwatch.GetTimestamp();
         return new(index, candidate, Stopwatch.GetElapsedTime(submitted, at).TotalMilliseconds, Stopwatch.GetElapsedTime(_started, at).TotalMilliseconds,
             _recent.ToArray(), ThreadPool.ThreadCount, ThreadPool.PendingWorkItemCount, (GC.GetTotalPauseDuration() - _gcBaseline).TotalMilliseconds,
-            _sampler.Snapshot(at));
+            _sampler.Snapshot(), at);
     }
 
     internal async Task ReportAsync(AdmissionFailurePoint point, Exception failure)
@@ -76,7 +76,7 @@ internal sealed class AdmissionSetupObservation : IAsyncDisposable
         line.Append(CultureInfo.InvariantCulture, $" request={(session?.Failure.RequestId is { } id ? id.ToString("D") : "not-available")}");
         line.Append(CultureInfo.InvariantCulture, $" submit-ms={point.SubmitMs:F1} setup-ms={point.SetupMs:F1} recent-ms={Recent(point.RecentMs)}");
         line.Append(CultureInfo.InvariantCulture, $" threads={point.Threads} pending={point.Pending} gc-pause-delta-ms={point.GcPauseDeltaMs:F1}");
-        line.Append(' ').Append(point.Sampler.Describe()).Append(" sampler-stop=").Append(stop).Append(" lookup=").Append(lookup);
+        line.Append(' ').Append(point.Sampler.Describe(point.FailureAt)).Append(" sampler-stop=").Append(stop).Append(" lookup=").Append(lookup);
         return line.ToString();
     }
 
@@ -88,7 +88,7 @@ internal sealed class AdmissionSetupObservation : IAsyncDisposable
 
 /// <summary>The failure-point snapshot, taken before any diagnostic await.</summary>
 internal sealed record AdmissionFailurePoint(int Index, Guid Candidate, double SubmitMs, double SetupMs, double[] RecentMs, int Threads,
-    long Pending, double GcPauseDeltaMs, SamplerSnapshot Sampler);
+    long Pending, double GcPauseDeltaMs, SamplerSnapshot Sampler, long FailureAt);
 
 /// <summary>A ring of the last ten passing submit durations in milliseconds.</summary>
 internal sealed class RecentDurations

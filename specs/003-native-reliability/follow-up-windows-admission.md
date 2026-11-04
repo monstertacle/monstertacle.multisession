@@ -120,6 +120,19 @@ Source state: `main` `18cbcbba`. The record contains:
     - an output failure replaces the primary;
     - the ring is unbounded.
   - These controls show how the diagnostic reports a failure. They say nothing about the cause on Windows.
+  - Review fixes 2026-11-04. Root decided fix-first after two opposed reviews of `61da49d`. Both races were found by review
+    from the source, not observed in a run.
+    - NEC-M1M2-LOOKUP-001 (DEF-S33-001): a lookup that faulted after the outer wait timed out was not observed.
+      `CandidateLookup` now observes the pending task on every outer timeout, whatever its state. A lookup's own timeout is
+      still reported as an error. Red/Green uses an injected wait that faults the lookup and then times out.
+    - NEC-M1M2-SNAPSHOT-002 (DEF-S33-002): a sample published after the failure point could produce a negative end gap.
+      The sampler now reads its own observation time under the lock that publishes samples. The line reports how long after
+      the failure point the sampler was read and whether the last sample came after it. The failure point and the submit timing
+      are unchanged.
+    - NEC-ADM-M1-WORDING-002 (DEF-ADM-R2-WORDING-01): the section 7 sentence of the source analysis now names the separate test
+      diagnostic line and the unchanged rethrown exception.
+    - The native scenario state-root question is registered as T021 (follow-up-native-scenario-root-ownership.md). It is open
+      and not part of these diagnostics.
 
 ## Acceptance
 

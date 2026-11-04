@@ -3,7 +3,8 @@
 - ID: SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104 (review alias DEF-S33-OWNERSHIP-QUESTION).
 - Owner: Alexander Bleissem. Root accepts.
 - Priority: P2. This is a resource ownership question, not an established product defect.
-- Status: implemented on a test topic per the root decision; open until root acceptance and merge.
+- Status: done 2026-11-04. Root accepted head `515d30a` and merged pull request #34 as `e6fec23`; see T021 in tasks.md. The
+  retained roots are not deleted.
 
 ## Observation (2026-11-04)
 

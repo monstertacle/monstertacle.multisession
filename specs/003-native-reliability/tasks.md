@@ -33,8 +33,9 @@ Created: 2026-10-30T06:20:36Z
     - each wrote one stage line with honest not-observed stages;
     - T020 kept its cleanup order.
     No source change is kept, no bound is changed and no cause is claimed.
-- [ ] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
-  SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2, open: a question, not an established product defect.
+- [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
+  SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
+  defect, was answered by root's own-root decision and pull request #34 (see Closure below).
   - Observation: `NativeScenarioOwnershipTests.ReleasesNativeStateAfterConcreteScenario` creates a
     `multisession-native-scenario-*` root and never deletes it, whereas the 14 theory cases delete theirs. 37 such roots had
     accumulated locally on 2026-11-04.
@@ -71,7 +72,17 @@ Created: 2026-10-30T06:20:36Z
       - the path is missing from the message;
       - deleting the parent. This mutation is now caught by the sentinel assertion; earlier it was only caught when the test
         cleanup itself failed.
-  - Stays open until root accepts the change and it is merged.
+  - Closure 2026-11-04 (root acceptance):
+    - Root accepted head `515d30a` and merged pull request #34 normally as `e6fec23` (parents `558f9b1` and `515d30a`).
+    - Gates on `515d30a`: 12 of 12 native checks passed on their first attempt: push quality 41800096712, push guard
+      41800096512, PR quality 41800104436 and PR guard 41800104673.
+    - Findings closed by that source:
+      - SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104 (own-root deletion after a pass, kept root on failure);
+      - NEC-T021-PRIMARY-001 (original failure stays first).
+      Both were checked by two opposed reviews and by root.
+    - The 42 roots kept on the writer's host are not deleted. Removing any of them is a separate owner-approved action.
+    - The historical Red/Green, controls and the recurrence at `4d25064` (spec 008 T006) stay as recorded. That Windows
+      timeout is not closed by this task.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and

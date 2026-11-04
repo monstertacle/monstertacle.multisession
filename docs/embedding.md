@@ -12,7 +12,9 @@ on the target system. Supported acceptance targets are Windows 11 25H2 x64,
 Windows Server 2025 x64 and Ubuntu 24.04 LTS x64. The complete target-system
 acceptance is still open; a successful build does not replace it.
 
-The nine packages carry version 0.2.0-alpha.9 and are published on nuget.org (release record `eng/release-records/0.2.0-alpha.9.json`). Earlier releases 0.2.0-alpha.8 and 0.2.0-alpha.7 remain published unchanged.
+This source builds the nine packages as version 0.2.0-alpha.10, a candidate that is not published yet. The latest published
+release is 0.2.0-alpha.9 (release record `eng/release-records/0.2.0-alpha.9.json`). Earlier releases 0.2.0-alpha.8 and
+0.2.0-alpha.7 remain published unchanged.
 The packages are licensed under the MIT License. With a local
 feed and nuget.org as a separate source, the host references:
 
@@ -46,7 +48,9 @@ Then, in the consumer project, add for example `dotnet add package Monstertacle.
 --version 0.2.0-alpha.9` and correspondingly Storage and the native package, from nuget.org or from a
 local feed of packages packed from this source. 0.2.0-alpha.9 passes the invocation context on the
 adapter's typed run options; the earlier 0.2.0-alpha.8 `FrameworkInvocation` still writes and reads it
-through `AgentRunOptions.AdditionalProperties`.
+through `AgentRunOptions.AdditionalProperties`. 0.2.0-alpha.10, packed from this source, changes one stop behaviour: a stop that
+has begun requests worker cancellation even when its deadline or the caller's cancellation prevents it from entering the stop
+gate. The stop's result is unchanged, and the request does not wait for provider callbacks.
 No project references to the library source tree are required. Do not disable the
 direct/transitive audit.
 

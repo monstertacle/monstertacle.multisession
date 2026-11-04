@@ -3,7 +3,7 @@
 - ID: SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104 (review alias DEF-S33-OWNERSHIP-QUESTION).
 - Owner: Alexander Bleissem. Root accepts.
 - Priority: P2. This is a resource ownership question, not an established product defect.
-- Status: open, not fixed.
+- Status: implemented on a test topic per the root decision; open until root acceptance and merge.
 
 ## Observation (2026-11-04)
 
@@ -63,7 +63,8 @@ Root read `0a9da51`, the ownership source and the host contract.
   releasing the lease only.
 - **Not allowed:** no existing or foreign root is deleted, and nothing is enumerated or swept.
 - Implementation: branch `test/003-t021-native-scenario-root-ownership` from `main` `558f9b1`.
-
+- Result: see T021 in tasks.md. The 38 roots that existed before this phase, the root left by the Red run and the root kept by
+  the failure control stay in place; none were deleted.
 ## Acceptance
 
 One of these two:

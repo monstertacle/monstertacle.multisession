@@ -43,6 +43,20 @@ Created: 2026-10-30T06:20:36Z
   - Dependencies: root's decision.
   - Acceptance: a Red/Green test cleanup of its own root only, passing native Linux and Windows CI, or a documented intentional
     retention. No existing root is deleted as part of it.
+  - Root decision 2026-11-04: delete the test's own root after a pass; keep it, with its path reported, after a failure.
+  - Implemented on `test/003-t021-native-scenario-root-ownership`:
+    - a test-only `OwnedScenarioRoot` that tracks the one fresh root;
+    - `ReleasesNativeStateAfterConcreteScenario` keeps every assertion and its order, and closes its probe handle before
+      `Finish` runs.
+  - Red:
+    - 2 of 3 fixture tests failed against a behaviourless scaffold;
+    - the unchanged test passed and left one more root (38 to 39).
+  - Green: 18 of 18. The root count was unchanged.
+  - Private controls:
+    - a pass deleted only its own root, and a foreign sentinel stayed;
+    - a forced failure kept the original assertion failure, kept the root and reported its path.
+  - Mutations, all detected: deleting on failure too, never deleting, no failure report, deleting the parent.
+  - Stays open until root accepts the change and it is merged.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and
@@ -118,3 +132,7 @@ evidence/windows-default-admission-source-analysis-20261104.md. These hold:
 - measurement proposals M1 to M4 for root decision.
 No product, test, bound or pipeline change; no cause is claimed. C1b, Q-M4, T016 and the Windows 11 release matrix keep their
 owners and open status.
+
+Merge receipt 2026-11-04: root merged pull request #33 normally as `558f9b1` from head `0083443`. That closes, within their
+bounded scope, NEC-M1M2-LOOKUP-001, NEC-M1M2-SNAPSHOT-002 and NEC-ADM-M1-WORDING-002, together with the M1/M2 setup diagnostics.
+The Windows default admission cause, T019 and T020 stay open.

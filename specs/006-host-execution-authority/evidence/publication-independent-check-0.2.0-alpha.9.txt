@@ -1,0 +1,23 @@
+measuredUtc 2026-11-03T23:58:31Z
+producer ci.yml push run 41738827195 on main at 67a7de9, artifact packages-and-consumer-linux, manifest SHA-256 fa2864c932b377c5320af231f135bfb49ed28fd9732288ee4e4446672132ce3f
+publish run 41742503760 (workflow_dispatch on main 654563c, version 0.2.0-alpha.9): success; all nine packages planned absent, pushed and verified
+Monstertacle.Multisession.Common canonical=54bf8e32262c1ba0 served=5d87786a87c8b028 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.AgentFramework canonical=22a8afd97402e4fd served=9314c7116b53f7f6 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.Checkpoints canonical=f81754a5a275ec5d served=78d6aa5afd9e1883 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.Checkpoints.Delivery canonical=30d620a0fb88a5f4 served=0473c913ebc53b63 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.Linux canonical=fcb1dab3d9fcac01 served=9a1aaa43837d8c52 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.Providers.Conversations canonical=5682099893487e5d served=1a8a4cfc8b4d59a4 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.Providers.Interactions canonical=8ba78cee6fd8ca93 served=fc9f46a975c54532 PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.Storage.Sqlite canonical=e991f0682929d38b served=53223383088fa42b PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+Monstertacle.Multisession.Windows canonical=024af5e215205ea8 served=e4b4627c6196779f PASS entries=8 changed=0 extra=.signature.p7s version=0.2.0-alpha.9 commit=67a7de9
+dotnet nuget verify --all: exit 0 for all nine independently downloaded packages; repository primary signature, CN=NuGet.org Repository by Microsoft, certificate SHA-256 1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d
+served SHA-256 of the independent downloads equals the workflow receipt for 9 of 9 packages
+listing monstertacle.multisession.common listed=true published=2026-11-03T23:52:48.167+00:00
+listing monstertacle.multisession.agentframework listed=true published=2026-11-03T23:52:48.943+00:00
+listing monstertacle.multisession.checkpoints listed=true published=2026-11-03T23:52:49.773+00:00
+listing monstertacle.multisession.checkpoints.delivery listed=true published=2026-11-03T23:52:50.627+00:00
+listing monstertacle.multisession.linux listed=true published=2026-11-03T23:52:51.45+00:00
+listing monstertacle.multisession.providers.conversations listed=true published=2026-11-03T23:52:52.227+00:00
+listing monstertacle.multisession.providers.interactions listed=true published=2026-11-03T23:52:52.963+00:00
+listing monstertacle.multisession.storage.sqlite listed=true published=2026-11-03T23:52:53.717+00:00
+listing monstertacle.multisession.windows listed=true published=2026-11-03T23:52:54.453+00:00

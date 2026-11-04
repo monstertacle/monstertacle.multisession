@@ -3,7 +3,7 @@
 Provider-neutral .NET libraries for running many agent sessions in parallel inside an application process: durable request
 identity, SQLite persistence, native Windows and Linux leases, cancellation, stop and explicit recovery. Development prerelease.
 
-## Packages (0.2.0-alpha.9)
+## Packages (0.2.0-alpha.10)
 
 | Package | Purpose |
 | --- | --- |

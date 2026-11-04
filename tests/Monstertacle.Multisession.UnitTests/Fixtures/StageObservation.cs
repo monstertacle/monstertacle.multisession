@@ -15,11 +15,18 @@ internal sealed class StageObservation(string task, params string[] stages)
     private const string _notObserved = "not-observed";
     private readonly long[] _stamps = new long[stages.Length];
     private long _origin;
+    private string? _detail;
 
     internal void Mark(int stage) => _stamps[stage] = Stopwatch.GetTimestamp();
 
     // A stamp taken elsewhere; zero means it was not observed.
     internal void Record(int stage, long stamp) => _stamps[stage] = stamp;
+
+    // Read after the window only, for example from collect; zero means it was not observed.
+    internal long Stamp(int stage) => _stamps[stage];
+
+    // Extra fields for the same line, set after the window (from collect); written once, after the stages.
+    internal void Append(string detail) => _detail = detail;
 
     internal async Task ObserveAsync(long origin, Func<Task> measured, Action<string> write, Action? collect = null)
     {
@@ -58,6 +65,7 @@ internal sealed class StageObservation(string task, params string[] stages)
             if (_stamps[stage] == 0) { line.Append('=').Append(_notObserved); continue; }
             line.Append("-ms=").Append(Stopwatch.GetElapsedTime(_origin, _stamps[stage]).TotalMilliseconds.ToString("F1", CultureInfo.InvariantCulture));
         }
+        if (_detail is not null) { line.Append(' ').Append(_detail); }
         return line.ToString();
     }
 }

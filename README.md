@@ -10,7 +10,7 @@ protocol adapters for Conversations/Responses and Interactions, as well as Cance
 Live, target-system, integrator and final package acceptances remain required;
 the current scope is described in the [work record](specs/001-agent-multisession/evidence/implementation-progress.md).
 
-## Local packages 0.2.0-alpha.9
+## Local packages 0.2.0-alpha.10
 
 Nine libraries are packed locally: `Common`, `AgentFramework`, `Storage.Sqlite`, `Linux`,
 `Windows`, `Providers.Conversations`, `Providers.Interactions`, `Checkpoints` and `Checkpoints.Delivery`, each with the

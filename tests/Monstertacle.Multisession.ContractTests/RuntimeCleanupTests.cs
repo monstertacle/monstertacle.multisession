@@ -23,7 +23,7 @@ public sealed class RuntimeCleanupTests(ITestOutputHelper output)
         await using TestStateDirectoryLease lease = new(Options().StateDirectory);
         SessionRuntime runtime = Runtime(store, new(), lease);
         await runtime.StartAsync(Options(), CancellationToken.None);
-        // T020 diagnostic: stage stamps of the stop window, written after the window (follow-up-windows-elapsed-bounds.md).
+        SchedulingSampler sampler = SchedulingSampler.Started(); // Diagnostic only, written after the window; see follow-up-windows-elapsed-bounds.md.
         StageObservation stages = new("T020", "cleanup-entry-wait-observed", "stop-failure-observed");
         long began = Stopwatch.GetTimestamp();
         await stages.ObserveAsync(began, async () =>
@@ -45,7 +45,7 @@ public sealed class RuntimeCleanupTests(ITestOutputHelper output)
                 await Record.ExceptionAsync(() => stopping);
                 await runtime.DisposeAsync();
             }
-        }, output.WriteLine);
+        }, output.WriteLine, () => stages.Append(sampler.Freeze(began, stages.Stamp(_stopFailureObserved)).Format()));
         Assert.True(lease.IsDisposed);
     }
 

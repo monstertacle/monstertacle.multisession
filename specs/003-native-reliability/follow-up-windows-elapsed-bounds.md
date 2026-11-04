@@ -142,3 +142,463 @@ that gap.
 - **Baselines:** the unmodified tests passed in the same copy, each with one passing line.
 
 These controls show how the observation reports a failure. They say nothing about the cause of the original Windows failures.
+
+## Natural recurrence 2026-11-04 (T020; bound by root monitoring)
+
+This is the first natural failure of either test since the permanent observation was added.
+
+**Where it ran**
+
+- **Run:** 41836330209, `pull_request`, attempt 1, head `91192c5`.
+- **Branch:** pull request #38. The delta is documentation only, so `src` and `tests` are identical to `main` `4ab04c4`.
+- **Job:** 126596070216, `quality (windows-latest)`. The test step ended at 13:18:06Z.
+
+**What failed**
+
+- **Test:** `RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`, at `RuntimeCleanupTests.cs:39`. This is the
+  elapsed bound, which was line 29 before the observation was added.
+- **Log:** `[xUnit.net 00:00:02.33] … [FAIL]`, then `Failed … [1 s]`.
+- **Stack:** lines 39, 46, `StageObservation.cs:28`, 29 and 49.
+- **Stage line:** `stage-observation T020 outcome=failed:Xunit.Sdk.TrueException cleanup-entry-wait-observed-ms=11.4
+  stop-failure-observed-ms=1101.8`.
+- **Raw log:** root's copy, SHA-256 `b929fff0f267e575b627fa3b9ffd93a61f7ab4c80a5638692f4b2017df3d7606`.
+
+**The rest of the run**
+
+- **Other suites:** UnitTests 452 of 452 passed. ContractTests had 1 failure out of 274. Linux quality in the same run passed
+  274 of 274.
+- **Other runs of this head:** the push quality run 41836319036 passed on Windows.
+- **Job totals:** across the four runs of this head, 9 jobs succeeded, 1 failed and 1 was skipped. The skipped job is the
+  dependent canonical consumer. The author's report had said "10 pass"; root's live job facts are authoritative.
+- **Not retried.**
+
+**What the line shows**
+
+- **Within the bound:** the test resumed after the entry wait at 11.4 ms.
+- **The overrun:** the stop failure was observed at 1101.8 ms. That is about 900 ms after the 200 ms deadline, and passing runs
+  observe it at 200 to 216 ms.
+- **What it does not show:** the line does not say whether the deadline callback, the stop's completion or the test's resumption
+  was late.
+
+## Source analysis 2026-11-04 (T020)
+
+**Path at `91192c5`**
+
+Source SHA-256:
+- `RuntimeLifecycle.cs` `19c1437d…`;
+- `RuntimeShutdown.cs` `069c219c…`;
+- `RuntimeCleanupTests.cs` `bdb98c8e…`;
+- `StageObservation.cs` `2d40b6aa…`.
+
+1. `StopOnceAsync` creates the deadline as `new CancellationTokenSource(200 ms, host.Clock)`. The test passes no clock, so this
+   is `TimeProvider.System`. The deadline is linked with the caller's token.
+2. It moves to `Stopping`, stops operations, requests worker cancellation without waiting, and enters the stop gate.
+3. `CompleteStopAsync` stops acceptance, cancels queued work, waits for the workers, then awaits
+   `CleanupAsync().WaitAsync(token)`.
+4. `CleanupCoreAsync` drains, disposes statistics, then disposes the store, which the test holds. The lease and `Stopped` come
+   only after that.
+5. The stop can therefore end only through the deadline. That `WaitAsync` faults, `StorageUnavailable` is thrown, and the gate
+   is released in a `finally`.
+6. While the store is held, the lease stays held.
+
+The runtime has no `ConfigureAwait(false)`, so its continuations go to the caller's synchronization context.
+
+**Points where the delay could arise**
+
+- **(a)** before the deadline callback runs: the timer firing, or the thread pool dispatching it;
+- **(b)** between that callback and the stop's completion: the continuation posted to the caller's context, or a stall of the
+  thread that runs it;
+- **(c)** between the stop's completion and the test resuming;
+- **(d)** a stall of the whole process or host.
+
+**Private controls**
+
+- **Where they ran:** Linux, 8 cores, Release, in a private export of `91192c5` under `~/dev/.agenttemp`.
+- **What was added:** one probe test file only. The export otherwise compared byte-equal with the archive, the clone stayed
+  untouched, and nothing was kept in the source.
+- **The probe:** it repeats the T020 scenario exactly and records:
+  - D, when the wrapped callback of the selected 200 ms deadline starts. A wrapping `TimeProvider`, passed through the public
+    `clock` parameter, records this. That is a changed clock path, not the `TimeProvider.System` fast path of the canonical test.
+  - C, when an `ExecuteSynchronously` continuation registered on the stop task runs. This is when that observer executed, not
+    an atomic completion timestamp: inlining can be declined or deferred, and the observer can run before or after the
+    awaited continuation.
+  - O, when the test observes the failure.
+  - Two samplers: how far a dedicated thread overslept its 10 ms sleeps, and the dispatch latency of one pool item queued per
+    wake.
+- **Samples:** each case ran as its own test, so that it started in the same xUnit context as the canonical test. There were 5
+  cases per condition.
+- **Logs:** run 3, SHA-256 `1e960c51…`; the suite control, `05f8aa28…`. Both are kept privately.
+
+| Condition (injected 900 ms) | D (ms) | C − D (ms) | O − C (ms) | pool dispatch max (ms) | dedicated oversleep max (ms) |
+|---|---|---|---|---|---|
+| Healthy | 197.3–202.0 | 0.7–0.9 | 0.0–0.1 | ≤ 3.2 | ≤ 3.2 |
+| Deadline delivery delayed | 1098.6–1108.6 | 0.7–4.3 | 0.0–1.0 | ≤ 13.6 | ≤ 8.0 |
+| Thread pool starved by blocking items | 632.3–902.4 | 0.6–1.5 | 0.0–0.1 | 622–1792 | ≤ 3.8 |
+| Continuation posted to the caller's context delayed | 199.8–203.5 | 2498–2502 | 0.0–0.1 | ≤ 3.5 | ≤ 2.1 |
+| Blocked after the stop completed | 200.7–203.4 | 0.7–1.2 | 900.2–900.3 | ≤ 2.1 | ≤ 2.6 |
+
+- **Full-suite control:** one run of the ContractTests suite with the probe cases included passed 299 of 299. The canonical
+  line read `3.0` and `202.3`, and the healthy probe cases read D 199.1–201.3, C − D 0.7–1.9 and O − C ≤ 0.1.
+- **In every condition** the failure code was `StorageUnavailable`, the lease was held at observation, and the lease was
+  released after cleanup.
+
+**Measured facts, Linux only**
+
+- The test's context is xUnit's `AsyncTestSyncContext` with no inner context.
+- The deadline callback runs on a pool thread.
+- The runtime's continuation after the deadline runs on a different, non-pool thread, about 1 ms later.
+- Under these controls only, the test's observation ran inline on that same thread, 0.0 to 0.1 ms after C, unless something
+  blocked it. The control "Blocked after the stop completed" shows that a block there moves O by about 900 ms.
+- An earlier loop variant lost the xUnit context after the first sample. Its samples are not used.
+
+**Inference, not measured on Windows** (corrected 2026-11-04, NEC-T020-PROP-CLAIM-002 / DEF-T020-MEASURE-003)
+
+- For the natural Windows failure, (a), (b), (c) and (d) all stay open.
+  - The Linux near-inline result says nothing about Windows observer scheduling. It does not exclude (c), and it does not
+    exclude (d), a process or host stall.
+  - An earlier version of this record called (c) unlikely and placed the delay at (a), (b) or (d). That went beyond the
+    evidence and is withdrawn.
+- In the private controls, a delayed timer and pool starvation had different sampler and D signatures. Without C, D and the
+  samplers do not separate (b) from (c): the interval after D stays one combined runtime-and-observer interval.
+- (d) was not simulated. A high maximum does not prove a whole-host stall, and a low one does not exclude a short stall.
+- No Windows cause is claimed.
+
+**Observer effects of the candidate stamps**
+
+- The wrapping clock moves the deadline from the `TimeProvider.System` fast path to `CreateTimer`, on the same timer queue.
+- The sampler adds a dedicated thread that wakes every 10 ms, plus one tiny pool item per wake.
+- A completion continuation (C) adds almost nothing beyond O here, and root's earlier decision excluded it.
+
+**Decision for root** (superseded the same day by the review and root disposition below; kept as history)
+
+There is no isolated defect, no Red and no fix proposal. The bounds, the assertions and the runtime are unchanged. Root chooses
+between:
+
+1. **Extend the T020 line, test-only:**
+   - add the D stamp, with the clock wrapper selected only for the 200 ms deadline;
+   - add the two sampler maxima, written in the existing `finally` after the window;
+   - before any merge, run call-site controls like P1 to P4 and a healthy control, keeping the primary failure first and the
+     cleanup order unchanged.
+2. **Keep the line as it is** and wait for the next natural failure, accepting that (a), (b) and (d) stay inseparable.
+
+Acceptance is as above.
+
+## Proposal review and repair 2026-11-04 (T020)
+
+**The findings, all under T020**
+
+Two opposed reviews read the proposal above, and root decided. Nothing here is a product defect.
+
+| Finding | What was wrong | Root disposition |
+|---|---|---|
+| NEC-T020-PROP-RESOURCE-001 / DEF-T020-MEASURE-002 | The private sampler joined without a bound and queued a pool item at every wake with no cap. Late callbacks still changed its maxima, so the window was not finite. In one starved sample the pool maximum, 1792.4 ms, included time after the observation at about 903.6 ms. | an accepted proposal-admission blocker |
+| NEC-T020-PROP-CLAIM-002 / DEF-T020-MEASURE-003 | The Linux near-inline result was used to place the Windows delay. | an accepted docs repair, made in this record and in `tasks.md` |
+| DEF-T020-MEASURE-001 | The clock wrapper changes the `TimeProvider.System` fast path. | keep System; the wrapper stays a historical private probe |
+
+- **Root's decision:** a bounded, System-preserving, sampler-only private proposal.
+- **Not readmitted:** D (the clock wrapper) and C (a completion observer).
+- **History only:** the injected D and C controls above.
+
+**Candidate R1 (private; historical, kept as reviewed; the canonical implementation below supersedes its metric wording)**
+
+The candidate is a private export of `ba130ea`. Its diff from that head, SHA-256 `4303bc76…`, touches five test-side files:
+- a new `SchedulingSampler` fixture;
+- its tests;
+- two read-after-window members on `StageObservation`, `Stamp(int)` and `Append(string)`;
+- the ContractTests link;
+- the T020 call.
+
+The T020 call change is a single line pair:
+- the old comment line becomes `SchedulingSampler.Started()`, before `began`;
+- the existing `ObserveAsync` call gains a `collect` argument that appends the frozen snapshot.
+
+Every original bound stays on its line: 200 ms at 31, 5 s at 32, 2 s at 36 and < 1 s at 39. The `finally` order is unchanged,
+and nothing is added to the measured lambda.
+
+**How the sampler works**
+
+- **Thread:** one dedicated background thread wakes on a 10 ms monitor timeout and records how far it overslept. It exits on
+  stop or at a 15 s lifetime cap.
+- **Pool probe:** at most one is pending at a time. A wake that finds one pending queues nothing and counts a skip.
+- **Window:** from `began` to the stop-failure-observed stamp, or to the freeze if that stage was not observed. Samples outside
+  it never count.
+- **Pending values:** a probe pending at the end is reported as a lower-bound age, never as a maximum. (R1 wording, too strong;
+  corrected in "Canonical implementation 2026-11-04".)
+- **Missing values:** an empty window reads `missing`, not 0.
+- **Freeze:** it runs from `collect`, after the measured work and its cleanup.
+  - The join is bounded at 200 ms.
+  - The snapshot is immutable, and every later write is discarded.
+  - It never throws. A fault becomes `sampler=fault:<type>` in the same line.
+- **Not used:** reflection, xUnit internals, scheduler or context wrapping, and `ThreadPool` tuning.
+- **Warnings:** the build ran with warnings as errors; there are no probe-only exceptions.
+
+**Private controls (Linux, Release, capped build)**
+
+| # | Control | Result |
+|---|---|---|
+| 1 | Healthy baseline: the candidate T020 test on the System path | passed; `cleanup-entry-wait-observed-ms=8.5 stop-failure-observed-ms=214.1 sampler=complete window-end=stop-failure-observed stop=joined dedicated-n=20 … pool-n=20 … pool-pending-at-end=false` |
+| 2 | Held sampler thread | the freeze returned within the bound with `stop=timeout`; the late wake was discarded and the snapshot text was unchanged |
+| 3 | Held pool probe | at most 1 outstanding; ≥ 3 skips; `pool-pending-at-end=true` with an age; the dispatch maximum read `missing` |
+| 4 | Probe released after the freeze | discarded; the snapshot was equal and the same instance |
+| 5 | Empty window (end = origin) | dedicated and pool maxima `missing`, counts 0 |
+| 6 | Stop-failure stage not observed | `window-end=freeze` |
+| 7 | Sampler fault with a failing measured window and a failing write | `AggregateException(primary, write)` with the primary first; the line read `sampler=fault:System.InvalidOperationException` |
+| 8 | Variant: 1 s bound set to Zero | `TrueException` at line 39 stayed primary; cleanup markers showed release, stop, dispose and the lease disposed, then the sampler was frozen with `stop=joined` |
+| 9 | Variant: entry never signalled | `TimeoutException` at line 32 stayed primary; both stages not observed; `window-end=freeze stop=joined` |
+| 10 | Lifetime cap of 300 ms, never frozen | the thread ended by itself; `sampler=expired` |
+
+- **Negative controls:** four one-line mutants were each detected:
+  - an unbounded join failed control 2;
+  - no pending cap failed control 3;
+  - no window filter failed control 5;
+  - no late discard failed controls 3 and 4.
+- **Format:** `dotnet format --verify-no-changes` passed for both test projects.
+- **Variants:** controls 8 and 9 were private edits, restored afterwards and checked by hash.
+
+**What stays unknown**
+
+- These are Linux mechanism controls, not a canonical qualification and not a Windows cause.
+- The maxima are correlation envelopes and missingness for the window, not a classifier.
+- Without D and C, (a) the timer cannot be separated from (b) or (c).
+- (d) was not simulated.
+- The observer effect is one thread waking every 10 ms, plus at most one tiny pool item, both during the timed window.
+
+**Next (root decides; owner: this task's owner)**
+
+1. Grant the candidate as a canonical test-only change, with its own review, the full local quality gate and the
+   required native gates.
+2. Or keep the current line.
+
+Acceptance stays as above. T019, 008 T006 and 008 T007 (pull request #38 held) are not closed by this.
+
+## Canonical implementation 2026-11-04 (T020)
+
+**Admission**
+
+Two narrow opposed reviews read the R1 candidate and its logs. Root then admitted a bounded canonical test-only implementation
+of exactly the five candidate test files, after three metric corrections:
+
+| Finding | Correction |
+|---|---|
+| NEC-T020-WAKE-AGE-001 (DEF-T020-REPAIR-METRIC-001 part 1) | The wake age is the time since the last selected wake, or since the origin when none was selected. It is not an oversleep and not a lower bound of one. A healthy age of a few ms says nothing about a late wait. |
+| NEC-T020-LATENCY-WINDOW-002 (part 2) | A pool sample is selected by its run stamp inside the window, and its value is the full queue-to-run latency. The queue stamp can precede the origin, so a maximum is not an interval wholly inside the window. |
+| DEF-T020-REPAIR-METRIC-001 part 3 | The pending fields become `pool-unresolved-for-window` and `pool-unresolved-age-in-window-ms`. They are a bookkeeping proxy for a probe queued at or before the end that was not recorded by the freeze, or that was recorded with a run stamp after the end. They are not proof that its callback had not started, and not a dispatch lower bound. The age is the end minus the later of the queue stamp and the origin. |
+
+The R1 description above ("Pending values … lower-bound age") is kept as history and is superseded by this table.
+
+**What changed from R1**
+
+Only what the corrections needed:
+- **Renames:**
+  - the snapshot fields and output keys;
+  - the internal outstanding-probe stamp;
+  - the sampler thread name, now `scheduling-sampler`.
+- **Label:** with no selected wake, the key is `dedicated-age-since-origin-ms` instead of `dedicated-last-wake-age-ms`.
+- **Comments:** describing the window, the endpoint selection, the fallback and the observer effect.
+- **One control hook:** `onProbeStart`, before the run stamp. It is null in the measured test.
+- **Call-site comment:** neutral wording.
+
+The algorithm, the caps, the bounded join, the immutable freeze, the late-write discard and the clock path are unchanged.
+
+**The line in practice**
+
+| Item | Value |
+|---|---|
+| R1 → R2 diff | SHA-256 `fe865f02…` |
+| R2 export diff from `9e8349b` | `b1fff860…` |
+| Canonical files | identical to the R2 export |
+| Example line from the full local suite | `… stop-failure-observed-ms=201.8 sampler=complete window-end=stop-failure-observed stop=joined dedicated-n=19 dedicated-oversleep-max-ms=3.5 dedicated-last-wake-age-ms=3.7 pool-n=19 pool-dispatch-max-ms=2.4 pool-unresolved-for-window=false pool-skipped=0` |
+
+**Unchanged in the T020 test**
+
+- Only line 26 (the comment becomes `SchedulingSampler.Started()`) and line 48 (the `collect` argument) change.
+- Lines 27 to 47 are byte-identical: `began`, the measured lambda, the 200 ms, 5 s, 2 s and < 1 s bounds and the `finally`.
+- The deadline stays on `TimeProvider.System`.
+- There is no C, no D, no wrapping and no `ThreadPool` tuning.
+
+**Controls (Linux, Release, warnings as errors)**
+
+- **New countercases:**
+  - **Probe queued before the origin and run inside the window:** it is selected, and its full latency is at least the
+    queue-to-release interval of about 100 ms. A clipped value would be about 50 ms.
+  - **Probe started but not recorded by the freeze:** it is unresolved for the window, it is not counted, and its age is at
+    most the window.
+- **Adjusted controls:**
+  - the empty window now carries `dedicated-age-since-origin-ms`;
+  - a window with wakes carries `dedicated-last-wake-age-ms`.
+- **Counts:** 9 sampler controls and the 5 existing `StageObservation` tests passed in both UnitTests builds (`net10.0` and
+  `net10.0-windows`). Both `RuntimeCleanupTests` passed in the canonical clone.
+- **Negative probes, each detected:**
+  - latency clipped to the origin (about 50 ms against at least 102 ms);
+  - a started but unrecorded probe treated as resolved;
+  - the unresolved age not clipped (71 ms against a 20 ms window);
+  - no origin-fallback label.
+- **Historical R1 controls:** kept above, as reviewed.
+
+**Full local quality, run once (Linux, capped, 14:26:49Z to 14:30:31Z)**
+
+- **Restore, build and format:** locked restore, Release build with 0 warnings and 0 errors, and `format --verify-no-changes`.
+- **Gate self-tests:** coverage-gate, package-hash and suite-inventory self-tests.
+- **Suites:**
+  - UnitTests 461 of 461;
+  - ContractTests 274 of 274;
+  - IntegrationTests 451 of 451;
+  - PlatformTests 72 of 72;
+  - Checkpoints.Tests 5 of 5;
+  - Checkpoints.Delivery.Tests 99 of 99.
+- **Audit:** no vulnerable packages reported.
+- **Product coverage:** 97.74 % against the 87 % threshold.
+- **Codemetr cover:**
+  - passed and complete: 0 violations, 0 new, 0 worsened, 0 unreported;
+  - line 96 %, branch 84.4 %, diff line 96.4 % and diff branch 87.6 %.
+  - It also gave a tool warning, "1 file(s) have no coverage data", with an empty `unreported` list. That is recorded as
+    observed and not resolved here.
+
+**What stays unknown**
+
+- The Windows cause: (a) to (d) are open.
+- Whether the sampler's observer effect shifts a natural failure.
+- What the maxima can show: they are correlation envelopes, not a classifier.
+- No native run was made.
+
+**Next (root)**
+
+- Review the exact patch, then decide on upload and the required native gates.
+- Owner: this task's owner.
+- Acceptance: unchanged.
+
+T019, 008 T006 and 008 T007 (pull request #38 held, alpha.10 unpublished) are not closed.
+
+## Root source acceptance and the coverage output question 2026-11-04 (T020)
+
+**Root source acceptance**
+
+Root accepted `807d025` (tree `a864f696`):
+- the 7 file pins match;
+- the protected diff is empty;
+- lines 27 to 47 are byte-equal;
+- the quality SourceHash `c3ebe3104f0568d12737ff500b26f40e17bc393730d9ecad3483201be23519ba` was reproduced.
+
+Root then authorized a normal non-force upload to pull request #38, and the observation of the ordinary native checks of the new
+head. The old red run 41836330209 at `91192c5` is not rerun and is not waived.
+
+**Question NEC-T020-COVER-OUTPUT-Q001** (alias T020-COVERAGE-OUTPUT-CONSISTENCY; P3, non-blocking, not a product gap)
+
+The question: in the retained local quality run, `codemetr-csharp-cover` 0.1.1 (package SHA-256 `612aa2b8…`) printed
+"1 file(s) have no coverage data and count as 0% (no test project covers them)". The same report has `passed` and `complete`
+true, 0 violations, `unreported` 0 and an empty `unreported` list. The report SHA-256 is `407d3307…`.
+
+**What the read-only inspection found** (no tool, build or test run)
+
+- **The tool's documented rule:** under `unreported: zero`, code that "the source declares but the coverage data does not
+  mention … counts as 0 % and is listed in `unreported`". The list is member-level. The warning counts files, and the tool's
+  XML documentation also has a file-level state ("Lines of one file, or null when the file has no coverage data").
+- **The file universe:** the report's 320 files equal the 320 tracked `.cs` files under `src` and `examples`, with
+  `src/Monstertacle.Multisession.Windows/**` excluded on Linux by the generated `cover-native-config.json`.
+- **Reports versus sources:** the six consumed Cobertura reports, joined with their `<source>` roots, mention 282 of these
+  files. That leaves 38 files in no report.
+  - 36 of the 38 declare only interfaces or enums, so they have no executable code.
+  - The other two are `src/Monstertacle.Multisession.Common/Contracts/PageLimits.cs`, a static class of `const` fields only,
+    and `src/Monstertacle.Multisession.Common/Cqrs/CommandAcknowledgement.cs`, a bodiless `readonly record struct` whose
+    members are compiler-generated.
+  - Neither has a source statement to execute.
+- **The empty report:** the Checkpoints.Tests report has no `<source>` and no class entry. The Checkpoints project contains
+  only `ICheckpoint.cs`, an interface.
+- **What follows:**
+  - The counted file is most likely one of those two files, with no coverable lines. It therefore adds 0 lines to the
+    denominator, which fits `unreported` 0 and the measured 97.74 %.
+  - Which of the two, and why only one is counted, is not visible in the retained stdout report: it has no per-file data.
+- **The diff base:** `4494f9a` is fixed in the repository's own `codemetr-cover.json`. It is an ancestor of `main` `4ab04c4`,
+  155 commits earlier, so the diff percentages are not specific to pull request #38.
+
+**Still open, and the next step**
+
+The exact file and the tool's reason for counting it stay open.
+
+- **Next:** one bounded run of the same tool version with the same `cover-native-config.json` and the same six retained
+  reports, with `--output FILE` for the complete per-file report. No tests and no build. It needs a root grant, because this
+  phase allows no tool execution.
+- **Acceptance:** the file is named, with its coverable-line count.
+  - If that count is 0, record it as a tool-output inconsistency: a file-level warning without a member-level entry. Route it
+    to the tool's owner through an existing task.
+  - Otherwise, treat it as a coverage finding under this task.
+- **Owner:** the integration maintainer; root accepts.
+
+No exclusion, threshold or baseline is changed for this.
+
+## Sampler state structure repair 2026-11-04 (T020)
+
+**Finding T020-SAMPLER-INSTANCE-STATE-001** (P1, a required native gate blocker; owner: the integration maintainer; root
+accepts)
+
+- **The blocker:** at `eb2d57f` on pull request #38, the required `codemetr-guard` failed on both operating systems (push run
+  41853347312, pull-request run 41853363528). Its one new violation was `instanceFields`: `SchedulingSampler` had 23 instance
+  fields against `maxInstanceFields` 8 in `codemetr.json`.
+- **The rest of the run:** native quality and both canonical consumers passed.
+- **Why it got through:** the local gate (`scripts/Invoke-Quality.ps1`) runs only `codemetr-csharp-cover`. The full guard
+  (`dotnet tool run codemetr-csharp -- check --format json`) was not run before upload.
+- **Reproduced locally:** the same command on `eb2d57f` returned exit 1 with exactly this violation.
+
+**Repair** (`tests/Monstertacle.Multisession.UnitTests/Fixtures/SchedulingSampler.cs` only)
+
+The state is grouped into cohesive owners in the same file. They are touched only by the sampler and only under its existing
+gate:
+- `SamplerHooks`: the three control hooks;
+- `WakeLog`: wake stamps, oversleeps, skip marks, count and truncation, plus the window selection of wakes;
+- `ProbeLog`: queue and run stamps, count, truncation and the bookkeeping of the single outstanding probe, plus the window
+  selection of probes and the unresolved proxy;
+- `SamplerLifecycle`: stop request, freeze, expiry, the first fault and the discarded late writes.
+
+**The result**
+
+- `SchedulingSampler` keeps 8 explicit fields: the gate, the lifetime, the hooks, the two logs, the lifecycle, the thread and
+  the snapshot.
+- The guard counts explicit fields only. Counting auto-property backing fields too, no new type exceeds 8.
+- **Unchanged:**
+  - the constants: capacity 2048, period 10 ms, join 200 ms, lifetime 15 s;
+  - the order of every step, including when the queue stamp is taken;
+  - the window selection, the late discard, the immutable snapshot and the output format;
+  - the public surface used by the tests and the call site;
+  - `RuntimeCleanupTests`, the System clock path, every assertion and every threshold.
+
+**Checks (Linux, capped)**
+
+- **Full guard:** passed, with 0 violations over 620 files and 661 types. Config and baseline are unchanged.
+- **Focused controls:**
+  - 9 sampler and 5 stage controls passed in both UnitTests builds;
+  - `RuntimeCleanupTests` passed 2 of 2;
+  - the T020 line format is unchanged.
+- **Negative probes on the new structure, run in a private export, each detected:**
+  - no outstanding-probe cap;
+  - no late discard;
+  - no wake window filter;
+  - no outstanding-unresolved override;
+  - an unbounded join.
+- **Full local quality:** run once (15:36:16Z to 15:39:46Z), and passed:
+  - a 0-warning build;
+  - the gate self-tests;
+  - 1362 tests;
+  - coverage 97.74 %;
+  - Codemetr cover passed and complete, with 0 violations;
+  - no vulnerable packages.
+  - The new SourceHash is `3a3562a1…`.
+
+**Next:** root and opposed review of the exact patch, then one normal upload and the required native checks of the new head.
+The T020 cause, (a) to (d), stays unknown.
+
+**NEC-T020-COVER-OUTPUT-Q001 answered** (read-only, no new tool run)
+
+The quality script already writes the complete report through `--output`. The retained report at the run
+`dce4042cf5b4424ea14eb6995dad839c`, SHA-256 `407d3307…`, lists every type:
+- **The counted missing-data file:** `src/Monstertacle.Multisession.Common/Contracts/PageLimits.cs` contains a constants-only type with `coverage.line` 0, no members and `coverableLines` 5. This is not a claim that it is the only zero-coverage memberless type in the report; other such types occur in `SoakProbeFlow.cs`.
+- **Why it is counted:**
+  - the tool estimates its five `const` declarations as code lines;
+  - constants compile to no executable code, so no coverage engine reports them;
+  - with no members, the member-level `unreported` list stays empty.
+- **Why the others are not:** `CommandAcknowledgement.cs` and the interfaces have `coverableLines` 0 and are not counted.
+- **What follows:**
+  - The warning is a tool estimation matter for a constants-only type. It is not a product gap, and it does not affect the
+    87 % product gate, which is Cobertura-based.
+  - The five lines are inside Codemetr's own 4951-line denominator.
+- **Disposition:** Root disposition: the file/count question is answered. The constants-only estimate is accepted as a reporting limitation for this SDK candidate; no tool change is commissioned. Executable product coverage continues to use Cobertura; config, baseline and thresholds stay unchanged.
+- **Unchanged:** no exclusion, threshold, baseline or source change is made.

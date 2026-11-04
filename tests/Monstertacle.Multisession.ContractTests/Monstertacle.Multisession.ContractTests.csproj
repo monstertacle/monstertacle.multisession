@@ -7,6 +7,7 @@
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Conversations/Monstertacle.Multisession.Providers.Conversations.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Providers.Interactions/Monstertacle.Multisession.Providers.Interactions.csproj" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/StageObservation.cs" Link="Fixtures/StageObservation.cs" />
+    <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/SchedulingSampler.cs" Link="Fixtures/SchedulingSampler.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/InMemorySessionStore.cs" Link="Fixtures/InMemorySessionStore.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/TestStateDirectoryLease.cs" Link="Fixtures/TestStateDirectoryLease.cs" />
     <Compile Include="../Monstertacle.Multisession.UnitTests/Fixtures/DispatchClock.cs" Link="Fixtures/DispatchClock.cs" />

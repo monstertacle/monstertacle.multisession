@@ -33,6 +33,85 @@ Created: 2026-10-30T06:20:36Z
     - each wrote one stage line with honest not-observed stages;
     - T020 kept its cleanup order.
     No source change is kept, no bound is changed and no cause is claimed.
+  - Natural recurrence 2026-11-04 (follow-up-windows-elapsed-bounds.md, Natural recurrence): bound by root monitoring.
+    - Run 41836330209, pull_request, attempt 1, head `91192c5` (pull request #38; documentation-only delta, `src` and `tests`
+      identical to `main` `4ab04c4`), job 126596070216 `quality (windows-latest)`.
+    - Failure: `RuntimeCleanupTests.cs:39`, the elapsed bound (the line numbering moved from 29 when the observation was added).
+    - Stage line: `cleanup-entry-wait-observed-ms=11.4 stop-failure-observed-ms=1101.8`. Root's log is
+      `b929fff0…7606`.
+    - Not retried. The four runs of that head had 9 successful jobs, 1 failed and 1 skipped.
+    - Owner: this task's owner; root decides.
+  - Source analysis and private controls 2026-11-04 (same file, Source analysis): the 1101.8 ms is when the test observed the
+    failure. It is not a measured runtime interval and not a timer cause.
+    - Private Linux controls: under those controls only, the test's observation ran 0.0 to 0.1 ms after a continuation observer
+      on the stop task ran (C). C is when that observer executed, not an atomic completion timestamp.
+    - On Windows none of the candidate locations is excluded. They are (a) deadline delivery or its dispatch, (b) the runtime
+      continuation, (c) the test observer, and (d) a process or host stall. In particular, observer delay and host stall are
+      still possible. (Wording corrected 2026-11-04 under NEC-T020-PROP-CLAIM-002; see the follow-up.)
+    - A delayed deadline and a starved thread pool leave the same stage line. In the private controls only, two samplers had
+      different signatures for them. They are not a cause classifier.
+    - No defect is isolated, no Red exists and no fix is proposed. The cause is unknown.
+  - Proposal review 2026-11-04 (follow-up, Proposal review and repair). Two opposed reviews and the root disposition accepted
+    these findings under this task:
+    - NEC-T020-PROP-RESOURCE-001 / DEF-T020-MEASURE-002: the private sampler had no finite lifetime or window. It is a
+      proposal-admission blocker, not a product defect.
+    - NEC-T020-PROP-CLAIM-002 / DEF-T020-MEASURE-003: the Linux-to-Windows inference was unsupported. Repaired in these
+      records.
+    - DEF-T020-MEASURE-001: keep the `TimeProvider.System` path. The clock wrapper (D) stays a historical private probe.
+      Neither D nor a completion observer (C) is readmitted.
+  - Repair 2026-11-04 (follow-up, Proposal review and repair): a bounded, System-preserving, sampler-only private candidate,
+    with 10 private controls and 4 detected mutants. Nothing canonical changed.
+  - Next (root decides, then superseded below): admit the candidate as a canonical test-only change with its required gates,
+    or keep the current line.
+  - Root admission 2026-11-04 (follow-up, Canonical implementation 2026-11-04): a bounded canonical test-only implementation
+    of the 5 candidate test files, after three metric corrections:
+    - NEC-T020-WAKE-AGE-001 (DEF-T020-REPAIR-METRIC-001 part 1): the wake age is the time since the last selected wake, or
+      since the origin when none was selected. It is not an oversleep and not a lower bound of one.
+    - NEC-T020-LATENCY-WINDOW-002 (part 2): a pool maximum is a full queue-to-run latency, selected by its run stamp. Its
+      queue stamp can precede the origin.
+    - DEF-T020-REPAIR-METRIC-001 part 3: `pool-unresolved-for-window` and `pool-unresolved-age-in-window-ms` replace the
+      pending fields. They are a bookkeeping proxy, not proof that a callback had not started, and the age is clipped to the
+      origin.
+  - Implemented 2026-11-04 on `release/0.2.0-alpha.10-source`, as a local commit only. The changes:
+    - five test-side files;
+    - these two records.
+    - The runtime, `TimeProvider.System` and the measured lambda with its bounds and `finally` are byte-identical.
+  - Checks:
+    - 9 sampler and 5 stage controls, in both UnitTests builds, plus the two `RuntimeCleanupTests` call-site tests;
+    - 4 negative probes for the new semantics, all detected;
+    - one full local Linux quality run, passed, with all six suites green and coverage at 97.74 %.
+  - Next (root): review the exact patch, then decide on upload and the required native gates. Owner: this task's owner.
+    Acceptance: unchanged. The cause stays unknown. T019, 008 T006 and 008 T007 (PR #38 held) stay open.
+  - Root source acceptance 2026-11-04: `807d025` (tree `a864f696`) accepted.
+    - The 7 file pins match, the protected diff is empty, and lines 27 to 47 are byte-equal.
+    - The quality SourceHash `c3ebe310…` was reproduced.
+    - Closed within their bounded scope: NEC-T020-WAKE-AGE-001, NEC-T020-LATENCY-WINDOW-002, DEF-T020-REPAIR-METRIC-001,
+      NEC-T020-PROP-RESOURCE-001, NEC-T020-PROP-CLAIM-002 and DEF-T020-MEASURE-001.
+    - Root authorized a normal upload to pull request #38, with the fresh native checks of the new head to be observed. The
+      old red gate is not waived.
+  - Question NEC-T020-COVER-OUTPUT-Q001 (alias T020-COVERAGE-OUTPUT-CONSISTENCY; P3, non-blocking; follow-up, Coverage
+    output question). Codemetr cover 0.1.1 warned that 1 file has no coverage data, while its `unreported` list was empty and
+    its count 0.
+    - A read-only inspection narrowed the scope, but did not name the file.
+    - It is not a product gap.
+    - Owner: this task's owner; root accepts.
+    - Next: the bounded tool run named in the follow-up.
+  - Finding T020-SAMPLER-INSTANCE-STATE-001 (P1, a required native gate blocker; follow-up, Sampler state structure repair).
+    - At `eb2d57f` on pull request #38, the required `codemetr-guard` failed on both operating systems.
+      `SchedulingSampler` had 23 instance fields against a maximum of 8. Native quality and the canonical consumers passed.
+    - Repair: the sampler's state now lives in cohesive owners under its existing gate (hooks, wake log, probe log,
+      lifecycle), with 8 fields. Behaviour, constants and output are unchanged.
+    - Checks:
+      - the local full guard passed with 0 violations, and config and baseline are unchanged;
+      - focused controls and 5 negative probes passed, and one full local quality run passed.
+    - Next: root and opposed review of the exact patch before any upload. Then the required native checks of the new head.
+  - NEC-T020-COVER-OUTPUT-Q001 answered from the retained complete report (follow-up). The counted file is `PageLimits.cs`: its
+    5 `const` declarations are estimated as coverable lines that no engine reports, and it has no members, so the member-level
+    `unreported` list is empty. This is a tool estimation matter, not a product gap.
+    - Root disposition: the file/count question is answered. The retained report also contains zero-coverage memberless
+      types in `SoakProbeFlow.cs`, so that property alone is not a unique identifier.
+    - The constants-only estimate is accepted as a reporting limitation for this SDK candidate; no tool change is
+      commissioned. Executable product coverage continues to use Cobertura; config, baseline and thresholds stay unchanged.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

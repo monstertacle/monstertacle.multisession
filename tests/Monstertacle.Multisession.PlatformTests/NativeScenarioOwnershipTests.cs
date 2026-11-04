@@ -66,6 +66,11 @@ public sealed class NativeScenarioOwnershipTests(ITestOutputHelper output)
             }
             owned.Passed();
         }
-        finally { owned.Finish(output.WriteLine); }
+        catch (Exception primary)
+        {
+            owned.Report(primary, output.WriteLine);
+            throw;
+        }
+        finally { owned.Finish(); }
     }
 }

@@ -19,11 +19,28 @@ public sealed class RuntimeLifecycleTests(ITestOutputHelper output)
         SessionSnapshot other = await setup.CreateSessionAsync();
         RequestAdmission requests = new(setup.Store, setup.Options);
         List<Guid> ids = [];
-        for (int index = 0; index < 102; index++)
+        // Default-budget setup diagnostics (follow-up-windows-admission.md, M1 and M2): a failed submit writes one line, then its
+        // original exception is rethrown unchanged.
+        await using (AdmissionSetupObservation setupObservation = AdmissionSetupObservation.Start(setup.Store.GetRequestAsync, output.WriteLine))
         {
-            RequestReceipt receipt = await requests.SubmitAsync(Guid.NewGuid(), new(index == 101 ? other.SessionId : first.SessionId,
-                "queued-" + index, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
-            ids.Add(receipt.RequestId);
+            for (int index = 0; index < 102; index++)
+            {
+                Guid candidate = Guid.NewGuid();
+                long submitted = Stopwatch.GetTimestamp();
+                RequestReceipt receipt;
+                try
+                {
+                    receipt = await requests.SubmitAsync(candidate, new(index == 101 ? other.SessionId : first.SessionId,
+                        "queued-" + index, TimeSpan.FromSeconds(10), null, false), CancellationToken.None);
+                }
+                catch (Exception failure)
+                {
+                    await setupObservation.ReportAsync(setupObservation.Capture(index, candidate, submitted, failure), failure);
+                    throw;
+                }
+                setupObservation.Record(submitted);
+                ids.Add(receipt.RequestId);
+            }
         }
         await setup.Store.DisposeAsync();
         await using SqliteRuntimeFixture host = await SqliteRuntimeFixture.OpenAsync(setup.Directory, []);

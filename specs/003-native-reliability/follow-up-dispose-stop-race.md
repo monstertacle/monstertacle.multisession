@@ -3,6 +3,9 @@
 Owner: Alexander Bleissem
 Status: contract Q decided and merged into `main` (pull request #23, 2026-11-03). Item C1 has a root decision and is being
 implemented on branch `fix/c1-retain-stop-gate` (not merged). Item C1b is an unconfirmed source-only candidate.
+Current status (2026-11-04, supersedes the status lines above, which are kept as written): contract Q (pull request #23) and the
+C1 correction (pull request #24) are merged, released in 0.2.0-alpha.9 and accepted; T017 and T018 are closed. C1b and M4 below
+remain open.
 Origin: push run 41699098083 at `4669501` (pull request #22). `quality (windows-latest)` failed one case,
 `ContractTests.RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`. The pull request run 41699106368 on the same
 head passed the same test, as did the runs on `a24e548` and `8054481`. The runtime source is unchanged from `main` (`4b533c9`).
@@ -198,3 +201,23 @@ argument.
   - C1b.
 
   The fix does not claim general concurrency safety for stop and disposal.
+
+## Addendum 2026-11-04: closure and remaining tasks
+
+Root accepted contract Q and the C1 correction with the published 0.2.0-alpha.9:
+- `main` producer run 41738827195 at `67a7de9`;
+- publish run 41742503760;
+- receipts in `specs/006-host-execution-authority/evidence/`.
+
+The sections above describe the state at the time they were written. Their "open" and "not merged" wording for C1 is
+historical.
+
+**Task M4** (owner Alexander Bleissem; open, accepted as a source-only limit until resolved). Replaying at the check after the
+stop gate survives the contract Q tests, because that window has no external control point.
+- **Next step:** look for an existing public seam that can hold a stop between taking the lifecycle lock and the post-gate check.
+  If none exists, record a source-backed disposition for root.
+- **Dependency:** a new seam needs an architecture decision; no production hook without it.
+- **Acceptance:** either a deterministic test that kills the M4 mutation, or a recorded root disposition that accepts the
+  source-only coverage.
+
+**Task C1b** stays as recorded above: owner Alexander Bleissem, unconfirmed, with its next step and acceptance unchanged.

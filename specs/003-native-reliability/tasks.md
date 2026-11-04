@@ -16,8 +16,8 @@ Created: 2026-10-30T06:20:36Z
 - [x] T014 Apply reviewed Wave-only admission profile after observed native default-budget timeout, preserving SDK defaults and every functional assertion; require fresh native CI.
 - [x] T015 Close current-head Windows CRAP gaps with deterministic direct worker protocol tests in WorkerProtocolTests.cs and repeat complete native CI without gate changes.
 - [ ] T016 Investigate the independent published Windows capacity failure under follow-up-capacity-probe.md; preserve bounds and original failure, no retry-as-fix claim.
-- [ ] T017 Disposal after a reported stop failure (follow-up-dispose-stop-race.md): contract Q implemented with a controlled Red then Green, own-failure and shared-disposal controls and mutations on fix/dispose-stop-failure-ownership; stays open until review, merge and native gates on the merged head. Its item C1 (a stop still unwinding while disposal completes ends with a raw ObjectDisposedException, reproduced and pre-existing) is open with its own owner, task and acceptance and is not closed by T017.
-- [ ] T018 C1 (follow-up-dispose-stop-race.md): keep the private stop gate usable instead of disposing it, per the root decision of 2026-11-03; red-first overlap, own-failure and queued-waiter tests, then native gates on fix/c1-retain-stop-gate. Stays open until review and merge. C1b (stop admitted after an unprepared start while disposal releases the operations token) is a separate unconfirmed candidate with its own owner, next step and acceptance and is not closed by T018.
+- [x] T017 Disposal after a reported stop failure (follow-up-dispose-stop-race.md): contract Q implemented with a controlled Red then Green, own-failure and shared-disposal controls and mutations on fix/dispose-stop-failure-ownership; stays open until review, merge and native gates on the merged head. Its item C1 (a stop still unwinding while disposal completes ends with a raw ObjectDisposedException, reproduced and pre-existing) is open with its own owner, task and acceptance and is not closed by T017.
+- [x] T018 C1 (follow-up-dispose-stop-race.md): keep the private stop gate usable instead of disposing it, per the root decision of 2026-11-03; red-first overlap, own-failure and queued-waiter tests, then native gates on fix/c1-retain-stop-gate. Stays open until review and merge. C1b (stop admitted after an unprepared start while disposal releases the operations token) is a separate unconfirmed candidate with its own owner, next step and acceptance and is not closed by T018.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and
@@ -63,3 +63,10 @@ T016 remains open; no full release or stable published-capacity fix is claimed.
 Release 2026-11-04: T017 (pull request #23) and T018 (pull request #24) are contained in 0.2.0-alpha.9, produced by the
 `main` run 41738827195 at `67a7de9` and published (receipts in `specs/006-host-execution-authority/evidence/`). Closing
 both tasks is the root acceptance record. C1b, the contract Q post-gate survivor, T016 and the Windows follow-ups stay open.
+
+Closure 2026-11-04 (root acceptance of the published 0.2.0-alpha.9): T017 is closed. Contract Q was merged as `dd1ca0e`
+(pull request #23) and requalified on the release head. T018 is closed. The retained stop gate was merged as `67a7de9`
+(pull request #24). Both are contained in the `main` producer run 41738827195 at `67a7de9` and in publish run 41742503760
+(record merge `654563c`, receipt merge `9ac1a8e`). The task texts above keep their wording from implementation time. Still open
+and not closed by T017 or T018: C1b and the contract Q post-gate survivor M4 (both with tasks in follow-up-dispose-stop-race.md),
+T016, follow-up-windows-admission.md and the Windows 11 release matrix.

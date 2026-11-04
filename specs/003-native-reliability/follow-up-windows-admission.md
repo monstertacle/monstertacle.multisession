@@ -92,6 +92,47 @@ Source state: `main` `18cbcbba`. The record contains:
     and the end gap.
   - No runtime, API, schema, pipeline or budget change. M3 and M4 are not granted.
   - Owner: Alexander Bleissem. Next: a separate test topic.
+  - Implemented 2026-11-04 on branch `test/003-admission-setup-diagnostics`
+    (evidence/admission-setup-diagnostics-architecture-20261104.md). Test-only.
+    - New fixtures: `AdmissionSetupObservation`, `SchedulingSampler`, `CandidateLookup` and `TaskObservation`.
+    - Only the first setup loop uses them.
+    - On a failed submit:
+      - a synchronous snapshot is taken first: index, candidate, the exception's own fields, submit and setup time, the last 10
+        durations, thread-pool counters, the GC pause delta and the sampler state;
+      - then the sampler is stopped within a bound;
+      - then one read-only lookup runs, with a 2 s token and a 3 s outer bound;
+      - one line is written and the original exception is rethrown unchanged.
+    - A failing report is thrown with the primary failure first.
+  - Red: 10 of 11 new tests failed against behaviourless signatures. A first scaffold that did not compile (CA1822) is not
+    counted. Green: 11 of 11.
+  - Private call-site controls, run in a patched private copy that is not retained:
+    - the unchanged old loop under a store stall writes nothing;
+    - the new loop writes one line under a store stall (stage, index 50, candidate, low sampled lag);
+    - under a scheduling stall it shows a 5965 ms lag;
+    - under a lookup stall it shows `lookup=timeout` after 3003 ms;
+    - under an output failure it gives `AggregateException`, primary first;
+    - the passing run writes nothing and leaves no state behind.
+  - Mutations, all detected by assertions:
+    - the primary is wrapped;
+    - the lookup or the sampler stop is unbounded;
+    - missing samples are reported as zero;
+    - absence is reported as not accepted;
+    - an output failure replaces the primary;
+    - the ring is unbounded.
+  - These controls show how the diagnostic reports a failure. They say nothing about the cause on Windows.
+  - Review fixes 2026-11-04. Root decided fix-first after two opposed reviews of `61da49d`. Both races were found by review
+    from the source, not observed in a run.
+    - NEC-M1M2-LOOKUP-001 (DEF-S33-001): a lookup that faulted after the outer wait timed out was not observed.
+      `CandidateLookup` now observes the pending task on every outer timeout, whatever its state. A lookup's own timeout is
+      still reported as an error. Red/Green uses an injected wait that faults the lookup and then times out.
+    - NEC-M1M2-SNAPSHOT-002 (DEF-S33-002): a sample published after the failure point could produce a negative end gap.
+      The sampler now reads its own observation time under the lock that publishes samples. The line reports how long after
+      the failure point the sampler was read and whether the last sample came after it. The failure point and the submit timing
+      are unchanged.
+    - NEC-ADM-M1-WORDING-002 (DEF-ADM-R2-WORDING-01): the section 7 sentence of the source analysis now names the separate test
+      diagnostic line and the unchanged rethrown exception.
+    - The native scenario state-root question is registered as T021 (follow-up-native-scenario-root-ownership.md). It is open
+      and not part of these diagnostics.
 
 ## Acceptance
 

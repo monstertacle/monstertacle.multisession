@@ -212,7 +212,8 @@ The options are ordered by intrusiveness. Each keeps every bound and assertion, 
   - First user: `RuntimeLifecycleTests.cs:22-27`.
   - Related: `SubmitAsync` is called in 16 IntegrationTests files. Which of them are default-budget setup loops is listed as
     part of M1, not assumed here.
-- After a stage-8 `Unknown`, the rethrow also carries the read-only lookup outcome of the candidate.
+- After a stage-8 `Unknown`, the separate test diagnostic line also carries the read-only lookup outcome of the candidate. The
+  original exception is rethrown unchanged.
 - No product change. The observer cost was not measured.
 
 **M2, test-only scheduling canary** (answers question 3)

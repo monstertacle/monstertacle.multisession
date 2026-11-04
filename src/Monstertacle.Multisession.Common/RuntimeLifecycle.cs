@@ -120,6 +120,9 @@ internal sealed class RuntimeLifecycle(RuntimeHost host) : IAsyncDisposable
             _state = RuntimeState.Stopping;
         }
         _shutdown.Operations.Stop();
+        // Stop intent (spec 008 T006): request worker cancellation even if this call cannot enter the stop gate. The request is
+        // guarded and idempotent and does not wait for callbacks; the bounded stop and drain still own their completion.
+        StopWorkers();
         try { await _shutdown.EnterAsync(linked.Token); }
         catch (Exception) { throw Error(ErrorCode.StorageUnavailable); }
         try

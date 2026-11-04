@@ -85,3 +85,44 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
       - (c) if the current contract is kept: `StopCallbackDeadlineTests` should not rely on the 100 ms deadline outliving
         gate admission. That would be a test change with its own decision. Widening the 100 ms deadline is not proposed.
     - D2, the test-only discriminator for a natural failure, stays ungranted. The acceptance above is unchanged.
+  - Root contract 2026-11-04 (008T006-STOP-INTENT-CONTRACT-20261104):
+    - After a valid stop passes the state guards and publishes `Stopping`, it requests worker cancellation through the
+      existing guarded, idempotent `StopWorkers`, whether or not it enters the stop gate. It never waits for callbacks outside
+      the bounded stop and drain.
+    - A pre-cancelled caller cancels the waiting, not the stop intent.
+    - Failure mapping, guards, replay, ownership order and the HostControlled policy are unchanged.
+    - This is a prospective strengthening, not a claim that the old contract was violated.
+  - Implemented on `fix/008-t006-stop-intent` (evidence/t006-stop-intent-architecture-20261104.md):
+    - one call to `StopWorkers()` in `RuntimeLifecycle.StopOnceAsync`, after `Operations.Stop()` and before the gate;
+    - new `StopIntentCancellationTests`: a pre-expired 100 ms deadline, through the public `TimeProvider`, and a pre-cancelled
+      caller, each with a non-throwing and a throwing held callback.
+    - Red on the unchanged product: 4 of 4 failed with "the stop did not request worker cancellation".
+    - Green: 4 of 4, and the existing stop, ownership, cleanup, overlap and dispose suites (24 of 24) passed unchanged.
+    - Mutations, all killed: removing the early request; waiting synchronously for the callbacks; releasing the lease early;
+      swallowing a faulted cancellation.
+    - `StopCallbackDeadlineTests` is byte-unchanged and was not stage-aligned. With the fix, a pre-gate expiry can no longer
+      produce its line-47 timeout, and the remaining scheduling hypothesis H2 cannot be removed by a clock.
+  - Still open:
+    - the Windows cause (H1 or H2, not measured on a runner) stays unknown;
+    - D2 stays ungranted;
+    - acceptance still needs the cause recorded and 20 consecutive normal Windows runs of the class.
+    Owner: integration maintainer; root accepts and merges.
+  - Review finding NEC-T006-TEST-CLEANUP-001 (alias DEF-T006-TEST-CLEANUP-001), accepted by root as an acceptance blocker:
+    - The finding: in the first version of `StopIntentCancellationTests`, the `finally` only released the callback. Any assertion
+      exit skipped the drain stop and the runtime disposal before the test lease was disposed.
+    - The repair, in that test only:
+      - every exit after the runtime start runs the original cleanup order: release the callback, observe the first stop within
+        5 s, drain with `StopAsync(5 s)`, then dispose the runtime, all before the test lease is disposed;
+      - the original failure is rethrown unchanged;
+      - an unexpected cleanup failure is reported after it, in an `AggregateException`.
+    - Unchanged: the product (`RuntimeLifecycle.cs`), `StopCallbackDeadlineTests` and the 100 ms, 2 s and 5 s limits.
+    - Red: a new forced-exit proof, with exits after start, after the stop failure and after the drain, plus a failing store
+      disposal. It failed 4 of 4 on the first cleanup shape.
+    - Green: 8 of 8, the four contract cases and the four proofs.
+    - Mutations:
+      - killed: cleanup skipped on failure; cleanup failure placed before the primary; cleanup failure swallowed; runtime
+        disposal skipped (3 of 4, with one equivalent case);
+      - two first variants did not compile and are not counted;
+      - skipping the observation of the first stop survived, and is equivalent with the current exit points;
+      - the product mutation without the early request still fails with its own primary message.
+    - The Windows cause, D2 and the 20-run acceptance above stay open.

@@ -96,6 +96,18 @@ Created: 2026-10-30T06:20:36Z
     - It is not a product gap.
     - Owner: this task's owner; root accepts.
     - Next: the bounded tool run named in the follow-up.
+  - Finding T020-SAMPLER-INSTANCE-STATE-001 (P1, a required native gate blocker; follow-up, Sampler state structure repair).
+    - At `eb2d57f` on pull request #38, the required `codemetr-guard` failed on both operating systems.
+      `SchedulingSampler` had 23 instance fields against a maximum of 8. Native quality and the canonical consumers passed.
+    - Repair: the sampler's state now lives in cohesive owners under its existing gate (hooks, wake log, probe log,
+      lifecycle), with 8 fields. Behaviour, constants and output are unchanged.
+    - Checks:
+      - the local full guard passed with 0 violations, and config and baseline are unchanged;
+      - focused controls and 5 negative probes passed, and one full local quality run passed.
+    - Next: root and opposed review of the exact patch before any upload. Then the required native checks of the new head.
+  - NEC-T020-COVER-OUTPUT-Q001 answered from the retained complete report (follow-up). The counted file is `PageLimits.cs`: its
+    5 `const` declarations are estimated as coverable lines that no engine reports, and it has no members, so the member-level
+    `unreported` list is empty. This is a tool estimation matter, not a product gap.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

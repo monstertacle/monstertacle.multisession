@@ -525,3 +525,82 @@ The exact file and the tool's reason for counting it stay open.
 - **Owner:** the integration maintainer; root accepts.
 
 No exclusion, threshold or baseline is changed for this.
+
+## Sampler state structure repair 2026-11-04 (T020)
+
+**Finding T020-SAMPLER-INSTANCE-STATE-001** (P1, a required native gate blocker; owner: the integration maintainer; root
+accepts)
+
+- **The blocker:** at `eb2d57f` on pull request #38, the required `codemetr-guard` failed on both operating systems (push run
+  41853347312, pull-request run 41853363528). Its one new violation was `instanceFields`: `SchedulingSampler` had 23 instance
+  fields against `maxInstanceFields` 8 in `codemetr.json`.
+- **The rest of the run:** native quality and both canonical consumers passed.
+- **Why it got through:** the local gate (`scripts/Invoke-Quality.ps1`) runs only `codemetr-csharp-cover`. The full guard
+  (`dotnet tool run codemetr-csharp -- check --format json`) was not run before upload.
+- **Reproduced locally:** the same command on `eb2d57f` returned exit 1 with exactly this violation.
+
+**Repair** (`tests/Monstertacle.Multisession.UnitTests/Fixtures/SchedulingSampler.cs` only)
+
+The state is grouped into cohesive owners in the same file. They are touched only by the sampler and only under its existing
+gate:
+- `SamplerHooks`: the three control hooks;
+- `WakeLog`: wake stamps, oversleeps, skip marks, count and truncation, plus the window selection of wakes;
+- `ProbeLog`: queue and run stamps, count, truncation and the bookkeeping of the single outstanding probe, plus the window
+  selection of probes and the unresolved proxy;
+- `SamplerLifecycle`: stop request, freeze, expiry, the first fault and the discarded late writes.
+
+**The result**
+
+- `SchedulingSampler` keeps 8 explicit fields: the gate, the lifetime, the hooks, the two logs, the lifecycle, the thread and
+  the snapshot.
+- The guard counts explicit fields only. Counting auto-property backing fields too, no new type exceeds 8.
+- **Unchanged:**
+  - the constants: capacity 2048, period 10 ms, join 200 ms, lifetime 15 s;
+  - the order of every step, including when the queue stamp is taken;
+  - the window selection, the late discard, the immutable snapshot and the output format;
+  - the public surface used by the tests and the call site;
+  - `RuntimeCleanupTests`, the System clock path, every assertion and every threshold.
+
+**Checks (Linux, capped)**
+
+- **Full guard:** passed, with 0 violations over 620 files and 661 types. Config and baseline are unchanged.
+- **Focused controls:**
+  - 9 sampler and 5 stage controls passed in both UnitTests builds;
+  - `RuntimeCleanupTests` passed 2 of 2;
+  - the T020 line format is unchanged.
+- **Negative probes on the new structure, run in a private export, each detected:**
+  - no outstanding-probe cap;
+  - no late discard;
+  - no wake window filter;
+  - no outstanding-unresolved override;
+  - an unbounded join.
+- **Full local quality:** run once (15:36:16Z to 15:39:46Z), and passed:
+  - a 0-warning build;
+  - the gate self-tests;
+  - 1362 tests;
+  - coverage 97.74 %;
+  - Codemetr cover passed and complete, with 0 violations;
+  - no vulnerable packages.
+  - The new SourceHash is `3a3562a1…`.
+
+**Next:** root and opposed review of the exact patch, then one normal upload and the required native checks of the new head.
+The T020 cause, (a) to (d), stays unknown.
+
+**NEC-T020-COVER-OUTPUT-Q001 answered** (read-only, no new tool run)
+
+The quality script already writes the complete report through `--output`. The retained report at the run
+`dce4042cf5b4424ea14eb6995dad839c`, SHA-256 `407d3307…`, lists every type:
+- **The counted file:** `src/Monstertacle.Multisession.Common/Contracts/PageLimits.cs` is the only type with `coverage.line`
+  0 and no members. It has `coverableLines` 5.
+- **Why it is counted:**
+  - the tool estimates its five `const` declarations as code lines;
+  - constants compile to no executable code, so no coverage engine reports them;
+  - with no members, the member-level `unreported` list stays empty.
+- **Why the others are not:** `CommandAcknowledgement.cs` and the interfaces have `coverableLines` 0 and are not counted.
+- **What follows:**
+  - The warning is a tool estimation matter for a constants-only type. It is not a product gap, and it does not affect the
+    87 % product gate, which is Cobertura-based.
+  - The five lines are inside Codemetr's own 4951-line denominator.
+- **Open:** whether the tool's estimator should treat `const` declarations as coverable. That question belongs to the tool's
+  owner and would need an existing tool task.
+- **Unchanged:** no exclusion, threshold, baseline or source change is made.

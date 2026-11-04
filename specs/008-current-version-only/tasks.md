@@ -217,3 +217,8 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
     - Coverage output question NEC-T020-COVER-OUTPUT-Q001 (P3, non-blocking) is recorded under 003 T020.
     - T007's next steps above are unchanged. The merge, the producer run, the release record, publication and host uptake still
       need root's decisions.
+  - Required gate blocker 2026-11-04 (003 T020, T020-SAMPLER-INSTANCE-STATE-001): at `eb2d57f` the required `codemetr-guard`
+    failed on both operating systems (runs 41853347312 and 41853363528), while quality and the canonical consumers passed.
+    - A test-only state-structure repair of `SchedulingSampler` is committed locally and not uploaded. The local full guard,
+      the focused controls and the full local quality passed.
+    - Pull request #38 stays held until root reviews the patch and the new head's required native checks pass.

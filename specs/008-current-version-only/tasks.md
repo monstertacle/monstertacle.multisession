@@ -107,3 +107,22 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
     - D2 stays ungranted;
     - acceptance still needs the cause recorded and 20 consecutive normal Windows runs of the class.
     Owner: integration maintainer; root accepts and merges.
+  - Review finding NEC-T006-TEST-CLEANUP-001 (alias DEF-T006-TEST-CLEANUP-001), accepted by root as an acceptance blocker:
+    - The finding: in the first version of `StopIntentCancellationTests`, the `finally` only released the callback. Any assertion
+      exit skipped the drain stop and the runtime disposal before the test lease was disposed.
+    - The repair, in that test only:
+      - every exit after the runtime start runs the original cleanup order: release the callback, observe the first stop within
+        5 s, drain with `StopAsync(5 s)`, then dispose the runtime, all before the test lease is disposed;
+      - the original failure is rethrown unchanged;
+      - an unexpected cleanup failure is reported after it, in an `AggregateException`.
+    - Unchanged: the product (`RuntimeLifecycle.cs`), `StopCallbackDeadlineTests` and the 100 ms, 2 s and 5 s limits.
+    - Red: a new forced-exit proof, with exits after start, after the stop failure and after the drain, plus a failing store
+      disposal. It failed 4 of 4 on the first cleanup shape.
+    - Green: 8 of 8, the four contract cases and the four proofs.
+    - Mutations:
+      - killed: cleanup skipped on failure; cleanup failure placed before the primary; cleanup failure swallowed; runtime
+        disposal skipped (3 of 4, with one equivalent case);
+      - two first variants did not compile and are not counted;
+      - skipping the observation of the first stop survived, and is equivalent with the current exit points;
+      - the product mutation without the early request still fails with its own primary message.
+    - The Windows cause, D2 and the 20-run acceptance above stay open.

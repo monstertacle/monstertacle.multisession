@@ -65,6 +65,13 @@ Root read `0a9da51`, the ownership source and the host contract.
 - Implementation: branch `test/003-t021-native-scenario-root-ownership` from `main` `558f9b1`.
 - Result: see T021 in tasks.md. The 38 roots that existed before this phase, the root left by the Red run and the root kept by
   the failure control stay in place; none were deleted.
+- Review fix 2026-11-04, NEC-T021-PRIMARY-001 (DEF-T021-001):
+  - The finding: the failure report ran in `finally`, so a failing report replaced the original assertion failure.
+  - The fix: the test now catches its body failure, reports the kept root and rethrows the same failure. If the report
+    throws, the test throws an `AggregateException` with the original failure first, the report failure second and the kept
+    path in its message.
+  - Pass deletion, the lease assertions and their order, the probe handle closure and the existing roots are unchanged.
+
 ## Acceptance
 
 One of these two:

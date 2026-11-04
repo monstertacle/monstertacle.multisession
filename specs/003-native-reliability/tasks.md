@@ -56,6 +56,21 @@ Created: 2026-10-30T06:20:36Z
     - a pass deleted only its own root, and a foreign sentinel stayed;
     - a forced failure kept the original assertion failure, kept the root and reported its path.
   - Mutations, all detected: deleting on failure too, never deleting, no failure report, deleting the parent.
+  - Review fix 2026-11-04, NEC-T021-PRIMARY-001 (DEF-T021-001), primary preservation:
+    - Red: a failing body with a failing report surfaced `IOException`, not the original failure.
+    - Green: the original failure stays first, in an `AggregateException` with the report failure and the kept path.
+    - Private controls on the real test:
+      - a pass deleted only its own root and kept a foreign sentinel;
+      - a failure with a working report kept the original `Assert.Equal` failure and printed the path;
+      - a failure with a throwing report gave `AggregateException`: `Assert.Equal` first, `IOException` second, path in the
+        message, root kept.
+    - Mutations killed:
+      - the report failure replaces the primary;
+      - the report failure is swallowed;
+      - deleting on failure;
+      - the path is missing from the message;
+      - deleting the parent. This mutation is now caught by the sentinel assertion; earlier it was only caught when the test
+        cleanup itself failed.
   - Stays open until root accepts the change and it is merged.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push

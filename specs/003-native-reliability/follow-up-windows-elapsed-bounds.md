@@ -1,8 +1,10 @@
-# Windows elapsed-time bounds failed on a documentation-only head (T019)
+# Windows elapsed-time bounds failed on a documentation-only head (T019, T020)
 
 Owner: Alexander Bleissem (diagnosis and source uptake); root (source decision, reruns and merge)
-Status: open; cause unknown. Recorded 2026-11-04. Priority P2: a required native check is red, and no product effect is shown.
-Origin: finding SDK-WIN-CANCEL-LATENCY-20261104, pull request #28 (`cc319fe`, which changes only
+Status: open; cause unknown for both. Recorded 2026-11-04. Priority P1 for each: a required native check is red. No product effect is
+shown.
+Origin: findings SDK-WIN-CANCEL-LATENCY-20261104 (T019, attempt 1) and SDK-WIN-CLEANUP-LATENCY-20261104 (T020, attempt 2), pull
+request #28 (`cc319fe`, which changes only
 `specs/006-host-execution-authority/tasks.md`; runtime and tests are byte-identical to `main` `1bdac2e`).
 
 ## Observations (both on `quality (windows-latest)`, pull request run 41754114699)
@@ -11,8 +13,8 @@ The two attempts failed different assertions in different suites. They are recor
 
 | Attempt | Job | Failed test | Bound | Other suites |
 | --- | --- | --- | --- | --- |
-| 1 | 126326035132 (01:26:54Z to 01:36:07Z) | `IntegrationTests.EmbeddedConsumerTests.RunsCompletePublicEmbeddingFlowWithoutLibraryChangesOrServerProcess`, line 49 (1 of 436) | cancelling a running request must reach its end within 2 seconds | UnitTests 447 and ContractTests 266 passed |
-| 2 | 126331776929 (01:42:34Z to 01:48:29Z) | `ContractTests.RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`, line 29 (1 of 266) | a stop with a 200 ms deadline, while store disposal is held, must return its failure within 1 second | UnitTests 447 passed; IntegrationTests did not run, because the gate stops at the first failed suite |
+| 1 (T019) | 126326035132 (01:26:54Z to 01:36:07Z) | `IntegrationTests.EmbeddedConsumerTests.RunsCompletePublicEmbeddingFlowWithoutLibraryChangesOrServerProcess`, line 49 (1 of 436) | cancelling a running request must reach its end within 2 seconds | UnitTests 447 and ContractTests 266 passed |
+| 2 (T020) | 126331776929 (01:42:34Z to 01:48:29Z) | `ContractTests.RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`, line 29 (1 of 266) | a stop with a 200 ms deadline, while store disposal is held, must return its failure within 1 second | UnitTests 447 passed; IntegrationTests did not run, because the gate stops at the first failed suite |
 
 - **Same head, push run:** the push quality run 41754108932 at the same head passed both tests on Windows, and both pass on Linux.
 - **No elapsed values:** neither assertion logs the measured elapsed time, so the size of the overrun is unknown.

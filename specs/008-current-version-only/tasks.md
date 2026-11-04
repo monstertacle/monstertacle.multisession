@@ -222,3 +222,22 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
     - A test-only state-structure repair of `SchedulingSampler` is committed locally and not uploaded. The local full guard,
       the focused controls and the full local quality passed.
     - Pull request #38 stays held until root reviews the patch and the new head's required native checks pass.
+  - Source merged and canonical record prepared 2026-11-04:
+    - **The merge:** root merged pull request #38 normally at the pinned head `6a8b244`, as `main` `db28d7b`, after all 12
+      required jobs of that head passed natively.
+    - **The producer:** the `ci.yml` push run 41869316232 on `main` at `db28d7b`, attempt 1, passed. Quality and the canonical
+      consumer each passed on Ubuntu and Windows. The `main` guard run 41869315811 passed on both.
+    - **The record:** `eng/release-records/0.2.0-alpha.10.json` records:
+      - that run and its artifact `packages-and-consumer-linux` (artifact digest `4bff1307…`);
+      - the producer manifest, SHA-256 `bd157023…`;
+      - the nine packages with their SHA-256.
+    - **Validation:** `eng/Test-ReleaseInput.ps1` passes against the downloaded artifact. It checked the manifest, the exact
+      file set and bytes, and each package's id, version and source commit `db28d7b`. No package is signed or extra.
+    - **Not done:** no publication, tag or host change. 0.2.0-alpha.10 is not served, and the 0.2.0-alpha.9 packages are
+      unchanged.
+    - **Next:**
+      1. root reviews and merges this record through a normal pull request;
+      2. root decides on publication through `publish.yml`;
+      3. an independent served-package check;
+      4. host uptake in a separate host task.
+    - **Acceptance:** unchanged.

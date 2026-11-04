@@ -112,6 +112,15 @@ Created: 2026-10-30T06:20:36Z
       types in `SoakProbeFlow.cs`, so that property alone is not a unique identifier.
     - The constants-only estimate is accepted as a reporting limitation for this SDK candidate; no tool change is
       commissioned. Executable product coverage continues to use Cobertura; config, baseline and thresholds stay unchanged.
+  - Merged 2026-11-04: root merged pull request #38 normally at the pinned head `6a8b244`, as `main` `db28d7b`, after all 12
+    required jobs of that head passed natively on Linux and Windows. The `main` push runs also passed: quality and its
+    canonical consumers in 41869316232, and the guard in 41869315811.
+    - Closed within their bounded scope, with their acceptance met:
+      - T020-SAMPLER-INSTANCE-STATE-001: the required guard is green on `6a8b244` and on `main`;
+      - NEC-T020-Q001-UNIQUENESS-001 / DEF-T020-STRUCTURE-DOC-001;
+      - NEC-T020-COVER-OUTPUT-Q001, under root's disposition above.
+    - T020 itself stays open. The cause of the Windows overrun, (a) to (d), is unknown, and the bounded observation is the
+      means for the next natural failure. Passing runs do not close it.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

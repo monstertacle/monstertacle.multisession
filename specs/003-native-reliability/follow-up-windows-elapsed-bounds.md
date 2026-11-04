@@ -468,3 +468,60 @@ The algorithm, the caps, the bounded join, the immutable freeze, the late-write 
 - Acceptance: unchanged.
 
 T019, 008 T006 and 008 T007 (pull request #38 held, alpha.10 unpublished) are not closed.
+
+## Root source acceptance and the coverage output question 2026-11-04 (T020)
+
+**Root source acceptance**
+
+Root accepted `807d025` (tree `a864f696`):
+- the 7 file pins match;
+- the protected diff is empty;
+- lines 27 to 47 are byte-equal;
+- the quality SourceHash `c3ebe3104f0568d12737ff500b26f40e17bc393730d9ecad3483201be23519ba` was reproduced.
+
+Root then authorized a normal non-force upload to pull request #38, and the observation of the ordinary native checks of the new
+head. The old red run 41836330209 at `91192c5` is not rerun and is not waived.
+
+**Question NEC-T020-COVER-OUTPUT-Q001** (alias T020-COVERAGE-OUTPUT-CONSISTENCY; P3, non-blocking, not a product gap)
+
+The question: in the retained local quality run, `codemetr-csharp-cover` 0.1.1 (package SHA-256 `612aa2b8…`) printed
+"1 file(s) have no coverage data and count as 0% (no test project covers them)". The same report has `passed` and `complete`
+true, 0 violations, `unreported` 0 and an empty `unreported` list. The report SHA-256 is `407d3307…`.
+
+**What the read-only inspection found** (no tool, build or test run)
+
+- **The tool's documented rule:** under `unreported: zero`, code that "the source declares but the coverage data does not
+  mention … counts as 0 % and is listed in `unreported`". The list is member-level. The warning counts files, and the tool's
+  XML documentation also has a file-level state ("Lines of one file, or null when the file has no coverage data").
+- **The file universe:** the report's 320 files equal the 320 tracked `.cs` files under `src` and `examples`, with
+  `src/Monstertacle.Multisession.Windows/**` excluded on Linux by the generated `cover-native-config.json`.
+- **Reports versus sources:** the six consumed Cobertura reports, joined with their `<source>` roots, mention 282 of these
+  files. That leaves 38 files in no report.
+  - 36 of the 38 declare only interfaces or enums, so they have no executable code.
+  - The other two are `src/Monstertacle.Multisession.Common/Contracts/PageLimits.cs`, a static class of `const` fields only,
+    and `src/Monstertacle.Multisession.Common/Cqrs/CommandAcknowledgement.cs`, a bodiless `readonly record struct` whose
+    members are compiler-generated.
+  - Neither has a source statement to execute.
+- **The empty report:** the Checkpoints.Tests report has no `<source>` and no class entry. The Checkpoints project contains
+  only `ICheckpoint.cs`, an interface.
+- **What follows:**
+  - The counted file is most likely one of those two files, with no coverable lines. It therefore adds 0 lines to the
+    denominator, which fits `unreported` 0 and the measured 97.74 %.
+  - Which of the two, and why only one is counted, is not visible in the retained stdout report: it has no per-file data.
+- **The diff base:** `4494f9a` is fixed in the repository's own `codemetr-cover.json`. It is an ancestor of `main` `4ab04c4`,
+  155 commits earlier, so the diff percentages are not specific to pull request #38.
+
+**Still open, and the next step**
+
+The exact file and the tool's reason for counting it stay open.
+
+- **Next:** one bounded run of the same tool version with the same `cover-native-config.json` and the same six retained
+  reports, with `--output FILE` for the complete per-file report. No tests and no build. It needs a root grant, because this
+  phase allows no tool execution.
+- **Acceptance:** the file is named, with its coverable-line count.
+  - If that count is 0, record it as a tool-output inconsistency: a file-level warning without a member-level entry. Route it
+    to the tool's owner through an existing task.
+  - Otherwise, treat it as a coverage finding under this task.
+- **Owner:** the integration maintainer; root accepts.
+
+No exclusion, threshold or baseline is changed for this.

@@ -82,6 +82,20 @@ Created: 2026-10-30T06:20:36Z
     - one full local Linux quality run, passed, with all six suites green and coverage at 97.74 %.
   - Next (root): review the exact patch, then decide on upload and the required native gates. Owner: this task's owner.
     Acceptance: unchanged. The cause stays unknown. T019, 008 T006 and 008 T007 (PR #38 held) stay open.
+  - Root source acceptance 2026-11-04: `807d025` (tree `a864f696`) accepted.
+    - The 7 file pins match, the protected diff is empty, and lines 27 to 47 are byte-equal.
+    - The quality SourceHash `c3ebe310…` was reproduced.
+    - Closed within their bounded scope: NEC-T020-WAKE-AGE-001, NEC-T020-LATENCY-WINDOW-002, DEF-T020-REPAIR-METRIC-001,
+      NEC-T020-PROP-RESOURCE-001, NEC-T020-PROP-CLAIM-002 and DEF-T020-MEASURE-001.
+    - Root authorized a normal upload to pull request #38, with the fresh native checks of the new head to be observed. The
+      old red gate is not waived.
+  - Question NEC-T020-COVER-OUTPUT-Q001 (alias T020-COVERAGE-OUTPUT-CONSISTENCY; P3, non-blocking; follow-up, Coverage
+    output question). Codemetr cover 0.1.1 warned that 1 file has no coverage data, while its `unreported` list was empty and
+    its count 0.
+    - A read-only inspection narrowed the scope, but did not name the file.
+    - It is not a product gap.
+    - Owner: this task's owner; root accepts.
+    - Next: the bounded tool run named in the follow-up.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

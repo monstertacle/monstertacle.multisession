@@ -208,3 +208,12 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
       - old wording as a control: the local-only mapping with `--version 0.2.0-alpha.9` fails with NU1603. NuGet substitutes
         0.2.0-alpha.10 for the requested 0.2.0-alpha.9.
     - Unchanged: version, lock files, product, tests, CI and release policy. T007's next steps above are unchanged.
+  - Native gate dependency 2026-11-04 (003 T020): the pull request quality run 41836330209 at `91192c5` failed natively on
+    Windows. It was a natural T020 recurrence and was not retried.
+    - Root accepted a bounded test-only T020 observation (`807d025`): five test files and the T020 records, with runtime,
+      version, locks, embedding and CI unchanged.
+    - Root authorized a normal non-force upload of this branch to pull request #38 for fresh native checks of the new head.
+      This is not a rerun of the old run, and the old red gate is not waived.
+    - Coverage output question NEC-T020-COVER-OUTPUT-Q001 (P3, non-blocking) is recorded under 003 T020.
+    - T007's next steps above are unchanged. The merge, the producer run, the release record, publication and host uptake still
+      need root's decisions.

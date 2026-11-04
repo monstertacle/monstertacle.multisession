@@ -29,7 +29,17 @@ Dependencies: native Windows Server and required Windows11 host access for the
 release matrix; offline controlled workloads need no provider credentials. The
 Wave consumer's explicit thirty-second budget is a separate acceptance profile.
 
-## Acceptance
+## Recurrence 2026-11-04 (pull request #30)
+
+- Run: push quality run 41769537053, attempt 1, `windows-latest`, head `9a76a2f`. That head adds only documentation on
+  top of `main` `6b2dfbf`.
+- Failure: `IntegrationTests/RuntimeLifecycleTests.StopsAcceptanceAndFinalizesAllQueuedPages` threw
+  `SessionOperationException: AdmissionTimedOut` from `RequestAdmission.SubmitAsync` at `RuntimeLifecycleTests.cs:24`.
+- Where: in the setup loop that queues 102 requests under the default admission budget, before the stop window this test
+  measures. It is not T019 or T020. Those are different tests and bounds.
+- Same head: the pull_request quality run 41769544991 passed. Neither run was retried.
+- Not in the log: the loop index, the failure stage, the outcome of the candidate and any native code. Like the earlier
+  records, it adds no cause. It is bound here as a further default-budget recurrence.
 
 Source/package/trace hashes and measured timings account for the observed expiry
 or explicitly state the remaining uncertainty. Every timed-out candidate is looked

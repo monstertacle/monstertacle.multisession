@@ -60,3 +60,30 @@ cause.
 
 Related: `follow-up-windows-admission.md` (Windows admission variability), `follow-up-capacity-probe.md` and
 `follow-up-dispose-stop-race.md`. No shared cause with them is established.
+
+## Measurements 2026-11-04 (passing runs only)
+
+- **Instrumentation:** test-only stage logging on the observation branch `diag/t019-t020-stage-timing` (`22ab323`, not for merge).
+  The two tests and the provider fixture each write one stage line before their unchanged bound.
+- **Runs:**
+  - Linux: 20 local runs of each test;
+  - native Windows and Linux: one push run of `ci.yml`, 41762345411, all jobs successful.
+- **Values:** in milliseconds from the start of each measured window. Windows and Linux CI are single runs.
+
+| Stage | Linux local (min / median / max) | Windows CI | Linux CI |
+| --- | --- | --- | --- |
+| T019 cancellation recorded | 7.0 / 8.7 / 21.0 | 19.1 | 1.2 |
+| T019 provider observed cancellation | 91.8 / 96.7 / 101.2 | 87.8 | 99.0 |
+| T019 end read (bound 2000) | 105.6 / 107.8 / 119.6 | 115.6 | 103.9 |
+| T020 cleanup entered | 7.6 / 8.5 / 13.4 | 2.3 | 1.1 |
+| T020 stop returned (deadline 200) | 200.6 / 204.6 / 213.0 | 201.5 | 200.7 |
+| T020 observed at the bound (bound 1000) | 204.4 / 208.2 / 216.3 | 201.6 | 200.8 |
+
+- **Normal envelope:** in normal runs both paths sit far inside their bounds. The cancellation is seen within one 100 ms poll, and
+  the stop returns just after its 200 ms deadline.
+- **Not measured:** the failing runs (pull request #28, run 41754114699). The stage that stalled there is unknown, and no cause is
+  claimed.
+
+**Proposal for root:** keep the stage line in both tests on `main`. It is test-only and prints before the unchanged bound, so any
+future native failure reports which stage stalled. Repeated native runs of the observation branch would be the alternative, but
+they spend runner time on passing runs and are root's decision.

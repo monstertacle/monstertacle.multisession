@@ -20,6 +20,11 @@ Created: 2026-10-30T06:20:36Z
 - [x] T018 C1 (follow-up-dispose-stop-race.md): keep the private stop gate usable instead of disposing it, per the root decision of 2026-11-03; red-first overlap, own-failure and queued-waiter tests, then native gates on fix/c1-retain-stop-gate. Stays open until review and merge. C1b (stop admitted after an unprepared start while disposal releases the operations token) is a separate unconfirmed candidate with its own owner, next step and acceptance and is not closed by T018.
 - [ ] T019 Cancellation end within 2 s failed on Windows (follow-up-windows-elapsed-bounds.md, finding SDK-WIN-CANCEL-LATENCY-20261104): pull request #28, attempt 1, `EmbeddedConsumerTests:49`. Cause unknown, bound kept, priority P1 (required native check). Owner Alexander Bleissem; next: a stage-timed pure C# diagnostic of the cancellation path on native Windows with a Linux control; reruns and the gate decision are root's. Acceptance: the slow stage is measured or the uncertainty is stated with an envelope, and root decides.
 - [ ] T020 Stop deadline within 1 s failed on Windows (follow-up-windows-elapsed-bounds.md, finding SDK-WIN-CLEANUP-LATENCY-20261104): pull request #28, attempt 2, `RuntimeCleanupTests:29`. It is a different test and stage from T019, with no shared cause assumed. Cause unknown, bound kept, priority P1 (required native check). Owner Alexander Bleissem; next: a stage-timed pure C# diagnostic of the stop path (entry, worker completion, cleanup start, deadline firing, return) on native Windows with a Linux control. Acceptance as for T019.
+  - Measurements 2026-11-04 (follow-up-windows-elapsed-bounds.md, Measurements): in passing runs on Linux and native Windows the
+    T019 path ends in about 120 ms or less and the T020 stop returns within about 15 ms of its 200 ms deadline. The failing runs
+    were not measured, so T019 and T020 stay open with their cause unknown.
+  - Next, owner root: decide whether the test-only stage line goes to `main`, so that the next native failure reports its stalled
+    stage, or whether to request repeated native observation runs.
 
 T015 evidence: documentation-only head a298bf6, PR run41062018961 and push
 run41062007264 passed all tests but reported CrashProtocol.IsKnown and

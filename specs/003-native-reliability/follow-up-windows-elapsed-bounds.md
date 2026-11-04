@@ -590,8 +590,7 @@ The T020 cause, (a) to (d), stays unknown.
 
 The quality script already writes the complete report through `--output`. The retained report at the run
 `dce4042cf5b4424ea14eb6995dad839c`, SHA-256 `407d3307…`, lists every type:
-- **The counted file:** `src/Monstertacle.Multisession.Common/Contracts/PageLimits.cs` is the only type with `coverage.line`
-  0 and no members. It has `coverableLines` 5.
+- **The counted missing-data file:** `src/Monstertacle.Multisession.Common/Contracts/PageLimits.cs` contains a constants-only type with `coverage.line` 0, no members and `coverableLines` 5. This is not a claim that it is the only zero-coverage memberless type in the report; other such types occur in `SoakProbeFlow.cs`.
 - **Why it is counted:**
   - the tool estimates its five `const` declarations as code lines;
   - constants compile to no executable code, so no coverage engine reports them;
@@ -601,6 +600,5 @@ The quality script already writes the complete report through `--output`. The re
   - The warning is a tool estimation matter for a constants-only type. It is not a product gap, and it does not affect the
     87 % product gate, which is Cobertura-based.
   - The five lines are inside Codemetr's own 4951-line denominator.
-- **Open:** whether the tool's estimator should treat `const` declarations as coverable. That question belongs to the tool's
-  owner and would need an existing tool task.
+- **Disposition:** Root disposition: the file/count question is answered. The constants-only estimate is accepted as a reporting limitation for this SDK candidate; no tool change is commissioned. Executable product coverage continues to use Cobertura; config, baseline and thresholds stay unchanged.
 - **Unchanged:** no exclusion, threshold, baseline or source change is made.

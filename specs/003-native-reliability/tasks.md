@@ -108,6 +108,10 @@ Created: 2026-10-30T06:20:36Z
   - NEC-T020-COVER-OUTPUT-Q001 answered from the retained complete report (follow-up). The counted file is `PageLimits.cs`: its
     5 `const` declarations are estimated as coverable lines that no engine reports, and it has no members, so the member-level
     `unreported` list is empty. This is a tool estimation matter, not a product gap.
+    - Root disposition: the file/count question is answered. The retained report also contains zero-coverage memberless
+      types in `SoakProbeFlow.cs`, so that property alone is not a unique identifier.
+    - The constants-only estimate is accepted as a reporting limitation for this SDK candidate; no tool change is
+      commissioned. Executable product coverage continues to use Cobertura; config, baseline and thresholds stay unchanged.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

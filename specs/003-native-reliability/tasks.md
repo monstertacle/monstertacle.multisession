@@ -61,8 +61,27 @@ Created: 2026-10-30T06:20:36Z
       Neither D nor a completion observer (C) is readmitted.
   - Repair 2026-11-04 (follow-up, Proposal review and repair): a bounded, System-preserving, sampler-only private candidate,
     with 10 private controls and 4 detected mutants. Nothing canonical changed.
-  - Next (root decides): admit the candidate as a canonical test-only change with its required gates, or keep the current
-    line. Owner: this task's owner. Acceptance: unchanged. T019, 008 T006 and 008 T007 stay open.
+  - Next (root decides, then superseded below): admit the candidate as a canonical test-only change with its required gates,
+    or keep the current line.
+  - Root admission 2026-11-04 (follow-up, Canonical implementation 2026-11-04): a bounded canonical test-only implementation
+    of the 5 candidate test files, after three metric corrections:
+    - NEC-T020-WAKE-AGE-001 (DEF-T020-REPAIR-METRIC-001 part 1): the wake age is the time since the last selected wake, or
+      since the origin when none was selected. It is not an oversleep and not a lower bound of one.
+    - NEC-T020-LATENCY-WINDOW-002 (part 2): a pool maximum is a full queue-to-run latency, selected by its run stamp. Its
+      queue stamp can precede the origin.
+    - DEF-T020-REPAIR-METRIC-001 part 3: `pool-unresolved-for-window` and `pool-unresolved-age-in-window-ms` replace the
+      pending fields. They are a bookkeeping proxy, not proof that a callback had not started, and the age is clipped to the
+      origin.
+  - Implemented 2026-11-04 on `release/0.2.0-alpha.10-source`, as a local commit only. The changes:
+    - five test-side files;
+    - these two records.
+    - The runtime, `TimeProvider.System` and the measured lambda with its bounds and `finally` are byte-identical.
+  - Checks:
+    - 9 sampler and 5 stage controls, in both UnitTests builds, plus the two `RuntimeCleanupTests` call-site tests;
+    - 4 negative probes for the new semantics, all detected;
+    - one full local Linux quality run, passed, with all six suites green and coverage at 97.74 %.
+  - Next (root): review the exact patch, then decide on upload and the required native gates. Owner: this task's owner.
+    Acceptance: unchanged. The cause stays unknown. T019, 008 T006 and 008 T007 (PR #38 held) stay open.
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

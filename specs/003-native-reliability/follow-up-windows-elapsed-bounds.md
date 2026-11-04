@@ -299,7 +299,7 @@ Two opposed reviews read the proposal above, and root decided. Nothing here is a
 - **Not readmitted:** D (the clock wrapper) and C (a completion observer).
 - **History only:** the injected D and C controls above.
 
-**Candidate (private, not in this repository)**
+**Candidate R1 (private; historical, kept as reviewed; the canonical implementation below supersedes its metric wording)**
 
 The candidate is a private export of `ba130ea`. Its diff from that head, SHA-256 `4303bc76…`, touches five test-side files:
 - a new `SchedulingSampler` fixture;
@@ -322,7 +322,8 @@ and nothing is added to the measured lambda.
 - **Pool probe:** at most one is pending at a time. A wake that finds one pending queues nothing and counts a skip.
 - **Window:** from `began` to the stop-failure-observed stamp, or to the freeze if that stage was not observed. Samples outside
   it never count.
-- **Pending values:** a probe pending at the end is reported as a lower-bound age, never as a maximum.
+- **Pending values:** a probe pending at the end is reported as a lower-bound age, never as a maximum. (R1 wording, too strong;
+  corrected in "Canonical implementation 2026-11-04".)
 - **Missing values:** an empty window reads `missing`, not 0.
 - **Freeze:** it runs from `collect`, after the measured work and its cleanup.
   - The join is bounded at 200 ms.
@@ -369,3 +370,101 @@ and nothing is added to the measured lambda.
 2. Or keep the current line.
 
 Acceptance stays as above. T019, 008 T006 and 008 T007 (pull request #38 held) are not closed by this.
+
+## Canonical implementation 2026-11-04 (T020)
+
+**Admission**
+
+Two narrow opposed reviews read the R1 candidate and its logs. Root then admitted a bounded canonical test-only implementation
+of exactly the five candidate test files, after three metric corrections:
+
+| Finding | Correction |
+|---|---|
+| NEC-T020-WAKE-AGE-001 (DEF-T020-REPAIR-METRIC-001 part 1) | The wake age is the time since the last selected wake, or since the origin when none was selected. It is not an oversleep and not a lower bound of one. A healthy age of a few ms says nothing about a late wait. |
+| NEC-T020-LATENCY-WINDOW-002 (part 2) | A pool sample is selected by its run stamp inside the window, and its value is the full queue-to-run latency. The queue stamp can precede the origin, so a maximum is not an interval wholly inside the window. |
+| DEF-T020-REPAIR-METRIC-001 part 3 | The pending fields become `pool-unresolved-for-window` and `pool-unresolved-age-in-window-ms`. They are a bookkeeping proxy for a probe queued at or before the end that was not recorded by the freeze, or that was recorded with a run stamp after the end. They are not proof that its callback had not started, and not a dispatch lower bound. The age is the end minus the later of the queue stamp and the origin. |
+
+The R1 description above ("Pending values … lower-bound age") is kept as history and is superseded by this table.
+
+**What changed from R1**
+
+Only what the corrections needed:
+- **Renames:**
+  - the snapshot fields and output keys;
+  - the internal outstanding-probe stamp;
+  - the sampler thread name, now `scheduling-sampler`.
+- **Label:** with no selected wake, the key is `dedicated-age-since-origin-ms` instead of `dedicated-last-wake-age-ms`.
+- **Comments:** describing the window, the endpoint selection, the fallback and the observer effect.
+- **One control hook:** `onProbeStart`, before the run stamp. It is null in the measured test.
+- **Call-site comment:** neutral wording.
+
+The algorithm, the caps, the bounded join, the immutable freeze, the late-write discard and the clock path are unchanged.
+
+**The line in practice**
+
+| Item | Value |
+|---|---|
+| R1 → R2 diff | SHA-256 `fe865f02…` |
+| R2 export diff from `9e8349b` | `b1fff860…` |
+| Canonical files | identical to the R2 export |
+| Example line from the full local suite | `… stop-failure-observed-ms=201.8 sampler=complete window-end=stop-failure-observed stop=joined dedicated-n=19 dedicated-oversleep-max-ms=3.5 dedicated-last-wake-age-ms=3.7 pool-n=19 pool-dispatch-max-ms=2.4 pool-unresolved-for-window=false pool-skipped=0` |
+
+**Unchanged in the T020 test**
+
+- Only line 26 (the comment becomes `SchedulingSampler.Started()`) and line 48 (the `collect` argument) change.
+- Lines 27 to 47 are byte-identical: `began`, the measured lambda, the 200 ms, 5 s, 2 s and < 1 s bounds and the `finally`.
+- The deadline stays on `TimeProvider.System`.
+- There is no C, no D, no wrapping and no `ThreadPool` tuning.
+
+**Controls (Linux, Release, warnings as errors)**
+
+- **New countercases:**
+  - **Probe queued before the origin and run inside the window:** it is selected, and its full latency is at least the
+    queue-to-release interval of about 100 ms. A clipped value would be about 50 ms.
+  - **Probe started but not recorded by the freeze:** it is unresolved for the window, it is not counted, and its age is at
+    most the window.
+- **Adjusted controls:**
+  - the empty window now carries `dedicated-age-since-origin-ms`;
+  - a window with wakes carries `dedicated-last-wake-age-ms`.
+- **Counts:** 9 sampler controls and the 5 existing `StageObservation` tests passed in both UnitTests builds (`net10.0` and
+  `net10.0-windows`). Both `RuntimeCleanupTests` passed in the canonical clone.
+- **Negative probes, each detected:**
+  - latency clipped to the origin (about 50 ms against at least 102 ms);
+  - a started but unrecorded probe treated as resolved;
+  - the unresolved age not clipped (71 ms against a 20 ms window);
+  - no origin-fallback label.
+- **Historical R1 controls:** kept above, as reviewed.
+
+**Full local quality, run once (Linux, capped, 14:26:49Z to 14:30:31Z)**
+
+- **Restore, build and format:** locked restore, Release build with 0 warnings and 0 errors, and `format --verify-no-changes`.
+- **Gate self-tests:** coverage-gate, package-hash and suite-inventory self-tests.
+- **Suites:**
+  - UnitTests 461 of 461;
+  - ContractTests 274 of 274;
+  - IntegrationTests 451 of 451;
+  - PlatformTests 72 of 72;
+  - Checkpoints.Tests 5 of 5;
+  - Checkpoints.Delivery.Tests 99 of 99.
+- **Audit:** no vulnerable packages reported.
+- **Product coverage:** 97.74 % against the 87 % threshold.
+- **Codemetr cover:**
+  - passed and complete: 0 violations, 0 new, 0 worsened, 0 unreported;
+  - line 96 %, branch 84.4 %, diff line 96.4 % and diff branch 87.6 %.
+  - It also gave a tool warning, "1 file(s) have no coverage data", with an empty `unreported` list. That is recorded as
+    observed and not resolved here.
+
+**What stays unknown**
+
+- The Windows cause: (a) to (d) are open.
+- Whether the sampler's observer effect shifts a natural failure.
+- What the maxima can show: they are correlation envelopes, not a classifier.
+- No native run was made.
+
+**Next (root)**
+
+- Review the exact patch, then decide on upload and the required native gates.
+- Owner: this task's owner.
+- Acceptance: unchanged.
+
+T019, 008 T006 and 008 T007 (pull request #38 held, alpha.10 unpublished) are not closed.

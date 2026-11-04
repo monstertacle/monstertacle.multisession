@@ -2,13 +2,17 @@ using System.Diagnostics;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.UnitTests.Fixtures;
 using Xunit;
+using Xunit.Abstractions;
 using static Monstertacle.Multisession.ContractTests.Fixtures.RuntimeTestComposition;
 
 namespace Monstertacle.Multisession.ContractTests;
 
 /// <summary>Stop deadlines include resource shutdown without releasing ownership before the store closes.</summary>
-public sealed class RuntimeCleanupTests
+public sealed class RuntimeCleanupTests(ITestOutputHelper output)
 {
+    private const int _cleanupEntryWaitObserved = 0;
+    private const int _stopFailureObserved = 1;
+
     /// <summary>A held store cleanup cannot extend the caller's deadline or release its lease prematurely.</summary>
     [Fact]
     public async Task BoundsCleanupAndRetainsLeaseUntilStoreCloses()
@@ -19,22 +23,29 @@ public sealed class RuntimeCleanupTests
         await using TestStateDirectoryLease lease = new(Options().StateDirectory);
         SessionRuntime runtime = Runtime(store, new(), lease);
         await runtime.StartAsync(Options(), CancellationToken.None);
+        // T020 diagnostic: stage stamps of the stop window, written after the window (follow-up-windows-elapsed-bounds.md).
+        StageObservation stages = new("T020", "cleanup-entry-wait-observed", "stop-failure-observed");
         long began = Stopwatch.GetTimestamp();
-        Task stopping = runtime.StopAsync(TimeSpan.FromMilliseconds(200), CancellationToken.None).AsTask();
-        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        try
+        await stages.ObserveAsync(began, async () =>
         {
-            SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => stopping.WaitAsync(TimeSpan.FromSeconds(2)));
-            Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
-            Assert.True(Stopwatch.GetElapsedTime(began) < TimeSpan.FromSeconds(1));
-            Assert.True(lease.IsHeld);
-        }
-        finally
-        {
-            finish.TrySetResult();
-            await Record.ExceptionAsync(() => stopping);
-            await runtime.DisposeAsync();
-        }
+            Task stopping = runtime.StopAsync(TimeSpan.FromMilliseconds(200), CancellationToken.None).AsTask();
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            stages.Mark(_cleanupEntryWaitObserved);
+            try
+            {
+                SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => stopping.WaitAsync(TimeSpan.FromSeconds(2)));
+                stages.Mark(_stopFailureObserved);
+                Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
+                Assert.True(Stopwatch.GetElapsedTime(began) < TimeSpan.FromSeconds(1));
+                Assert.True(lease.IsHeld);
+            }
+            finally
+            {
+                finish.TrySetResult();
+                await Record.ExceptionAsync(() => stopping);
+                await runtime.DisposeAsync();
+            }
+        }, output.WriteLine);
         Assert.True(lease.IsDisposed);
     }
 

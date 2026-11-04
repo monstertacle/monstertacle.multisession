@@ -2,13 +2,18 @@ using System.Diagnostics;
 using Monstertacle.Multisession.Contracts;
 using Monstertacle.Multisession.IntegrationTests.Fixtures;
 using Monstertacle.Multisession.Storage.Sqlite;
+using Monstertacle.Multisession.UnitTests.Fixtures;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Monstertacle.Multisession.IntegrationTests;
 
 /// <summary>An independent consumer-owned adapter composes only public library APIs.</summary>
-public sealed class EmbeddedConsumerTests
+public sealed class EmbeddedConsumerTests(ITestOutputHelper output)
 {
+    private const int _cancellationReturned = 0;
+    private const int _providerCancellationObserved = 1;
+    private const int _terminalReadReturned = 2;
     private static readonly string[] _headSequence = ["0", "1"];
     private static readonly string[] _secondSessionInputs = ["first-b", "follow-b"];
     /// <summary>Two sessions overlap, retain their own heads, accept follow-ups, cancel cooperatively and stop without deleting data.</summary>
@@ -43,12 +48,19 @@ public sealed class EmbeddedConsumerTests
         Assert.Equal(_headSequence, provider.Inputs.Where(item => item.SessionId == a.SessionId).Select(item => item.PreviousHead));
         RequestReceipt delayed = await SubmitAsync(runtime, a.SessionId, "delayed");
         Assert.Equal(delayed.RequestId, await provider.DelayedEntered.Task.WaitAsync(TimeSpan.FromSeconds(5)));
+        // T019 diagnostic: stage stamps of the cancellation window, written after the window (follow-up-windows-elapsed-bounds.md).
+        StageObservation stages = new("T019", "cancel-request-returned", "provider-cancellation-observed", "terminal-read-returned");
         long cancellation = Stopwatch.GetTimestamp();
-        await runtime.Requests.CancelRequestAsync(delayed.RequestId, CancellationToken.None);
-        RequestSnapshot cancelled = await EndAsync(runtime, delayed.RequestId);
-        Assert.True(Stopwatch.GetElapsedTime(cancellation) < TimeSpan.FromSeconds(2));
-        Assert.Equal(RequestState.Cancelled, cancelled.State);
-        Assert.Equal(ExecutionCertainty.ConfirmedEnded, cancelled.Certainty);
+        await stages.ObserveAsync(cancellation, async () =>
+        {
+            await runtime.Requests.CancelRequestAsync(delayed.RequestId, CancellationToken.None);
+            stages.Mark(_cancellationReturned);
+            RequestSnapshot cancelled = await EndAsync(runtime, delayed.RequestId);
+            stages.Mark(_terminalReadReturned);
+            Assert.True(Stopwatch.GetElapsedTime(cancellation) < TimeSpan.FromSeconds(2));
+            Assert.Equal(RequestState.Cancelled, cancelled.State);
+            Assert.Equal(ExecutionCertainty.ConfirmedEnded, cancelled.Certainty);
+        }, output.WriteLine, () => stages.Record(_providerCancellationObserved, provider.DelayedCancellationObserved));
         Assert.Equal(5, provider.Inputs.Count);
         Assert.Equal(_secondSessionInputs, (await runtime.Sessions.ReadHistoryAsync(b.SessionId, 100, null, CancellationToken.None)).Items.Select(item => item.Input));
         await runtime.StopAsync(TimeSpan.FromSeconds(5), CancellationToken.None);

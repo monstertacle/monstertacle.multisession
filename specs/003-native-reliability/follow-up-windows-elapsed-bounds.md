@@ -692,3 +692,58 @@ the runtime and its workers stay alive past the test. This has to be proven with
 
 - The line shows the order and time of these stamps, not which internal step was slow.
 - A process that ends early writes nothing (unchanged).
+
+## T022 and SDK-T020-ENTRY-TIMEOUT-FIXTURE-CLEANUP-001: implementation (2026-11-06)
+
+Candidate commits on `test/003-t022-t023-diagnostics`: red `7c49b0e`, green `b4a7b64`. Test and fixture code only.
+
+**Fixture:** `tests/Monstertacle.Multisession.ContractTests/Fixtures/BoundedCleanupWindow.cs`.
+
+- It holds the original body. `BoundsCleanupAndRetainsLeaseUntilStoreCloses` calls it with the defaults. Its assertions,
+  the 5 s entry wait, the 2 s stop wait and the 1 s elapsed bound are unchanged.
+- The cleanup order is the original one: release the owned preparation, finish the store close, observe the stop, dispose the
+  runtime. Every step runs, and their failures are collected.
+- A measured failure is thrown as is. Cleanup failures:
+  - after a measured failure, they follow it in an `AggregateException`;
+  - without one, they are thrown as an `AggregateException`.
+- The pattern is the one of `StopIntentCancellationTests`.
+
+**Line** (stage list `cleanup-entry-wait-observed`, `stop-failure-observed`, `cleanup-entered`, `stop-completed`,
+`test-cleanup-began`, then `stop-outcome=` before the sampler fields):
+
+- `cleanup-entered` and `stop-completed` are timestamps read inside the window and copied into the line at the freeze.
+- `stop-outcome` is the stop task's state at the freeze: `pending`, `completed`, `canceled`, or
+  `faulted:<type>[:<code>]`.
+
+**Controls** (`RuntimeCleanupObservationTests`; owned provider, hook and submit only):
+
+| Control | Red (`7c49b0e`, original structure) | Green line (local, 2026-11-06) |
+|---|---|---|
+| Silent stop without cleanup: a provider call held until the control releases it | the entry wait timed out and the window's cleanup did not run (`CleanupRan` false): the finding is proven | `cleanup-entered-ms=5000.2`, `test-cleanup-began-ms=4999.5`, `stop-completed-ms=200.7`, `stop-outcome=faulted:SessionOperationException:StorageUnavailable`; primary `TimeoutException`, cleanup ran, lease disposed |
+| Late entry: an acceptance held for 1.5 s by a store hook | the window passed its entry wait at 1502 ms, but no `cleanup-entered` stamp existed | `cleanup-entered-ms=1498.6` before `test-cleanup-began-ms=1499.1`, `stop-completed-ms=204.7`, same outcome; primary `TrueException` (the original 1 s bound) |
+| Cleanup failure after the entry timeout: as silent, and the release step throws | (new with the fix) | an `AggregateException`: [0] the `TimeoutException`, [1] the owned failure; the lease was still disposed |
+
+In both observed cases the stop ended at its 200 ms deadline with `StorageUnavailable`. The lines tell the cases apart only by
+**who entered cleanup and when**:
+- **late:** the runtime entered cleanup by itself, after the stop, and before the test cleanup began;
+- **silent:** cleanup was entered only by the test's own cleanup.
+
+**Mutants** (each restored; built with `--no-incremental`):
+
+| Mutant | Result |
+|---|---|
+| m1, entry wait back outside the guard | silent and cleanup-failure controls fail |
+| m2, a failing release skips the later steps | cleanup-failure control fails |
+| m3, cleanup failure first | cleanup-failure control fails |
+| m4, no `cleanup-entered` stamp | late control fails |
+| m5, no `stop-completed` stamp | late and silent controls fail |
+| m6, cleanup entry stamped on every call (not only the first) | **survived** |
+| m7, outcome never `faulted` | late and silent controls fail |
+
+m6 survived because in these controls the store's `Disposing` is entered only once before the freeze. The first-entry guard
+is defensive and not observable here.
+
+**Limits**
+
+- Unchanged: the line does not show which runtime step was slow, and a process that ends early writes nothing.
+- The cause of the natural failure (run 41876640953) remains unknown. The next natural failure is read from its line.

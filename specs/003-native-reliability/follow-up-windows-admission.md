@@ -228,3 +228,68 @@ Source `77e39e6`. Root approved T023 test-only on 2026-11-06T14:01:51Z.
 
 - The report says which step was running only if the worker wrote it to standard error.
 - The cause of a silent worker is not shown.
+
+## T023: implementation (2026-11-06)
+
+Candidate commits on `test/003-t022-t023-diagnostics`: red `1bad070`, green `f9caaa6`. Test and fixture code only; the
+validation host gains a fixture worker mode.
+
+**Fixture worker**
+- `examples/Monstertacle.Multisession.ValidationHost/FirstLineFixtureWorker.cs`, with its protocol constants in
+  `FirstLineFixtureProtocol.cs` (linked into the integration tests, like `CrashProtocol.cs`).
+- `--first-line-fixture-worker silent|stderr`: it writes its process id to `first-line-fixture.pid` in its working directory
+  and never writes standard output.
+- `stderr` writes 2,048 lines of 63 characters (131,072 bytes, more than a pipe buffer) to standard error, then the marker.
+- It ends by itself after 2 minutes.
+
+**Harness** (`tests/Monstertacle.Multisession.IntegrationTests/Fixtures/CrashHarness.cs`)
+- `StartAsync` is unchanged for its callers. It calls the new `StartWorkerAsync(start, point, limit)` with the unchanged 30 s
+  limit.
+- Standard error is read from the start into `BoundedTextTail` (the last 2,048 characters and a count of every character).
+- **On a first-line timeout:**
+  - the harness ends only its own child, by its captured process (the existing `KillAsync`);
+  - it then throws a `TimeoutException` whose inner exception is the original one;
+  - the message names the limit, the elapsed time, that no worker step is known (steps are reported only in the first line),
+    the child's process id, and the standard-error tail (or `standard error: none`).
+- The barrier check, the candidate lookup and the process ownership are unchanged.
+
+**A second defect, found by the red: harness cleanup replaced the timeout.**
+- The red run showed both controls failing with a `FileNotFoundException`, not a timeout. The harness's own cleanup waited
+  for the release of `multisession.db`, a file the worker had not created.
+- Any worker that times out before it creates its store therefore lost the timeout.
+- Fixes:
+  - an absent store has nothing to release;
+  - a failure to end the child is reported after the start failure, in an `AggregateException`, never instead of it.
+
+**Controls** (`CrashHarnessTimeoutTests`, 2 s control limit)
+
+| Control | Red (`1bad070`) | Green (`f9caaa6`) |
+|---|---|---|
+| silent | `FileNotFoundException` replaced the timeout | `TimeoutException` (inner `TimeoutException`), reported elapsed between the limit and the measured time, `standard error: none`, the recorded process id named and no longer running |
+| stderr only | the same | the same, plus the marker, the exact count of 131,102 characters, a message under 8 KiB |
+
+- The existing `PersistenceRecoveryTests`, `CrashBoundaryTests`, `CrashJournalTests` and `CrashWorkerDiagnosticTests` pass
+  on both target frameworks: 23 of 23 each.
+
+**Mutants** (each restored; built with `--no-incremental`)
+
+| Mutant | Result |
+|---|---|
+| t1, standard error not read | the stderr control fails: no marker, so the worker blocked on a full pipe |
+| t2, unattributed timeout | both controls fail |
+| t3, absent store fails cleanup | both controls fail |
+| t4, a 1,000 times larger tail | the stderr control fails |
+| t5, the tail described before the child is ended | **survived** |
+| t6, inner exception dropped | both controls fail |
+| t7, elapsed time measured from earlier | both controls fail |
+
+- **t5 survived.** The child had written all of its standard error long before the 2 s limit, so in these controls the order
+  is not observable.
+- **Invalid runs, kept as evidence:** the first t2 and t4 variants did not compile, because of the unused-variable and
+  unused-parameter analyzers.
+
+**Limits**
+- The step is known only if the worker wrote it to standard error. The cause of a silent worker is not shown.
+- The tail is reported verbatim, bounded to 2,048 characters. The existing check against a state path or payload in the
+  message covers the store-failure line, not this timeout message.
+- No Windows run was made: `ProcessExitWait`'s Windows branch and the Windows file-release wait were not exercised.

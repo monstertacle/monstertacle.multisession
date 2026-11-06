@@ -134,6 +134,58 @@ Source state: `main` `18cbcbba`. The record contains:
     - The native scenario state-root question is registered as T021 (follow-up-native-scenario-root-ownership.md). It is open
       and not part of these diagnostics.
 
+## Unbound Windows restart failures 2026-11-02 (run 41505132813; bound 2026-11-06)
+
+Bound by root forwarding (intake MS-RECOVERY-RUN-41505132813-UNBOUND, 2026-11-06), from the raw job log (SHA-256 `8160ef7f2b6a6144…`) and
+the retained `quality-windows` artifact (IntegrationTests TRX SHA-256 `eab93e76c290a098…`). Nothing was rerun.
+
+**Where it ran**
+
+- **Run:** 41505132813, `push`, attempt 1, branch `feature/015-continuity-pinning`, head `6df1707`. That head is an ancestor of
+  `main`.
+- **Job:** 125482363143, `quality (windows-latest)`, Microsoft Windows Server 2025, runner 2.338.2.
+- **Suite totals:** IntegrationTests 429 of 432 passed; UnitTests and ContractTests passed.
+
+**The three failures (raw)**
+
+- **`ValidationScenarioTests.RecoveryExecutesTenNativeRestarts`:** started 19:01:48Z, took 1 min 34 s. The `recovery` scenario
+  exited 2 with `ScenarioExecutionFailed`, generic code 16, certainty 0, no exception type, no site, no cleanup failure. The
+  stack shows `ValidationScenarioTests.cs:84`, 61 and 64.
+- **`PersistenceRecoveryTests.PreservesExactStateAcrossForcedRestart(iteration 2)`:** started 19:03:23Z, took 35.0 s, and
+  **`(iteration 0)`** started 19:03:58Z and took 34.6 s. Both threw `System.TimeoutException` at `CrashHarness.cs:40` (and 49),
+  from `PersistenceRecoveryTests.cs:33` (and 77). At that head, line 40 is the 30 s wait for the crash worker's first output
+  line: the worker wrote no line within 30 s.
+
+**Measured around the failures (same TRX)**
+
+- Iteration 8 started at 19:04:32Z and passed, but took 22.0 s.
+- Every later iteration (19:04:54Z onward) passed in about 1.4 s.
+- The failures fall inside one window of slow tests, 19:01:48Z to about 19:04:54Z. What made it slow was not measured.
+
+**Why this is not bound as a recurrence**
+
+- The recorded forced-restart failures (evidence/windows-restart-admission-20261102.md, run 41533898656) failed when the
+  crash worker *reported* `AdmissionTimedOut` at its barrier.
+- Here the worker wrote **no** line, so neither the admission nor the stage is known.
+- The slow-window pattern is similar, but the failure signature differs, so no common cause is claimed. Separately, the
+  `recovery` scenario's generic code 16 matches the shape of the original T016 capacity failure. No shared cause is assumed
+  there either.
+
+**What current `main` would show**
+
+- **The `recovery` scenario:** untyped scenario failures name their exception type and throw site since `c2c498b`
+  (2026-11-03, after `6df1707`).
+- **The crash worker:** failures it *reports* carry its step, stage and candidate since `26286be`.
+- **Gap:** a first-line timeout still throws a bare `TimeoutException`, and the worker's redirected standard error is not
+  read.
+
+**Next executable steps**
+
+1. Root monitoring binds the next natural Windows recurrence of either test on `main`; a `recovery` recurrence now carries
+   its type and site.
+2. T023 (proposed) closes the first-line timeout gap, test-only. No rerun, no bound change, no runtime change before a
+   proven defect.
+
 ## Acceptance
 
 

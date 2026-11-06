@@ -602,3 +602,42 @@ The quality script already writes the complete report through `--output`. The re
   - The five lines are inside Codemetr's own 4951-line denominator.
 - **Disposition:** Root disposition: the file/count question is answered. The constants-only estimate is accepted as a reporting limitation for this SDK candidate; no tool change is commissioned. Executable product coverage continues to use Cobertura; config, baseline and thresholds stay unchanged.
 - **Unchanged:** no exclusion, threshold, baseline or source change is made.
+
+## Natural failure 2026-11-04 on Linux (T020 test, entry-wait site; bound 2026-11-06)
+
+Bound by root forwarding (intake MS-MAIN-T020-LINUX-NATURAL-FAILURE, 2026-11-06). It is a second natural failure of the T020 test,
+at a different site than the recurrence above. It is not an overrun of the 1 s elapsed bound.
+
+**Where it ran**
+
+- **Run:** 41876640953, `push` to `main`, head `fc3891f`.
+- **Job:** 126737700342, `quality (ubuntu-24.04)`. Runner image 20261025.353.1.
+- **Failure time (raw log):** 2026-11-04T17:22:54.7074696Z.
+- **Raw log:** an operations copy, SHA-256 `31f5f921a0efec44…`. The stage line is at log line 241.
+
+**What failed**
+
+- **Test:** `RuntimeCleanupTests.BoundsCleanupAndRetainsLeaseUntilStoreCloses`. `System.TimeoutException` was thrown in the
+  observed body at `RuntimeCleanupTests.cs:32`, `await entered.Task.WaitAsync(TimeSpan.FromSeconds(5))`; the stack also
+  shows lines 29 and 49.
+- **What timed out:** after `StopAsync(200 ms)`, the store's disposal callback (the cleanup entry) was not reached within
+  5 s.
+- **Suite totals:** ContractTests 273 of 274 passed.
+- **Stage line (verbatim):** `stage-observation T020 outcome=failed:System.TimeoutException cleanup-entry-wait-observed=not-observed
+  stop-failure-observed=not-observed sampler=complete window-end=freeze stop=joined dedicated-n=495 dedicated-oversleep-max-ms=0.7
+  dedicated-last-wake-age-ms=4.3 pool-n=429 pool-dispatch-max-ms=669.4 pool-unresolved-for-window=false pool-skipped=66`.
+
+**Correction**
+
+An earlier operations summary read the dedicated oversleep maximum as 0 ms and inferred something about scheduling. The raw value
+is 0.7 ms. That inference is withdrawn, and no cause is claimed.
+
+**What the line does not show**
+
+- whether the 200 ms stop reached the store's disposal at all;
+- when the stop task completed, and with which outcome;
+- why the cleanup entry was not observed within 5 s.
+
+The pool maximum of 669.4 ms is a measured value, not an explanation of the 5 s wait.
+
+**Next executable question:** T022.

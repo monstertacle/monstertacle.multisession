@@ -641,3 +641,54 @@ is 0.7 ms. That inference is withdrawn, and no cause is claimed.
 The pool maximum of 669.4 ms is a measured value, not an explanation of the 5 s wait.
 
 **Next executable question:** T022.
+
+## T022 and SDK-T020-ENTRY-TIMEOUT-FIXTURE-CLEANUP-001: source analysis before implementation (2026-11-06)
+
+Source `77e39e6`. Root approved T022 test-only on 2026-11-06T14:01:51Z.
+
+**Test:** `tests/Monstertacle.Multisession.ContractTests/RuntimeCleanupTests.cs`,
+`BoundsCleanupAndRetainsLeaseUntilStoreCloses`.
+
+**Observation infrastructure**
+
+- `tests/Monstertacle.Multisession.UnitTests/Fixtures/StageObservation.cs`: test-only. A mark only reads
+  `Stopwatch.GetTimestamp`, and the line is written once, after the window.
+- `SchedulingSampler`: unchanged.
+
+**Runtime stop path** (`src/Monstertacle.Multisession.Common/RuntimeLifecycle.cs`, read only)
+
+- `StopAsync(200 ms)` enters the stop gate, then `CompleteStopAsync` runs: stop acceptance, queued cancel, the worker completion
+  wait and, only if the workers completed, `CleanupAsync`.
+- `CleanupCoreAsync` drains tracked API operations (`RuntimeShutdown.DrainAsync`), then disposes the store. That disposal is
+  the fixture's `Disposing` callback, the "cleanup entry".
+- So a stop can end without ever entering cleanup (workers not completed in time), or cleanup can be entered after the
+  deadline, while it waits for a draining operation.
+
+**Finding SDK-T020-ENTRY-TIMEOUT-FIXTURE-CLEANUP-001 (static).** The 5 s entry wait runs before the test's `try/finally`. A
+timeout there skips `finish.TrySetResult()`, the wait for the stop task and `runtime.DisposeAsync()`: the held store cleanup,
+the runtime and its workers stay alive past the test. This has to be proven with an owned fixture before it is fixed.
+
+**Decision (test-only, no runtime change; original assertions and bounds unchanged)**
+
+1. **The observed body becomes one fixture method,** shared by the original test and the controls.
+2. **The entry wait moves into the guarded body.** The test's cleanup always runs (set `finish`, wait for the stop, dispose).
+   A cleanup failure after a failed body is reported together with the primary failure, which comes first; it never
+   replaces it.
+3. **New stamps** (timestamp reads only, stored for the line written after the window):
+   - `cleanup-entered`: the first entry of the store's `Disposing` callback;
+   - `stop-completed`: a synchronous continuation of the stop task;
+   - `test-cleanup-began`.
+
+   At the freeze, `stop-outcome` records the stop task's status and failure type and code.
+4. **Controls:**
+   - **Silent stop without cleanup:** an owned provider holds a worker, so the stop ends at its deadline without entering
+     cleanup.
+   - **Late entry:** an owned, held submit makes the runtime's own cleanup enter after the deadline.
+
+   They must give distinguishable lines: in the first, cleanup is entered only after `test-cleanup-began`; in the second,
+   before it.
+
+**Limits**
+
+- The line shows the order and time of these stamps, not which internal step was slow.
+- A process that ends early writes nothing (unchanged).

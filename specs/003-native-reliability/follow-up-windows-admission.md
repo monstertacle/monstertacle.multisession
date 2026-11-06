@@ -196,3 +196,35 @@ Any isolated defect has a Red/Green regression and unchanged certainty/deadline
 tests. Native default-profile observations and configured-Wave results are reported
 separately. Open release blockers remain open in feature001; this follow-up is not
 a substitute for a successful current Wave/native quality gate.
+
+## T023: source analysis before implementation (2026-11-06)
+
+Source `77e39e6`. Root approved T023 test-only on 2026-11-06T14:01:51Z.
+
+**Current behaviour** (`tests/Monstertacle.Multisession.IntegrationTests/Fixtures/CrashHarness.cs`, `StartAsync`)
+
+- The harness starts the crash worker with standard output and standard error redirected.
+- It waits up to 30 s (`_processLimit`) for the first output line. A timeout throws a bare `TimeoutException`; the existing
+  catch disposes the harness, which ends its own child.
+- **Standard error is never read.** Its content is lost, and a worker that writes more than a pipe buffer to it would block
+  (a latent deadlock).
+- The worker (`examples/Monstertacle.Multisession.ValidationHost/CrashWorker.cs`) records its steps in memory and reports them
+  only inside its first line. So on a first-line timeout no step is known.
+
+**Decision (test-only; 30 s limit, barrier check, candidate lookup and process ownership unchanged)**
+
+1. **Read the worker's standard error from its start** into a bounded tail, so a full pipe cannot block the worker.
+2. **On a first-line timeout:** end only the harness's own child (the existing `KillAsync`, by its captured process), then
+   throw a `TimeoutException` with the original as its inner exception. The message names the limit, the elapsed time, that
+   no worker step is known (no line), and the bounded standard-error tail.
+3. **Owned controls:** a validation-host fixture worker mode, beside the existing crash, disk-full and ownership workers, that
+   writes nothing to standard output and is ended by the harness:
+   - `silent`: writes nothing;
+   - `stderr`: writes far more than a pipe buffer to standard error, ending with a marker.
+
+   Both run with a short control limit; the production limit is unchanged.
+
+**Limits**
+
+- The report says which step was running only if the worker wrote it to standard error.
+- The cause of a silent worker is not shown.

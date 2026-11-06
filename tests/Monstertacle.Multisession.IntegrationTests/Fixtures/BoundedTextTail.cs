@@ -12,6 +12,10 @@ internal sealed class BoundedTextTail(int capacity)
     private readonly Lock _gate = new();
     private readonly StringBuilder _tail = new();
     private long _seen;
+    private int _peak;
+
+    // The most characters the tail ever stored (SDK-SQ-001 control).
+    internal int PeakStored { get { lock (_gate) { return _peak; } } }
 
     internal void Append(string? line)
     {
@@ -20,6 +24,7 @@ internal sealed class BoundedTextTail(int capacity)
         {
             _seen += line.Length + 1;
             _tail.Append(line).Append('\n');
+            _peak = Math.Max(_peak, _tail.Length);
             if (_tail.Length > capacity) { _tail.Remove(0, _tail.Length - capacity); }
         }
     }

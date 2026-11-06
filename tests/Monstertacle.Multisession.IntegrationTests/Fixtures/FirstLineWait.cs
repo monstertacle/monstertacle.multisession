@@ -14,6 +14,9 @@ internal sealed class FirstLineWait
 {
     private const int _standardErrorTail = 2048;
     private readonly BoundedTextTail _standardError = new(_standardErrorTail);
+
+    // The standard-error tail, for the SDK-SQ-001 control.
+    internal BoundedTextTail StandardError => _standardError;
     private readonly Process _child;
     private readonly TimeSpan _limit;
 

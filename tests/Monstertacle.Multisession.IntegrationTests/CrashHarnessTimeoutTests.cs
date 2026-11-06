@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using Monstertacle.Multisession.IntegrationTests.Fixtures;
@@ -58,6 +59,86 @@ public sealed class CrashHarnessTimeoutTests
         finally
         {
             if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); }
+        }
+    }
+
+    /// <summary>
+    /// SDK-SQ-001: 8 Mi characters of standard error without any line terminator. The reader keeps draining from the start, the
+    /// tail stores at most its capacity at any time, keeps exactly the last characters and counts every one; the allocation
+    /// during the wait stays far below the stream (process-wide allocated bytes, a test-only measure with a stated margin).
+    /// </summary>
+    [Fact]
+    public async Task UnterminatedStderrIsReadInBoundedChunks()
+    {
+        await using PrivateStoreDirectory directory = new();
+        using Process child = new() { StartInfo = CrashHarness.WorkerStart(directory.StateDirectory, FirstLineFixtureProtocol.WorkerArgument, FirstLineFixtureProtocol.StderrUnterminated) };
+        FirstLineWait firstLine = new(child, _controlLimit);
+        Assert.True(child.Start());
+        try
+        {
+            long before = GC.GetTotalAllocatedBytes(precise: true);
+            Exception? thrown = await Record.ExceptionAsync(() => firstLine.ReadAsync(async () =>
+            {
+                child.Kill(true); // the control's own child only
+                await child.WaitForExitAsync();
+            }));
+            long allocated = GC.GetTotalAllocatedBytes(precise: true) - before;
+            TimeoutException timeout = Assert.IsType<TimeoutException>(thrown);
+            string measured = "tail peak " + firstLine.StandardError.PeakStored.ToString(CultureInfo.InvariantCulture) + " chars, allocated "
+                + allocated.ToString(CultureInfo.InvariantCulture) + " bytes";
+            Assert.True(firstLine.StandardError.PeakStored <= 2048, "tail storage grew: " + measured);
+            // The stream is 16 MiB as UTF-16; a whole-line reader allocates at least that. The bound is half the stream's characters in bytes.
+            Assert.True(allocated < FirstLineFixtureProtocol.UnterminatedChars, "allocation grew with the stream: " + measured);
+            long total = FirstLineFixtureProtocol.UnterminatedChars + FirstLineFixtureProtocol.Marker.Length;
+            Assert.Contains("standard error: " + total.ToString(CultureInfo.InvariantCulture) + " chars, last 2048: ", timeout.Message, StringComparison.Ordinal);
+            Assert.EndsWith(new string('u', 2048 - FirstLineFixtureProtocol.Marker.Length) + FirstLineFixtureProtocol.Marker, timeout.Message, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); }
+        }
+    }
+
+    /// <summary>SDK-SQ-002: a private path with no executable never starts; its start failure is thrown as is, not replaced by cleanup.</summary>
+    [Fact]
+    public async Task NeverStartedWorkerKeepsItsStartFailure()
+    {
+        await using PrivateStoreDirectory directory = new();
+        ProcessStartInfo start = CrashHarness.WorkerStart(directory.StateDirectory, FirstLineFixtureProtocol.WorkerArgument, FirstLineFixtureProtocol.Silent);
+        start.FileName = Path.Combine(directory.StateDirectory, "no-such-executable");
+        Exception? thrown = await Record.ExceptionAsync(() => CrashHarness.StartWorkerAsync(start, CrashProtocol.RecoveryPoint, _controlLimit));
+        Assert.IsType<Win32Exception>(thrown); // the original start failure, not an AggregateException with a cleanup failure
+        Assert.False(File.Exists(Path.Combine(directory.StateDirectory, FirstLineFixtureProtocol.ProcessIdFileName))); // no child ran
+    }
+
+    /// <summary>
+    /// SDK-SQ-002: ending the harness's own started child fails (its own store file is unreadable after the child was killed); the
+    /// failure is reported and the captured Process is disposed all the same. Linux only: the failure uses a Unix file mode.
+    /// </summary>
+    [Fact]
+    public async Task ProcessIsDisposedWhenEndingTheChildFails()
+    {
+        if (OperatingSystem.IsWindows()) { return; } // the owned failure needs a Unix file mode; recorded as a limit
+        await using PrivateStoreDirectory directory = new();
+        string database = Path.Combine(directory.StateDirectory, "multisession.db");
+        await File.WriteAllBytesAsync(database, []);
+        File.SetUnixFileMode(database, UnixFileMode.None);
+        Process child = new() { StartInfo = CrashHarness.WorkerStart(directory.StateDirectory, FirstLineFixtureProtocol.WorkerArgument, FirstLineFixtureProtocol.Silent) };
+        bool disposed = false;
+        child.Disposed += (_, _) => disposed = true;
+        Assert.True(child.Start());
+        int processId = child.Id;
+        try
+        {
+            Exception? thrown = await Record.ExceptionAsync(async () => await new CrashHarness(child).DisposeAsync());
+            Assert.IsType<UnauthorizedAccessException>(thrown);
+            Assert.True(disposed, "the captured Process was not disposed after its cleanup failed");
+            Assert.False(Running(processId), "the own child is still running");
+        }
+        finally
+        {
+            File.SetUnixFileMode(database, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            if (!disposed) { if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); } child.Dispose(); }
         }
     }
 

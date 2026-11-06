@@ -5,7 +5,7 @@ namespace Monstertacle.Multisession.ValidationHost;
 /// <summary>
 /// Test fixture worker (T023): never writes a first standard-output line, so a harness waiting for one times out. It records its
 /// own process id in its working directory, so a control can show that only this child was ended. <c>silent</c> writes nothing;
-/// <c>stderr</c> writes far more than a pipe buffer to standard error, ending with the marker. It ends by itself after
+/// <c>stderr</c> writes far more than a pipe buffer to standard error, ending with the marker. <c>stderr-unterminated</c> writes 8 Mi characters and the marker without any line terminator. It ends by itself after
 /// <see cref="_selfLimit"/>, so it never outlives a harness that failed to end it.
 /// </summary>
 internal static class FirstLineFixtureWorker
@@ -14,7 +14,7 @@ internal static class FirstLineFixtureWorker
 
     internal static async Task<int> RunAsync(string[] args)
     {
-        if (args.Length != 2 || args[1] is not (FirstLineFixtureProtocol.Silent or FirstLineFixtureProtocol.Stderr)) { return 2; }
+        if (args.Length != 2 || args[1] is not (FirstLineFixtureProtocol.Silent or FirstLineFixtureProtocol.Stderr or FirstLineFixtureProtocol.StderrUnterminated)) { return 2; }
         await File.WriteAllTextAsync(Path.Combine(Environment.CurrentDirectory, FirstLineFixtureProtocol.ProcessIdFileName),
             Environment.ProcessId.ToString(CultureInfo.InvariantCulture));
         if (args[1] == FirstLineFixtureProtocol.Stderr)
@@ -22,6 +22,13 @@ internal static class FirstLineFixtureWorker
             string filler = new('e', FirstLineFixtureProtocol.StderrLineLength);
             for (int line = 0; line < FirstLineFixtureProtocol.StderrLines; line++) { await Console.Error.WriteLineAsync(filler); }
             await Console.Error.WriteLineAsync(FirstLineFixtureProtocol.Marker);
+            await Console.Error.FlushAsync();
+        }
+        if (args[1] == FirstLineFixtureProtocol.StderrUnterminated)
+        {
+            string chunk = new('u', FirstLineFixtureProtocol.UnterminatedChunk);
+            for (int written = 0; written < FirstLineFixtureProtocol.UnterminatedChars; written += chunk.Length) { await Console.Error.WriteAsync(chunk); }
+            await Console.Error.WriteAsync(FirstLineFixtureProtocol.Marker); // still no line terminator
             await Console.Error.FlushAsync();
         }
         await Task.Delay(_selfLimit);

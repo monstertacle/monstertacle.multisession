@@ -14,7 +14,6 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
     private const int _sharingViolation = 32;
     private const int _lockViolation = 33;
     private const string _databaseFileName = "multisession.db";
-    private const int _standardErrorTail = 2048;
     private static readonly JsonSerializerOptions _web = new(JsonSerializerDefaults.Web);
     public CrashSignal? Signal { get; private set; }
 
@@ -46,25 +45,16 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
     }
 
     // Waits up to the limit for the worker's first line; production uses the 30 s limit, T023's owned controls a short one.
-    // Standard error is read from the start into a bounded tail, so a full pipe never blocks the worker (T023).
     internal static async Task<CrashHarness> StartWorkerAsync(ProcessStartInfo start, string point, TimeSpan limit)
     {
         string stateDirectory = start.WorkingDirectory;
         Process child = new() { StartInfo = start };
-        BoundedTextTail standardError = new(_standardErrorTail);
-        child.ErrorDataReceived += (_, received) => standardError.Append(received.Data);
+        FirstLineWait firstLine = new(child, limit); // T023: standard error read from the start; an attributed timeout
         CrashHarness harness = new(child);
         try
         {
             if (!child.Start()) { throw new InvalidOperationException("Crash worker could not start."); }
-            child.BeginErrorReadLine();
-            long began = Stopwatch.GetTimestamp();
-            string? line;
-            try { line = await child.StandardOutput.ReadLineAsync().WaitAsync(limit); }
-            catch (TimeoutException timeout)
-            {
-                throw await harness.AttributeTimeoutAsync(timeout, limit, Stopwatch.GetElapsedTime(began), standardError);
-            }
+            string? line = await firstLine.ReadAsync(harness.KillAsync);
             harness.Signal = line is null ? null : JsonSerializer.Deserialize<CrashSignal>(line);
             string expectedBarrier = point == CrashProtocol.JournalPoint ? CrashProtocol.JournalBarrier : CrashProtocol.RecoveryBarrier;
             if (harness.Signal is null || harness.Signal.Barrier != expectedBarrier || harness.Signal.ProcessId != child.Id)
@@ -82,20 +72,6 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
             catch (Exception cleanup) { throw new AggregateException("Ending the crash worker failed after its start failed.", primary, cleanup); }
             throw;
         }
-    }
-
-    // T023: a first-line timeout names the limit, the elapsed time, that no worker step is known (the worker reports its steps only
-    // in that line) and the bounded standard-error tail. Only this harness's own child, by its captured process, is ended first, so
-    // the tail holds everything the child wrote.
-    private async Task<Exception> AttributeTimeoutAsync(TimeoutException timeout, TimeSpan limit, TimeSpan elapsed, BoundedTextTail standardError)
-    {
-        int processId = process.Id;
-        Exception? cleanup = null;
-        try { await KillAsync(); }
-        catch (Exception failure) { cleanup = failure; }
-        TimeoutException attributed = new(string.Create(CultureInfo.InvariantCulture,
-            $"Crash worker wrote no first line within {limit.TotalSeconds:F1} s (elapsed {elapsed.TotalSeconds:F1} s); no worker step is known: the worker reports its steps only in that line. Its own worker process {processId} {(cleanup is null ? "ended" : "could not be ended (next exception)")}. {standardError.Describe()}"), timeout);
-        return cleanup is null ? attributed : new AggregateException("Ending the crash worker failed after its first-line timeout.", attributed, cleanup);
     }
 
     // Read-only lookup of a candidate the worker reported, after the worker is gone: never a resubmission.

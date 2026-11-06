@@ -51,9 +51,11 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
         Process child = new() { StartInfo = start };
         FirstLineWait firstLine = new(child, limit); // T023: standard error read from the start; an attributed timeout
         CrashHarness harness = new(child);
+        bool started = false;
         try
         {
-            if (!child.Start()) { throw new InvalidOperationException("Crash worker could not start."); }
+            started = child.Start();
+            if (!started) { throw new InvalidOperationException("Crash worker could not start."); }
             string? line = await firstLine.ReadAsync(harness.KillAsync);
             harness.Signal = line is null ? null : JsonSerializer.Deserialize<CrashSignal>(line);
             string expectedBarrier = point == CrashProtocol.JournalPoint ? CrashProtocol.JournalBarrier : CrashProtocol.RecoveryBarrier;
@@ -67,6 +69,12 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
         }
         catch (Exception primary)
         {
+            if (!started)
+            {
+                // SDK-SQ-002: a child that never started has nothing to end; its handle is released and the start failure stays as is.
+                child.Dispose();
+                throw;
+            }
             // The start failure stays the thrown one; a failure to end the child is reported with it, never instead of it.
             try { await harness.DisposeAsync(); }
             catch (Exception cleanup) { throw new AggregateException("Ending the crash worker failed after its start failed.", primary, cleanup); }
@@ -123,8 +131,9 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await KillAsync();
-        process.Dispose();
+        // SDK-SQ-002: the captured handle is released even when ending the child fails; that failure still propagates.
+        try { await KillAsync(); }
+        finally { process.Dispose(); }
     }
 
 }

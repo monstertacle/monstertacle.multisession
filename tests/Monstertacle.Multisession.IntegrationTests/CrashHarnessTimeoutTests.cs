@@ -30,7 +30,7 @@ public sealed class CrashHarnessTimeoutTests
     {
         string message = await TimeOutAsync(FirstLineFixtureProtocol.Stderr);
         Assert.Contains(FirstLineFixtureProtocol.Marker, message, StringComparison.Ordinal); // written after more than a pipe buffer
-        Assert.Contains("standard error: " + ((FirstLineFixtureProtocol.StderrLines * (FirstLineFixtureProtocol.StderrLineLength + 1)) + FirstLineFixtureProtocol.Marker.Length + 1).ToString(CultureInfo.InvariantCulture) + " chars", message, StringComparison.Ordinal);
+        Assert.Contains("standard error: " + ((FirstLineFixtureProtocol.StderrLines * (FirstLineFixtureProtocol.StderrLineLength + Environment.NewLine.Length)) + FirstLineFixtureProtocol.Marker.Length + Environment.NewLine.Length).ToString(CultureInfo.InvariantCulture) + " chars", message, StringComparison.Ordinal);
         Assert.True(message.Length < 8192, "the standard-error report is not bounded: " + message.Length.ToString(CultureInfo.InvariantCulture));
     }
 
@@ -113,7 +113,8 @@ public sealed class CrashHarnessTimeoutTests
 
     /// <summary>
     /// SDK-SQ-002: ending the harness's own started child fails (its own store file is unreadable after the child was killed); the
-    /// failure is reported and the captured Process is disposed all the same. Linux only: the failure uses a Unix file mode.
+    /// failure is reported and the captured Process is disposed all the same (observed: it no longer has an associated process).
+    /// Linux only: the failure uses a Unix file mode.
     /// </summary>
     [Fact]
     public async Task ProcessIsDisposedWhenEndingTheChildFails()
@@ -124,21 +125,22 @@ public sealed class CrashHarnessTimeoutTests
         await File.WriteAllBytesAsync(database, []);
         File.SetUnixFileMode(database, UnixFileMode.None);
         Process child = new() { StartInfo = CrashHarness.WorkerStart(directory.StateDirectory, FirstLineFixtureProtocol.WorkerArgument, FirstLineFixtureProtocol.Silent) };
-        bool disposed = false;
-        child.Disposed += (_, _) => disposed = true;
         Assert.True(child.Start());
         int processId = child.Id;
         try
         {
             Exception? thrown = await Record.ExceptionAsync(async () => await new CrashHarness(child).DisposeAsync());
             Assert.IsType<UnauthorizedAccessException>(thrown);
-            Assert.True(disposed, "the captured Process was not disposed after its cleanup failed");
             Assert.False(Running(processId), "the own child is still running");
+            // A disposed Process no longer has an associated process; an undisposed one answers that its killed child exited.
+            Assert.Throws<InvalidOperationException>(() => child.HasExited);
         }
         finally
         {
             File.SetUnixFileMode(database, UnixFileMode.UserRead | UnixFileMode.UserWrite);
-            if (!disposed) { if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); } child.Dispose(); }
+            // Owned safety cleanup without masking the result: only this test's own captured child.
+            await Record.ExceptionAsync(async () => { if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); } });
+            child.Dispose();
         }
     }
 

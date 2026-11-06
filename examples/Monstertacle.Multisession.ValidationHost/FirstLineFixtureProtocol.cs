@@ -12,5 +12,6 @@ internal static class FirstLineFixtureProtocol
     internal const int StderrLines = 2048;
     internal const int StderrLineLength = 63;
     internal const int UnterminatedChars = 8 * 1024 * 1024; // 8 Mi characters without any line terminator
-    internal const int UnterminatedChunk = 64 * 1024;
+    internal const int UnterminatedChunk = 26 * 2520; // a multiple of the pattern length, so the pattern runs on across chunks
+    internal const int PatternLength = 26; // character i of the unterminated stream is 'a' + i % 26
 }

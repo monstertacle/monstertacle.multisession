@@ -5,7 +5,7 @@ namespace Monstertacle.Multisession.ValidationHost;
 /// <summary>
 /// Test fixture worker (T023): never writes a first standard-output line, so a harness waiting for one times out. It records its
 /// own process id in its working directory, so a control can show that only this child was ended. <c>silent</c> writes nothing;
-/// <c>stderr</c> writes far more than a pipe buffer to standard error, ending with the marker. <c>stderr-unterminated</c> writes 8 Mi characters and the marker without any line terminator. It ends by itself after
+/// <c>stderr</c> writes far more than a pipe buffer to standard error, ending with the marker. <c>stderr-unterminated</c> writes 8 Mi characters of a cyclic pattern and the marker without any line terminator. It ends by itself after
 /// <see cref="_selfLimit"/>, so it never outlives a harness that failed to end it.
 /// </summary>
 internal static class FirstLineFixtureWorker
@@ -26,8 +26,14 @@ internal static class FirstLineFixtureWorker
         }
         if (args[1] == FirstLineFixtureProtocol.StderrUnterminated)
         {
-            string chunk = new('u', FirstLineFixtureProtocol.UnterminatedChunk);
-            for (int written = 0; written < FirstLineFixtureProtocol.UnterminatedChars; written += chunk.Length) { await Console.Error.WriteAsync(chunk); }
+            string chunk = string.Create(FirstLineFixtureProtocol.UnterminatedChunk, 0, (span, _) =>
+            {
+                for (int index = 0; index < span.Length; index++) { span[index] = (char)('a' + (index % FirstLineFixtureProtocol.PatternLength)); }
+            });
+            for (int written = 0; written < FirstLineFixtureProtocol.UnterminatedChars; written += chunk.Length)
+            {
+                await Console.Error.WriteAsync(chunk.AsMemory(0, Math.Min(chunk.Length, FirstLineFixtureProtocol.UnterminatedChars - written)));
+            }
             await Console.Error.WriteAsync(FirstLineFixtureProtocol.Marker); // still no line terminator
             await Console.Error.FlushAsync();
         }

@@ -23,8 +23,16 @@ internal static class ExtensionsProbeFlow
 
     internal static async Task ExecuteOwnedAsync(ProbeHost host, ProbeTrace trace, ProbeBarrier barrier, ThirdContractProvider external, string directory)
     {
-        await using ProbeHost owned = host;
-        await ExecuteWorkloadAsync(owned, trace, barrier, external, directory);
+        try { await ExecuteWorkloadAsync(host, trace, barrier, external, directory); }
+        catch (Exception primary)
+        {
+            // A disposal failure is added as cleanup and never replaces the workload failure (same owner rule as WaveProbeFlow).
+            try { await host.DisposeAsync(); }
+            catch (Exception cleanup) { throw ValidationProbeException.FromException(primary).WithCleanup(cleanup); }
+            throw;
+        }
+        // The workload ends with its own explicit stop, which already ran runtime cleanup; disposal then finds a stopped runtime.
+        await host.DisposeAsync();
     }
 
     private static async Task ExecuteWorkloadAsync(ProbeHost host, ProbeTrace trace, ProbeBarrier barrier, ThirdContractProvider external, string directory)

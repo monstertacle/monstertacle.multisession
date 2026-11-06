@@ -66,12 +66,16 @@ All three produce the same report today.
 
 ## Decision (smallest consistent change; no product, public API, bound or pipeline change)
 
-- `ExtensionsProbeFlow` uses the existing owner pattern of `WaveProbeFlow`:
+- `ExtensionsProbeFlow` uses the failure branch of the existing owner rule of `WaveProbeFlow`:
   - `ExecuteAsync` starts the host and calls `ExecuteOwnedAsync`;
-  - `ExecuteOwnedAsync` runs the workload, keeps a primary failure, adds a host-disposal failure as cleanup, and reports
-    disposal alone as `ScenarioCleanupFailed`.
-- After the change, A reports `ScenarioExecutionFailed`, with `TimeoutException`, a throw site, and a `StorageUnavailable`
-  cleanup failure. B reports its typed primary failure. C reports `ScenarioCleanupFailed`.
+  - `ExecuteOwnedAsync` runs the workload; on a workload failure it disposes the host, keeps the primary failure and adds a
+    disposal failure as cleanup.
+- **No Wave-style `ScenarioCleanupFailed` relabelling on success.** The workload ends with its own explicit
+  `StopAsync`, which already runs runtime cleanup. Disposal then finds a stopped runtime and returns, so reading C cannot
+  occur for this flow, and a relabelling branch would be dead, untestable code.
+- **The observed report** is therefore reading A or B, not C. After the change, A reports `ScenarioExecutionFailed`, with
+  `TimeoutException`, a throw site, and a `StorageUnavailable` cleanup failure. B reports its typed primary failure, plus a
+  cleanup failure if disposal also fails.
 - Bounds stay: 5 s overlap, 10 s stop. There is no retry and no swallowed exception.
 
 ### Not changed, with reasons (open for root decision)
@@ -92,9 +96,34 @@ All three produce the same report today.
 2. **Red:** a unit test with an in-memory store whose disposal fails and a body failure. The report must keep the body's
    primary failure and list `StorageUnavailable` as cleanup. Under the extraction it observes the disposal error as the
    primary and no cleanup.
-3. **Green:** the owner pattern. Further controls:
-   - disposal-only failure reports `ScenarioCleanupFailed` with no invented primary;
-   - a body failure with successful disposal keeps only the primary.
+3. **Green:** the owner rule. Control: a body failure with successful disposal keeps only the primary (no invented
+   cleanup).
 4. **Negative control:** the real `extensions` scenario passes with no failure and no cleanup (existing
    `ValidationScenarioTests` and `ValidationHostContractTests` cases).
 5. The full codemetr guard from the root.
+
+## Qualification (private clone, 2026-11-06; serial, capped 2G/1G, private temp)
+
+| Step | Result |
+|---|---|
+| Red, on the behavior-preserving extraction (commit `250eb92`) | `KeepsWorkloadFailureWhenHostDisposalAlsoFails` failed: expected NotFound, actual StorageUnavailable, with no cleanup. That is the observed report shape. The control passed |
+| Green | both tests pass |
+| Unit tests | 463/463 pass |
+| Real `extensions` scenario (negative control, net10.0) | `ValidationScenarioTests` and `NativeScenarioOwnershipTests` pass |
+| `net10.0-windows` integration target on Linux | fails with `UnsupportedPlatform` before the flow, identically on the unchanged base `fc3891f`. That is the environment, not this change |
+| Full codemetr guard | 621 files, 0 violations |
+
+The raw Linux T020 line (job 126737700342), kept verbatim: `dedicated-n=495 dedicated-oversleep-max-ms=0.7
+dedicated-last-wake-age-ms=4.3 pool-n=429 pool-dispatch-max-ms=669.4 pool-unresolved-for-window=false pool-skipped=66`. It is
+T020 evidence only.
+
+## Limitations
+
+- **The runtime cause stays unknown.** A recurrence with this report separates A from B, but not:
+  - which body call threw a typed failure under B;
+  - which `CompleteStopAsync` sub-stage failed;
+  - whether a deadline or a fault occurred.
+- **No stage timing is recorded.**
+- **The ten other `await using` flows keep the masking shape.**
+
+All of these are open root decisions (see "Not changed").

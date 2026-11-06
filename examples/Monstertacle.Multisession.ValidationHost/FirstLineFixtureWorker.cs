@@ -12,17 +12,22 @@ internal static class FirstLineFixtureWorker
 {
     private static readonly TimeSpan _selfLimit = TimeSpan.FromMinutes(2);
 
-    internal static async Task<int> RunAsync(string[] args)
+    // The worker process: its own standard error, working directory and self limit.
+    internal static Task<int> RunAsync(string[] args) => RunAsync(args, Console.Error, Environment.CurrentDirectory, _selfLimit);
+
+    // SDK-T023-FIXTURE-WORKER-CRAP-001: the same behavior with its process resources passed in, so a test can observe the output,
+    // the recorded process id and the self limit in process without redirecting the global console or waiting two minutes.
+    internal static async Task<int> RunAsync(string[] args, TextWriter error, string directory, TimeSpan selfLimit)
     {
         if (args.Length != 2 || args[1] is not (FirstLineFixtureProtocol.Silent or FirstLineFixtureProtocol.Stderr or FirstLineFixtureProtocol.StderrUnterminated)) { return 2; }
-        await File.WriteAllTextAsync(Path.Combine(Environment.CurrentDirectory, FirstLineFixtureProtocol.ProcessIdFileName),
+        await File.WriteAllTextAsync(Path.Combine(directory, FirstLineFixtureProtocol.ProcessIdFileName),
             Environment.ProcessId.ToString(CultureInfo.InvariantCulture));
         if (args[1] == FirstLineFixtureProtocol.Stderr)
         {
             string filler = new('e', FirstLineFixtureProtocol.StderrLineLength);
-            for (int line = 0; line < FirstLineFixtureProtocol.StderrLines; line++) { await Console.Error.WriteLineAsync(filler); }
-            await Console.Error.WriteLineAsync(FirstLineFixtureProtocol.Marker);
-            await Console.Error.FlushAsync();
+            for (int line = 0; line < FirstLineFixtureProtocol.StderrLines; line++) { await error.WriteLineAsync(filler); }
+            await error.WriteLineAsync(FirstLineFixtureProtocol.Marker);
+            await error.FlushAsync();
         }
         if (args[1] == FirstLineFixtureProtocol.StderrUnterminated)
         {
@@ -32,12 +37,12 @@ internal static class FirstLineFixtureWorker
             });
             for (int written = 0; written < FirstLineFixtureProtocol.UnterminatedChars; written += chunk.Length)
             {
-                await Console.Error.WriteAsync(chunk.AsMemory(0, Math.Min(chunk.Length, FirstLineFixtureProtocol.UnterminatedChars - written)));
+                await error.WriteAsync(chunk.AsMemory(0, Math.Min(chunk.Length, FirstLineFixtureProtocol.UnterminatedChars - written)));
             }
-            await Console.Error.WriteAsync(FirstLineFixtureProtocol.Marker); // still no line terminator
-            await Console.Error.FlushAsync();
+            await error.WriteAsync(FirstLineFixtureProtocol.Marker); // still no line terminator
+            await error.FlushAsync();
         }
-        await Task.Delay(_selfLimit);
+        await Task.Delay(selfLimit);
         return 3;
     }
 }

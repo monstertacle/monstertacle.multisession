@@ -42,6 +42,21 @@ public sealed class FirstLineFixtureWorkerTests
         finally { Directory.Delete(directory, true); }
     }
 
+    /// <summary>
+    /// The process entry (the worker's own console, current directory and two-minute limit) refuses a wrong argument list at once
+    /// with exit 2 and records nothing in the current directory; it only reads those process resources, it changes none.
+    /// </summary>
+    [Fact]
+    public async Task ProcessEntryRefusesWrongArgumentsBeforeTouchingAnyResource()
+    {
+        string record = Path.Combine(Environment.CurrentDirectory, FirstLineFixtureProtocol.ProcessIdFileName);
+        bool recordedBefore = File.Exists(record);
+        Task<int> run = FirstLineFixtureWorker.RunAsync([FirstLineFixtureProtocol.WorkerArgument, "unknown"]);
+        Assert.True(run.IsCompleted, "a refused argument list must not wait for the two-minute self limit");
+        Assert.Equal(2, await run);
+        Assert.Equal(recordedBefore, File.Exists(record));
+    }
+
     /// <summary><c>silent</c> records its own process id, writes nothing, does not end before its self limit and then exits 3.</summary>
     [Fact]
     public async Task SilentRecordsItsProcessIdAndEndsOnlyAtItsLimit()

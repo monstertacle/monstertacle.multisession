@@ -33,6 +33,34 @@ public sealed class CrashHarnessTimeoutTests
         Assert.True(message.Length < 8192, "the standard-error report is not bounded: " + message.Length.ToString(CultureInfo.InvariantCulture));
     }
 
+    /// <summary>Ending the child fails after the timeout: the attributed timeout stays first, the failure follows it.</summary>
+    [Fact]
+    public async Task FailureToEndTheChildIsReportedAfterTheTimeout()
+    {
+        await using PrivateStoreDirectory directory = new();
+        using Process child = new() { StartInfo = CrashHarness.WorkerStart(directory.StateDirectory, FirstLineFixtureProtocol.WorkerArgument, FirstLineFixtureProtocol.Silent) };
+        FirstLineWait firstLine = new(child, _controlLimit);
+        InvalidOperationException owned = new("owned failure of the control");
+        Assert.True(child.Start());
+        try
+        {
+            Exception? thrown = await Record.ExceptionAsync(() => firstLine.ReadAsync(async () =>
+            {
+                child.Kill(true); // the control's own child only
+                await child.WaitForExitAsync();
+                throw owned;
+            }));
+            AggregateException both = Assert.IsType<AggregateException>(thrown);
+            TimeoutException timeout = Assert.IsType<TimeoutException>(both.InnerExceptions[0]);
+            Assert.Contains("could not be ended (next exception)", timeout.Message, StringComparison.Ordinal);
+            Assert.Same(owned, both.InnerExceptions[1]);
+        }
+        finally
+        {
+            if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); }
+        }
+    }
+
     private static async Task<string> TimeOutAsync(string variant)
     {
         await using PrivateStoreDirectory directory = new();

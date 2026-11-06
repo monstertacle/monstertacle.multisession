@@ -20,6 +20,8 @@ internal sealed class FirstLineWait
     private readonly Process _child;
     private readonly TimeSpan _limit;
     private Task _drain = Task.CompletedTask;
+    // SDK-SQ-R1-001: how the drain ended; null for the end of the stream, otherwise only the exception's type name (no payload).
+    private string? _drainFailure;
 
     internal FirstLineWait(Process child, TimeSpan limit)
     {
@@ -33,14 +35,17 @@ internal sealed class FirstLineWait
     // Call once, after the child started; the drain starts before the wait, so no standard error is missed or left in the pipe.
     internal async Task<string?> ReadAsync(Func<Task> endChild)
     {
-        _drain = DrainAsync(_child.StandardError, _standardError);
+        _drain = DrainAsync(_child.StandardError, _standardError, failure => _drainFailure = failure);
         long began = Stopwatch.GetTimestamp();
         try { return await _child.StandardOutput.ReadLineAsync().WaitAsync(_limit); }
         catch (TimeoutException timeout) { throw await AttributeAsync(timeout, Stopwatch.GetElapsedTime(began), endChild); }
     }
 
-    // Runs until the end of the stream: the child ended, or the harness disposed the process (its stream then closes).
-    private static async Task DrainAsync(StreamReader reader, BoundedTextTail tail)
+    // Runs until the end of the stream, or until reading fails. A failure is recorded (its type name only) and never escapes: the
+    // timeout report says the standard error is incomplete, and the attributed timeout stays the thrown exception. The report is
+    // built before the harness disposes the process, so a failure it sees is unexpected; a stream closed by that later disposal
+    // ends the drain after the report and changes nothing reported.
+    private static async Task DrainAsync(StreamReader reader, BoundedTextTail tail, Action<string> failed)
     {
         char[] buffer = new char[_readChunk];
         try
@@ -48,9 +53,9 @@ internal sealed class FirstLineWait
             int read;
             while ((read = await reader.ReadAsync(buffer.AsMemory())) > 0) { tail.Append(buffer.AsSpan(0, read)); }
         }
-        catch (Exception closed) when (closed is ObjectDisposedException or IOException)
+        catch (Exception failure)
         {
-            // The disposed process closed the stream: nothing more can be read, and the tail keeps what was read.
+            failed(failure.GetType().Name);
         }
     }
 
@@ -63,6 +68,7 @@ internal sealed class FirstLineWait
         string drained = string.Empty;
         try { await _drain.WaitAsync(_drainAfterEnd); }
         catch (TimeoutException) { drained = " (read so far: the stream did not end within " + _drainAfterEnd.TotalSeconds.ToString("F0", CultureInfo.InvariantCulture) + " s)"; }
+        if (_drainFailure is { } readFailure) { drained += " (standard error incomplete: reading failed with " + readFailure + ")"; }
         TimeoutException attributed = new(string.Create(CultureInfo.InvariantCulture,
             $"Crash worker wrote no first line within {_limit.TotalSeconds:F1} s (elapsed {elapsed.TotalSeconds:F1} s); no worker step is known: the worker reports its steps only in that line. Its own worker process {processId} {(cleanup is null ? "ended" : "could not be ended (next exception)")}.{drained} {_standardError.Describe()}"), timeout);
         return cleanup is null ? attributed : new AggregateException("Ending the crash worker failed after its first-line timeout.", attributed, cleanup);

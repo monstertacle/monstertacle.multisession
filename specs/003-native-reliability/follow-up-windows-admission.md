@@ -326,3 +326,51 @@ not be ended", and [1] the owned failure.
 **t8 survived; this path is not covered.** The aggregation in `StartWorkerAsync`'s outer catch (a start failure kept when
 the later disposal fails) is not exercised by any control. With the absent-store fix, no owned control makes that disposal
 fail without a further seam. It is defensive; root decides whether it stays, gets a seam, or is removed.
+
+## T023 opposed-review fixes: analysis before implementation (2026-11-06)
+
+Source `76b0e19`. Two opposed reviews (operations record owner-sdk-t022-t023-opposed-review-20261106, status quo and
+necessity) reviewed it, and root accepted two findings at 2026-11-06T15:00:03Z. T022 and the two earlier T023 fixes are
+retained unchanged.
+
+**SDK-SQ-001 (P1; alias SDK-NECESSITY-STDERR-MEMORY-002): bounded reading, not only a bounded message**
+- **Current defect:**
+  - `FirstLineWait` uses `BeginErrorReadLine`/`ErrorDataReceived`. The process class accumulates each line until its
+    terminator or the end of the stream, so an unterminated line is held whole.
+  - `BoundedTextTail.Append` then appends the whole line to a `StringBuilder` before trimming it.
+  - The 2,048-character cap bounded the final message, not the reader or the tail storage.
+- **Decision:**
+  - From the start, a drain task reads `StandardError` with `ReadAsync` into one fixed character buffer (no `ReadLine`,
+    `ReadToEnd` or line buffer).
+  - Each chunk goes into a fixed character ring of 2,048 that keeps the last characters. It counts every decoded character,
+    line terminators included as decoded.
+  - The drain runs until the end of the stream, so the pipe never blocks the child.
+  - On a timeout, the harness ends its own child first. It then waits, bounded, for the drain to reach the end of the
+    stream, so the tail holds what the child wrote. If the drain does not finish in time, the tail is reported as read so
+    far.
+  - The drain ends by itself at the end of the stream or when the stream is closed with the disposed process. Its stream
+    errors are observed, never left unobserved.
+- **Control (red first):** an owned worker writes 8 MiB of standard error without any line terminator, then the marker.
+  - The tail must keep exactly the last 2,048 characters, with the exact count.
+  - The tail's stored characters must never exceed 2,048, measured as a peak.
+  - Allocation during the timed wait must stay far below the stream size (process-wide allocated bytes, a test-only
+    measure with a stated margin).
+
+**SDK-SQ-002 (P2; closes SDK-T023-OUTER-CATCH-UNCOVERED-003): cleanup of a never-started child, and the handle**
+- **Current defects:**
+  - A start failure (for example a missing executable) reaches the outer catch. `DisposeAsync` then calls `KillAsync`,
+    whose `HasExited` throws on a never-started `Process`, so an `AggregateException` replaces the plain start failure.
+  - `DisposeAsync` awaits `KillAsync` before `process.Dispose()`, so any failure there skips disposing the handle.
+- **Decision:**
+  - A child that never started is not ended: the outer catch disposes its `Process` and rethrows the start failure
+    unchanged. There is nothing to signal.
+  - `DisposeAsync` disposes the `Process` in a `finally`, after `KillAsync`, whatever `KillAsync` does.
+  - The outer aggregation for a started child stays: a start-path failure first, then the cleanup failure.
+- **Controls (red first):**
+  - a private path with no executable through the real `StartWorkerAsync` keeps the original start exception;
+  - a harness whose own started child's cleanup fails still disposes its `Process` (observed through the component's
+    `Disposed` event). The cleanup failure is an unreadable own store file in the owned directory; the child is killed
+    first, by its captured process only.
+
+**Unchanged:** the 30 s production limit; the typed, attributed primary timeout; only the captured child is ended; no
+runtime source change.

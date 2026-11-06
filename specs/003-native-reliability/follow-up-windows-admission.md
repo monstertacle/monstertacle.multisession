@@ -459,3 +459,28 @@ indicator.
   The bounded reader, the start and disposal controls and the 8 Mi unterminated control are unchanged and green.
 - **Targeted mutants:** both red. One drops the indicator; the other classifies `ObjectDisposedException` as expected
   disposal by its type, which would hide a closure before the report.
+
+### T023 fixture worker coverage (SDK-T023-FIXTURE-WORKER-CRAP-001; analysis before the change, 2026-11-06)
+
+**Finding.** Root's publication-readiness review (operations record
+owner-sdk-qualified-diagnostics-publication-readiness-20261106) found the coverage gate failing on the fixture worker.
+- The coverage gate in `Invoke-Quality` (`codemetr-csharp-cover check`) fails on
+  `FirstLineFixtureWorker.RunAsync(string[])`: CRAP 110 against a limit of 30.
+- The cause: complexity 10 and 0% in-process coverage. The worker runs only as a child process of the integration controls,
+  so no in-process test reaches it.
+- The structural codemetr check passed throughout; it does not measure coverage.
+
+**Decision (test-only).**
+- **Seam:** the worker keeps its process entry `RunAsync(args)`. It delegates to an internal overload that receives the
+  error writer, the working directory and the self limit; the entry passes `Console.Error`, the current directory and the
+  2-minute limit. The child process therefore behaves byte for byte as before, and the owned child controls (silent, stderr,
+  8 Mi unterminated) keep exercising that path.
+- **Tests:** in-process tests in `Monstertacle.Multisession.UnitTests`, which already sees the validation host's internals,
+  call the overload with their own writer, a private directory and a short limit, and assert the observable outcomes:
+  - a refused argument list exits 2 at once, with no effect;
+  - `silent` records the process id, writes nothing, is still running before its limit and then exits 3;
+  - `stderr` writes exactly its lines, then the marker;
+  - `stderr-unterminated` writes the cyclic pattern for exactly its count, across the shorter last chunk, then the marker,
+    with no line terminator.
+- **Not done:** no global console redirection and no two-minute wait. No exclusion, filter, baseline, threshold or scope
+  change, and no split made only to lower the score.

@@ -419,3 +419,34 @@ Candidate commits on `test/003-t023-bounded-reader-start-cleanup` from `76b0e19`
 - `StreamReader` and pipe internals keep their own fixed buffers.
 - No Windows run.
 - T022 and the earlier T023 fixes are unchanged.
+
+### T023 residual SDK-SQ-R1-001: drain outcome (analysis before implementation, 2026-11-06)
+
+The narrow recheck (operations record owner-sdk-t023-bounded-reader-current-recheck-20261106) accepted the bounded reader
+(SDK-SQ-001) and the start and disposal fixes (SDK-SQ-002). Root accepted one P2 residual at 2026-11-06T15:54:13Z.
+
+**Defect.**
+- `FirstLineWait.DrainAsync` catches every `IOException` and `ObjectDisposedException` and returns a completed task.
+- So a read failure before the end of the stream looks the same as a clean end. A child whose standard error could not be
+  read is reported as `standard error: none`, or with a tail that looks complete. That is a silently swallowed error
+  (constitution: errors handled traceably).
+
+**Decision (smallest bounded change).**
+- The drain keeps one outcome: the end of the stream, or the type name of the exception that ended the reading. No message,
+  stack or payload is kept.
+- Every exception that ends the drain is caught and recorded, so it never replaces the attributed timeout and never goes
+  unobserved.
+- The attributed timeout report adds ` (standard error incomplete: reading failed with <type>)` when the drain ended by a
+  failure before the report. The existing "did not end within 5 s" note stays.
+- **When a failure counts as unexpected:** by timing, not by exception type. The report is built after the own child was
+  ended and before the harness disposes the `Process`. So a failure the report sees happened before any disposal and is
+  unexpected, whatever its type.
+- **Expected disposal stays benign.** A stream closed by the harness's own disposal ends the drain only after the report, so
+  it changes nothing that is reported; the drain still observes it.
+- **Unchanged:** a clean end of the stream, the fixed 4,096-character chunk and the 2,048-character ring, the attributed
+  timeout first, and a cleanup failure after it.
+
+**Control (red first).** An owned fixture child whose standard-error reader is closed by the test before the drain starts,
+so reading fails before the end of the stream. On `00df079` the report says `standard error: none` as if clean; it must
+instead carry the incomplete indicator. The silent worker's clean end must still report `standard error: none` without the
+indicator.

@@ -484,3 +484,26 @@ owner-sdk-qualified-diagnostics-publication-readiness-20261106) found the covera
     with no line terminator.
 - **Not done:** no global console redirection and no two-minute wait. No exclusion, filter, baseline, threshold or scope
   change, and no split made only to lower the score.
+
+### T023 subtask SDK004: the real entry dispatch arm (analysis before the test, 2026-11-06)
+
+**Diagnosis.** The read-only diagnosis (operations record owner-sdk004-diff-measurement-readonly-diagnosis-20261106) was
+accepted by root at 2026-11-06T17:27:04Z. Against the actual `origin/main` base, the changed-line coverage counts two kinds of
+line:
+- **The constant lines** of `FirstLineFixtureProtocol.cs`: a tool false positive (no IL, no sequence points), owned
+  separately. Not changed here.
+- **`Program.cs` line 16:** the real dispatch arm `FirstLineFixtureProtocol.WorkerArgument => FirstLineFixtureWorker.RunAsync`,
+  executed only in child processes that are killed, so its hits are lost.
+
+Root keeps the actual-base gate; the configured historical base is not proof.
+
+**Decision (test only).**
+- One in-process control in `Monstertacle.Multisession.PlatformTests`, in the existing `WorkerConsoleIsolation` collection
+  (which already owns console redirection).
+- It invokes the validation host's real `Assembly.EntryPoint`, the compiler's synchronous wrapper of `async Task<int> Main`,
+  with the first-line worker argument and an unknown variant.
+- It asserts exit 2, no standard output or standard error, and no process-id record.
+- **What it distinguishes:** a dropped arm falls through to the scenario runner, which writes a report, so the test fails.
+- **What it cannot distinguish:** a misroute to another fixture worker. All of them refuse a two-argument list silently with
+  exit 2, and a valid variant would block for its two-minute limit.
+- **Unchanged:** `Main`, the constants and the configuration.

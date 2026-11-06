@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using Monstertacle.Multisession.Contracts;
+using Monstertacle.Multisession.ContractTests.Fixtures;
 using Monstertacle.Multisession.UnitTests.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,44 +9,9 @@ namespace Monstertacle.Multisession.ContractTests;
 /// <summary>Stop deadlines include resource shutdown without releasing ownership before the store closes.</summary>
 public sealed class RuntimeCleanupTests(ITestOutputHelper output)
 {
-    private const int _cleanupEntryWaitObserved = 0;
-    private const int _stopFailureObserved = 1;
-
     /// <summary>A held store cleanup cannot extend the caller's deadline or release its lease prematurely.</summary>
     [Fact]
-    public async Task BoundsCleanupAndRetainsLeaseUntilStoreCloses()
-    {
-        TaskCompletionSource entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        TaskCompletionSource finish = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        InMemorySessionStore store = new() { Disposing = async () => { entered.TrySetResult(); await finish.Task; } };
-        await using TestStateDirectoryLease lease = new(Options().StateDirectory);
-        SessionRuntime runtime = Runtime(store, new(), lease);
-        await runtime.StartAsync(Options(), CancellationToken.None);
-        SchedulingSampler sampler = SchedulingSampler.Started(); // Diagnostic only, written after the window; see follow-up-windows-elapsed-bounds.md.
-        StageObservation stages = new("T020", "cleanup-entry-wait-observed", "stop-failure-observed");
-        long began = Stopwatch.GetTimestamp();
-        await stages.ObserveAsync(began, async () =>
-        {
-            Task stopping = runtime.StopAsync(TimeSpan.FromMilliseconds(200), CancellationToken.None).AsTask();
-            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
-            stages.Mark(_cleanupEntryWaitObserved);
-            try
-            {
-                SessionOperationException failure = await Assert.ThrowsAsync<SessionOperationException>(() => stopping.WaitAsync(TimeSpan.FromSeconds(2)));
-                stages.Mark(_stopFailureObserved);
-                Assert.Equal(ErrorCode.StorageUnavailable, failure.Failure.Code);
-                Assert.True(Stopwatch.GetElapsedTime(began) < TimeSpan.FromSeconds(1));
-                Assert.True(lease.IsHeld);
-            }
-            finally
-            {
-                finish.TrySetResult();
-                await Record.ExceptionAsync(() => stopping);
-                await runtime.DisposeAsync();
-            }
-        }, output.WriteLine, () => stages.Append(sampler.Freeze(began, stages.Stamp(_stopFailureObserved)).Format()));
-        Assert.True(lease.IsDisposed);
-    }
+    public Task BoundsCleanupAndRetainsLeaseUntilStoreCloses() => new BoundedCleanupWindow().RunAsync(output.WriteLine);
 
     /// <summary>Concurrent stop callers share one resource shutdown.</summary>
     [Fact]

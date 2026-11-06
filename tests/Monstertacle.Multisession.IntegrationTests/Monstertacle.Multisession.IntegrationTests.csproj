@@ -16,6 +16,7 @@
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashFailure.cs" Link="Fixtures/CrashFailure.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/ProcessExitWait.cs" Link="Fixtures/ProcessExitWait.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/DiskFullProtocol.cs" Link="Fixtures/DiskFullProtocol.cs" />
+    <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/FirstLineFixtureProtocol.cs" Link="Fixtures/FirstLineFixtureProtocol.cs" />
     <Compile Include="../../examples/Monstertacle.Multisession.ValidationHost/CrashStateDirectoryLease.cs" Link="Fixtures/CrashStateDirectoryLease.cs" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Common/Monstertacle.Multisession.Common.csproj" />
     <ProjectReference Include="../../src/Monstertacle.Multisession.Storage.Sqlite/Monstertacle.Multisession.Storage.Sqlite.csproj" />

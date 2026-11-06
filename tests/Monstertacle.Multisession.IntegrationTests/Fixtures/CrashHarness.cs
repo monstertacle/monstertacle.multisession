@@ -26,6 +26,12 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
         string token = Guid.NewGuid().ToString("N");
         await lease.PrepareFileAsync(CrashProtocol.MarkerFileName, StateFileMode.CreateNew, CancellationToken.None);
         await File.WriteAllTextAsync(Path.Combine(stateDirectory, CrashProtocol.MarkerFileName), token);
+        return await StartWorkerAsync(WorkerStart(stateDirectory, CrashProtocol.WorkerArgument, stateDirectory, token, point), point, _processLimit);
+    }
+
+    // The validation-host worker started in the state directory with both output streams redirected.
+    internal static ProcessStartInfo WorkerStart(string stateDirectory, params string[] arguments)
+    {
         ProcessStartInfo start = new("dotnet")
         {
             UseShellExecute = false,
@@ -34,16 +40,20 @@ internal sealed class CrashHarness(Process process) : IAsyncDisposable
             WorkingDirectory = stateDirectory,
         };
         start.ArgumentList.Add(ValidationHostBuild.WorkerPath());
-        start.ArgumentList.Add(CrashProtocol.WorkerArgument);
-        start.ArgumentList.Add(stateDirectory);
-        start.ArgumentList.Add(token);
-        start.ArgumentList.Add(point);
+        foreach (string argument in arguments) { start.ArgumentList.Add(argument); }
+        return start;
+    }
+
+    // Waits up to the limit for the worker's first line; production uses the 30 s limit, T023's owned controls a short one.
+    internal static async Task<CrashHarness> StartWorkerAsync(ProcessStartInfo start, string point, TimeSpan limit)
+    {
+        string stateDirectory = start.WorkingDirectory;
         Process child = new() { StartInfo = start };
         CrashHarness harness = new(child);
         try
         {
             if (!child.Start()) { throw new InvalidOperationException("Crash worker could not start."); }
-            string? line = await child.StandardOutput.ReadLineAsync().WaitAsync(_processLimit);
+            string? line = await child.StandardOutput.ReadLineAsync().WaitAsync(limit);
             harness.Signal = line is null ? null : JsonSerializer.Deserialize<CrashSignal>(line);
             string expectedBarrier = point == CrashProtocol.JournalPoint ? CrashProtocol.JournalBarrier : CrashProtocol.RecoveryBarrier;
             if (harness.Signal is null || harness.Signal.Barrier != expectedBarrier || harness.Signal.ProcessId != child.Id)

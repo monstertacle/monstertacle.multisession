@@ -13,6 +13,7 @@ internal static class Program
             CrashProtocol.NativeWorkerArgument => await CrashWorker.RunAsync(args, native: true),
             DiskFullProtocol.WorkerArgument => await DiskFullWorker.RunAsync(args),
             OwnershipProtocol.WorkerArgument => await NativeOwnershipWorker.RunAsync(args),
+            FirstLineFixtureProtocol.WorkerArgument => await FirstLineFixtureWorker.RunAsync(args),
             _ => await ScenarioRunner.RunAsync(args),
         };
     }

@@ -374,3 +374,48 @@ retained unchanged.
 
 **Unchanged:** the 30 s production limit; the typed, attributed primary timeout; only the captured child is ended; no
 runtime source change.
+
+### T023 opposed-review fixes: implementation (2026-11-06)
+
+Candidate commits on `test/003-t023-bounded-reader-start-cleanup` from `76b0e19`: analysis `b6b5bc1`, red `d060532`, fix
+`b2e86ad`, controls hardened `a86b608`. Test and fixture code only; no runtime source change.
+
+**SDK-SQ-001: bounded reading**
+- `FirstLineWait` starts one drain task right after the child starts: `StandardError.ReadAsync` into one fixed
+  4,096-character buffer, until the end of the stream. There is no line reader.
+- `BoundedTextTail` is one fixed ring of 2,048 characters. It counts every decoded character, line terminators as decoded.
+- On a timeout the own child is ended first. The drain is then awaited for at most 5 s; if it has not finished, the message
+  says so and reports the tail as read so far.
+- **Control** (`CrashHarnessStderrMemoryTests`, in its own non-parallel collection because it reads the process-wide
+  allocation counter): an owned worker writes 8 Mi characters of a cyclic pattern and the marker, with no line terminator.
+
+| | `76b0e19` (red) | Fix |
+|---|---|---|
+| Tail peak | 8,388,638 characters | 2,048 |
+| Allocation during the wait | about 71 MB | about 4.4 MB (bound 8 MiB) |
+| Count | wrong | exact (8,388,637) |
+| Last 2,048 characters | — | exact |
+
+**SDK-SQ-002: never-started cleanup and the handle**
+- If `Start` throws or returns false, the outer catch disposes the `Process` and rethrows the start failure unchanged.
+- `DisposeAsync` disposes the `Process` in a `finally` after `KillAsync`. The started-child aggregation (start-path failure
+  first) is unchanged.
+- **Controls:**
+  - a private path with no executable keeps its `Win32Exception`; it was an `AggregateException` on `76b0e19`;
+  - the own child's cleanup fails on an unreadable own store file after the child was killed. The failure propagates, the
+    child is gone, and the `Process` is disposed: it no longer has an associated process; on `76b0e19` it was not
+    disposed.
+  - Linux only, because the failure uses a Unix file mode.
+
+**Mutants** (each restored; non-incremental builds): 8 of 10 red.
+
+| Survivor | Why it is not observable here |
+|---|---|
+| r04, no bounded drain wait after the kill | The owned workers finish writing long before the limit |
+| r10, the never-started branch does not dispose | That `Process` is internal to `StartWorkerAsync` |
+
+**Limits**
+- The allocation control is a test-only, process-wide measure.
+- `StreamReader` and pipe internals keep their own fixed buffers.
+- No Windows run.
+- T022 and the earlier T023 fixes are unchanged.

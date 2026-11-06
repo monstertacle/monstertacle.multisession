@@ -450,3 +450,12 @@ The narrow recheck (operations record owner-sdk-t023-bounded-reader-current-rech
 so reading fails before the end of the stream. On `00df079` the report says `standard error: none` as if clean; it must
 instead carry the incomplete indicator. The silent worker's clean end must still report `standard error: none` without the
 indicator.
+
+**Implementation** (red `376829c`, fix `cdf9e8c`):
+- `FirstLineWait` keeps the drain's ending as the exception type name only, and the timeout report appends
+  ` (standard error incomplete: reading failed with <type>)`.
+- **Control `UnreadableStderrIsReportedIncompleteNotNone`:** on `00df079` the report had no indicator; with the fix it reports
+  `ObjectDisposedException` as incomplete. The silent worker's clean end still says `standard error: none` with no indicator.
+  The bounded reader, the start and disposal controls and the 8 Mi unterminated control are unchanged and green.
+- **Targeted mutants:** both red. One drops the indicator; the other classifies `ObjectDisposedException` as expected
+  disposal by its type, which would hide a closure before the report.

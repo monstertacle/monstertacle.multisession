@@ -22,6 +22,7 @@ public sealed class CrashHarnessTimeoutTests
     {
         string message = await TimeOutAsync(FirstLineFixtureProtocol.Silent);
         Assert.Contains("standard error: none", message, StringComparison.Ordinal);
+        Assert.DoesNotContain("incomplete", message, StringComparison.Ordinal); // a clean end of the stream is complete
     }
 
     /// <summary>A worker that fills its standard-error pipe: it is not blocked, and the timeout carries the bounded tail.</summary>
@@ -59,6 +60,36 @@ public sealed class CrashHarnessTimeoutTests
         finally
         {
             if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); }
+        }
+    }
+
+    /// <summary>
+    /// SDK-SQ-R1-001: the own child's standard-error reader is closed before its stream ended, so the drain's reading fails. The
+    /// timeout report must say its standard error is incomplete, never "none" as for a clean end; the timeout stays first.
+    /// </summary>
+    [Fact]
+    public async Task UnreadableStderrIsReportedIncompleteNotNone()
+    {
+        await using PrivateStoreDirectory directory = new();
+        using Process child = new() { StartInfo = CrashHarness.WorkerStart(directory.StateDirectory, FirstLineFixtureProtocol.WorkerArgument, FirstLineFixtureProtocol.Silent) };
+        FirstLineWait firstLine = new(child, _controlLimit);
+        Assert.True(child.Start());
+        child.StandardError.Dispose(); // the owned reader closes before the end of its stream
+        try
+        {
+            Exception? thrown = await Record.ExceptionAsync(() => firstLine.ReadAsync(async () =>
+            {
+                child.Kill(true); // the control's own child only
+                await child.WaitForExitAsync();
+            }));
+            TimeoutException timeout = Assert.IsType<TimeoutException>(thrown);
+            Assert.IsType<TimeoutException>(timeout.InnerException);
+            Assert.Contains("(standard error incomplete: reading failed with ObjectDisposedException)", timeout.Message, StringComparison.Ordinal);
+            Assert.True(timeout.Message.Length < 8192, "the report is not bounded: " + timeout.Message.Length.ToString(CultureInfo.InvariantCulture));
+        }
+        finally
+        {
+            await Record.ExceptionAsync(async () => { if (!child.HasExited) { child.Kill(true); await child.WaitForExitAsync(); } });
         }
     }
 

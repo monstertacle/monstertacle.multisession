@@ -293,3 +293,36 @@ validation host gains a fixture worker mode.
 - The tail is reported verbatim, bounded to 2,048 characters. The existing check against a state path or payload in the
   message covers the store-failure line, not this timeout message.
 - No Windows run was made: `ProcessExitWait`'s Windows branch and the Windows file-release wait were not exercised.
+
+### T023 revision after the codemetr guard (2026-11-06)
+
+**Guard finding and fix (`dd8483d`)**
+- The full guard (`dotnet tool run codemetr-csharp -- check --format json`) on `f9caaa6` found one new violation: class
+  coupling of `CrashHarness` was 43, over the limit of 40.
+- No baseline, exclusion or limit change. The timed first-line read, the standard-error tail and the timeout attribution
+  moved into `tests/Monstertacle.Multisession.IntegrationTests/Fixtures/FirstLineWait.cs`.
+- Behavior is unchanged. `StartWorkerAsync` constructs the wait before the child starts, which subscribes standard error. It
+  calls `ReadAsync(harness.KillAsync)` after the start.
+- The guard then passes with 0 violations.
+
+**New control (`51f2c42`):** `FailureToEndTheChildIsReportedAfterTheTimeout`. The control's own ending step kills its child
+and then throws. The result is an `AggregateException`: [0] the attributed `TimeoutException`, which says the process "could
+not be ended", and [1] the owned failure.
+
+**Mutants on the final shape (r2)**
+
+| Mutant | Result |
+|---|---|
+| t1, standard error not read | the stderr control fails |
+| t2, unattributed timeout | both controls fail |
+| t3, absent store fails cleanup | both controls fail |
+| t4, a 1,000 times larger tail | the stderr control fails |
+| t5, the tail described before the child is ended | **survived** (as before) |
+| t6, inner exception dropped | both controls fail |
+| t7, elapsed time measured from earlier | both controls fail |
+| t8, the harness's outer catch lets a disposal failure replace the start failure | **survived** |
+| t9, a failure to end the child replaces the timeout | the new control fails |
+
+**t8 survived; this path is not covered.** The aggregation in `StartWorkerAsync`'s outer catch (a start failure kept when
+the later disposal fails) is not exercised by any control. With the absent-store fix, no owned control makes that disposal
+fail without a further seam. It is defensive; root decides whether it stays, gets a seam, or is removed.

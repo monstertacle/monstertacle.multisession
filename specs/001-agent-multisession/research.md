@@ -92,6 +92,11 @@ replay or an agent loop of its own violate the scope decision. Separate CLI runt
 would be possible as later adapters but require additional process, version and
 platform contracts and are not required for this first delivery.
 
+**Superseded (constitution 3.0.0, principle VII, 2026-11-07)**: vendor-specific agent CLI runtimes
+are no longer permitted as adapters, including optional packages. Agent tasks go through one common,
+vendor-neutral agent-runtime boundary (OpenCode through its structured interfaces). The text above is
+kept as the historical research record.
+
 Sources: [OpenAI Conversation state](https://developers.openai.com/api/docs/guides/conversation-state),
 [Create conversation](https://developers.openai.com/api/reference/resources/conversations/methods/create),
 [Gemini Interactions overview](https://ai.google.dev/gemini-api/docs/interactions-overview),

@@ -11,6 +11,12 @@ Integrate one explicitly selected current SharpClaw backend at the host composit
 boundary. Preserve host policy and SDK neutrality. Do not introduce a generic
 backend kernel or promise migration of existing sessions by default.
 
+Constitution 3.0.0 (principle VII, 2026-11-07) narrows the selection: the backend to integrate is
+the common, vendor-neutral agent-runtime boundary (OpenCode through its structured interfaces).
+SharpClaw's vendor-specific CLI backends (Claude, Codex, Grok, Kimi) are recorded noncompliance with
+an owned replacement task in SharpClaw and MUST NOT be integrated here. Existing native sessions and
+histories are not migrated.
+
 ## Next steps and dependencies
 
 1. Select the concrete backend and freeze its current identity, observation,

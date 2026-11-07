@@ -87,6 +87,68 @@ public sealed class OwnedScenarioRootTests
         finally { Remove(parent); }
     }
 
+    /// <summary>
+    /// SDK-PR41-WIN-SHUTDOWN-LOCK-001 (P-SHUTDOWN-1): after a pass, a store handle that outlived the scenario is its own failure naming
+    /// the store file, and the root is kept instead of being deleted around the open handle.
+    /// </summary>
+    [Fact]
+    public void ReportsAStoreHandleThatOutlivedAPassAndKeepsTheRoot()
+    {
+        string parent = Parent();
+        try
+        {
+            OwnedScenarioRoot owned = new(parent, "case-");
+            string store = Path.Combine(Directory.CreateDirectory(Path.Combine(owned.Path, "run-1")).FullName, "multisession.db");
+            File.WriteAllText(store, "store");
+            Exception? thrown;
+            using (FileStream held = new(store, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                thrown = Record.Exception(() => Run(owned, () => { }, _ => throw new InvalidOperationException("a pass reports nothing")));
+            }
+            IOException failure = Assert.IsType<IOException>(thrown);
+            Assert.Contains(store, failure.Message, StringComparison.Ordinal);
+            Assert.Contains("root kept at " + owned.Path, failure.Message, StringComparison.Ordinal);
+            Assert.True(File.Exists(store));
+        }
+        finally { Remove(parent); }
+    }
+
+    /// <summary>
+    /// P-SHUTDOWN-1: a cleanup failure after a pass is reported as a cleanup failure naming the kept root, never swallowed and never
+    /// confused with a scenario failure; nothing is retried.
+    /// </summary>
+    [Fact]
+    public void ReportsACleanupFailureAfterAPassAsItsOwnFailure()
+    {
+        string parent = Parent();
+        string locked = "";
+        try
+        {
+            OwnedScenarioRoot owned = new(parent, "case-");
+            locked = Directory.CreateDirectory(Path.Combine(owned.Path, "run-1")).FullName;
+            File.WriteAllText(Path.Combine(locked, "state"), "state");
+            // The deletion is refused by the platform: a read-only directory on Unix, an exclusively open file on Windows.
+            FileStream? exclusive = null;
+            if (OperatingSystem.IsWindows()) { exclusive = new(Path.Combine(locked, "state"), FileMode.Open, FileAccess.Read, FileShare.None); }
+            else { File.SetUnixFileMode(locked, UnixFileMode.UserRead | UnixFileMode.UserExecute); }
+            Exception? thrown;
+            using (exclusive) { thrown = Record.Exception(() => Run(owned, () => { }, _ => throw new InvalidOperationException("a pass reports nothing"))); }
+            IOException failure = Assert.IsType<IOException>(thrown);
+            Assert.StartsWith("Native scenario cleanup failed after a pass", failure.Message, StringComparison.Ordinal);
+            Assert.Contains("root kept at " + owned.Path, failure.Message, StringComparison.Ordinal);
+            Assert.NotNull(failure.InnerException);
+            Assert.True(File.Exists(Path.Combine(locked, "state")));
+        }
+        finally
+        {
+            if (!OperatingSystem.IsWindows() && locked.Length > 0 && Directory.Exists(locked))
+            {
+                File.SetUnixFileMode(locked, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+            }
+            Remove(parent);
+        }
+    }
+
     // The lifecycle shape of NativeScenarioOwnershipTests.ReleasesNativeStateAfterConcreteScenario.
     private static void Run(OwnedScenarioRoot owned, Action body, Action<string> report)
     {

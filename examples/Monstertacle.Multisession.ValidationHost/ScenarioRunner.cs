@@ -54,21 +54,18 @@ internal static class ScenarioRunner
     internal static async Task<ValidationReport> ExecuteOwnedAsync(string scenario, ValidationRunState state, Func<ValidationRunState, Task> execute)
     {
         ValidationReport report;
-        using (ScenarioAdmissionTrace admissions = ScenarioAdmissionTrace.Begin())
+        using ScenarioAdmissionTrace admissions = ScenarioAdmissionTrace.Begin();
+        try
         {
-            try
-            {
-                await execute(state);
-                report = ValidationReport.Pass(scenario, state.RunId);
-            }
-            // A failed report names the scenario's admissions (M1, SDK-PR41-WIN-RETENTION-ADMISSION-001); its classification is unchanged.
-            catch (Exception failure)
-            {
-                report = ValidationReport.FromException(scenario, failure) with { RunId = state.RunId, Admissions = admissions.Snapshot() };
-            }
+            await execute(state);
+            report = ValidationReport.Pass(scenario, state.RunId);
         }
+        catch (Exception failure) { report = ValidationReport.FromException(scenario, failure) with { RunId = state.RunId }; }
         try { await state.DisposeAsync(); }
         catch (Exception cleanup) { report = report.WithCleanup(cleanup); }
-        return report;
+        // Every final failed report names the scenario's admissions (M1, SDK-PR41-WIN-RETENTION-ADMISSION-001), also when cleanup was the
+        // only failure (SDK-SCENARIO-CLEANUP-ENVELOPE-001); the body failure stays primary and cleanup stays attached. A passing
+        // report carries none.
+        return report.Status == "FAIL" ? report with { Admissions = admissions.Snapshot() } : report;
     }
 }

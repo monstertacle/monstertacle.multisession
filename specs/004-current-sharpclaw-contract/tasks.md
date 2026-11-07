@@ -7,6 +7,7 @@ Created: 2026-10-30T07:41:16Z
 - [x] T005 Execute package-only isolated consumer reference, concurrent first/follow-up/reopen cases.
 - [ ] T006 Execute unsupported/uncertain negative cases and document exact limits.
 - [x] T007 Record source/binary/package/driver evidence, integration instructions and concrete remaining work.
+- [ ] T008 Constitution 3.0.0 principle VII uptake: freeze the common runtime boundary contract (OpenCode structured interface, version pin, typed capabilities) as the backend for follow-up.md steps 1-4 and T006, against fake or recorded local fixtures first; no vendor CLI adapter, no automatic migration of native sessions.
 
 T006 remains open: missing attempted ID, changed workspace/model, absent terminal
 success and changed native identity were exercised. Cancellation, uncertain worker

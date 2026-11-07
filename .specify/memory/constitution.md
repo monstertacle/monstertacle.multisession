@@ -74,7 +74,7 @@ These rules make "best practices" verifiable instead of a mere declaration of in
   documented and approved in review.
 - The multisession core and its public session operations MUST stay generic with respect to
   vendors, agent products and execution transports. Selection MUST happen through explicitly
-  registered, polymorphic adapters. Provider, backend and model identifiers are technical
+  registered, polymorphic adapters, within the limits of principle VII. Provider, backend and model identifiers are technical
   configuration data, not a basis for vendor-specific if/switch branches in the core. Mapping
   identifiers to registered adapters at the composition edge is permitted.
 - Protocol, authentication, native session/continuation rules and the interpretation of
@@ -230,6 +230,39 @@ Metrics complement this behavioral evidence; they replace neither tests nor code
 - Conversation with the project owner or other people outside the repository may use any language;
   everything written into the repository is governed by this rule.
 
+### VII. No vendor-specific agent CLIs; one common agent-runtime boundary
+
+- Product integration MUST NOT use, introduce, package or delegate through vendor-specific agent CLI
+  packages, executables or wrappers, for example the Claude Code, Codex, Grok or Kimi command-line
+  agents. This includes optional and opt-in provider packages, adapters, plugins and examples offered
+  as product backends.
+- A generic wrapper, factory, plugin, process launcher, configurable executable path or argument
+  template MUST NOT hide a prohibited vendor CLI invocation; resolving to one is the same violation.
+- Agent-task execution MUST go through one common, vendor-neutral agent-runtime boundary that is
+  configured by provider and model. The intended runtime is OpenCode, used through its structured
+  interfaces (server HTTP API, SDK or ACP) in preference to parsing command-line output, against an
+  examined and version-pinned contract. Principle II continues to apply to that adapter: typed
+  capabilities, no pretended equivalence, no agent runtime of the library's own, no dependency on a
+  target host.
+- The runtime process, its isolation, credentials and configuration are owned by the host that runs
+  it (today the consuming product, in the target architecture the worker host). The library adapter
+  connects to a host-provided runtime; it does not take over hosting, scheduling or communication
+  responsibilities.
+- Clients consume the common library contract. They MUST NOT need per-vendor CLI arguments, version
+  checks or output parsing to select a provider or model.
+- Not affected by this principle: the unified runtime calling model-provider APIs internally;
+  ordinary vendor model API client libraries and vendor or model configuration values; development
+  tools used by maintainers to work on the repository; inert test fixtures that are not product
+  backends.
+- Existing vendor CLI product paths in consuming products are explicit noncompliance with an owned
+  replacement task. They are neither exempt nor compliant. Replacing them MUST NOT kill, reset,
+  replay or swap existing native sessions, native histories, owner pauses or uncertain operations,
+  and MUST NOT switch providers automatically. A runtime session that uses a vendor's model is a
+  different agent session from that vendor's CLI session; native identities and histories are not
+  interchangeable.
+- This principle takes precedence over earlier allowances, including the statement in spec 001
+  research R-03 that separate CLI runtimes would be possible as later adapters.
+
 ## Technical constraints
 
 - The application MUST be supported on Linux and Windows. Concrete supported operating system
@@ -287,7 +320,8 @@ Metrics complement this behavioral evidence; they replace neither tests nor code
    understandability, security and constitution compliance.
    The review MUST explicitly cover SOLID contracts, business rules maintained in several places and
    anti-patterns including magic values; Codemetr alone does not replace it.
-   For adapter/session changes it MUST additionally check backend neutrality, explicit capability
+   For adapter/session changes it MUST additionally check compliance with principle VII (no
+   vendor-specific agent CLI, the common runtime boundary), backend neutrality, explicit capability
    boundaries and the actual representability of the guaranteed agent and target host contracts.
    Vendor-neutral method names alone are not sufficient. The review MUST also check that new and
    changed content is English according to principle VI.
@@ -315,6 +349,23 @@ invented without confirmation.
 
 ### Amendment record
 
+- 3.0.0 (2026-11-07, measured 2026-11-07T11:54:25Z): owner decision "Meine Vorgabe sind keine
+  Verwendung von anbieter spezifischen CLI Paketen. Das wäre in die constitution aufzunehmen." ("My
+  requirement is that no vendor-specific CLI packages are used. This is to be included in the
+  constitution."). The owner's request is the approval of this amendment. Added principle VII and
+  the matching review obligation in process step 4, and limited the adapter rule of principle II to
+  principle VII. MAJOR because it is an incompatible narrowing: vendor-specific agent CLI adapters
+  were previously permitted as later adapters (spec 001 research R-03) and are now prohibited,
+  including optional opt-in packages. Rationale: one common, vendor-neutral agent-runtime boundary
+  (OpenCode through its structured interfaces), selected by provider and model, instead of
+  per-vendor CLI knowledge in the library or its clients. Affected flows: technical planning and
+  every adapter/session review (step 4); spec 001 research R-03 (superseded note); spec 004
+  follow-up and open task T006 (the backend contract to integrate is the common runtime boundary);
+  the private design question SDK-CLIENT-AGENT-BOUNDARY-001. The library contains no vendor CLI
+  path today, so no source change is needed here; existing vendor CLI paths in consuming products
+  are recorded as noncompliance with an owned replacement task in those products. Migration plan:
+  no automatic migration and no runtime or package version change; native sessions, histories,
+  owner pauses and uncertain operations are preserved. Historical qualifications stay historical.
 - 2.1.0 (2026-11-01): owner request "Make English mandatory everywhere in the Monstertacle
   constitution, including documentation" (recorded 2026-11-01T20:43:46Z). Added principle VI and
   the review obligation in process step 4; translated the constitution from German into English
@@ -329,4 +380,4 @@ invented without confirmation.
   with an unchanged overall scope (owner approval "87 % code coverage sind okay, bitte anpassen"
   ("87 % code coverage is okay, please adjust"), 2026-10-28).
 
-**Version**: 2.1.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm the original adoption date | **Last Amended**: 2026-11-01
+**Version**: 3.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm the original adoption date | **Last Amended**: 2026-11-07

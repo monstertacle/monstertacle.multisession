@@ -17,7 +17,7 @@ internal sealed record ScenarioAdmission(int Index, string Phase, double StartMs
 internal sealed class ScenarioAdmissionTrace : IDisposable
 {
     internal const int MaximumAdmissions = 10;
-    private const int MaximumPhaseCharacters = 64;
+    private const int _maximumPhaseCharacters = 64;
     private static readonly AsyncLocal<ScenarioAdmissionTrace?> _current = new();
     private readonly ScenarioAdmissionTrace? _previous;
     private readonly long _started = Stopwatch.GetTimestamp();
@@ -37,7 +37,7 @@ internal sealed class ScenarioAdmissionTrace : IDisposable
 
     internal (int Index, string Phase, long Started) Start(string input)
     {
-        string phase = "submit:" + (input.Length > MaximumPhaseCharacters ? input[..MaximumPhaseCharacters] : input);
+        string phase = "submit:" + (input.Length > _maximumPhaseCharacters ? input[.._maximumPhaseCharacters] : input);
         lock (_recent) { return (++_next, phase, Stopwatch.GetTimestamp()); }
     }
 

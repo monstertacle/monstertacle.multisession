@@ -12,9 +12,9 @@ on the target system. Supported acceptance targets are Windows 11 25H2 x64,
 Windows Server 2025 x64 and Ubuntu 24.04 LTS x64. The complete target-system
 acceptance is still open; a successful build does not replace it.
 
-This source builds the nine packages as version 0.2.0-alpha.10, a candidate that is not published yet. The latest published
-release is 0.2.0-alpha.9 (release record `eng/release-records/0.2.0-alpha.9.json`). Earlier releases 0.2.0-alpha.8 and
-0.2.0-alpha.7 remain published unchanged.
+This source builds the nine packages as version 0.2.0-alpha.10, the latest published release (release record
+`eng/release-records/0.2.0-alpha.10.json`). Earlier releases 0.2.0-alpha.9, 0.2.0-alpha.8 and 0.2.0-alpha.7 remain published
+unchanged.
 The packages are licensed under the MIT License. The host references:
 
 - `Monstertacle.Multisession.Common`
@@ -26,7 +26,7 @@ The packages are licensed under the MIT License. The host references:
 There are two ways to install them. Each needs its own private `NuGet.Config` in the consumer project, because the source
 mapping decides where the `Monstertacle.Multisession.*` packages come from.
 
-**Published 0.2.0-alpha.9 from nuget.org.** All packages, including the library's own, come from nuget.org:
+**Published 0.2.0-alpha.10 from nuget.org.** All packages, including the library's own, come from nuget.org:
 
 ```xml
 <configuration>
@@ -43,10 +43,10 @@ mapping decides where the `Monstertacle.Multisession.*` packages come from.
 </configuration>
 ```
 
-Then add, for example, `dotnet add package Monstertacle.Multisession.Common --version 0.2.0-alpha.9`, and the same version of
+Then add, for example, `dotnet add package Monstertacle.Multisession.Common --version 0.2.0-alpha.10`, and the same version of
 Storage and the native package.
 
-**Unpublished 0.2.0-alpha.10 packed from this source.** Pack it with `dotnet pack Monstertacle.Multisession.slnx -c Release -o
+**0.2.0-alpha.10 packed from this source.** Pack it with `dotnet pack Monstertacle.Multisession.slnx -c Release -o
 <folder>`. The library's own packages then come only from that folder, and everything else from nuget.org. Replace the local
 path with the actual package folder:
 
@@ -68,11 +68,12 @@ path with the actual package folder:
 ```
 
 Then add, for example, `dotnet add package Monstertacle.Multisession.Common --version 0.2.0-alpha.10`, and the same version of
-Storage and the native package. 0.2.0-alpha.10 is not on nuget.org, so this route works only with the local folder.
+Storage and the native package. A local pack has the same version as the published release but other, unsigned bytes, so use a
+separate package cache for it (for example `dotnet restore --packages <folder>`).
 
 0.2.0-alpha.9 passes the invocation context on the
 adapter's typed run options; the earlier 0.2.0-alpha.8 `FrameworkInvocation` still writes and reads it
-through `AgentRunOptions.AdditionalProperties`. 0.2.0-alpha.10, packed from this source, changes one stop behaviour: a stop that
+through `AgentRunOptions.AdditionalProperties`. 0.2.0-alpha.10 changes one stop behaviour: a stop that
 has begun requests worker cancellation even when its deadline or the caller's cancellation prevents it from entering the stop
 gate. The stop's result is unchanged, and the request does not wait for provider callbacks.
 No project references to the library source tree are required. Do not disable the

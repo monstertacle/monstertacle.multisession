@@ -1,0 +1,30 @@
+Independent check of the 0.2.0-alpha.10 publication (2026-11-04)
+
+Publication: publish.yml run 41892137368, dispatched once from main fc3891f, attempt 1, success; the run planned all nine packages
+as absent, pushed them and verified them as served (receipt: publication-receipt-0.2.0-alpha.10.json).
+
+Canonical packages: producer run 41869316232 on main at db28d7b674be63b471eda1752964c86db3835e29, artifact
+packages-and-consumer-linux (id 13342893370), as recorded in eng/release-records/0.2.0-alpha.10.json.
+
+Served packages: downloaded separately from
+https://api.nuget.org/v3-flatcontainer/<id>/0.2.0-alpha.10/<id>.0.2.0-alpha.10.nupkg into a fresh directory.
+
+Checks per package:
+- eng/Test-PublishedPackage.ps1 -Canonical <canonical> -Published <served>: EQUIVALENT, 8 entries compared, only .signature.p7s added;
+- eng/Test-RepositorySignature.ps1 -Package <served>: repository primary signature by CN=NuGet.org Repository by Microsoft,
+  certificate SHA-256 1f4b311d9acc115c8dc8018b5a49e00fce6da8e2855f9f014ca6f34570bc482d (dotnet nuget verify --all passes);
+- the served SHA-256 equals the receipt.
+
+Package                                            Served SHA-256
+Monstertacle.Multisession.Common                   bb60a18f557cbfdf2d8ee3904f497d63f6e07ab0c4da68b7e0a9583fcc16b880
+Monstertacle.Multisession.AgentFramework           aa2fcd58d02f6b32dcf9bcccdd4e116981ff261562f74cf33ad368bb4071daa0
+Monstertacle.Multisession.Checkpoints              4e8715a09a25c36deea8af41e8477b62bd3bedbc46be73652545fc1149c14115
+Monstertacle.Multisession.Checkpoints.Delivery     501b0e369c7c20524ec3506a5679d09ea6f758afa14d78895a66d128f3b4994a
+Monstertacle.Multisession.Linux                    f740e9c7e3c36608f5b93784d0845af448a9b9a5422c42ad710c19ebf1727703
+Monstertacle.Multisession.Providers.Conversations  f68bef607fc295d874f2b2eb4200daf16192ce190393fba3912e591de2b862f2
+Monstertacle.Multisession.Providers.Interactions   e3fbea1136e369396304865af6a991194fbf7165f5c77106e71306123e6af25c
+Monstertacle.Multisession.Storage.Sqlite           384a6ea7f4865395d6e7b24a8343398a1596649edad82633f6279611fbc69e3a
+Monstertacle.Multisession.Windows                  4e66fe9fb82cc7988583e9f8af86b4b3a0eff9e064c3e3d65bfd09b3c40f725c
+
+All nine passed both checks. 0.2.0-alpha.9 is unchanged: the served Monstertacle.Multisession.Common 0.2.0-alpha.9 still has
+SHA-256 5d87786a87c8b028bd9b15c3a0a4e753006260dc7ea15b1b161bd2554d1e8274.

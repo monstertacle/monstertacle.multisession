@@ -54,12 +54,19 @@ internal static class ScenarioRunner
     internal static async Task<ValidationReport> ExecuteOwnedAsync(string scenario, ValidationRunState state, Func<ValidationRunState, Task> execute)
     {
         ValidationReport report;
-        try
+        using (ScenarioAdmissionTrace admissions = ScenarioAdmissionTrace.Begin())
         {
-            await execute(state);
-            report = ValidationReport.Pass(scenario, state.RunId);
+            try
+            {
+                await execute(state);
+                report = ValidationReport.Pass(scenario, state.RunId);
+            }
+            // A failed report names the scenario's admissions (M1, SDK-PR41-WIN-RETENTION-ADMISSION-001); its classification is unchanged.
+            catch (Exception failure)
+            {
+                report = ValidationReport.FromException(scenario, failure) with { RunId = state.RunId, Admissions = admissions.Snapshot() };
+            }
         }
-        catch (Exception failure) { report = ValidationReport.FromException(scenario, failure) with { RunId = state.RunId }; }
         try { await state.DisposeAsync(); }
         catch (Exception cleanup) { report = report.WithCleanup(cleanup); }
         return report;

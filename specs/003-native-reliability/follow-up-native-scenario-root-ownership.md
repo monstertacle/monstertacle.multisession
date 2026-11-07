@@ -82,3 +82,24 @@ One of these two:
   the roots are kept, and who removes them.
 
 Either way, no foreign directory is deleted and no product code changes.
+
+## SDK-PR41-WIN-SHUTDOWN-LOCK-001 (2026-11-07)
+
+- Run: PR41 push run 42292328442, job 128148644344, head `04eb658`.
+- Failure: the `shutdown` case of `NativeScenarioOwnershipTests.ExecutesOfflineScenarioAndReleasesNativeState` failed after 16 s with
+  an `IOException` ("multisession.db … being used by another process") from `Directory.Delete` in the theory's bare `finally`.
+  - That `finally` replaced any earlier assertion failure, so the log cannot separate (a) a store handle that outlived a passing
+    scenario from (b) a scenario failure masked by the delete. Cause not proven.
+  - SQLite pooling is off (`SqliteConnectionPolicy` `Pooling = false`). On Windows the sharing violation also covers a handle
+    held in the same process.
+- Root grant P-SHUTDOWN-1 (test-only), implemented on `t016-primary-failure-diagnostics`:
+  - The theory owns its root through `OwnedScenarioRoot`, like the sibling fact: the scenario failure stays first and keeps the
+    root.
+  - After a pass, `Finish` opens each owned `multisession.db` exclusively once. A surviving handle is its own failure naming the
+    file, and the root is kept. A deletion failure is a cleanup failure naming the kept root.
+  - No retry, no pool or handle clearing, nothing swallowed, no `src`, public API or timeout change.
+- Controls (`OwnedScenarioRootTests`), red on `04eb658`, each with a red mutation:
+  - a store handle that outlives a pass;
+  - a cleanup failure after a pass.
+- Linux limit: the exclusive open detects handles .NET locks itself; a native SQLite handle (fcntl locks) is not seen on Linux. On
+  Windows the sharing check applies. The next natural Windows recurrence will show which reading holds.

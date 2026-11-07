@@ -123,6 +123,10 @@ Created: 2026-10-30T06:20:36Z
       - NEC-T020-COVER-OUTPUT-Q001, under root's disposition above.
     - T020 itself stays open. The cause of the Windows overrun, (a) to (d), is unknown, and the bounded observation is the
       means for the next natural failure. Passing runs do not close it.
+- [ ] T021b SDK-PR41-WIN-SHUTDOWN-LOCK-001 (follow-up-native-scenario-root-ownership.md, 2026-11-07): the scenario theory owns its
+  root and probes the store before deletion (P-SHUTDOWN-1, test-only). Cause not proven; open until a natural Windows run of the
+  new head shows it. SDK-PR41-WIN-RETENTION-ADMISSION-001 is bound to follow-up-windows-admission.md (M1 extended to ScenarioRunner
+  admissions; cause of the slow commit not proven).
 - [x] T021 Native scenario state-root ownership (follow-up-native-scenario-root-ownership.md, ID
   SDK-NATIVE-SCENARIO-ROOT-OWNERSHIP-20261104). P2. Closed 2026-11-04: the ownership question, not an established product
   defect, was answered by root's own-root decision and pull request #34 (see Closure below).

@@ -29,6 +29,20 @@
         "resolved": "0.2.0-alpha.1",
         "contentHash": "PuXg49yLAKcBZeKZrtUaMjzuSEuPbZRRUQX99FRKT7NpWs8dhMxF9Jmm/g8djudJgDtYrBVjQUB2YZ92xesFTw=="
       }
+    },
+    "net11.0-windows7.0": {
+      "monstertacle.multisession.common": {
+        "type": "Project",
+        "dependencies": {
+          "Monstertacle.SharpQrs": "[0.2.0-alpha.1, )"
+        }
+      },
+      "Monstertacle.SharpQrs": {
+        "type": "CentralTransitive",
+        "requested": "[0.2.0-alpha.1, )",
+        "resolved": "0.2.0-alpha.1",
+        "contentHash": "PuXg49yLAKcBZeKZrtUaMjzuSEuPbZRRUQX99FRKT7NpWs8dhMxF9Jmm/g8djudJgDtYrBVjQUB2YZ92xesFTw=="
+      }
     }
   }
 }

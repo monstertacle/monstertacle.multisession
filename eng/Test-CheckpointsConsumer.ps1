@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$PackageDirectory = 'artifacts/packages',
+    [ValidateSet(10, 11)][int]$RuntimeMajor = 10,
     [string]$TempRoot = (Join-Path ([Environment]::GetFolderPath('UserProfile')) 'dev/.agenttemp')
 )
 # Isolated base-contract conformance: restores only the packed checkpoint contract package (exact bytes, lock file, private
@@ -8,6 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+$framework = "net$RuntimeMajor.0"
 [xml]$properties = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
 $version = @($properties.Project.PropertyGroup.Version | Where-Object { $_ })[0]
 $name = 'Monstertacle.Multisession.Checkpoints'
@@ -15,6 +17,9 @@ $package = Get-Item -LiteralPath (Join-Path $PackageDirectory "$name.$version.nu
 $workspace = Join-Path ([IO.Path]::GetFullPath($TempRoot)) ('checkpoints-consumer-' + [Guid]::NewGuid().ToString('N'))
 $feed = Join-Path $workspace 'feed'
 $null = New-Item -Path $feed -ItemType Directory -Force
+$consumerSdk = if ($RuntimeMajor -eq 10) { '10.0.403' } else { '11.0.100' }
+@{ sdk = @{ version = $consumerSdk; rollForward = 'disable'; allowPrerelease = $false } } |
+    ConvertTo-Json | Set-Content (Join-Path $workspace 'global.json')
 Copy-Item -LiteralPath $package.FullName -Destination $feed
 $source = Join-Path $workspace 'Program.cs'
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'CheckpointsConsumer.cs.txt') -Destination $source
@@ -22,7 +27,7 @@ $project = Join-Path $workspace 'ImportResume.csproj'
 [IO.File]::WriteAllText($project, @"
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType><TargetFramework>$framework</TargetFramework>
     <Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><LangVersion>14.0</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors><NuGetAudit>true</NuGetAudit>
     <NuGetAuditMode>all</NuGetAuditMode><NuGetAuditLevel>low</NuGetAuditLevel>
@@ -41,7 +46,9 @@ $config = Join-Path $workspace 'NuGet.Config'
 </configuration>
 "@)
 function Invoke-Consumer([string[]]$Arguments, [string]$Log) {
-    & dotnet @Arguments *> (Join-Path $workspace $Log)
+    Push-Location $workspace
+    try { & dotnet @Arguments *> (Join-Path $workspace $Log) }
+    finally { Pop-Location }
     if ($LASTEXITCODE -ne 0) { throw "Checkpoints consumer step failed: $Log; workspace: $workspace" }
 }
 $packages = Join-Path $workspace 'packages'
@@ -50,10 +57,10 @@ try {
     Invoke-Consumer @('restore', $project, '--configfile', $config, '--packages', $packages, '--use-lock-file') 'restore.log'
     Invoke-Consumer @('restore', $project, '--configfile', $config, '--packages', $packages, '--locked-mode') 'locked-restore.log'
     $lock = Get-Content -Raw -LiteralPath (Join-Path $workspace 'packages.lock.json') | ConvertFrom-Json -AsHashtable
-    $resolved = @($lock.dependencies['net10.0'].Keys)
+    $resolved = @($lock.dependencies["$framework"].Keys)
     # The base package must stand alone: no delivery, SQLite, session, agent-framework or host package may come with it.
     if ($resolved.Count -ne 1 -or $resolved[0] -ne $name) { throw "The base package resolved more than itself: $($resolved -join ', ')" }
-    $entry = $lock.dependencies['net10.0'][$name]
+    $entry = $lock.dependencies["$framework"][$name]
     $sha512 = [Convert]::ToBase64String([Security.Cryptography.SHA512]::HashData([IO.File]::ReadAllBytes($package.FullName)))
     if ($entry.type -ne 'Direct' -or $entry.resolved -ne $version -or $entry.contentHash -ne $sha512) { throw 'The lock file does not bind the exact packed base package.' }
     Invoke-Consumer @('build', $project, '-c', 'Release', '--no-restore') 'build.log'
@@ -61,13 +68,13 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Consumer Codemetr failed: $workspace" }
     $guard = Get-Content -Raw -LiteralPath (Join-Path $workspace 'codemetr.json') | ConvertFrom-Json
     if ($guard.summary.types -lt 2 -or $guard.summary.skipped -ne 0) { throw 'Expected the consumer classes to be measured.' }
-    Invoke-Consumer @((Join-Path $workspace 'bin/Release/net10.0/ImportResume.dll')) 'report.json'
+    Invoke-Consumer @((Join-Path $workspace "bin/Release/$framework/ImportResume.dll")) 'report.json'
     $report = Get-Content -Raw -LiteralPath (Join-Path $workspace 'report.json') | ConvertFrom-Json
     $expected = @('typed-read', 'released-once', 'cancelled-read-refused-and-released')
     if ($report.Status -ne 'PASS' -or @(Compare-Object $expected @($report.Cases | Where-Object Passed | ForEach-Object Name)).Count -ne 0) {
         throw 'Incomplete checkpoint contract consumer conformance.'
     }
-    [ordered]@{ Status = 'PASS'; Platform = $(if ($IsWindows) { 'windows' } else { 'linux' }); CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O')
+    [ordered]@{ Status = 'PASS'; Framework = $framework; Platform = $(if ($IsWindows) { 'windows' } else { 'linux' }); CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O')
         Package = [ordered]@{ File = $package.Name; Sha256 = (Get-FileHash -LiteralPath $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant(); LockContentHash = $sha512 }
         Consumer = $report } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $workspace 'manifest.json')
     Write-Host "PASS checkpoint contract package consumer: $workspace"

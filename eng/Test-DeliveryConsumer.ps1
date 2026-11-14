@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$PackageDirectory = 'artifacts/packages',
+    [ValidateSet(10, 11)][int]$RuntimeMajor = 10,
     [string]$TempRoot = (Join-Path ([Environment]::GetFolderPath('UserProfile')) 'dev/.agenttemp')
 )
 # Isolated host conformance: restores only the packed delivery package (exact bytes, lock file, private package folder),
@@ -8,6 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+$framework = "net$RuntimeMajor.0"
 [xml]$properties = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
 $version = @($properties.Project.PropertyGroup.Version | Where-Object { $_ })[0]
 $name = 'Monstertacle.Multisession.Checkpoints.Delivery'
@@ -17,6 +19,9 @@ $basePackage = Get-Item -LiteralPath (Join-Path $PackageDirectory "$baseName.$ve
 $workspace = Join-Path ([IO.Path]::GetFullPath($TempRoot)) ('delivery-consumer-' + [Guid]::NewGuid().ToString('N'))
 $feed = Join-Path $workspace 'feed'
 $null = New-Item -Path $feed -ItemType Directory -Force
+$consumerSdk = if ($RuntimeMajor -eq 10) { '10.0.403' } else { '11.0.100' }
+@{ sdk = @{ version = $consumerSdk; rollForward = 'disable'; allowPrerelease = $false } } |
+    ConvertTo-Json | Set-Content (Join-Path $workspace 'global.json')
 Copy-Item -LiteralPath $package.FullName, $basePackage.FullName -Destination $feed
 $source = Join-Path $workspace 'Program.cs'
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'DeliveryConsumer.cs.txt') -Destination $source
@@ -24,7 +29,7 @@ $project = Join-Path $workspace 'InvoiceOutbox.csproj'
 [IO.File]::WriteAllText($project, @"
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType><TargetFramework>$framework</TargetFramework>
     <Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><LangVersion>14.0</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors><NuGetAudit>true</NuGetAudit>
     <NuGetAuditMode>all</NuGetAuditMode><NuGetAuditLevel>low</NuGetAuditLevel>
@@ -44,7 +49,9 @@ $config = Join-Path $workspace 'NuGet.Config'
 </configuration>
 "@)
 function Invoke-Consumer([string[]]$Arguments, [string]$Log) {
-    & dotnet @Arguments *> (Join-Path $workspace $Log)
+    Push-Location $workspace
+    try { & dotnet @Arguments *> (Join-Path $workspace $Log) }
+    finally { Pop-Location }
     if ($LASTEXITCODE -ne 0) { throw "Delivery consumer step failed: $Log; workspace: $workspace" }
 }
 $packages = Join-Path $workspace 'packages'
@@ -53,18 +60,18 @@ try {
     Invoke-Consumer @('restore', $project, '--configfile', $config, '--packages', $packages, '--use-lock-file') 'restore.log'
     Invoke-Consumer @('restore', $project, '--configfile', $config, '--packages', $packages, '--locked-mode') 'locked-restore.log'
     $lock = Get-Content -Raw -LiteralPath (Join-Path $workspace 'packages.lock.json') | ConvertFrom-Json -AsHashtable
-    $entry = $lock.dependencies['net10.0'][$name]
+    $entry = $lock.dependencies["$framework"][$name]
     $sha512 = [Convert]::ToBase64String([Security.Cryptography.SHA512]::HashData([IO.File]::ReadAllBytes($package.FullName)))
     if ($entry.resolved -ne $version -or $entry.contentHash -ne $sha512) { throw 'The lock file does not bind the exact packed delivery package.' }
     # The base contract arrives transitively, from the same packed set.
-    $baseEntry = $lock.dependencies['net10.0'][$baseName]
+    $baseEntry = $lock.dependencies["$framework"][$baseName]
     $baseSha512 = [Convert]::ToBase64String([Security.Cryptography.SHA512]::HashData([IO.File]::ReadAllBytes($basePackage.FullName)))
     if ($null -eq $baseEntry -or $baseEntry.type -ne 'Transitive' -or $baseEntry.resolved -ne $version -or $baseEntry.contentHash -ne $baseSha512) {
         throw 'The lock file does not bind the exact packed base contract package.'
     }
-    $direct = @($lock.dependencies['net10.0'].Keys | Where-Object { $lock.dependencies['net10.0'][$_].type -eq 'Direct' })
+    $direct = @($lock.dependencies["$framework"].Keys | Where-Object { $lock.dependencies["$framework"][$_].type -eq 'Direct' })
     if ($direct.Count -ne 1 -or $direct[0] -ne $name) { throw 'The consumer must reference the delivery package only.' }
-    if (@($lock.dependencies['net10.0'].Keys | Where-Object { $_ -like 'SharpClaw*' -or $_ -like 'Monstertacle.Multisession.Common*' -or $_ -like 'Microsoft.Agents*' }).Count -ne 0) {
+    if (@($lock.dependencies["$framework"].Keys | Where-Object { $_ -like 'SharpClaw*' -or $_ -like 'Monstertacle.Multisession.Common*' -or $_ -like 'Microsoft.Agents*' }).Count -ne 0) {
         throw 'The delivery package pulled a host, session-runtime or agent-framework dependency.'
     }
     Invoke-Consumer @('build', $project, '-c', 'Release', '--no-restore') 'build.log'
@@ -72,14 +79,14 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Consumer Codemetr failed: $workspace" }
     $guard = Get-Content -Raw -LiteralPath (Join-Path $workspace 'codemetr.json') | ConvertFrom-Json
     if ($guard.summary.types -lt 2 -or $guard.summary.skipped -ne 0) { throw 'Expected the consumer classes to be measured.' }
-    Invoke-Consumer @((Join-Path $workspace 'bin/Release/net10.0/InvoiceOutbox.dll'), (Join-Path $workspace 'state')) 'report.json'
+    Invoke-Consumer @((Join-Path $workspace "bin/Release/$framework/InvoiceOutbox.dll"), (Join-Path $workspace 'state')) 'report.json'
     $report = Get-Content -Raw -LiteralPath (Join-Path $workspace 'report.json') | ConvertFrom-Json
     $expected = @('accepted-advances-position', 'second-owner-refused', 'crash-in-sending-is-uncertain', 'uncertain-blocks-automatic-send',
         'resend-authorized-once-atomically', 'second-resend-refused', 'attempt-grant-and-stale-key', 'route-move-recorded', 'moved-custody-intact')
     if ($report.Status -ne 'PASS' -or @(Compare-Object $expected @($report.Cases | Where-Object Passed | ForEach-Object Name)).Count -ne 0) {
         throw 'Incomplete delivery consumer conformance.'
     }
-    [ordered]@{ Status = 'PASS'; Platform = $(if ($IsWindows) { 'windows' } else { 'linux' }); CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O')
+    [ordered]@{ Status = 'PASS'; Framework = $framework; Platform = $(if ($IsWindows) { 'windows' } else { 'linux' }); CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O')
         Package = [ordered]@{ File = $package.Name; Sha256 = (Get-FileHash -LiteralPath $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant(); LockContentHash = $sha512 }
         Consumer = $report } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $workspace 'manifest.json')
     Write-Host "PASS delivery package consumer: $workspace"

@@ -27,3 +27,11 @@ https://github.com/monstertacle/monstertacle.multisession (`docs/embedding.md`, 
 
 MIT (SPDX `MIT`); see the `LICENSE` file in each package. Dependencies are referenced as NuGet packages under their own licenses;
 the packages contain no third-party code.
+
+## Runtime targets
+
+The source supports .NET 10 and additionally .NET 11, including the corresponding
+Windows targets for the native Windows library. Consumers select their own runtime;
+contracts, persistent state and execution authority do not change between targets.
+Actual package availability follows the separately authorised release version;
+source support alone is not a claim that a new package has been published.

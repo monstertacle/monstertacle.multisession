@@ -213,3 +213,10 @@ sanitized cause. Own availability locks can be repaired after access has been co
 a positive re-check; recovery/other native blocks remain in place.
 The optional `ISessionAvailabilityProvider` facet allows host-owned adapters the same
 read-only check. The direct Gemini lazy reopen still does not create an HTTP operation.
+
+## Additional runtime selection
+
+Use `net11.0` (or `net11.0-windows` for the native Windows composition) in place of
+the .NET 10 examples when adopting .NET 11. Both target sets remain supported.
+Build/qualify the matching native host and run package consumers with `-RuntimeMajor 11`.
+A successful cross-build is not native-platform qualification or session migration.

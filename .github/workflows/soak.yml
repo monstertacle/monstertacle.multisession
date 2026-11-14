@@ -21,14 +21,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-latest]
+        runtime: [10, 11]
         include:
           - os: ubuntu-24.04
             platform: linux
-            framework: net10.0
             rid: linux-x64
           - os: windows-latest
             platform: windows
-            framework: net10.0-windows
             rid: win-x64
     runs-on: ${{ matrix.os }}
     steps:
@@ -37,10 +36,12 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: |
+            10.0.403
+            11.0.100
       - name: Validate the complete native candidate
         shell: pwsh
-        run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}'
+        run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}' -RuntimeMajor ${{ matrix.runtime }}
       - name: Check requested source and consume candidate packages
         shell: pwsh
         env:
@@ -58,13 +59,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
           dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages
           if ($LASTEXITCODE -ne 0) { throw 'Candidate package build failed.' }
-          ./eng/PackageSmoke.ps1
+          ./eng/PackageSmoke.ps1 -RuntimeMajor ${{ matrix.runtime }}
           $null = New-Item artifacts/soak -ItemType Directory -Force
           Copy-Item -LiteralPath (Join-Path $run.FullName 'run.json') -Destination artifacts/soak/candidate.json
       - name: Publish native host
         shell: pwsh
         run: |
-          dotnet publish examples/Monstertacle.Multisession.ValidationHost -c Release -f '${{ matrix.framework }}' -r '${{ matrix.rid }}' --self-contained false --no-restore -o artifacts/publish/native
+          $framework = if ($IsWindows) { 'net${{ matrix.runtime }}.0-windows' } else { 'net${{ matrix.runtime }}.0' }
+          dotnet publish examples/Monstertacle.Multisession.ValidationHost -c Release -f $framework -r '${{ matrix.rid }}' --self-contained false --no-restore -o artifacts/publish/native
           if ($LASTEXITCODE -ne 0) { throw 'Native candidate publish failed.' }
       - name: Run a full monotonic hour and verify every receipt window
         shell: pwsh
@@ -85,7 +87,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: native-hour-${{ matrix.platform }}
+          name: native-hour-${{ matrix.platform }}-net${{ matrix.runtime }}
           path: |
             artifacts/quality/${{ matrix.platform }}/
             artifacts/packages/

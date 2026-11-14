@@ -45,7 +45,7 @@ CQRS is integrated via `Monstertacle.SharpQrs` **0.2.0-alpha.1**.
 asynchronous operations after start. The existing ports remain compatible and go through the same
 dispatchers. [CQRS contract and examples](docs/cqrs.md), [SpecKit feature](specs/002-sharpqrs-cqrs/spec.md).
 
-- .NET SDK **10.0.403** as per `global.json`, no implicit roll-forward.
+- .NET SDK **11.0.100** (with .NET 10 and .NET 11 runtime sets) as per `global.json`, no implicit roll-forward.
 - PowerShell 7 (`pwsh`), Git and NuGet access; no Python.
 - Approved local `Codemetr.CSharp.Tool` **0.1.0**; no debt baseline.
 - Repository-local `Codemetr.CSharp.Cover.Tool` **0.1.1**; configuration in `codemetr-cover.json`.
@@ -194,3 +194,17 @@ emit structured ILogger events and Activities with local identifiers, state,
 certainty, duration and public failure category. Inputs, outputs, bindings and
 workspace contents are not reported. Logger/listener exceptions are isolated;
 `FailureCount` counts them. A dedicated diagnostics object per runtime additionally holds BCL duration histograms, a counter of observed completions and cached queue/reservation gauges. The monitor reads initially and with a one-second pause; missing or stale values are withdrawn on read failure/stop. Complete diagnostics acceptance is still open.
+
+## Additional .NET 11 support
+
+All nine libraries provide .NET 10 and .NET 11 assets. The native Windows library
+uses the matching `-windows` targets. Run `scripts/Invoke-Quality.ps1 -RuntimeMajor 11`
+(or `10`) on the actual native OS. Every suite, validation child and coverage result
+belongs to the selected runtime; existing 87% native product and complete coverage
+gates apply independently. The static guard still measures all own C# source.
+
+`eng/PackageSmoke.ps1`, `eng/Test-CheckpointsConsumer.ps1` and
+`eng/Test-DeliveryConsumer.ps1` accept the same `-RuntimeMajor` selection. CI runs
+Windows/Linux × both runtimes and canonical consumers use identical producer package
+bytes. Existing release records remain historical; no package is published by this
+extension. See specs/014-dotnet11-support/ for analysis and actual qualification.

@@ -22,6 +22,20 @@
         "resolved": "10.0.14",
         "contentHash": "QtpQzuSZVyTPCuHW058yCs9Nj0394uUkNyFHS813nOmK9UgUdBdaprJ5PPsBgsQIpxADTsTkbaMMonykem6qdw=="
       }
+    },
+    "net11.0": {
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Direct",
+        "requested": "[10.0.14, )",
+        "resolved": "10.0.14",
+        "contentHash": "SwcbEBtkECq3D2oywvHkm46fyrX9Dd2JPWphDnHUc2+cUWR1Mdo41atAjh/9iZjgQxuvbKfZKXqostT/LZfefA=="
+      },
+      "Monstertacle.SharpQrs": {
+        "type": "Direct",
+        "requested": "[0.2.0-alpha.1, )",
+        "resolved": "0.2.0-alpha.1",
+        "contentHash": "PuXg49yLAKcBZeKZrtUaMjzuSEuPbZRRUQX99FRKT7NpWs8dhMxF9Jmm/g8djudJgDtYrBVjQUB2YZ92xesFTw=="
+      }
     }
   }
 }

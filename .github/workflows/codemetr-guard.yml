@@ -21,7 +21,9 @@ jobs:
         run: ./scripts/Test-SpecKitConfiguration.ps1 -ForbidPython
       - uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: |
+            10.0.403
+            11.0.100
       - run: dotnet tool restore
       - name: Full Codemetr guard (including tests and validation host)
         shell: pwsh

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
     <Description>Opaque single-channel durable delivery checkpoint with typed atomic receipt and compare-and-swap primitives on SQLite.</Description>
     <PackageTags>delivery;checkpoint;sqlite;idempotency;custody</PackageTags>
   </PropertyGroup>

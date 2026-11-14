@@ -40,3 +40,12 @@ accepted but not yet served answers the push with 409; it is recorded as pending
 served with the canonical content and signature.
 
 The scripts are tested by `eng/Test-PublicationTooling.ps1` (synthetic packages and a local test feed) in the quality workflow.
+
+## Dual-runtime qualification
+
+Current quality runs are named by native platform and runtime, for example
+`packages-and-consumer-linux-net10`. Each producer artifact still contains exactly
+one package consumer manifest. Windows/Linux consumers for both runtimes validate
+identical package bytes from that designated producer. Historical release records
+retain their original artifact names and hashes; do not rewrite them for this naming
+change. Publication remains manual and uses an explicitly approved new version.

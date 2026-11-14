@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [ValidateSet('windows', 'linux')]
-    [string]$Platform = $(if ($IsWindows) { 'windows' } else { 'linux' })
+    [string]$Platform = $(if ($IsWindows) { 'windows' } else { 'linux' }),
+    [ValidateSet(10, 11)][int]$RuntimeMajor = 10
 )
 
 Set-StrictMode -Version Latest
@@ -33,6 +34,12 @@ function Get-QualitySuites([string]$Root) {
     return @($suites)
 }
 
+function Get-QualityFramework([string]$Suite, [string]$Platform, [int]$RuntimeMajor) {
+    $framework = "net$RuntimeMajor.0"
+    if ($Platform -eq 'windows' -and $Suite -in @('UnitTests', 'IntegrationTests', 'PlatformTests')) { $framework += '-windows' }
+    return $framework
+}
+
 function Get-SourceHash {
     $files = @(Get-Item -Force global.json, Directory.Build.props, Directory.Packages.props, .editorconfig,
         Monstertacle.Multisession.slnx, codemetr.json, codemetr-cover.json, .config/dotnet-tools.json, README.md)
@@ -55,7 +62,7 @@ try {
     $runDirectory = Join-Path $root ("artifacts/quality/$Platform/" + [Guid]::NewGuid().ToString('N'))
     $null = New-Item $runDirectory -ItemType Directory -Force
     $sourceHash = Get-SourceHash
-    [ordered]@{ SourceHash = $sourceHash; Platform = $Platform; StartedUtc = [DateTimeOffset]::UtcNow.ToString('O') } |
+    [ordered]@{ SourceHash = $sourceHash; Platform = $Platform; RuntimeMajor = $RuntimeMajor; StartedUtc = [DateTimeOffset]::UtcNow.ToString('O') } |
         ConvertTo-Json | Set-Content (Join-Path $runDirectory 'run.json') -Encoding utf8
 
     Invoke-Dotnet @('restore', 'Monstertacle.Multisession.slnx', '--locked-mode', '--force')
@@ -71,6 +78,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Spec Kit configuration behavior tests failed.' }
     & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-QualitySuites.Tests.ps1
     if ($LASTEXITCODE -ne 0) { throw 'Quality suite inventory behavior tests failed.' }
+    & (Join-Path $PSHOME 'pwsh') -NoProfile -File tests/quality/Test-RuntimeFramework.Tests.ps1
+    if ($LASTEXITCODE -ne 0) { throw 'Runtime routing tests failed.' }
     $suites = @(Get-QualitySuites $root)
 
     # A new directory per invocation prevents old reports from contributing to this run.
@@ -79,10 +88,8 @@ try {
         $arguments = @('test', $project, '-c', 'Release', '--no-build', '--no-restore',
             '--settings', 'tests/coverage.runsettings', '--collect', 'XPlat Code Coverage',
             '--logger', 'trx', '--results-directory', (Join-Path $runDirectory $suite))
-        if ($suite -in @('UnitTests', 'IntegrationTests', 'PlatformTests')) {
-            $framework = if ($Platform -eq 'windows') { 'net10.0-windows' } else { 'net10.0' }
-            $arguments += @('-f', $framework)
-        }
+        $framework = Get-QualityFramework $suite $Platform $RuntimeMajor
+        $arguments += @('-f', $framework)
         Invoke-Dotnet $arguments
     }
 

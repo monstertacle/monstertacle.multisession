@@ -26,8 +26,10 @@ public sealed class NativeScenarioOwnershipTests(ITestOutputHelper output)
     [InlineData("limits")]
     public async Task ExecutesOfflineScenarioAndReleasesNativeState(string scenario)
     {
-        string root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "dev", ".agenttemp",
-            "multisession-cli-scenario-" + Guid.NewGuid().ToString("N"));
+        // SDK-PR41-WIN-SHUTDOWN-LOCK-001 (P-SHUTDOWN-1): the theory owns its root like the sibling fact (T021): the scenario's own
+        // failure stays first and keeps the root; after a pass the store files are probed exclusively before the root is deleted.
+        OwnedScenarioRoot owned = OwnedScenarioRoot.UnderScratch("multisession-cli-scenario-");
+        string root = owned.Path;
         Assert.False(Directory.Exists(root));
         try
         {
@@ -36,10 +38,18 @@ public sealed class NativeScenarioOwnershipTests(ITestOutputHelper output)
             int exit = await ScenarioRunner.RunAsync(["--scenario", scenario, "--state-root", root], report);
             Assert.True(exit == 0, "scenario " + scenario + " exited " + exit + ": " + report);
             string run = Assert.Single(Directory.GetDirectories(root, "run-*"));
-            await using NativeLease reopened = NativeLease.OpenExisting(run);
-            Assert.True(reopened.IsHeld);
+            await using (NativeLease reopened = NativeLease.OpenExisting(run))
+            {
+                Assert.True(reopened.IsHeld);
+            }
+            owned.Passed();
         }
-        finally { if (Directory.Exists(root)) { Directory.Delete(root, recursive: true); } }
+        catch (Exception primary)
+        {
+            owned.Report(primary, output.WriteLine);
+            throw;
+        }
+        finally { owned.Finish(); }
     }
 
     /// <summary>Scenario cleanup releases native state ownership before returning success. The test then deletes its own root;

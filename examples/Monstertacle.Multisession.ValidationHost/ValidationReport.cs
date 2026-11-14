@@ -12,6 +12,8 @@ internal sealed record ValidationReport(string Scenario, string Status, string R
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ValidationFailure? Failure { get; init; }
     public IReadOnlyList<ValidationFailure> CleanupFailures { get; init; } = [];
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyList<ScenarioAdmission>? Admissions { get; init; }
     public string? OperatingSystem { get; init; }
     public string? RuntimeVersion { get; init; }
     public string? SqliteVersion { get; init; }

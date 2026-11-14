@@ -41,6 +41,32 @@ Wave consumer's explicit thirty-second budget is a separate acceptance profile.
 - Not in the log: the loop index, the failure stage, the outcome of the candidate and any native code. Like the earlier
   records, it adds no cause. It is bound here as a further default-budget recurrence.
 
+## Recurrence 2026-11-06 (pull request #41), SDK-PR41-WIN-RETENTION-ADMISSION-001
+
+- Run: push quality run 42292328442, attempt 1, job 128148644344, `windows-latest`, head `04eb658`. The PR41 pull_request run's
+  required contexts passed; that does not remove this failure or name its cause.
+- Failure: the `retention` validation scenario exited 2 after 32 s with `AdmissionTimedOut` (code 24), certainty Unknown,
+  admission status Unknown, `Details.Stage` 8 (`FailureStage.AdmissionCommit`). One `SubmitAsync` of `RetentionProbeFlow`
+  (`ProbeHost` defaults, admission timeout 5 s) timed out at the commit.
+- Proven: the failure site (admission commit beyond the 5 s default on Windows). Not proven: why the commit was slow; which of the two
+  submits it was. Not retried, no timeout or profile change, the Unknown outcome is kept (ADM-CERTAINTY-QUEUE-20261104).
+- Root decision 2026-11-07: extend the M1 envelope to ScenarioRunner admissions only (test/ValidationHost). Implemented on
+  `t016-primary-failure-diagnostics` as `ScenarioAdmissionTrace`. Every `ProbeHost.SubmitAsync` of a scenario records its order,
+  phase (`submit:<input>`), monotonic start since the scenario began, duration and the facts its outcome states (code, stage,
+  admission status, certainty, request id). The last 10 are kept. A failed report carries them as `Admissions`; a passing report is
+  unchanged. Nothing is looked up, retried or reclassified, and the original exception is rethrown unchanged.
+  - Control: `ScenarioAdmissionEnvelopeTests`, red on `04eb658` because the failed report named no admissions.
+  - Not changed: no `src`, public API, persisted runtime, bound or timeout change. M3 and M4 are still not granted; a separate exact
+    source proposal is needed if the next natural recurrence's envelope does not separate the cause.
+
+- SDK-SCENARIO-CLEANUP-ENVELOPE-001 (root 2026-11-07, root task `owner-diagnostic-claim-binding-and-cleanup-envelope-20261107`, from
+  the opposed review of the delta above): the envelope was attached only in the scenario body's catch, so a scenario whose
+  admissions succeeded but whose state cleanup failed ended as a failed report without it.
+  - Fix (`41ac773`): the trace spans body and cleanup; every final failed report carries the admissions; the body failure stays
+    primary with cleanup attached; a passing report carries none.
+  - Controls (`ScenarioAdmissionEnvelopeTests`): cleanup-only failure, red on `3302e4a`; body plus cleanup failure, a precedence pin.
+    Mutations, each red: body catch only; envelope on every report.
+
 ## Source analysis and private controls 2026-11-04 (evidence/windows-default-admission-source-analysis-20261104.md)
 
 Source state: `main` `18cbcbba`. The record contains:

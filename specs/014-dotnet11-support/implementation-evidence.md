@@ -2,7 +2,7 @@
 
 **Recorded**: 2026-11-14T10:31:06Z (measured with `date -u`)
 **Owner**: current implementation session for Alexander Bleissem
-**Status**: local acceptance passed; native hosted results are reported separately.
+**Status**: local and native hosted acceptance passed; final documentation CI and merge pending.
 
 ## Actual local checks
 
@@ -66,7 +66,7 @@ FR-001/005: all matching targets built; existing public/state/runtime contracts 
 FR-002: 1362 tests per target and independent native product/complete cover checks passed.
 FR-003: nine packages and both sets of actual external consumers/published scenarios passed.
 FR-004: locked restore, formatting/analyzers, audit, full/diff metrics passed; native
-Windows/Linux matrix and canonical consumers require hosted qualification on this head.
+Windows/Linux matrix and canonical consumers passed hosted qualification on the implementation head.
 All local findings were either corrected and checked or explicitly retained with the
 existing source-bound task assignment above. No unresolved local acceptance blocker remains.
 
@@ -81,3 +81,23 @@ dependencies. This was an implementation staging error, not a runtime or SDK def
 The example-host target and native-reference conditions are now committed. The
 unnecessary manual metadata-staging workaround was removed. Existing project-reference
 target selection is retained; final exact-head native CI must qualify the correction.
+
+## Hosted acceptance
+
+Updated: 2026-11-14T11:04:46Z (measured with `date -u`).
+
+The complete [PR quality run](https://github.com/monstertacle/monstertacle.multisession/actions/runs/43587241962)
+passed on implementation commit `24c0d29c998f3087902c3bd669f0808a1e2789f6`.
+All four native Linux/Windows × .NET 10/11 quality jobs passed, including locked
+restore, build, formatting, test suites, audit, coverage, package layout, external
+consumers and published host scenarios. All four canonical-consumer jobs passed
+against the same designated Linux/.NET10 producer package artifact and manifest.
+Both native [metrics guards](https://github.com/monstertacle/monstertacle.multisession/actions/runs/43587241939)
+also passed. Thus Windows evidence is actual execution, not cross-compilation.
+The example host lock graph is committed with both new framework groups.
+
+All tasks T001–T007 are accepted. Final documentation changes receive their own
+current-head CI before merge. The explicitly retained historical feature008 T006
+assignment remains there; this runtime task does not claim its historical cause
+or older repeated-normal-run acceptance has been established. No new unassigned
+finding or runtime-acceptance blocker remains.

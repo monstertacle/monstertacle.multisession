@@ -2,7 +2,7 @@
 
 **Created**: 2026-11-14T09:57:24Z (measured with `date -u`)
 **Owner**: current implementation session for Alexander Bleissem
-**Status**: implementation and acceptance complete; final documentation CI and merge pending
+**Status**: complete (implementation and runtime acceptance)
 
 1. Add semantic failing regression cases for quality suite/runtime selection.
 2. Add matching .NET 11 TFMs to every project and native reference/alias conditions;

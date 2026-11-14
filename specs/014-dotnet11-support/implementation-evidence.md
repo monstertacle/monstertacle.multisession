@@ -2,7 +2,7 @@
 
 **Recorded**: 2026-11-14T10:31:06Z (measured with `date -u`)
 **Owner**: current implementation session for Alexander Bleissem
-**Status**: local and native hosted acceptance passed; final documentation CI and merge pending.
+**Status**: local and native hosted acceptance passed.
 
 ## Actual local checks
 

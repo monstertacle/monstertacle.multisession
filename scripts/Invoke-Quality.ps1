@@ -89,6 +89,15 @@ try {
             '--settings', 'tests/coverage.runsettings', '--collect', 'XPlat Code Coverage',
             '--logger', 'trx', '--results-directory', (Join-Path $runDirectory $suite))
         $framework = Get-QualityFramework $suite $Platform $RuntimeMajor
+        # Bind executable-reference metadata to this target explicitly before the collector instruments its local DLL.
+        $localHost = Join-Path $root "tests/Monstertacle.Multisession.$suite/bin/Release/$framework/Monstertacle.Multisession.ValidationHost.dll"
+        if (Test-Path -LiteralPath $localHost) {
+            $builtHost = Join-Path $root "examples/Monstertacle.Multisession.ValidationHost/bin/Release/$framework"
+            foreach ($suffix in @('runtimeconfig.json', 'deps.json')) {
+                $metadata = "Monstertacle.Multisession.ValidationHost.$suffix"
+                Copy-Item -LiteralPath (Join-Path $builtHost $metadata) -Destination (Join-Path (Split-Path $localHost -Parent) $metadata) -Force
+            }
+        }
         $arguments += @('-f', $framework)
         Invoke-Dotnet $arguments
     }

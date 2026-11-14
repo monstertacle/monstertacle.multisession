@@ -63,9 +63,21 @@ manual/source-bound invocation contract. Windows execution requires actual CI.
 ## Requirement disposition
 
 FR-001/005: all matching targets built; existing public/state/runtime contracts retained.
-FR-002: 1362 assertions per target and independent native product/complete cover checks passed.
+FR-002: 1362 tests per target and independent native product/complete cover checks passed.
 FR-003: nine packages and both sets of actual external consumers/published scenarios passed.
 FR-004: locked restore, formatting/analyzers, audit, full/diff metrics passed; native
 Windows/Linux matrix and canonical consumers require hosted qualification on this head.
 All local findings were either corrected and checked or explicitly retained with the
 existing source-bound task assignment above. No unresolved local acceptance blocker remains.
+
+## Hosted child-process metadata binding
+
+The first hosted net11 Linux quality attempt ran the suite itself successfully but
+64 integration cases failed to start their validation-host children. One captured
+child diagnostic reported missing System.Runtime 11.0.0.0; the application test host
+had already run on .NET 11. The existing copy-local executable reference therefore
+needs explicit matching launch metadata. Quality now stages the selected host's
+runtimeconfig/deps beside the test copy before instrumentation, retaining the
+collector's instrumented DLL and binding launch to the same selected target.
+This is test build/launch configuration; no runtime package or product behaviour
+is changed. Final committed-head native CI must verify this correction.

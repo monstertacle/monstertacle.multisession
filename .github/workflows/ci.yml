@@ -30,6 +30,14 @@ jobs:
           dotnet-version: |
             10.0.403
             11.0.100
+      - name: Configure temporary storage
+        shell: pwsh
+        run: |
+          $temporary = Join-Path $HOME 'dev/.agenttemp'
+          New-Item $temporary -ItemType Directory -Force | Out-Null
+          "TMPDIR=$temporary" >> $env:GITHUB_ENV
+          "TMP=$temporary" >> $env:GITHUB_ENV
+          "TEMP=$temporary" >> $env:GITHUB_ENV
       - name: Locked restore, build, format, tests, audit and 87 percent coverage
         shell: pwsh
         run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}' -RuntimeMajor ${{ matrix.runtime }}

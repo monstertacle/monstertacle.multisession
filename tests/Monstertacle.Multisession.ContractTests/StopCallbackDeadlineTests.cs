@@ -33,8 +33,9 @@ public sealed class StopCallbackDeadlineTests(ITestOutputHelper output)
                     if (callbackThrows) { throw new InvalidOperationException("private callback payload"); }
                 });
                 registered.TrySetResult();
-                try { await Task.Delay(Timeout.InfiniteTimeSpan, token); }
-                catch (OperationCanceledException) { }
+                // Retain the callback registration until the test releases it. Cancellation may precede the provider await;
+                // an already-cancelled delay could let the provider dispose its registration before CancelAsync invokes it.
+                await release.Task;
                 return new(RequestState.Cancelled, ExecutionCertainty.ConfirmedEnded, string.Empty, false, binding, null);
             },
         };

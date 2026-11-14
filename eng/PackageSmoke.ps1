@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$PackageDirectory = 'artifacts/packages',
+    [ValidateSet(10, 11)][int]$RuntimeMajor = 10,
     [string]$TempRoot = (Join-Path ([Environment]::GetFolderPath('UserProfile')) 'dev/.agenttemp')
 )
 Set-StrictMode -Version Latest
@@ -22,7 +23,7 @@ if ($IsWindows) {
 }
 [xml]$properties = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
 $version = @($properties.Project.PropertyGroup.Version | Where-Object { $_ })[0]
-$framework = if ($IsWindows) { 'net10.0-windows' } else { 'net10.0' }
+$framework = if ($IsWindows) { "net$RuntimeMajor.0-windows" } else { "net$RuntimeMajor.0" }
 $platformPackage = if ($IsWindows) { 'Windows' } else { 'Linux' }
 $template = Join-Path $root 'tests/Monstertacle.Multisession.IntegrationTests/Fixtures/PackageConsumer.cs.txt'
 $consumerSource = Join-Path $workspace 'Program.cs'
@@ -49,6 +50,7 @@ $project = @"
 "@
 $projectPath = Join-Path $workspace 'Consumer.csproj'
 [IO.File]::WriteAllText($projectPath, $project)
+Copy-Item (Join-Path $root 'global.json') (Join-Path $workspace 'global.json')
 $escapedFeed = [Security.SecurityElement]::Escape($feed)
 $config = @"
 <configuration>
@@ -80,7 +82,7 @@ try {
     & (Join-Path $PSScriptRoot Test-FrameworkConsumer.ps1) -Workspace $workspace -ProjectText $project -ConfigPath $configPath -Framework $framework -PlatformPackage $platformPackage
     $hashes = @((Get-ChildItem -LiteralPath $feed -Filter '*.nupkg' -File) + (Get-Item -LiteralPath $template, $consumerSource, $projectPath, $configPath) |
         ForEach-Object { [ordered]@{ File = $_.Name; Sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() } })
-    [ordered]@{ Status = 'PASS'; Platform = $platformPackage; CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O'); Workspace = $workspace; Hashes = $hashes; Consumer = $report } |
+    [ordered]@{ Status = 'PASS'; Platform = $platformPackage; Framework = $framework; CompletedUtc = [DateTimeOffset]::UtcNow.ToString('O'); Workspace = $workspace; Hashes = $hashes; Consumer = $report } |
         ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $workspace 'manifest.json')
     Write-Host "PASS package consumer: $workspace"
 } finally {

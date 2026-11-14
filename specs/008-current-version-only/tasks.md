@@ -241,3 +241,15 @@ T005 (2026-11-01): SharpClaw consumes the canonical alpha.5 bytes on its branch 
       3. an independent served-package check;
       4. host uptake in a separate host task.
     - **Acceptance:** unchanged.
+
+### Additional runtime qualification observation
+
+RT11-CALLBACK-LIFETIME-001 from feature014 T007 adds a Linux .NET-11 callback-entry
+observation to T006's existing investigation. Owner of this bounded runtime
+qualification: current implementation session for Alexander Bleissem; existing T006
+integration-maintainer ownership and historical Windows acceptance remain unchanged.
+See [source-bound review and controlled mechanism evidence](../014-dotnet11-support/evidence/cancellation-fixture-review.md).
+The new fixture correction retains registration until explicit release and changes
+no product cancellation rule, wait limit or exception assertion. The next step here
+is to compare future natural observations with that qualified fixture; it does not
+assign a cause to historical failures or claim the older 20-run Windows acceptance.

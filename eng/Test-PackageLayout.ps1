@@ -48,14 +48,21 @@ foreach ($name in $names) {
         try { $text = $reader.ReadToEnd() } finally { $reader.Dispose() }
         if ($text.Replace("`r`n", "`n") -cne $license) { throw "Packaged LICENSE differs from the repository MIT notice: $name" }
         $assemblies = @($zip.Entries | Where-Object FullName -Like 'lib/*/*.dll')
-        if ($assemblies.Count -ne 1 -or $assemblies[0].Name -ne "$name.dll") { throw "Unexpected assembly contents: $name" }
+        $frameworks = if ($name -eq 'Monstertacle.Multisession.Windows') { @('net10.0-windows7.0', 'net11.0-windows7.0') } else { @('net10.0', 'net11.0') }
+        $expected = @($frameworks | ForEach-Object { "lib/$_/$name.dll" })
+        $actual = @($assemblies.FullName | Sort-Object)
+        if ($actual.Count -ne 2 -or (Compare-Object $expected $actual)) { throw "Unexpected target assemblies: $name" }
+        $groups = @($metadata.dependencies.group)
+        if ($groups.Count -ne 2 -or (Compare-Object $frameworks @($groups.targetFramework | Sort-Object))) { throw "Unexpected target dependency groups: $name" }
         # A package without dependencies (the contract package) has no dependency elements at all.
         $dependencies = @($specification.GetElementsByTagName('dependency'))
         # Dependency direction of the checkpoint packages: the contract stands alone, the delivery package builds on it.
         if ($name -eq 'Monstertacle.Multisession.Checkpoints' -and $dependencies.Count -ne 0) { throw "The checkpoint contract package must have no dependencies." }
-        if ($name -eq 'Monstertacle.Multisession.Checkpoints.Delivery' -and
-            @($dependencies | Where-Object { $_.id -eq 'Monstertacle.Multisession.Checkpoints' -and $_.version -eq $version }).Count -ne 1) {
-            throw "The delivery checkpoint package must depend on Monstertacle.Multisession.Checkpoints $version."
+        foreach ($group in $groups) {
+            if ($name -eq 'Monstertacle.Multisession.Checkpoints.Delivery' -and
+                @($group.dependency | Where-Object { $_.id -eq 'Monstertacle.Multisession.Checkpoints' -and $_.version -eq $version }).Count -ne 1) {
+                throw "The delivery checkpoint package must depend on Monstertacle.Multisession.Checkpoints $version in each target group."
+            }
         }
         foreach ($dependency in $dependencies) {
             if ($dependency.id -eq 'Monstertacle.SharpQrs') {

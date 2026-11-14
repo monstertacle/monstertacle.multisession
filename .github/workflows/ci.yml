@@ -14,6 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-latest]
+        runtime: [10, 11]
         include:
           - os: ubuntu-24.04
             platform: linux
@@ -26,10 +27,12 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: |
+            10.0.403
+            11.0.100
       - name: Locked restore, build, format, tests, audit and 87 percent coverage
         shell: pwsh
-        run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}'
+        run: ./scripts/Invoke-Quality.ps1 -Platform '${{ matrix.platform }}' -RuntimeMajor ${{ matrix.runtime }}
       - name: Diagnose bounded private VHD formatting after native failure
         if: failure() && runner.os == 'Windows'
         shell: pwsh
@@ -44,13 +47,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Pinned tool restore failed.' }
           dotnet pack Monstertacle.Multisession.slnx -c Release --no-build -o artifacts/packages
           if ($LASTEXITCODE -ne 0) { throw 'Local package build failed.' }
-          ./eng/PackageSmoke.ps1
-          ./eng/Test-DeliveryConsumer.ps1
-          ./eng/Test-CheckpointsConsumer.ps1
+          ./eng/PackageSmoke.ps1 -RuntimeMajor ${{ matrix.runtime }}
+          ./eng/Test-DeliveryConsumer.ps1 -RuntimeMajor ${{ matrix.runtime }}
+          ./eng/Test-CheckpointsConsumer.ps1 -RuntimeMajor ${{ matrix.runtime }}
       - name: Publish and validate native host outside the source tree
         shell: pwsh
         run: |
-          $framework = if ($IsWindows) { 'net10.0-windows' } else { 'net10.0' }
+          $framework = if ($IsWindows) { 'net${{ matrix.runtime }}.0-windows' } else { 'net${{ matrix.runtime }}.0' }
           $rid = if ($IsWindows) { 'win-x64' } else { 'linux-x64' }
           $publish = "artifacts/publish/$rid"
           dotnet publish examples/Monstertacle.Multisession.ValidationHost -c Release -f $framework -r $rid --self-contained false --no-restore -o $publish
@@ -62,13 +65,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: quality-${{ matrix.platform }}
+          name: quality-${{ matrix.platform }}-net${{ matrix.runtime }}
           path: artifacts/quality/${{ matrix.platform }}/
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: packages-and-consumer-${{ matrix.platform }}
+          name: packages-and-consumer-${{ matrix.platform }}-net${{ matrix.runtime }}
           path: |
             artifacts/packages/
             artifacts/package-smoke/
@@ -84,6 +87,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-latest]
+        runtime: [10, 11]
         include:
           - os: ubuntu-24.04
             platform: linux
@@ -96,10 +100,12 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: |
+            10.0.403
+            11.0.100
       - uses: actions/download-artifact@v4
         with:
-          name: packages-and-consumer-linux
+          name: packages-and-consumer-linux-net10
           path: artifacts/canonical-input
       - name: Verify and consume identical producer package bytes
         shell: pwsh
@@ -109,13 +115,13 @@ jobs:
           $manifests = @(Get-ChildItem artifacts/canonical-input/package-smoke -Filter manifest.json -Recurse -File)
           if ($manifests.Count -ne 1) { throw 'Expected exactly one successful package producer manifest.' }
           ./eng/Test-CanonicalPackageHashes.ps1 -ProducerManifest $manifests[0].FullName -PackageDirectory artifacts/canonical-input/packages > artifacts/canonical-package-source.json
-          ./eng/PackageSmoke.ps1 -PackageDirectory artifacts/canonical-input/packages
-          ./eng/Test-DeliveryConsumer.ps1 -PackageDirectory artifacts/canonical-input/packages
-          ./eng/Test-CheckpointsConsumer.ps1 -PackageDirectory artifacts/canonical-input/packages
+          ./eng/PackageSmoke.ps1 -RuntimeMajor ${{ matrix.runtime }} -PackageDirectory artifacts/canonical-input/packages
+          ./eng/Test-DeliveryConsumer.ps1 -RuntimeMajor ${{ matrix.runtime }} -PackageDirectory artifacts/canonical-input/packages
+          ./eng/Test-CheckpointsConsumer.ps1 -RuntimeMajor ${{ matrix.runtime }} -PackageDirectory artifacts/canonical-input/packages
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: canonical-consumer-${{ matrix.platform }}
+          name: canonical-consumer-${{ matrix.platform }}-net${{ matrix.runtime }}
           path: |
             artifacts/canonical-package-source.json
             artifacts/package-smoke/

@@ -70,14 +70,14 @@ Windows/Linux matrix and canonical consumers require hosted qualification on thi
 All local findings were either corrected and checked or explicitly retained with the
 existing source-bound task assignment above. No unresolved local acceptance blocker remains.
 
-## Hosted child-process metadata binding
+## Hosted child-process composition correction
 
-The first hosted net11 Linux quality attempt ran the suite itself successfully but
-64 integration cases failed to start their validation-host children. One captured
-child diagnostic reported missing System.Runtime 11.0.0.0; the application test host
-had already run on .NET 11. The existing copy-local executable reference therefore
-needs explicit matching launch metadata. Quality now stages the selected host's
-runtimeconfig/deps beside the test copy before instrumentation, retaining the
-collector's instrumented DLL and binding launch to the same selected target.
-This is test build/launch configuration; no runtime package or product behaviour
-is changed. Final committed-head native CI must verify this correction.
+The first hosted net11 Linux quality attempt ran the suite itself but failed 64
+validation-host child cases, including missing System.Runtime 11.0.0.0. Investigation
+of the next CI build showed only net10 host outputs. The local example-host csproj
+already had both new targets, but it had inadvertently been omitted from the staged
+commit. Consequently clean CI referenced a net10 executable while loading net11 test
+dependencies. This was an implementation staging error, not a runtime or SDK defect.
+The example-host target and native-reference conditions are now committed. The
+unnecessary manual metadata-staging workaround was removed. Existing project-reference
+target selection is retained; final exact-head native CI must qualify the correction.

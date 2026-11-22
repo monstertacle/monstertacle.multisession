@@ -190,8 +190,16 @@ Metrics complement this behavioral evidence; they replace neither tests nor code
 
 ### V. Security and traceable operation
 
-- Secrets and personal data MUST NOT be disclosed in source code, test data or logs.
-  Configuration and secrets MUST be managed separately.
+- Real API keys, tokens, passwords, credential-bearing connection strings, private keys,
+  personal or confidential data and session or authentication state MUST stay out of sources, tests,
+  documentation, examples, Git history, logs, artifacts, caches and images. Use runtime secret
+  management, separate from other configuration, and ephemeral synthetic test keys
+  generated at test time. Ignore rules alone
+  are insufficient. Report confirmed exposure privately to the authorized owner without
+  values and promptly rotate affected real credentials with authorization.
+- Before every commit, contributors MUST examine the exact staged diff and run the
+  [staged secret check](../../docs/secret-handling.md). A detection, missing dependency or scan
+  failure MUST block the commit. Reports MUST redact sensitive values.
 - Inputs at trust boundaries MUST be validated. Access MUST use the minimal necessary permissions;
   database queries MUST be parameterized.
 - Dependencies MUST be checked for maintenance status, license and known security vulnerabilities
@@ -349,6 +357,11 @@ invented without confirmation.
 
 ### Amendment record
 
+- 3.1.0 (2026-11-22, measured 2026-11-22T12:31:39Z): owner-approved public secret handling.
+  Principle V now requires exact staged review and a fail-closed scanner before every commit.
+  This reduces accidental disclosure of credentials and private data. Contributors install a
+  verified scanner and use the new guide. The [feature plan](../../specs/015-staged-secret-protection/plan.md)
+  records the affected workflow and qualification.
 - 3.0.0 (2026-11-07, measured 2026-11-07T11:54:25Z): owner decision "Meine Vorgabe sind keine
   Verwendung von anbieter spezifischen CLI Paketen. Das wäre in die constitution aufzunehmen." ("My
   requirement is that no vendor-specific CLI packages are used. This is to be included in the
@@ -380,4 +393,4 @@ invented without confirmation.
   with an unchanged overall scope (owner approval "87 % code coverage sind okay, bitte anpassen"
   ("87 % code coverage is okay, please adjust"), 2026-10-28).
 
-**Version**: 3.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm the original adoption date | **Last Amended**: 2026-11-07
+**Version**: 3.1.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm the original adoption date | **Last Amended**: 2026-11-22

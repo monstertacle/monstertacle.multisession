@@ -37,8 +37,24 @@ internal sealed class ProbeHost(ISessionStore store, SessionRuntime runtime, Run
     }
     internal ValueTask<SessionSnapshot> CreateAsync(string profile, string? workspace = null, string? directory = null)
         => Runtime.Sessions.CreateSessionAsync(Guid.NewGuid(), profile, new(directory, workspace), CancellationToken.None);
-    internal ValueTask<RequestReceipt> SubmitAsync(Guid session, string input, string? workspace = null)
-        => Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session, input, TimeSpan.FromSeconds(10), workspace, workspace is not null), CancellationToken.None);
+    // Every scenario admission is recorded in the scenario's admission envelope (M1, test/ValidationHost only); the outcome and any
+    // exception are returned or rethrown unchanged.
+    internal async ValueTask<RequestReceipt> SubmitAsync(Guid session, string input, string? workspace = null)
+    {
+        ScenarioAdmissionTrace? trace = ScenarioAdmissionTrace.Current;
+        (int, string, long)? admission = trace?.Start(input);
+        try
+        {
+            RequestReceipt receipt = await Runtime.Requests.SubmitAsync(Guid.NewGuid(), new(session, input, TimeSpan.FromSeconds(10), workspace, workspace is not null), CancellationToken.None);
+            if (admission is { } accepted) { trace!.Accepted(accepted, receipt.RequestId); }
+            return receipt;
+        }
+        catch (Exception failure)
+        {
+            if (admission is { } failed) { trace!.Failed(failed, failure); }
+            throw;
+        }
+    }
     internal async Task<RequestSnapshot> EndAsync(Guid id)
     {
         using CancellationTokenSource deadline = new(TimeSpan.FromSeconds(10));

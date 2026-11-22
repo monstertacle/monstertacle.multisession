@@ -40,6 +40,9 @@ describe deadlines, reservations, diagnostics and safe resumption.
 
 ## Development environment and checks
 
+Review the [secret handling rules and mandatory staged check](docs/secret-handling.md)
+before committing.
+
 CQRS is integrated via `Monstertacle.SharpQrs` **0.2.0-alpha.1**.
 `SessionRuntime.Commands` and `SessionRuntime.Queries` provide typed
 asynchronous operations after start. The existing ports remain compatible and go through the same
